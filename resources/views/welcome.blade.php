@@ -105,7 +105,7 @@
   <header id="header" class="fixed-top ">
     <div class="container d-flex align-items-center">
 
-      <h1 class="logo me-auto"><a href="{{ route('accueil') }}">Immo Manager</a></h1>
+      <h1 class="logo me-auto"><a href="{{ route('accueil') }}">Immo</a></h1>
       <nav id="navbar" class="navbar">
         <ul>
           <li><a class="nav-link scrollto active" href="#hero">Accueil</a></li>
@@ -209,135 +209,147 @@
 
 
     <!-- ======= Creer un compte ======= -->
-    <section id="compte" class="compte">
-        <div class="container" data-aos="fade-up">
-
-            <div class="section-title">
-              <h2>Créer un compte</h2>
-
-            </div><div id="afficher">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <!-- DEBUT POUR COMPTE PERSONNEL  <form class="mt-5">-->
-
-            <div class="tab-content d-flex justify-content-center" id="nav-tabContent">
-              <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-
-                    <form action="javascript:createCompte();" method="post" id="createcompteformID"  role="form" class="mt-5">
-                       @csrf
-                      <div class="form-row">
-                        <div class="form-group col-md-6">
-                          <label for="inputEmail4">Nom <strong style="color:red;">*</strong>
-                          </label>
-                          <input type="text" class="form-control" name="nom" id="nom" placeholder="Nom" required>
-                          <span class="invalid-feedback nom_err" role="alert">
-                          </span>
-                        </div>
-
-                        <div class="form-group col-md-6">
-                          <label for="inputEmail4">Prénom 
-                            <strong style="color:red;">*</strong>
-                          </label>
-                          <input type="text" class="form-control" name="prenom" id="prenom" placeholder="Prénom" required>
-                          <span class="invalid-feedback prenom_err" role="alert">
-                          </span>
-                        </div>
-
-                        <div class="form-group col-md-6">
-                          <label for="inputEmail4">E-mail personnel <strong style="color:red;">*</strong>
-                          </label>
-                          <input type="email" class="form-control" name="email" id="email" placeholder="E-mail" required>
-                          <span class="invalid-feedback email_err" role="alert">
-                          </span>
-                        </div>
-
-
-                        <div class="form-group col-md-2">
-                          <label for="code_pays">Pays <strong style="color:red;">*</strong></label>
-                          <select class="form-select" name="code_pays" id="code_pays" required>
-                              <option value="" disabled selected>--Pays--</option>
-                              <option value="+229" data-mask="(229) 99 99 99 99">Bénin</option>
-                              <option value="+228" data-mask="(228) 90 90 90 90">Togo</option>
-                              <!-- Vous pouvez ajouter plus de pays ici avec leurs masques -->
-                          </select>
-                          <span class="invalid-feedback code_pays_err" role="alert"></span>
-                        </div>
-
-                        <div class="form-group col-md-4">
-                          <label for="inputEmail4">Téléphone personnel <strong style="color:red;">*</strong>
-                          </label>
-                          <input type="text" class="form-control" name="telephone" id="telephone" placeholder="Téléphone" required>
-                          <span class="invalid-feedback telephone_err" role="alert">
-                          </span>
-                        </div>
-
-                      </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="inputPassword4">Choisissez un type de compte <strong style="color:red;">*</strong>
-                            </label>
-                            <select class="form-select" name="type_compte" id="type_compte" onchange="displayChoix();" required>
-                                <option value="" disabled selected>--Type de compte--</option>
-                                <option value="Entreprise">Entreprise</option>
-                                <option value="Particulier">Particulier</option>
-                            </select>
-                            <span class="invalid-feedback type_compte_err" role="alert">
-                          </span>
-                        </div>
-                        
-
-                      <section id="contact" class="contact" style="display:none;">
-                        <div class="container" data-aos="fade-up">
-                          <div class="row">
-                              <div class="col-lg-12 mt-5 mt-lg-0 d-flex align-items-stretch">
-                                <div  class="php-email-form">
-                                  <div class="row">
-                                    <div class="form-group col-md-6">
-                                      <label for="designation">Désignation de l'entreprise <strong style="color:red;">*</strong></label>
-                                      <input type="text" name="designation" class="form-control" id="designation">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                      <label for="adresse">Adresse de l'entreprise <strong style="color:red;">*</strong></label>
-                                      <input type="text" class="form-control" name="adresse" id="adresse">
-                                      <span class="invalid-feedback adresse_err" role="alert">
-                                      </span>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                      <label for="email">E-mail de l'entreprise <strong style="color:red;">*</strong></label>
-                                      <input type="email" class="form-control" name="email_entreprise" id="email_entreprise">
-                                      <span class="invalid-feedback  email_entreprise_err" role="alert">
-                                      </span>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                      <label for="telepone">Téléphone de l'entreprise <strong style="color:red;">*</strong></label>
-                                      <input type="telepone" class="form-control" name="telepone_entreprise" id="telepone_entreprise">
-                                      <span class="invalid-feedback  telepone_entreprise_err" role="alert">
-                                      </span>
-                                    </div>
-                                  </div>
-                                  
-                                </div>
-                              </div>
-
-                          </div>
-                        </div>
-                      </section>
-
-                      <div class="text-center sbg1">
-                        <button type="submit"  id="valider">
-                          <span id="s">Enregister</span>
-                        </button>
-                      </div>
-                    </form>
-
-              </div>
-              <!-- FIN POUR COMPTE PERSONNEL -->
-              
-            </div>
+    <section id="compte" class="py-5 bg-light">
+      <div class="container" data-aos="fade-up">
+    
+        <div class="section-title text-center mb-4">
+          <h2 class="text-primary">Créer un compte</h2>
+          <p class="text-muted">Veuillez remplir le formulaire ci-dessous pour créer un compte.</p>
         </div>
+    
+        <div id="afficher" class="alert alert-danger d-none" role="alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    
+        <div class="card shadow p-4">
+          <form action="javascript:createCompte();" method="post" id="createcompteformID">
+            @csrf
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="nom" id="nom" placeholder="Nom" required>
+                <span class="invalid-feedback nom_err"></span>
+              </div>
+    
+              <div class="col-md-6">
+                <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="prenom" id="prenom" placeholder="Prénom" required>
+                <span class="invalid-feedback prenom_err"></span>
+              </div>
+    
+              <div class="col-md-6">
+                <label for="email" class="form-label">E-mail personnel <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" name="email" id="email" placeholder="exemple@mail.com" required>
+                <span class="invalid-feedback email_err"></span>
+              </div>
+    
+              <div class="col-md-2">
+                <label for="code_pays" class="form-label">Pays <span class="text-danger">*</span></label>
+                <select class="form-select" name="code_pays" id="code_pays" required>
+                  <option value="" disabled selected>--Pays--</option>
+                  <option value="+229" data-mask="(229) 99 99 99 99">Bénin</option>
+                  <option value="+228" data-mask="(228) 90 90 90 90">Togo</option>
+                </select>
+                <span class="invalid-feedback code_pays_err"></span>
+              </div>
+    
+              <div class="col-md-4">
+                <label for="telephone" class="form-label">Téléphone personnel <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="telephone" id="telephone" placeholder="Téléphone" required>
+                <span class="invalid-feedback telephone_err"></span>
+              </div>
+    
+              <div class="col-md-6">
+                <label for="type_compte" class="form-label">Type de compte <span class="text-danger">*</span></label>
+                <select class="form-select" name="type_compte" id="type_compte" onchange="displayChoix();" required>
+                  <option value="" disabled selected>--Type de compte--</option>
+                  <option value="Entreprise">Entreprise</option>
+                  <option value="Particulier">Particulier</option>
+                </select>
+                <span class="invalid-feedback type_compte_err"></span>
+              </div>
 
+              <div class="col-md-6" id="plan_abonnement_input_div" style="display: none;">
+                <label for="plan_abonnement_input" class="form-label">Plan d'abonnement <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="plan_abonnement_input" name="plan_abonnement" placeholder="Cliquer pour choisir" readonly required data-bs-toggle="modal" data-bs-target="#modalPlans">
+                <span class="invalid-feedback plan_abonnement_err"></span>
+              </div>
+              
+              
+
+             <!-- <div class="col-md-6" id="plan_abonnement_personnel" style="display: none;">
+                <label for="type_compte" class="form-label">Plan d'abonnement<span class="text-danger">*</span></label>
+                <select class="form-select" name="plan_abonnement" id="plan_abonnement" required>
+                  <option value="" disabled selected>--Plan d'abonnement--</option>
+                  <option value="gratuit">Gratuit</option>
+                  <option value="basique">Basique</option>
+                  <option value="avance">Avancé</option>
+                </select>
+                <span class="invalid-feedback plan_abonnement_err"></span>
+              </div>
+
+              <div class="col-md-6" id="plan_abonnement_entreprise" style="display: none;">
+                <label for="type_compte" class="form-label">Plan d'abonnement<span class="text-danger">*</span></label>
+                <select class="form-select" name="plan_abonnement" id="plan_abonnement" required>
+                  <option value="" disabled selected>--Plan d'abonnement--</option>
+                  <option value="gratuit">Gratuit</option>
+                  <option value="starter">Starter</option>
+                  <option value="premium">Premium</option>
+                  <option value="professionnel">Professionnel</option>
+                </select>
+                <span class="invalid-feedback plan_abonnement_err"></span>
+              </div> -->
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6" id="nombre_mois-div" style="display: none;">
+                <label for="type_compte" class="form-label">Nombre du mois<span class="text-danger">*</span></label>
+                <select class="form-select" name="nombre_mois" id="nombre_mois" required>
+                  <option value="" disabled selected>--Nombre du mois--</option>
+                  <option value="3">3 Mois</option>
+                  <option value="6">6 Mois</option>
+                  <option value="12">12 Mois (1Ans)</option>
+                </select>
+                <span class="invalid-feedback nombre_mois_err"></span>
+              </div>
+            </div>
+    
+            <!-- Section entreprise -->
+            <div id="contact" class="mt-4 p-4 border rounded bg-white" style="display: none;">
+              <h5 class="mb-3 text-secondary">Informations sur l'entreprise</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="designation" class="form-label">Désignation de l'entreprise <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="designation" id="designation">
+                </div>
+                <div class="col-md-6">
+                  <label for="adresse" class="form-label">Adresse <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="adresse" id="adresse">
+                  <span class="invalid-feedback adresse_err"></span>
+                </div>
+                <div class="col-md-6">
+                  <label for="email_entreprise" class="form-label">E-mail de l'entreprise <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" name="email_entreprise" id="email_entreprise">
+                  <span class="invalid-feedback email_entreprise_err"></span>
+                </div>
+                <div class="col-md-6">
+                  <label for="telepone_entreprise" class="form-label">Téléphone de l'entreprise <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="telepone_entreprise" id="telepone_entreprise">
+                  <span class="invalid-feedback telepone_entreprise_err"></span>
+                </div>
+              </div>
+            </div>
+    
+            <div class="text-center mt-4">
+              <button type="submit" id="valider" class="btn btn-primary px-5 py-2">
+                <span id="s">Enregistrer</span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
+    
     <!-- End Creer un compte -->
 
     <!-- ======= Why Us Section ======= -->
@@ -606,6 +618,7 @@
 
       </div>
     </section><!-- End Portfolio Section -->
+   
 
     <!-- ======= Pricing Section ======= -->
     <section id="plans" class="pricing">
@@ -632,6 +645,21 @@
             </div>
           </div>
     
+          <!-- Plan Basique -->
+          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="150">
+            <div class="box">
+              <h3>Plan Basique</h3>
+              <h4><sup>xof</sup>25.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter jusqu'à 3 maisons</li>
+                <li><i class="bx bx-check"></i> Accès aux fonctionnalités de base</li>
+                <li><i class="bx bx-check"></i> Support standard</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas de statistiques ni API</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
           <!-- Plan Starter -->
           <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="200">
             <div class="box featured">
@@ -647,8 +675,24 @@
             </div>
           </div>
     
+          <!-- Plan Avancé -->
+          <div class="col-lg-4 mt-4" data-aos="fade-up" data-aos-delay="250">
+            <div class="box">
+              <h3>Plan Avancé</h3>
+              <h4><sup>xof</sup>100.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter jusqu'à 8 maisons</li>
+                <li><i class="bx bx-check"></i> Fonctionnalités avancées incluses</li>
+                <li><i class="bx bx-check"></i> Statistiques de base disponibles</li>
+                <li><i class="bx bx-check"></i> Support client prioritaire</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas d'intégration d'API</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
           <!-- Plan Premium -->
-          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
+          <div class="col-lg-4 mt-4" data-aos="fade-up" data-aos-delay="300">
             <div class="box">
               <h3>Plan Premium</h3>
               <h4><sup>xof</sup>150.000<span>par an</span></h4>
@@ -662,10 +706,9 @@
               <a href="#" class="buy-btn">Démarrer</a>
             </div>
           </div>
-          
     
           <!-- Plan Professionnel -->
-          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="400">
+          <div class="col-lg-4 mt-4" data-aos="fade-up" data-aos-delay="400">
             <div class="box">
               <h3>Plan Professionnel</h3>
               <h4><sup>xof</sup>300.000<span>par an</span></h4>
@@ -681,9 +724,9 @@
           </div>
     
         </div>
-    
       </div>
     </section>
+    
     
    <!-- End Pricing Section -->
 
@@ -904,7 +947,99 @@
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
 
+   <!-- Modal Plans d’abonnement -->
+   
 
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputPlan = document.getElementById("plan_abonnement_input");
+
+      // Utiliser click plutôt que mouseenter pour éviter les soucis
+      inputPlan.addEventListener("click", showModalPlans);
+      });
+
+
+    const plansParType = {
+      Particulier: ['gratuit', 'basique', 'avance'],
+      Entreprise: ['gratuit', 'starter', 'premium', 'professionnel']
+    };
+  
+   
+
+    function displayChoix() {
+        let typeCompte = document.getElementById("type_compte").value;
+
+      
+        // Afficher l'input de sélection via modal uniquement
+        if (typeCompte === "Particulier" || typeCompte === "Entreprise") {
+          document.getElementById("plan_abonnement_input_div").style.display = "block";
+        }
+
+        if(typeCompte == 'Entreprise'){
+
+          document.getElementById('contact').style.display = 'block';
+
+          $("#designation").attr('required', true);
+          $("#adresse").attr('required', true);
+          $("#email_entreprise").attr('required', true);
+          $("#telepone_entreprise").attr('required', true);
+        }else{
+          document.getElementById('contact').style.display = 'none';
+          $("#designation").attr('required', false);
+          $("#adresse").attr('required', false);
+          $("#email_entreprise").attr('required', false);
+          $("#telepone_entreprise").attr('required', false);
+        }
+    }
+
+  
+    function showModalPlans() {
+      const type = document.getElementById("type_compte").value;
+      const container = document.getElementById("plansContainer");
+  
+      if (!type) {
+        alert("Veuillez d'abord sélectionner un type de compte.");
+        return;
+      }
+  
+      const plans = plansParType[type];
+      let html = '<div class="list-group">';
+  
+      plans.forEach(plan => {
+        html += `<button type="button" class="list-group-item list-group-item-action" onclick="selectPlan('${plan}')">${plan.charAt(0).toUpperCase() + plan.slice(1)}</button>`;
+      });
+  
+      html += '</div>';
+      container.innerHTML = html;
+  
+      new bootstrap.Modal(document.getElementById('modalPlans')).show();
+    }
+  
+    function selectPlan(plan) {
+      const planInput = document.getElementById("plan_abonnement_input");
+      planInput.value = plan.charAt(0).toUpperCase() + plan.slice(1);
+  
+      // Afficher le champ nombre de mois si plan ≠ gratuit
+      const moisDiv = document.getElementById("nombre_mois-div");
+      if (plan !== "gratuit") {
+        moisDiv.style.display = "block";
+      } else {
+        moisDiv.style.display = "none";
+      }
+  
+      // Fermer le modal
+      bootstrap.Modal.getInstance(document.getElementById('modalPlans')).hide();
+    }
+  
+    // Ajouter événement à l'input fictif
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputPlan = document.getElementById("plan_abonnement_input");
+      inputPlan.addEventListener("mouseenter", showModalPlans);
+      inputPlan.addEventListener("focus", showModalPlans); // pour mobile
+    });
+  </script>
+  
   <!-- Vendor JS Files -->
   <script src="{{ asset('assets2/vendor/aos/aos.js') }}" defer></script>
   <script src="{{ asset('assets2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}" defer></script>
@@ -932,29 +1067,19 @@
   <script src="{{ asset('assets2/js/main.js') }}" defer></script>
   <script src="{{ asset('assets2/javascriptFileFormulaireMultiple.js') }}" defer></script>
   <script type="text/javascript">
-      var input = document.querySelector("#phone");
-        window.intlTelInput(input, {
-            initialCountry: "auto", // Automatically detect user's country
-            preferredCountries: ['us', 'gb', 'fr', 'de', 'ng'], // Set preferred countries
-            geoIpLookup: function(callback) {
-                fetch('https://ipinfo.io?token=YOUR_TOKEN')  // Use your token for accurate IP lookup
-                    .then(response => response.json())
-                    .then(data => callback(data.country))
-                    .catch(() => callback('us')); // Fallback to 'us' in case of failure
-            },
-            separateDialCode: true, // Separates the dial code from the phone number input
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js", // For formatting
-            customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
-                return "e.g. " + selectedCountryPlaceholder;
-            }
-        });
 
-
-     function displayChoix() {
+     function displayChoixdfdfdfd() {
     
         let val = document.getElementById('type_compte').value;
-        if (val == 'Entreprise') {
 
+        const planPersonnel = document.getElementById("plan_abonnement_personnel");
+        const planEntreprise = document.getElementById("plan_abonnement_entreprise");
+    
+        if (val == 'Entreprise') {
+          
+          document.getElementById('plan_abonnement_entreprise').style.display = 'block';
+          document.getElementById('plan_abonnement_personnel').style.display = 'none';
+          
           document.getElementById('contact').style.display = 'block';
 
           $("#designation").attr('required', true);
@@ -963,6 +1088,9 @@
           $("#telepone_entreprise").attr('required', true);
 
         } else {
+
+          document.getElementById('plan_abonnement_personnel').style.display = 'block';
+          document.getElementById('plan_abonnement_entreprise').style.display = 'none';
 
           document.getElementById('contact').style.display = 'none';
           $("#designation").attr('required', false);
@@ -1082,5 +1210,121 @@
 
 
 </body>
+
+
+<!-- Modal Plans d’abonnement -->
+<div class="modal fade" id="modalPlans" tabindex="-1" aria-labelledby="modalPlansLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalPlansLabel">Choisir un plan d'abonnement dhshdg</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body" id="plansContainer">
+        <!-- Les plans seront injectés ici -->
+
+        <div class="row">
+    
+          <!-- Plan Gratuit -->
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="box">
+              <h3>Plan Gratuit</h3>
+              <h4><sup>xof</sup>0<span>par mois</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter au plus 2 maisons</li>
+                <li><i class="bx bx-check"></i> Accès limité aux fonctionnalités de base</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas de support prioritaire</span></li>
+                <li class="na"><i class="bx bx-x"></i> <span>Fonctionnalités avancées indisponibles</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
+          <!-- Plan Basique -->
+          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="150">
+            <div class="box">
+              <h3>Plan Basique</h3>
+              <h4><sup>xof</sup>25.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter jusqu'à 3 maisons</li>
+                <li><i class="bx bx-check"></i> Accès aux fonctionnalités de base</li>
+                <li><i class="bx bx-check"></i> Support standard</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas de statistiques ni API</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
+          <!-- Plan Starter -->
+          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="200">
+            <div class="box featured">
+              <h3>Plan Starter</h3>
+              <h4><sup>xof</sup>50.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter jusqu'à 5 maisons</li>
+                <li><i class="bx bx-check"></i> Accès aux fonctionnalités de base</li>
+                <li><i class="bx bx-check"></i> Support client standard</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas de statistiques avancées</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
+          <!-- Plan Avancé -->
+          <div class="col-lg-4 mt-4" data-aos="fade-up" data-aos-delay="250">
+            <div class="box">
+              <h3>Plan Avancé</h3>
+              <h4><sup>xof</sup>100.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter jusqu'à 8 maisons</li>
+                <li><i class="bx bx-check"></i> Fonctionnalités avancées incluses</li>
+                <li><i class="bx bx-check"></i> Statistiques de base disponibles</li>
+                <li><i class="bx bx-check"></i> Support client prioritaire</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas d'intégration d'API</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
+          <!-- Plan Premium -->
+          <div class="col-lg-4 mt-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="box">
+              <h3>Plan Premium</h3>
+              <h4><sup>xof</sup>150.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte personnel pourra ajouter jusqu'à 10 maisons</li>
+                <li><i class="bx bx-check"></i> Fonctionnalités avancées incluses</li>
+                <li><i class="bx bx-check"></i> Support client prioritaire</li>
+                <li><i class="bx bx-check"></i> Statistiques avancées</li>
+                <li class="na"><i class="bx bx-x"></i> <span>Pas d'intégration d'API</span></li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
+          <!-- Plan Professionnel -->
+          <div class="col-lg-4 mt-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="box">
+              <h3>Plan Professionnel</h3>
+              <h4><sup>xof</sup>300.000<span>par an</span></h4>
+              <ul>
+                <li><i class="bx bx-check"></i> Un compte entreprise pourra ajouter jusqu'à 50 maisons</li>
+                <li><i class="bx bx-check"></i> Accès à toutes les fonctionnalités avancées</li>
+                <li><i class="bx bx-check"></i> Support client dédié 24/7</li>
+                <li><i class="bx bx-check"></i> Statistiques avancées et rapports détaillés</li>
+                <li><i class="bx bx-check"></i> Intégration d'API</li>
+              </ul>
+              <a href="#" class="buy-btn">Démarrer</a>
+            </div>
+          </div>
+    
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
 
 </html>
