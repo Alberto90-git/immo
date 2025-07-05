@@ -24,10 +24,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 <script>
   $(document).ready(function () {
-    // Initialiser le champ de numéro de téléphone avec le sélecteur de pays
     const telephone = document.querySelector("#telephone");
+
     const iti = window.intlTelInput(telephone, {
       initialCountry: "auto",
+      nationalMode: false, // pour forcer l'affichage du code pays
+      separateDialCode: true, // Affiche le code à part
+      autoPlaceholder: "polite",
       geoIpLookup: function (callback) {
         $.get("https://ipinfo.io", function () {}, "jsonp").always(function (resp) {
           const countryCode = resp && resp.country ? resp.country : "us";
@@ -36,9 +39,8 @@
       },
       utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
     });
-
-    
   });
+
 
     new DataTable('#example');
 

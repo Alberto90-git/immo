@@ -84,8 +84,8 @@
      </p>
       
      
-     <a href="http://127.0.0.1/ImmobilierApk/public/forgot-password/{{ $user['token'] }}" class="btn">Réinitialiser son mot de passe</a>
-     {{-- <a href="{{ request()->getSchemeAndHttpHost().'/forgot-password/'.$user['token']}}" class="btn">Rénitialiser son mot de passe</a> --}}
+     {{--<a href="http://127.0.0.1/ImmobilierApk/public/forgot-password/{{ $user['token'] }}" class="btn">Réinitialiser son mot de passe</a>--}}
+      <a href="{{ request()->getSchemeAndHttpHost().'/forgot-password/'.$user['token']}}" class="btn">Rénitialiser son mot de passe</a> 
 
       <p>Si vous avez des questions, n'hésitez pas à répondre à cet e-mail.</p>
     </div>

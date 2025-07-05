@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Email Template</title>
   <style>
     body {
@@ -25,9 +25,15 @@
     .header {
       text-align: center;
       background-color: #007bff;
-      padding: 10px;
+      padding: 20px 10px;
       border-radius: 8px 8px 0 0;
       color: #fff;
+    }
+
+    .header img {
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 10px;
     }
 
     .header h1 {
@@ -65,51 +71,25 @@
       color: #007bff;
       text-decoration: none;
     }
-
-    .copy-btn {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    
-    .copy-btn:hover {
-      background-color: #218838;
-    }
   </style>
 </head>
 <body>
 
   <div class="container">
     <div class="header">
-      <h1>Bienvenue chez Immo Manager</h1>
+      <!--<img src="logo/logo2.jpg" alt="Logo Immo">-->
+      <h1>Bienvenue chez Immo</h1>
     </div>
     <div class="content">
-        <p>Demande de connexion, veuillez confirmez votre demande</p>
-        <p>Votre code de confirmation est: <strong id="confirmation-code">{{ $userinfo['code_login'] }}</strong></p>
-        <button class="copy-btn" onclick="copyToClipboard()">Copier le code</button>
+        <p>Demande de connexion, veuillez confirmer votre demande</p>
+        <p>Votre code de confirmation est : <strong>{{ $userinfo['code_login'] }}</strong></p>
         <p>Si vous avez des questions, n'hésitez pas à répondre à cet e-mail.</p>
     </div>
     <div class="footer">
-      <p>&copy; 2024 Immo Manager. Tous droits réservés.</p>
+      <p>&copy; 2024 Immo. Tous droits réservés.</p>
       <p><a href="#">Politique de confidentialité</a> | <a href="#">Se désabonner</a></p>
     </div>
   </div>
-
-  <script>
-    function copyToClipboard() {
-      var codeText = document.getElementById("confirmation-code").innerText;
-      navigator.clipboard.writeText(codeText).then(function() {
-        alert("Code copié: " + codeText);
-      }, function(err) {
-        console.error('Erreur lors de la copie', err);
-      });
-    }  
-  </script>
 
 </body>
 </html>

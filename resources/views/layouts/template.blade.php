@@ -3,6 +3,8 @@
   dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
   <head>
     <meta charset="utf-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
@@ -59,6 +61,52 @@
 
     
     <script>
+
+function Sepatateur_Milliers(param)
+    {
+
+        var valSaisie=$(param).val().trim().replace(/\s/g,'');
+        //alert(valSaisie);
+        if($.isNumeric(valSaisie))
+          {
+            //.trim();
+            if (valSaisie==0)
+             {
+               $(param).val(valSaisie);
+             }
+             else
+             {
+               var str= valSaisie.toString().replace(/\s/g,'');
+               var n= str.length;
+               if (n < 4)
+                {
+                  //alert(n);//return valSaisie;
+                }
+               else
+                {
+                  //$('#montant_prime').val().replace(/\s/g,'');
+                 $(param).val(((n % 3) ? str.substr(0, n % 3) + ' ' : '') + str.substr(n % 3).match(new RegExp('[0-9]{3}', 'g')).join(' '));
+                       //);
+                }
+              }
+          }
+          else
+          {
+              //alert("Ce champ nécessite une valeur entière");
+              //$(param).removeClass('form-control').addClass('form-control has-warning');
+              $(param).val().toString().replace(/\s/g,'');
+              return false;
+          }
+    }
+
+    
+        $('#close').on('click', function(){
+          setInterval(function(){
+              window.location.reload()
+          }, 500)
+        });
+
+
       function display_message(m_title,m_message,m_icone,m_class) {
         swal({
               title: m_title,

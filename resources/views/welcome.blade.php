@@ -312,6 +312,14 @@
                 </select>
                 <span class="invalid-feedback nombre_mois_err"></span>
               </div>
+
+              <div class="col-md-6" id="prix_input_div" style="display: none;">
+                <label for="prix_input" class="form-label">Prix 
+                  <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="prix" name="prix">
+                <span class="invalid-feedback prix_err"></span>
+              </div>
             </div>
     
             <!-- Section entreprise -->
@@ -1018,14 +1026,23 @@
   
     function selectPlan(plan) {
       const planInput = document.getElementById("plan_abonnement_input");
+      
+
+      
       planInput.value = plan.charAt(0).toUpperCase() + plan.slice(1);
   
       // Afficher le champ nombre de mois si plan ≠ gratuit
       const moisDiv = document.getElementById("nombre_mois-div");
+
+      const prixDiv = document.getElementById("prix_input_div");
+
       if (plan !== "gratuit") {
         moisDiv.style.display = "block";
+        prixDiv.style.display = "block";
+
       } else {
         moisDiv.style.display = "none";
+        prixDiv.style.display = "none";
       }
   
       // Fermer le modal
@@ -1111,7 +1128,7 @@
 
 
     function createCompte() {
-
+      alert("ok")
       var data = new FormData();
       var form_data = $('#createcompteformID').serializeArray();
 

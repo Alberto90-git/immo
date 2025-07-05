@@ -28,10 +28,7 @@ class ParametreController extends SessionController
             /*$publicites =  Publicite::whereNull('delete_at')
                                     ->get();*/
                                     
-            
                 return view('/welcome');
-            
-
     }
 
     public function index()
@@ -72,7 +69,8 @@ class ParametreController extends SessionController
             $validator = Validator::make(
                 $request->all(),
                 [
-                    'designation' => 'bail|required|string',
+                    //'designation' => 'bail|required|string',
+                    'designation' => 'required|unique:annexes,designation',
                     //'designation' => ['bail','required','string','designation','max:255',Rule::unique(Annexe::class),],
                     'adresse' => 'bail|required|string',
                     'telephone' => 'bail|required|string',
@@ -85,7 +83,8 @@ class ParametreController extends SessionController
 
             if ($validator->fails()) {
                 return response()->json([
-                    'error' => $validator->errors()
+                    'error' => $validator->errors(),
+                    'message' => 'Veuillez bien remplir les champs'
                 ]);
             }
 
@@ -132,9 +131,6 @@ class ParametreController extends SessionController
             );
 
 
-            //if ($validator->fails()) {
-              //   return back()->withErrors('message','Proprietaire ajouté avec succès')->withInput();
-            //}
 
             $annexes = Annexe::where('idannexes',$request->id)
                             ->update([
@@ -166,7 +162,9 @@ class ParametreController extends SessionController
             }
         }
         catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            if ($e->errorInfo[1] == 1062) {
+                return back()->with('error', 'Cette désignation existe déjà.');
+            }
         }
     }
 
@@ -202,109 +200,81 @@ class ParametreController extends SessionController
 
 
     public function create(Request $request)
-    {
-        try {
-            $validator = Validator::make(
-                $request->all(),
-                [
-                    'format_choisi' => 'bail|required|string',
-                    'logo' => 'bail|required|mimes:jpeg,png,jpg|max:2048',
+{
+    try {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'format_choisi' => 'bail|required|string',
+                'logo' => 'bail|required|mimes:jpeg,png,jpg|max:2048',
+            ]
+        );
 
-                ],
-            );
-
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => $validator->errors()
-                ]);
-            }
-
-            $exist = Parametre::count();
-            if ($exist == 1) {
-
-
-                $pathdelete = get_logo(Auth::user()->iddirection_ref)?->logo_url;
-
-                $path_to_delete = "public/$pathdelete";
-
-                if (Storage::exists($path_to_delete)) {
-                    Storage::delete($path_to_delete);
-                }
-
-                 Parametre::truncate();
-                 
-                 $path = 'logo';
-
-                 
-
-
-
-                 if (!Storage::exists('public/'.$path)) {
-                     Storage::makeDirectory('public/'.$path, 0775, true); //creates directory
-                 }
- 
-                 if (Storage::exists('public/'.$path)) {
-                     if ($request->hasFile('logo')) {
-                         $images = $request->file('logo');
-                         $image_name = 'logo'.'_'. time().'.'.$images->getClientOriginalExtension();
-                         $images->storeAs('public/'.$path, $image_name);
-                         $image_link="$path/$image_name";
-                     }
-                     
-                 }
-
-     
-
-                $param = Parametre::create([
-                                'iddirection_ref'  => Auth::user()->iddirection_ref,
-                                'format_choisi' => $request->format_choisi,
-                                'logo_url'  => $image_link,
-                            ]);
-
-                if ($param) {
-
-                    activity()->performedOn(new Parametre())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Modification du paramétrage par '.Auth::user()->nom.' '.Auth::user()->prenom);
-
-                    return response()->json([
-                        'status' => true,
-                        'message' => "Paramétrage bien changé avec succès",
-                    ]);
-                }
-
-               
-
-            } else {
-
-                $param = Parametre::create([
-                                'iddirection_ref'  => Auth::user()->iddirection_ref,
-                                'format_choisi' => $request->format_choisi,
-                                'logo_url' => $request->logo,
-                            ]);
-
-                if ($param) {
-
-                    activity()->performedOn(new Parametre())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Modification du paramétrage par '.Auth::user()->nom.' '.Auth::user()->prenom);
-
-                    return response()->json([
-                        'status' => true,
-                        'message' => "Paramétrage bien effectué avec succès",
-                    ]);
-
-                }
-            }
-        }
-        catch (QueryException $e) {
+        if ($validator->fails()) {
             return response()->json([
-                'status' => false,
-                'message' => "Echec,essayé encore $e",
+                'error' => $validator->errors(),
+                'message' => "Veuillez renseigner toutes les informations"
             ]);
         }
+
+        $exist = Parametre::count();
+        $image_link = null;
+
+        // Supprimer l'ancien logo si existant
+        if ($exist == 1) {
+            $pathdelete = get_logo(Auth::user()->iddirection_ref)?->logo_url;
+            if ($pathdelete && Storage::exists("public/$pathdelete")) {
+                Storage::delete("public/$pathdelete");
+            }
+            Parametre::truncate(); // tu n'as qu'un seul paramètre actif
+        }
+
+        // Traitement image
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $path = 'logo';
+
+            if (!Storage::exists("public/$path")) {
+                Storage::makeDirectory("public/$path", 0775, true);
+            }
+
+            $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs("public/$path", $filename);
+            $image_link = "$path/$filename"; // logos/logo_xxx.jpg
+        }
+
+        // Création du paramètre
+        $param = Parametre::create([
+            'iddirection_ref' => Auth::user()->iddirection_ref,
+            'format_choisi'   => $request->format_choisi,
+            'logo_url'        => $image_link,
+        ]);
+
+        if ($param) {
+            activity()
+                ->performedOn(new Parametre())
+                ->causedBy(Auth::user()->id)
+                ->log('Modification du paramétrage par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Paramétrage effectué avec succès",
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => "Erreur inconnue lors de l'enregistrement.",
+        ]);
+
+    } catch (QueryException $e) {
+        return response()->json([
+            'status' => false,
+            'message' => "Échec, essayez encore : " . $e->getMessage(),
+        ]);
     }
+}
+
 
     
 }

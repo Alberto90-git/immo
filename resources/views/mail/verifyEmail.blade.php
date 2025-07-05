@@ -81,8 +81,8 @@
       <p>Email: {{ $newuser['email'] }}</p>
       <p>Mot de passe : {{ $newuser['password'] }}</p>
      
-      {{-- <a href="{{ request()->getSchemeAndHttpHost()}}" class="btn">Se connecter</a> --}}
-      <a href="http://127.0.0.1/ImmobilierApk/public/login" class="btn">Se connecter</a>
+      <a href="{{ request()->getSchemeAndHttpHost().'/login/'}}" class="btn">Se connecter</a> 
+      {{--  <a href="http://127.0.0.1/ImmobilierApk/public/login" class="btn">Se connecter</a>--}}
 
       <p>Si vous avez des questions, n'hésitez pas à répondre à cet e-mail.</p>
     </div>

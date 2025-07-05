@@ -117,7 +117,7 @@
 
                     <div class="mt-2 text-center">
                         <button class="btn btn-primary" id="valider" type="submit">
-                            <span id="s">Enregister</span>
+                            <span id="s">Enregistrer</span>
                         </button>
                     </div>
                 </form>
@@ -140,59 +140,84 @@
     }
 
     function save_user() {
-        // var frm = $('form#formulaire');
         var donnees = $("form#save_user").serialize();
+        
         $.ajax({
             url: "{{ route('saveUser') }}",
             method: 'POST',
             data: donnees,
             beforeSend: function(data) {
+                // Désactiver le bouton et afficher le spinner
                 $("#s").html("<i class='spinner-border spinner-border-sm'></i> En cours...");
-
-                $("#a").removeClass("fa fa-save");
+                $("#a").removeClass("fa fa-save mdi mdi-content-save");
                 $("#a").addClass("spinner-border text-primary");
                 $("#valider").attr("disabled", true);
-
             },
             success: function(data) {
+                // Fonction pour réactiver le bouton
+                function reactivateButton() {
+                    $("#valider").attr("disabled", false);
+                    $("#s").html("Enregistrer");
+                    $("#a").removeClass("spinner-border text-primary");
+                    $("#a").addClass("mdi mdi-content-save");
+                }
+                
+                // Gestion des erreurs de validation
                 if (!$.isEmptyObject(data.error)) {
                     printErrorMsg(data.error);
+                    reactivateButton();
+                    return;
                 }
+                
+                // Gestion des autres réponses
                 try {
                     if (data.status) {
-                        display_message("Erreur !!",data.message,"warning","btn btn-danger");
+                        // Succès
+                        display_message("Succès !", data.message, "success", "btn btn-success");
                         $("#save_user")[0].reset();
                     } else {
-                        display_message("Erreur !!",data.message,"warning","btn btn-danger");
+                        // Erreur métier
+                        display_message("Erreur !", data.message, "warning", "btn btn-danger");
                     }
-                    $("#s").html("Enregister");
-                    $("#a").removeClass("spinner-border spinner-border-sm");
-                    $("#a").addClass("mdi mdi-content-save");
-                    $("#valider").attr("disabled", false);
+                    reactivateButton();
                 } catch (error) {
-                    display_message("Erreur !!",data.message,"warning","btn btn-danger");
-                    $("#s").html("Enregister");
-
-                    $("#a").removeClass("spinner-border spinner-border-sm");
-                    $("#a").addClass("mdi mdi-content-save");
-                    $("#valider").attr("disabled", false);
+                    // Erreur JavaScript
+                    console.error('Erreur lors du traitement de la réponse:', error);
+                    display_message("Erreur !", "Une erreur inattendue s'est produite", "warning", "btn btn-danger");
+                    reactivateButton();
                 }
-
-
             },
-            error: function(data) {
-                $("#s").html("Enregister");
-                $("#a").removeClass("spinner-border spinner-border-sm");
-                $("#a").addClass("mdi mdi-content-save");
-                $("#valider").attr("disabled", false);
-                display_message("Erreur !!",data.message,"warning","btn btn-danger");
-
+            error: function(xhr, status, error) {
+                // Fonction pour réactiver le bouton
+                function reactivateButton() {
+                    $("#valider").attr("disabled", false);
+                    $("#s").html("Enregistrer");
+                    $("#a").removeClass("spinner-border text-primary");
+                    $("#a").addClass("mdi mdi-content-save");
+                }
+                
+                // Gestion des erreurs HTTP
+                let errorMessage = "Une erreur s'est produite";
+                
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.message) {
+                            errorMessage = response.message;
+                        }
+                    } catch (e) {
+                        // Si ce n'est pas du JSON, utiliser le message par défaut
+                        errorMessage = "Erreur de connexion au serveur";
+                    }
+                }
+                
+                display_message("Erreur !", errorMessage, "error", "btn btn-danger");
+                reactivateButton();
             }
         });
     }
-
-
-
 
     function printErrorMsg(msg) {
         const items = [];

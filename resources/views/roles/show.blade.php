@@ -1,43 +1,62 @@
 @extends('layouts.template')
 
-@section('content')
-
 @section('title')
-<title>Gestion rôle</title>
+    <title>Gestion des rôles</title>
 @endsection
 
-<div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span>Gestion rôle / Liste des permissions</h4>
+@section('content')
+<div class="container-xxl flex-grow-1 container-p-y" style="background-color: #f6f8fb; border-radius: 10px; padding: 25px;">
 
-        <div class="ms-3 demo-inline-spacing">
-            <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp;
-            </a>
-        </div>
+    <!-- Titre principal -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">
+            <span class="text-muted fw-light">Accueil /</span> Gestion des rôles / Détails
+        </h4>
+        <a href="{{ route('roles.index') }}" class="btn btn-outline-dark rounded-pill">
+            <i class="bx bx-arrow-back"></i> Retour
+        </a>
+    </div>
 
-
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group alert alert-info">
-                <strong>Nom rôle: </strong>
-                <b> {{ $role->name }} </b>
-            </div>
-        </div>
-      
-      <div class="card">
-        <h5 class="card-header">Les permissions</h5>
+    <!-- Informations du rôle -->
+    <div class="card mb-4 shadow-sm" style="background-color: #f0f4f7;">
         <div class="card-body">
-            @if(!empty($rolePermissions))
-                <div class="row">
-                    @foreach($rolePermissions as $v)
-                    <div class="col-md-3">
-                        <i class="fa fa-check"></i> <label class="label label-success"> <b> {{ $v->label }} </b> </label>
+            <h5 class="card-title mb-3 text-primary">
+                <i class="bx bx-user-circle me-2"></i> Informations du rôle
+            </h5>
+            <p class="mb-0"><strong>Nom :</strong> 
+                <span class="badge bg-secondary text-white px-3 py-2 rounded-pill">
+                    {{ $role->name }}
+                </span>
+            </p>
+        </div>
+    </div>
 
-                    </div>
+    <!-- Liste des permissions -->
+    <div class="card shadow-sm border-0" style="background-color: #e9eff5;">
+        <div class="card-header border-bottom bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bx bx-lock-alt me-2"></i> Permissions associées
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (!empty($rolePermissions) && $rolePermissions->count())
+                <div class="row">
+                    @foreach($rolePermissions as $permission)
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-2 bg-white d-flex align-items-center shadow-sm small">
+                                <i class="fa fa-check-circle text-success me-2"></i>
+                                <span>{{ $permission->label }}</span>
+                            </div>
+                        </div>
                     @endforeach
+                </div>
+            @else
+                <div class="alert alert-warning mb-0">
+                    Ce rôle ne dispose d'aucune permission actuellement.
                 </div>
             @endif
         </div>
-      </div>
-    
     </div>
+
+</div>
 @endsection

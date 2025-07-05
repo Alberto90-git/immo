@@ -21,7 +21,7 @@ class CreateAnnexesTable extends Migration
 
             $table->string('designation')->unique();
             $table->string('telephone'); 
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->nullable();
             $table->string('userdata')->nullable();
             $table->dateTime('blocage_annexe')->nullable();
             $table->string('siege_social');

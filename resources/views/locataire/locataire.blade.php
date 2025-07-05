@@ -7,39 +7,8 @@
     <title>Gestion locataire</title>
     @endsection
 
+    @include('notification.display_message')
 
-
-    @if (Session::has("message"))
-      <div class="col-md-6 p-4">
-        <div class="toast-container">
-        <div class="bs-toast toast fade show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-            <i class="bx bx-bell me-2"></i>
-            <div class="me-auto fw-semibold">SUCCES</div>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-              {{ Session::get('message') }}
-            </div>
-        </div>
-        </div>
-      </div>
-    @elseif (Session::has("error"))
-        <div class="col-md-6 p-4">
-            <div class="toast-container">
-            <div class="bs-toast toast fade show bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                <i class="bx bx-bell me-2"></i>
-                <div class="me-auto fw-semibold">ERREUR</div>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                  {{ Session::get('error') }}
-                </div>
-            </div>
-            </div>
-        </div>
-    @endif
     
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion locataire</h4>

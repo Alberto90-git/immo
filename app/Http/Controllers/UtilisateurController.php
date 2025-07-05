@@ -116,7 +116,6 @@ class UtilisateurController extends SessionController
             'email' => 'required',
             'Nouveau_mot_de_passe' => 'required|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/|regex:/[@$!%*#?&]/',
             'confirm_mot_de_passe' => ['same:Nouveau_mot_de_passe'],
-
         ]);
 
         $user = User::where('email', $request->email )->first();
@@ -232,6 +231,7 @@ class UtilisateurController extends SessionController
 
     public function HandleLogin(Request $request)
     {
+
         try {
 
             $credentials = $request->only(['email', 'password']);
@@ -270,20 +270,23 @@ class UtilisateurController extends SessionController
 
                     Session::put(['anne_data'=> $reponse1,'locataire' => $reponse2]);
 
-                    //Mail::to($agent->email)->send(new SendCodemail($userinfo));
-                    //return redirect()->route('code_login');
+                    Mail::to($agent->email)->send(new SendCodemail($userinfo));
+
+                    activity()->performedOn($agent)
+                                ->causedBy($agent)
+                                ->log('Connexion au système par ' . $agent->nom . ' ' . $agent->prenom);
+
+                    return redirect()->route('code_login');
                     //return redirect()->route('home');
                     // Log the activity
-                    activity()->performedOn($agent)
-                        ->causedBy($agent)
-                        ->log('Connexion au système par ' . $agent->nom . ' ' . $agent->prenom);
-
-                   return redirect()->route('home');
+                   
+                   //return redirect()->route('home');
                 }
             } else {
                 return redirect()->back()->with('failed', 'L\'email ou le mot de passe est incorrect.');
             }
         } catch (QueryException $e) {
+           // dd($e);
             return redirect()->back()->with('failed', 'Veuillez démarrer le serveur local.');
         }
     }
@@ -367,6 +370,7 @@ class UtilisateurController extends SessionController
 
     public function saveAdminCompte(Request $request)
     {
+        //dd($request->all());
         try {
             if ($request->type_compte == 'Particulier') {
                 $validator = Validator::make(
@@ -526,91 +530,121 @@ class UtilisateurController extends SessionController
 
     }
 
+
     public function store(Request $request)
     {
         try {
-
+            // Validation des données
             $validator = Validator::make(
                 $request->all(),
                 [
-                'nom' => ['required', 'string', 'min:2'],
-                'prenom' => ['required', 'string', 'min:2'],
-                'grade' => ['required', 'string', 'min:2'],
-                'email' => ['required','string','email','max:255',Rule::unique(User::class),],
-                'roles' => 'required',
-                'annexe' => 'required'
+                    'nom' => ['required', 'string', 'min:2'],
+                    'prenom' => ['required', 'string', 'min:2'],
+                    'grade' => ['required', 'string', 'min:2'],
+                    'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
+                    'roles' => 'required',
+                    'annexe' => 'required'
                 ],
                 [
                     '*.required' => 'Ce champ est obligatoire.',
-                    'email.unique' => 'L\'adresse mail est déjà utilisé',
+                    'email.unique' => 'L\'adresse mail est déjà utilisée',
                     'nom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
                     'prenom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
-                ]);
-            
-    
-            
-    
+                ]
+            );
+
             if ($validator->fails()) {
                 return response()->json([
                     'error' => $validator->errors(),
-                    'message' => "Veuillez Vérifier Les Informations Saisies",
+                    'message' => "Veuillez vérifier les informations saisies",
                 ]);
             }
-    
+
+            // Préparer les données une seule fois
             $password = uniqid();
-    
-            $newuser = User::create([
-                'nom'                   => Str::upper($request->nom),
-                'prenom'                => Str::ucfirst($request->prenom),
-                'grade'                 =>  Str::ucfirst($request->grade),
-                'idannexe_ref'          => $request->annexe,
-                'iddirection_ref'       => Auth::user()->iddirection_ref,
-                'email'                 => $request->email,
-                'email_verification_token' => Str::random(32),
-                'is_admin'              => false,
-                'email_verified'        => 0,
-                'password'              =>  Hash::make($password),
-                'type_compte'       => Auth::user()->type_compte,
-            ]);
-    
-            $newuser->assignRole($request->input('roles'));
-    
-            $userinfos = [
-                'nom'    => $request->email,
-                'prenom'    => $request->email,
-                'email'         => $request->email,
-                'password'         => $password,
-                'email_verification_token' => $newuser->email_verification_token
-            ];
-    
-    
-            if ($newuser) {
-    
-                activity()->performedOn(new User())
-                               ->causedBy(Auth::user()->id)
-                               ->log('Création du compte de '.$request->nom.' '.$request->prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
-    
-    
-                Mail::to($newuser->email)->send(new VerificationEmail($userinfos));
-                User::where('id', $newuser->id)->update(['mail_token_at' => Carbon::now()]);
-    
+            $emailVerificationToken = Str::random(32);
+            $currentUser = Auth::user();
+            
+            // Utiliser une transaction pour garantir la cohérence des données
+            DB::beginTransaction();
+
+            try {
+                // Créer l'utilisateur
+                $newuser = User::create([
+                    'nom' => Str::upper($request->nom),
+                    'prenom' => Str::ucfirst($request->prenom),
+                    'grade' => Str::ucfirst($request->grade),
+                    'idannexe_ref' => $request->annexe,
+                    'iddirection_ref' => $currentUser->iddirection_ref,
+                    'email' => $request->email,
+                    'email_verification_token' => $emailVerificationToken,
+                    'is_admin' => false,
+                    'email_verified' => 0,
+                    'password' => Hash::make($password),
+                    'type_compte' => $currentUser->type_compte,
+                    'mail_token_at' => Carbon::now(), // Défini directement à la création
+                ]);
+
+                // Assigner le rôle
+                $newuser->assignRole($request->input('roles'));
+
+                // Préparer les données pour l'email
+                $userinfos = [
+                    'nom' => $request->nom,
+                    'prenom' => $request->prenom,
+                    'email' => $request->email,
+                    'password' => $password,
+                    'email_verification_token' => $emailVerificationToken
+                ];
+
+                // Log de l'activité
+                activity()->performedOn($newuser)
+                    ->causedBy($currentUser->id)
+                    ->log("Création du compte de {$request->nom} {$request->prenom} par {$currentUser->nom} {$currentUser->prenom}");
+
+                DB::commit();
+
+                // Envoyer l'email après la transaction (pour éviter les rollbacks si l'email échoue)
+                try {
+                    Mail::to($newuser->email)->send(new VerificationEmail($userinfos));
+                } catch (\Exception $mailException) {
+                    // Log l'erreur d'email mais ne fait pas échouer la création d'utilisateur
+                    Log::error('Erreur lors de l\'envoi de l\'email de vérification', [
+                        'user_id' => $newuser->id,
+                        'email' => $newuser->email,
+                        'error' => $mailException->getMessage()
+                    ]);
+                }
+
                 return response()->json([
                     'status' => true,
-                    'message' => 'Utilisateur enrégistré avec succès,un mail lui est envoyé. contenant ses accès'
+                    'message' => 'Utilisateur enregistré avec succès, un mail lui est envoyé contenant ses accès'
                 ]);
-    
-                
-            } else {
-    
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Enregistrement échoué.'
-                ]);
+
+            } catch (\Exception $e) {
+                DB::rollback();
+                throw $e;
             }
-        } catch (QueryException $th) {
+
+        } catch (QueryException $e) {
+            Log::error('Erreur SQL lors de la création d\'utilisateur', [
+                'error' => $e->getMessage(),
+                'request_data' => $request->all()
+            ]);
+            
             return response()->json([
                 'status' => false,
-                'message' => 'Enregistrement échoué.'
+                'message' => 'Enregistrement échoué. Veuillez réessayer.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur générale lors de la création d\'utilisateur', [
+                'error' => $e->getMessage(),
+                'request_data' => $request->all()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Enregistrement échoué. Veuillez réessayer.'
             ]);
         }
     }
@@ -626,7 +660,6 @@ class UtilisateurController extends SessionController
 
     public function edit($id)
     {
-
         //$this->authorize('modifier-utilisateur');
 
         $user = User::find($id);
@@ -636,10 +669,11 @@ class UtilisateurController extends SessionController
                      ->pluck('name', 'name')->all();
 
         $userRole = $user->roles->pluck('name', 'name')->all();
-
+        
         $annexes = Annexe::whereNull('status')
-                           ->where('annexes.iddirection_ref',Auth::user()->iddirection_ref)
-                            ->get();
+                         ->where('email','!=','alldigitalagency90@gmail.com')
+                         ->where('annexes.iddirection_ref',Auth::user()->iddirection_ref)
+                         ->get();
 
 
         return view('users.edit', compact('user', 'roles', 'userRole','annexes'));

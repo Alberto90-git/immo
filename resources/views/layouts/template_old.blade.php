@@ -130,8 +130,8 @@
  
 
 
-   function Sepatateur_Milliers(param)
-      {
+    function Sepatateur_Milliers(param)
+    {
 
         var valSaisie=$(param).val().trim().replace(/\s/g,'');
         //alert(valSaisie);
@@ -165,7 +165,7 @@
               $(param).val().toString().replace(/\s/g,'');
               return false;
           }
-      }
+    }
  </script>
 </body>
 </html>

@@ -7,37 +7,7 @@
     <title>Gestion propriétaire</title>
   @endsection
 
-    @if (Session::has("message"))
-      <div class="col-md-6 p-4">
-        <div class="toast-container">
-        <div class="bs-toast toast fade show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-            <i class="bx bx-bell me-2"></i>
-            <div class="me-auto fw-semibold">SUCCES</div>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-              {{ Session::get('message') }}
-            </div>
-        </div>
-        </div>
-      </div>
-    @elseif (Session::has("error"))
-        <div class="col-md-6 p-4">
-            <div class="toast-container">
-            <div class="bs-toast toast fade show bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                <i class="bx bx-bell me-2"></i>
-                <div class="me-auto fw-semibold">ERREUR</div>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                  {{ Session::get('error') }}
-                </div>
-            </div>
-            </div>
-        </div>
-    @endif
+    @include('notification.display_message')
     
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion propriétaire</h4>
@@ -66,23 +36,23 @@
               <div class="alert-primary bg-primary text-light" id="afficher"></div>
       
                 @can('Is_admin')
-                @if(Auth::user()->type_compte != 'Particulier')
-                  <div class="row mb-3">
-                  <label class="col-sm-2 col-form-label" for="basic-default-company">Agence<span style="color: red;">*</span></label>
-                    <div class="col-sm-10">
-                      <select class="form-select" id="annexe" name="annexe" aria-label="Default select example">
-                        <option value="" selected disabled>Choisir une agence</option>
-                          @if(Session::get('anne_data') != " ")
-                            @foreach(Session::get('anne_data') as $terme)
-                              <option  value="{{$terme->idannexes}}">{{ $terme->designation }}</option>
-                            @endforeach
-                          @endif 
-                      </select>
-                        <span class="invalid-feedback annexe_err" role="alert">
-                        </span>
+                  @if(Auth::user()->type_compte != 'Particulier')
+                    <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-company">Agence<span style="color: red;">*</span></label>
+                      <div class="col-sm-10">
+                        <select class="form-select" id="annexe" name="annexe" aria-label="Default select example">
+                          <option value="" selected disabled>Choisir une agence</option>
+                            @if(Session::get('anne_data') != " ")
+                              @foreach(Session::get('anne_data') as $terme)
+                                <option  value="{{$terme->idannexes}}">{{ $terme->designation }}</option>
+                              @endforeach
+                            @endif 
+                        </select>
+                          <span class="invalid-feedback annexe_err" role="alert">
+                          </span>
+                      </div>
                     </div>
-                  </div>
-                @endif
+                  @endif
                 @endcan
 
 
@@ -102,6 +72,7 @@
                     <span class="invalid-feedback prenom_err" role="alert"></span>
                   </div>
                 </div>
+
                 <div class="row mb-3">
                   <label class="col-sm-2 col-form-label" for="telephone">Téléphone<span style="color: red;">*</span></label>
                   <div class="col-sm-10">
@@ -116,7 +87,7 @@
                       <input type="text" class="form-control" id="adresse" name="adresse" />
                       <span class="invalid-feedback adresse_err" role="alert">
                     </span>
-                    </div>
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
@@ -345,13 +316,52 @@
       
   function save_proprietaire() {
 
-      var data = new FormData();
+    const telephoneInput = document.querySelector("#telephone");
+        const iti = window.intlTelInputGlobals.getInstance(telephoneInput);
+
+        const formattedPhone = iti.getNumber();
+
+
+
+        const selectedCountry = iti.getSelectedCountryData();
+        const cleanedPhone = formattedPhone.replace(/\s+/g, "");
+
+        if (selectedCountry.iso2 === "bj" && cleanedPhone.length !== 14) {
+            display_message("Erreur !!", "Le numéro béninois doit contenir exactement 10 chiffres après +229.",
+                "warning", "btn btn-danger");
+            return;
+        } else if (selectedCountry.iso2 != "bj") {
+            display_message("Erreur !!", "Numéro de téléphone invalide ou trop court.", "warning", "btn btn-danger");
+            return;
+        }
+
+
+        var data = new FormData();
+
+        var form_data = $('#formulaireAnnexe').serializeArray();
+        $.each(form_data, function(key, input) {
+
+            if (input.name === "telephone") {
+                data.append("telephone", formattedPhone);
+            } else {
+                data.append(input.name, input.value);
+            }
+        });
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+
+      /*var data = new FormData();
 
       //Form data
       var form_data = $('#formulaire').serializeArray();
       $.each(form_data, function (key, input) {
           data.append(input.name, input.value);
-      });
+      }); */
 
       $.ajax({
           url: "{{ route('store_propre') }}",

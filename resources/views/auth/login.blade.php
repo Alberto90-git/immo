@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
   <head>
@@ -8,101 +7,367 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Immo Manager | Authentification</title>
+    <title>Immo | Connexion</title>
 
-    <meta name="description" content="" />
+    <meta name="description" content="Page de connexion à Immo, application de gestion des agences immobiliers, des maisons, chambres, locataires" />
 
     @include('css_file')
 
     <!-- Helpers -->
     <script src="assetsV2/vendor/js/helpers.js"></script>
     <script src="assetsV2/js/config.js"></script>
+    
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --soft-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        --soft-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
+        --glass-bg: rgba(255, 255, 255, 0.25);
+        --glass-border: rgba(255, 255, 255, 0.18);
+      }
+
+      body {
+        background: var(--primary-gradient);
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* Animated background elements */
+      .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .shape {
+        position: absolute;
+        background: var(--secondary-gradient);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+        opacity: 0.1;
+      }
+
+      .shape:nth-child(1) {
+        width: 300px;
+        height: 300px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+      }
+
+      .shape:nth-child(2) {
+        width: 200px;
+        height: 200px;
+        top: 60%;
+        right: 20%;
+        animation-delay: 2s;
+      }
+
+      .shape:nth-child(3) {
+        width: 150px;
+        height: 150px;
+        bottom: 10%;
+        left: 50%;
+        animation-delay: 4s;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+      }
+
+      .container-xxl {
+        position: relative;
+        z-index: 1;
+      }
+
+      .authentication-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .authentication-inner {
+        width: 100%;
+        max-width: 480px;
+        animation: slideUp 0.8s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: var(--soft-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+
+      .card:hover {
+        box-shadow: var(--soft-shadow-hover);
+        transform: translateY(-5px);
+      }
+
+      .card-body {
+        padding: 3rem;
+      }
+
+      h4 {
+        color: #2d3748;
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .welcome-emoji {
+        display: inline-block;
+        animation: wave 2s infinite;
+        transform-origin: 70% 70%;
+      }
+
+      @keyframes wave {
+        0% { transform: rotate(0deg); }
+        10% { transform: rotate(14deg); }
+        20% { transform: rotate(-8deg); }
+        30% { transform: rotate(14deg); }
+        40% { transform: rotate(-4deg); }
+        50% { transform: rotate(10deg); }
+        60% { transform: rotate(0deg); }
+        100% { transform: rotate(0deg); }
+      }
+
+      .form-label {
+        color: #4a5568;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control {
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        color: #2d3748;
+      }
+
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .form-control::placeholder {
+        color: #a0aec0;
+      }
+
+      .input-group-text {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-left: none;
+        border-radius: 0 12px 12px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .input-group-text:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 12px;
+        padding: 0.875rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        text-transform: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.5s;
+      }
+
+      .btn-primary:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .form-check-input {
+        border-radius: 6px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+      }
+
+      .form-check-label {
+        color: #4a5568;
+        font-weight: 500;
+      }
+
+      .text-center a {
+        color:rgb(18, 19, 23);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .text-center a:hover {
+        color:rgb(184, 177, 192);
+        text-decoration: underline;
+      }
+
+      .mb-4 {
+        color:rgb(230, 234, 240);
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 2rem !important;
+      }
+
+      /* Logo styling */
+      .logo-container {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .logo-container img {
+        max-height: 60px;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+      }
+
+      /* Alert styling */
+      .alert {
+        border-radius: 12px;
+        border: none;
+        backdrop-filter: blur(10px);
+        margin-bottom: 1.5rem;
+      }
+
+      .alert-success {
+        background: rgba(72, 187, 120, 0.1);
+        color: #2f855a;
+      }
+
+      .alert-danger {
+        background: rgba(245, 101, 101, 0.1);
+        color: #c53030;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .card-body {
+          padding: 2rem 1.5rem;
+        }
+        
+        .shape {
+          opacity: 0.05;
+        }
+      }
+
+      /* Loading animation */
+      .btn-loading {
+        position: relative;
+        pointer-events: none;
+      }
+
+      .btn-loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        margin: auto;
+        border: 2px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
 
   <body>
-    <!-- Content -->
+    <!-- Animated background -->
+    <div class="bg-animation">
+      <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+      </div>
+    </div>
 
+    <!-- Content -->
     <div class="container-xxl">
       <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner">
           <!-- Register -->
           <div class="card">
             <div class="card-body">
-              <!-- Logo -->
-              <div class="app-brand justify-content-center">
-                <a href="{{ route('accueil') }}" class="app-brand-link gap-2">
-                  <span class="app-brand-logo demo">
-                    <svg
-                      width="25"
-                      viewBox="0 0 25 42"
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlns:xlink="http://www.w3.org/1999/xlink"
-                    >
-                      <defs>
-                        <path
-                          d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
-                          id="path-1"
-                        ></path>
-                        <path
-                          d="M5.47320593,6.00457225 C4.05321814,8.216144 4.36334763,10.0722806 6.40359441,11.5729822 C8.61520715,12.571656 10.0999176,13.2171421 10.8577257,13.5094407 L15.5088241,14.433041 L18.6192054,7.984237 C15.5364148,3.11535317 13.9273018,0.573395879 13.7918663,0.358365126 C13.5790555,0.511491653 10.8061687,2.3935607 5.47320593,6.00457225 Z"
-                          id="path-3"
-                        ></path>
-                        <path
-                          d="M7.50063644,21.2294429 L12.3234468,23.3159332 C14.1688022,24.7579751 14.397098,26.4880487 13.008334,28.506154 C11.6195701,30.5242593 10.3099883,31.790241 9.07958868,32.3040991 C5.78142938,33.4346997 4.13234973,34 4.13234973,34 C4.13234973,34 2.75489982,33.0538207 2.37032616e-14,31.1614621 C-0.55822714,27.8186216 -0.55822714,26.0572515 -4.05231404e-15,25.8773518 C0.83734071,25.6075023 2.77988457,22.8248993 3.3049379,22.52991 C3.65497346,22.3332504 5.05353963,21.8997614 7.50063644,21.2294429 Z"
-                          id="path-4"
-                        ></path>
-                        <path
-                          d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z"
-                          id="path-5"
-                        ></path>
-                      </defs>
-                      <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
-                          <g id="Icon" transform="translate(27.000000, 15.000000)">
-                            <g id="Mask" transform="translate(0.000000, 8.000000)">
-                              <mask id="mask-2" fill="white">
-                                <use xlink:href="#path-1"></use>
-                              </mask>
-                              <use fill="#696cff" xlink:href="#path-1"></use>
-                              <g id="Path-3" mask="url(#mask-2)">
-                                <use fill="#696cff" xlink:href="#path-3"></use>
-                                <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-3"></use>
-                              </g>
-                              <g id="Path-4" mask="url(#mask-2)">
-                                <use fill="#696cff" xlink:href="#path-4"></use>
-                                <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-4"></use>
-                              </g>
-                            </g>
-                            <g
-                              id="Triangle"
-                              transform="translate(19.000000, 11.000000) rotate(-300.000000) translate(-19.000000, -11.000000) "
-                            >
-                              <use fill="#696cff" xlink:href="#path-5"></use>
-                              <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-5"></use>
-                            </g>
-                          </g>
-                        </g>
-                      </g>
-                    </svg>
-                  </span>
-                  <span class="app-brand-text demo text-body fw-bolder">Immo Manager</span>
-                </a>
+              <!-- Logo 
+              <div class="logo-container">
+                @include('logo')
               </div>
-              <!-- /Logo -->
-              <h4 class="mb-2">Bienvenue sur <strong>Immo Manager! 👋</h4>
+              /Logo -->
+              
+              <h4 class="mb-1">Bienvenue sur <strong>Immo</strong> ! <span class="welcome-emoji">👋</span></h4>
 
-              @if (Session::has("success"))
-                <div class="alert alert-primary alert-dismissible" role="alert">
-                  {{ Session::get('success') }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              @elseif (Session::has("failed"))
-                <div class="alert alert-danger alert-dismissible" role="alert">
-                  {{ Session::get('failed') }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              @endif
+              @include('display_message')
 
               <p class="mb-4">Veuillez vous connecter à votre espace de travail</p>
 
@@ -111,14 +376,21 @@
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
                   <input
-                    type="email" class="form-control @error('email') is-invalid @enderror"
-                    id="email"  name="email" placeholder="Votre email" autofocus  required />
-                      @error('email')
-                      <span class="invalid-feedback" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                      @enderror
+                    type="email" 
+                    class="form-control @error('email') is-invalid @enderror"
+                    id="email"  
+                    name="email" 
+                    placeholder="Votre email" 
+                    autofocus  
+                    required 
+                  />
+                  @error('email')
+                  <span class="invalid-feedback" role="alert">
+                      <strong>{{ $message }}</strong>
+                  </span>
+                  @enderror
                 </div>
+                
                 <div class="mb-3 form-password-toggle">
                   <div class="d-flex justify-content-between">
                     <label class="form-label" for="password">Mot de passe</label>
@@ -132,25 +404,32 @@
                       id="password"
                       class="form-control"
                       name="password"
-                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                      aria-describedby="password" required
+                      placeholder="••••••••••••"
+                      aria-describedby="password" 
+                      required
                     />
-                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                    <span class="input-group-text cursor-pointer" id="togglePassword">
+                      <i class="bx bx-hide" id="toggleIcon"></i>
+                    </span>
                   </div>
                 </div>
+                
                 <div class="mb-3">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="remember-me" />
-                    <label class="form-check-label" for="remember-me">Se rappeler </label>
+                    <label class="form-check-label" for="remember-me">Se rappeler de moi</label>
                   </div>
                 </div>
+                
                 <div class="mb-3">
-                  <button class="btn btn-primary d-grid w-100" type="submit" name="connexion" id="submit">Se connecter</button>
+                  <button class="btn btn-primary d-grid w-100" type="submit" name="connexion" id="submit">
+                    Se connecter
+                  </button>
                 </div>
               </form>
 
               <p class="text-center">
-                <span>Nouvea sur la plateforme ?</span>
+                <span>Nouveau sur la plateforme ?</span>
                 <a href="{{ route('accueil') }}">
                   <span>Créer un compte</span>
                 </a>
@@ -165,6 +444,43 @@
     <!-- / Content -->
     <!-- Core JS -->
     @include('js_file')
+    
+    <script>
+      // Toggle password visibility
+      document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.remove('bx-hide');
+          toggleIcon.classList.add('bx-show');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.remove('bx-show');
+          toggleIcon.classList.add('bx-hide');
+        }
+      });
 
+      // Form submission with loading state
+      document.getElementById('formAuthentication').addEventListener('submit', function() {
+        const submitBtn = document.getElementById('submit');
+        submitBtn.classList.add('btn-loading');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Connexion en cours...';
+      });
+
+      // Add input focus animations
+      const inputs = document.querySelectorAll('.form-control');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.style.transform = 'translateY(-2px)';
+        });
+        
+        input.addEventListener('blur', function() {
+          this.parentElement.style.transform = 'translateY(0)';
+        });
+      });
+    </script>
   </body>
 </html>
