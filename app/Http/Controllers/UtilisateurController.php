@@ -70,7 +70,7 @@ class UtilisateurController extends SessionController
             $user = User::where('email', $request->email)->first();
     
             if (!$user) {
-                return back()->with('failed', 'Erreur! votre email est incorrecte ou le système ne le reconnais pas.');
+                return back()->with('error', 'Erreur! votre email est incorrecte ou le système ne le reconnais pas.');
             }
     
             $token = Str::random(60);
@@ -82,13 +82,13 @@ class UtilisateurController extends SessionController
             }
 
             if (Mail::failures() != 0) {
-                return back()->with('success', 'Un lien a été envoyé à votre email, aller vérifier.');
+                return back()->with('message', 'Un lien a été envoyé à votre email, aller vérifier.');
             }
 
-            return back()->with('failed', 'Echec! there is some issue with email provider');
+            return back()->with('error', 'Echec! there is some issue with email provider');
 
         } catch (QueryException $th) {
-           return redirect()->back()->with('failed','Il y a un soucis');
+           return redirect()->back()->with('error','Il y a un soucis');
         }
         
 
@@ -103,8 +103,8 @@ class UtilisateurController extends SessionController
             $email = $user->email;
             return view('auth.reinitilisePassword', compact('email'));
         }
-       // return redirect()->route('reset_password')->with('failed', 'Password reset link is expired');
-       return redirect()->route('forgot-password')->with('failed', 'Veuillez reprendre le procèssus de changement de mot de passe en entrant le email à nouveau');
+       // return redirect()->route('reset_password')->with('error', 'Password reset link is expired');
+       return redirect()->route('forgot-password')->with('error', 'Veuillez reprendre le procèssus de changement de mot de passe en entrant le email à nouveau');
     }
 
 
@@ -130,12 +130,12 @@ class UtilisateurController extends SessionController
 
             if ($update) {
                 Auth::logout();
-                return redirect()->route('login')->with('success', 'Mot de passe change avec succès');
+                return redirect()->route('login')->with('message', 'Mot de passe change avec succès');
 
             }
 
         }
-        return redirect()->route('forgot-password')->with('failed', 'Failed! something went wrong');
+        return redirect()->route('forgot-password')->with('error', 'error! something went wrong');
     }
 
     // REINITIALISER PASSWORD FIN
@@ -205,20 +205,20 @@ class UtilisateurController extends SessionController
                    return redirect()->route('code_login');
                   //return redirect()->route('home')->with('success', 'Mot de passe change avec succès');
                 }else {
-                   return redirect()->back()->with('failed', 'Il y a un soucis');
+                   return redirect()->back()->with('error', 'Il y a un soucis');
                 }
 
             }
 
         }else {
-           return redirect()->route('connexion')->with('failed', 'Votre email ne correspond à aucun de nos enregistrement');
+           return redirect()->route('connexion')->with('error', 'Votre email ne correspond à aucun de nos enregistrement');
             
         }
 
 
         } catch (QueryException $e) {
 
-           return redirect()->back()->with('failed','Il y a un soucis');
+           return redirect()->back()->with('error','Il y a un soucis');
         }
     }
 
@@ -243,10 +243,10 @@ class UtilisateurController extends SessionController
                 }
 
                 if (!empty($agent->status))  {
-                    return redirect()->route('connexion')->with('failed', 'ouuf désolé, votre compte a été désactivé par votre supérieur.');
+                    return redirect()->route('connexion')->with('error', 'ouuf désolé, votre compte a été désactivé par votre supérieur.');
                 }
                 if (!empty($agent->blocage_entreprise))  {
-                    return redirect()->route('connexion')->with('failed', 'Votre entreprise a été bloquée, veuillez nous contacter via whatsapp au (+22961082260).');
+                    return redirect()->route('connexion')->with('error', 'Votre entreprise a été bloquée, veuillez nous contacter via whatsapp au (+22961082260).');
                 }
                 
                 if (!empty($agent->password_changed_at) &&  empty($agent->status)) {
@@ -283,11 +283,11 @@ class UtilisateurController extends SessionController
                    //return redirect()->route('home');
                 }
             } else {
-                return redirect()->back()->with('failed', 'L\'email ou le mot de passe est incorrect.');
+                return redirect()->back()->with('error', 'L\'email ou le mot de passe est incorrect.');
             }
         } catch (QueryException $e) {
            // dd($e);
-            return redirect()->back()->with('failed', 'Veuillez démarrer le serveur local.');
+            return redirect()->back()->with('error', 'Veuillez démarrer le serveur local.');
         }
     }
 
@@ -327,7 +327,7 @@ class UtilisateurController extends SessionController
            return redirect()->route('home');
 
         } else { 
-            return redirect()->route('code_login')->with('failed', 'Code incorrect, veuillez entre le code envoyé à votre adresse email');
+            return redirect()->route('code_login')->with('error', 'Code incorrect, veuillez entre le code envoyé à votre adresse email');
 
 
         }
@@ -534,7 +534,6 @@ class UtilisateurController extends SessionController
     public function store(Request $request)
     {
         try {
-            // Validation des données
             $validator = Validator::make(
                 $request->all(),
                 [
@@ -560,16 +559,13 @@ class UtilisateurController extends SessionController
                 ]);
             }
 
-            // Préparer les données une seule fois
             $password = uniqid();
             $emailVerificationToken = Str::random(32);
             $currentUser = Auth::user();
             
-            // Utiliser une transaction pour garantir la cohérence des données
             DB::beginTransaction();
 
             try {
-                // Créer l'utilisateur
                 $newuser = User::create([
                     'nom' => Str::upper($request->nom),
                     'prenom' => Str::ucfirst($request->prenom),
@@ -582,13 +578,11 @@ class UtilisateurController extends SessionController
                     'email_verified' => 0,
                     'password' => Hash::make($password),
                     'type_compte' => $currentUser->type_compte,
-                    'mail_token_at' => Carbon::now(), // Défini directement à la création
+                    'mail_token_at' => Carbon::now(),
                 ]);
 
-                // Assigner le rôle
                 $newuser->assignRole($request->input('roles'));
 
-                // Préparer les données pour l'email
                 $userinfos = [
                     'nom' => $request->nom,
                     'prenom' => $request->prenom,
@@ -597,18 +591,15 @@ class UtilisateurController extends SessionController
                     'email_verification_token' => $emailVerificationToken
                 ];
 
-                // Log de l'activité
                 activity()->performedOn($newuser)
                     ->causedBy($currentUser->id)
                     ->log("Création du compte de {$request->nom} {$request->prenom} par {$currentUser->nom} {$currentUser->prenom}");
 
                 DB::commit();
 
-                // Envoyer l'email après la transaction (pour éviter les rollbacks si l'email échoue)
                 try {
                     Mail::to($newuser->email)->send(new VerificationEmail($userinfos));
                 } catch (\Exception $mailException) {
-                    // Log l'erreur d'email mais ne fait pas échouer la création d'utilisateur
                     Log::error('Erreur lors de l\'envoi de l\'email de vérification', [
                         'user_id' => $newuser->id,
                         'email' => $newuser->email,
@@ -757,35 +748,34 @@ class UtilisateurController extends SessionController
    
     public function destroy($id)
     {
-        //$this->authorize('desactive-utilisateur');
-        // User::find($id)->delete();
-        $checkstatut = User::Where('id', $id)->first();
-
-        if ($checkstatut->status == NULL) {
-            DB::table('users')
-                ->where('id', $id)
-                ->update(['status' => Carbon::now()]);
-
-                activity()->performedOn(new User())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Désactivation du compte de '.$checkstatut->nom.' '.$checkstatut->prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
-
-            return redirect()->route('getUserView')->with('success', 'utilisateur désactivé');
-        } else {
-
-            DB::table('users')
-                ->where('id', $id)
-                ->update(['status' => NULL]);
-
-            activity()->performedOn(new User())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Activation du compte de '.$checkstatut->nom.' '.$checkstatut->prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
-
-            return redirect()->route('getUserView')->with('success', 'utilisateur activé');
+        $user = User::findOrFail($id);
+    
+        // Inversion du statut : si NULL → désactivation, sinon → activation
+        $isCurrentlyActive = is_null($user->status);
+    
+        $user->status = $isCurrentlyActive ? Carbon::now() : null;
+        $user->save();
+    
+        // Action log
+        $action = $isCurrentlyActive ? 'Désactivation' : 'Activation';
+        activity()
+            ->performedOn($user)
+            ->causedBy(Auth::id())
+            ->log("{$action} du compte de {$user->nom} {$user->prenom} par " . Auth::user()->nom . ' ' . Auth::user()->prenom);
+    
+        // Déconnexion si on désactive le compte courant
+        if ($isCurrentlyActive && Auth::id() == $user->id) {
+            Auth::logout();
         }
-
-        Auth::logoutUsingId($id);
+    
+        // Message utilisateur
+        $message = $isCurrentlyActive
+            ? "L’utilisateur {$user->nom} {$user->prenom} a été désactivé avec succès."
+            : "L’utilisateur {$user->nom} {$user->prenom} a été réactivé avec succès.";
+    
+        return redirect()->route('getUserView')->with('success', $message);
     }
+    
 
     
 

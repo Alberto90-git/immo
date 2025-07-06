@@ -749,7 +749,13 @@
         
         if (password1 !== password2) {
           e.preventDefault();
-          alert('Les mots de passe ne correspondent pas !');
+          Swal.fire({
+              icon: 'warning',
+              title: 'ERREUR',
+              text: "Les mots de passe ne correspondent pas !",
+              confirmButtonClass: 'btn btn-danger',
+              buttonsStyling: false
+          });
           return;
         }
 

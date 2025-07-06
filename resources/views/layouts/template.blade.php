@@ -124,6 +124,44 @@ function Sepatateur_Milliers(param)
               background: '#f0f0f0',
           });
         }
+
+
+
+        
+    function validateAndFormatPhone(inputId) {
+        const telephoneInput = document.querySelector(`#${inputId}`);
+
+        if (!telephoneInput) {
+            console.error(`L'élément avec l'ID "${inputId}" est introuvable.`);
+            return null;
+        }
+
+        const iti = window.intlTelInputGlobals.getInstance(telephoneInput);
+
+        if (!iti) {
+            console.error(`L'instance intlTelInput n'est pas initialisée pour l'élément "${inputId}".`);
+            return null;
+        }
+
+        const formattedPhone = iti.getNumber();
+        const selectedCountry = iti.getSelectedCountryData();
+        const cleanedPhone = formattedPhone.replace(/\s+/g, "");
+
+        if (selectedCountry.iso2 === "bj" && cleanedPhone.length !== 14) {
+            display_message("Erreur !!", "Le numéro béninois doit contenir exactement 10 chiffres après +229.",
+                "warning", "btn btn-danger");
+            return null;
+        }
+
+        if (selectedCountry.iso2 !== "bj") {
+            display_message("Erreur !!", "Numéro de téléphone invalide ou trop court.",
+                "warning", "btn btn-danger");
+            return null;
+        }
+
+        return formattedPhone;
+    }
+
     </script>
 
   </body>

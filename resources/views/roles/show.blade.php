@@ -32,12 +32,12 @@
     </div>
 
     <!-- Liste des permissions -->
-    <div class="card shadow-sm border-0" style="background-color: #e9eff5;">
+    <div class="card shadow-sm border-0" style="background-color:rgb(234, 237, 241);">
         <div class="card-header border-bottom bg-primary text-white">
-            <h5 class="mb-0">
+            <h5 class="mb-0 text-white text-center">
                 <i class="bx bx-lock-alt me-2"></i> Permissions associées
             </h5>
-        </div>
+        </div> <br />
         <div class="card-body">
             @if (!empty($rolePermissions) && $rolePermissions->count())
                 <div class="row">

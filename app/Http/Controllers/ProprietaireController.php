@@ -74,7 +74,8 @@ class ProprietaireController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'error' => $validator->errors()
+                    'error' => $validator->errors(),
+                    "message" => "Veuillez bien renseigner les informations"
                 ]);
             }
             $response = $this->check_is_admin_and_entreprise();
@@ -157,7 +158,7 @@ class ProprietaireController extends Controller
                            ->causedBy(Auth::user()->id)
                            ->log('Modification du propriétaire'.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message', Str::upper($request->nom).' '.Str::upper($request->prenom).' mis à jour avec succès');
+                return back()->with('success', Str::upper($request->nom).' '.Str::upper($request->prenom).' mis à jour avec succès');
             }
         }
         catch (QueryException $e) {
@@ -169,60 +170,38 @@ class ProprietaireController extends Controller
     public function destroy(Request $request)
     {
         try {
+            $now = Carbon::now();
 
-            $deleted = Proprietaire::where('id',$request->id)
-                                   ->update([
-                                            'delete_at' => Carbon::now()
-                                    ]);
+            $deleted = Proprietaire::where('id', $request->id)
+                                    ->update(['delete_at' => $now]);
 
-            $objetDeleted = Proprietaire::where('id',$request->id)
-                                   ->first();
+            $proprio = Proprietaire::find($request->id);
 
+            if ($deleted && $proprio) {
 
-            if ($deleted) {
+                $maisonIds = Maison::where('proprio_id', $request->id)->pluck('id');
 
-                $tab = Maison::where('proprio_id',$request->id)->select('id')->get();
-
-
-                for ($i=0; $i < count($tab) ; $i++) {
-
-                    Maison::where('id',$tab[$i]->id)
-                           ->update([
-                                    'delete_at' => Carbon::now()
-                            ]);
-
-                   Chambre::where('maison_id',$tab[$i]->id)
-                           ->update([
-                                    'delete_at' => Carbon::now()
-                            ]);
-
-                    Prix::where('maison_id',$tab[$i]->id)
-                           ->update([
-                                    'delete_at' => Carbon::now()
-                            ]);
-
-                    Locataire::where('maison_id',$tab[$i]->id)
-                           ->update([
-                                    'delete_at' => Carbon::now()
-                            ]);
-
-                    Facture::where('maison_id',$tab[$i]->id)
-                           ->update([
-                                    'delete_at' => Carbon::now()
-                            ]);
+                if ($maisonIds->isNotEmpty()) {
+                    Maison::whereIn('id', $maisonIds)->update(['delete_at' => $now]);
+                    Chambre::whereIn('maison_id', $maisonIds)->update(['delete_at' => $now]);
+                    Prix::whereIn('maison_id', $maisonIds)->update(['delete_at' => $now]);
+                    Locataire::whereIn('maison_id', $maisonIds)->update(['delete_at' => $now]);
+                    Facture::whereIn('maison_id', $maisonIds)->update(['delete_at' => $now]);
                 }
 
-                
-                 activity()->performedOn(new Proprietaire())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Suppression du propriétaire'.Str::upper($objetDeleted->nom).' '.Str::ucfirst($objetDeleted->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                activity()
+                    ->performedOn($proprio)
+                    ->causedBy(Auth::user())
+                    ->log('Suppression du propriétaire ' . Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                return back()->with('message','Suppression effectuée avec succès');
-                
+                return back()->with('success', 'Suppression effectuée avec succès.');
             }
-        } catch (QueryException $e) {
 
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return back()->with('error', 'Aucune suppression effectuée.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Échec, veuillez vérifier les données.');
         }
     }
+
 }
