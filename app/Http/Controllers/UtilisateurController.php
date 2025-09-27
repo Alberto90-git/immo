@@ -131,7 +131,6 @@ class UtilisateurController extends SessionController
             if ($update) {
                 Auth::logout();
                 return redirect()->route('login')->with('message', 'Mot de passe change avec succès');
-
             }
 
         }

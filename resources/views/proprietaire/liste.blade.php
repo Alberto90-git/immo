@@ -9,7 +9,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Agence</th>
-                        <th>Nom & prénom</th>
+                        <th>Nom & prénoms</th>
                         <th>Téléphone</th>
                         <th>Adresse</th>
                         <th class="text-center">Actions</th>

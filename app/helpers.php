@@ -114,7 +114,7 @@ if (!function_exists("get_locataire_liste")) {
     function get_locataire_liste()
     {
         try {
-            $reponse = Locataire::whereNull('locataires.delete_at')
+            return    Locataire::whereNull('locataires.delete_at')
                                 ->where('locataires.status',true)
                                 ->where('iddirection_ref',Auth::user()->iddirection_ref)
                                 ->where(function($querry){
@@ -123,7 +123,30 @@ if (!function_exists("get_locataire_liste")) {
                                     }
                                 })
                                 ->get();
-            return $reponse;
+
+        } catch (QueryException $e) {
+            return;
+        }
+
+    }
+}
+
+
+
+if (!function_exists("get_agences_liste")) {
+    
+    function get_agences_liste()
+    {
+        try {
+            return Annexe::whereNull('blocage_annexe')
+                                ->whereNull('status')
+                                ->where('iddirection_ref',Auth::user()->iddirection_ref)
+                                ->where(function($querry){
+                                    if (Gate::none(['Is_admin'])) {
+                                        $querry->where('idannexes',Auth::user()->idannexe_ref);
+                                    }
+                                })
+                                ->get();
 
         } catch (QueryException $e) {
             return;
