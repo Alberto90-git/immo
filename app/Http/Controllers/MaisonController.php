@@ -157,7 +157,7 @@ class MaisonController extends Controller
                            ->causedBy(Auth::user()->id)
                            ->log('Modification de la maison '.$request->nom_maison.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','La maison '.$request->nom_maison.' est mise avec succès');
+                return back()->with('success','La maison '.$request->nom_maison.' est mise avec succès');
             }
 
         } catch (QueryException $e) {
@@ -205,7 +205,7 @@ class MaisonController extends Controller
                            ->causedBy(Auth::user()->id)
                            ->log('Suppression de la maison '.$valueDeleted->nom_maison.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Suppression effectuée avec succès');
+                return back()->with('success','Suppression effectuée avec succès');
             }
             
         } catch (QueryException $e) {

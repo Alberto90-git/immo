@@ -1,6 +1,5 @@
 @extends('layouts.template')
 
-
 @section('content')
 
     @section('title')
@@ -8,11 +7,26 @@
     @endsection
 
 
-    @include('notification.display_message')
+    <style>
+      /* Forcer SweetAlert2 à apparaître au-dessus de tous les modals */
+      .swal2-container {
+          z-index: 10070 !important;
+      }
+      
+      .swal2-popup {
+          z-index: 10071 !important;
+      }
+    </style>
+
+
+
     
     
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion maison</h4>
+
+    @include('notification.display_message')
+
 
     <div class="col-md-6">
       <div class="demo-inline-spacing">
@@ -255,6 +269,24 @@
         
     <script>
 
+        function display_sweet_alert_over_modal(title, text, icon, buttonClass) {
+            // Appeler votre fonction existante
+            display_sweet_alerte2(title, text, icon, buttonClass);
+            
+            // Forcer le z-index après un court délai
+            setTimeout(function() {
+                const swalContainer = document.querySelector('.swal2-container');
+                const swalPopup = document.querySelector('.swal2-popup');
+                
+                if (swalContainer) {
+                    swalContainer.style.zIndex = '10070';
+                }
+                if (swalPopup) {
+                    swalPopup.style.zIndex = '10071';
+                }
+            }, 10);
+        }
+
         function limit(element) {
             var max_chars = 2;
             if (element.value.length > max_chars) {
@@ -316,13 +348,13 @@
       
                            // alert(data.message);
                            // $("#AjouerMaison div#afficher").html(data.message)
-                          display_message("Super !!",data.message,"success","btn btn-primary");
+                           display_sweet_alert_over_modal("Succès !!",data.message,"success","btn btn-primary");
       
       
                             $("#AjouerMaison form#formulaire")[0].reset();
                         } else {
                            // $("#AjouerMaison div#afficher").html(data.message)
-                          display_message("Erreur !!",data.message,"warning","btn btn-danger");
+                           display_sweet_alert_over_modal("Erreur !!",data.message,"warning","btn btn-danger");
       
                         }
       

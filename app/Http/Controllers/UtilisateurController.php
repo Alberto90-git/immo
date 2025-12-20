@@ -77,12 +77,16 @@ class UtilisateurController extends SessionController
             $update = User::where('email', $request->email)
                        ->update(['token' => $token, 'is_verified' => 0]);
 
-            if ($update) {
-               Mail::to($request->email)->send(new ResetPassword($user->email, $token));
-            }
-
-            if (Mail::failures() != 0) {
-                return back()->with('message', 'Un lien a été envoyé à votre email, aller vérifier.');
+            try {
+                if ($update) {
+                    Mail::to($request->email)->send(new ResetPassword($user->email, $token));
+                 }
+     
+                 if (Mail::failures() != 0) {
+                     return back()->with('message', 'Un lien a été envoyé à votre email, aller vérifier.');
+                 }
+            } catch (\Throwable $th) {
+                //throw $th;
             }
 
             return back()->with('error', 'Echec! there is some issue with email provider');
@@ -196,12 +200,18 @@ class UtilisateurController extends SessionController
                 if ($response)
                 {
                     
-                    $userinfo = [
-                        'code_login' => $rand,
-                        'email' => $request->email
-                    ];
-                   Mail::to($request->email)->send(new SendCodemail($userinfo));
-                   return redirect()->route('code_login');
+                   try {
+                            $userinfo = [
+                                'code_login' => $rand,
+                                'email' => $request->email
+                            ];
+
+                            Mail::to($request->email)->send(new SendCodemail($userinfo));
+                            return redirect()->route('code_login');
+
+                   } catch (\Throwable $th) {
+                        //throw $th;
+                   }
                   //return redirect()->route('home')->with('success', 'Mot de passe change avec succès');
                 }else {
                    return redirect()->back()->with('error', 'Il y a un soucis');
@@ -342,7 +352,7 @@ class UtilisateurController extends SessionController
 
     public function index()
     {
-        $id = $this->getDirectionId();
+        //$id = $this->getDirectionId();
 
         $data = User::where('email', 'NOT LIKE', 'admin@immo.net')
                      ->where('is_admin',false)
@@ -350,6 +360,7 @@ class UtilisateurController extends SessionController
                      //->where(Auth::user()->iddirection_ref,$id)
                      ->orderBy('id', 'DESC') 
                      ->get();
+
 
         //$data = Role::all();
         return view('users.index', compact('data'));
@@ -369,7 +380,208 @@ class UtilisateurController extends SessionController
 
     public function saveAdminCompte(Request $request)
     {
-        //dd($request->all());
+        try {
+            DB::beginTransaction();
+            
+            // Validation différente selon le type de compte
+            if ($request->type_compte === 'Particulier') {
+                $validator = Validator::make(
+                    $request->all(),
+                    [
+                        'nom' => ['required', 'string', 'min:2'],
+                        'prenom' => ['required', 'string', 'min:2'],
+                        'email' => ['required','string','email','max:255',Rule::unique(User::class)],
+                        'code_pays' => ['required'],
+                        'telephone' => ['required'],
+                        'type_compte' => ['required', 'string'],
+                        'mot_de_passe' => ['required', 'string', 'min:8'],
+                        'Confirmer_mot_de_passe' => ['required','same:mot_de_passe','string', 'min:8'],
+                    ],
+                    [
+                        '*.required' => 'Ce champ est obligatoire.',
+                        'email.unique' => 'L\'adresse mail est déjà utilisé',
+                        'nom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
+                        'prenom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
+                        'Confirmer_mot_de_passe.same' => 'Le mot de passe de confirmation ne correspond pas.',
+                    ]
+                );
+            } else {
+                $validator = Validator::make(
+                    $request->all(),
+                    [
+                        'nom' => ['required', 'string', 'min:2'],
+                        'prenom' => ['required', 'string', 'min:2'],
+                        'email' => ['required','string','email','max:255',Rule::unique(User::class)],
+                        'code_pays' => ['required'],
+                        'telephone' => ['required'],
+                        'type_compte' => ['required', 'string'],
+                        'mot_de_passe' => ['required', 'string', 'min:8'],
+                        'Confirmer_mot_de_passe' => ['required','same:mot_de_passe','string', 'min:8'],
+                        'designation' => ['required', 'string'],
+                        'adresse' => ['required', 'string'],
+                        'email_entreprise' => ['required','string','email','max:255'],
+                    ],
+                    [
+                        '*.required' => 'Ce champ est obligatoire.',
+                        'email.unique' => 'L\'adresse mail est déjà utilisé',
+                        '*.min' => 'Le :attribute doit avoir au moins :min caractères.',
+                        'Confirmer_mot_de_passe.same' => 'Le mot de passe de confirmation ne correspond pas.',
+                    ]
+                );
+            }
+            
+            if ($validator->fails()) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Veuillez vérifier les informations saisies',
+                    'error' => $validator->errors()
+                ], 422);
+            }
+            
+            // Préparation des données
+            $nom = Str::upper($request->nom);
+            $prenom = Str::ucfirst($request->prenom);
+            $email = $request->email;
+            $grade = 'Administrateur';
+            $type_compte = $request->type_compte;
+            $mot_de_passe = $request->mot_de_passe;
+            
+            // Gestion des données de l'entreprise
+            if ($type_compte === 'Entreprise') {
+                $designation = $request->designation;
+                $adresse = $request->adresse;
+                $telepone_entreprise = $request->code_pays . $request->telephone;
+                $email_entreprise = $request->email_entreprise;
+            } else {
+                // Pour les particuliers
+                $designation = $nom . ' ' . $prenom;
+                $adresse = 'Non spécifié';
+                $telepone_entreprise = $request->code_pays . $request->telephone;
+                $email_entreprise = $email;
+            }
+            
+            // Création de la direction
+            $direction_id = Direction::insertGetId([
+                'designation' => $designation,
+                'siege_social' => $adresse,
+                'telephone' => $telepone_entreprise,
+                'email' => $email_entreprise,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
+            
+            // Création de l'annexe
+            $annexe_id = Annexe::insertGetId([
+                'iddirection_ref' => $direction_id,
+                'designation' => $designation,
+                'siege_social' => $adresse,
+                'telephone' => $telepone_entreprise,
+                'email' => $email_entreprise,
+                'userdata' => $designation,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
+            
+            // Création de l'utilisateur
+            $newuser = User::create([
+                'iddirection_ref' => $direction_id,
+                'idannexe_ref' => $annexe_id,
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'grade' => $grade,
+                'type_compte' => $type_compte,
+                'email' => $email,
+                'email_verification_token' => Str::random(32),
+                'email_verified' => 0,
+                'is_admin' => true,
+                'password' => Hash::make($mot_de_passe),
+                'password_changed_at' => Carbon::now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
+            
+            // Création ou récupération du rôle Administrateur
+            $role = Role::where('name', 'Administrateur')->first();
+            if (!$role) {
+                $role = Role::create([
+                    'name' => 'Administrateur',
+                    'guard_name' => 'web',
+                    'iddirectionRef_role' => $direction_id
+                ]);
+                
+                // Attribution de toutes les permissions au rôle Administrateur
+                $permissions = Permission::pluck('id')->all();
+                $role->syncPermissions($permissions);
+            }
+            
+            // Attribution du rôle à l'utilisateur
+            $newuser->assignRole($role->id);
+            
+            // Préparation des données pour l'email
+            $userinfos = [
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'email' => $email,
+                'email_verification_token' => $newuser->email_verification_token,
+                'password' => $mot_de_passe // Pour l'email de bienvenue
+            ];
+            
+            // Mise à jour du token email
+            User::where('id', $newuser->id)->update(['mail_token_at' => Carbon::now()]);
+            
+            DB::commit();
+            
+            // Envoi de l'email de vérification
+            try {
+                Mail::to($newuser->email)->send(new VerificationEmail($userinfos));
+                
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Votre compte a été créé avec succès! Un email de confirmation vous a été envoyé.'
+                ]);
+                
+            } catch (\Exception $mailException) {
+                Log::error('Erreur lors de l\'envoi de l\'email', [
+                    'user_id' => $newuser->id,
+                    'error' => $mailException->getMessage()
+                ]);
+                
+                // Le compte est créé même si l'email échoue
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Votre compte a été créé avec succès! Cependant, l\'email de confirmation n\'a pas pu être envoyé. Veuillez contacter le support.'
+                ]);
+            }
+            
+        } catch (QueryException $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la création du compte', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.'
+            ], 500);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur générale lors de la création du compte', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Une erreur inattendue est survenue. Veuillez réessayer.'
+            ], 500);
+        }
+    }
+
+    public function saveAdminCompteOld(Request $request)
+    {
         try {
             if ($request->type_compte == 'Particulier') {
                 $validator = Validator::make(

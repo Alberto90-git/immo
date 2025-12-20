@@ -9,6 +9,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
+    
+  <!-- Dans la section head -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     @yield('title')
 
 
@@ -16,6 +22,17 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
    <script src="{{ asset('assets/js/vendor/jquery.min.js') }}"></script>
+
+   <style>
+    /* Forcer SweetAlert2 à apparaître au-dessus de tous les modals */
+    .swal2-container {
+        z-index: 10070 !important;
+    }
+    
+    .swal2-popup {
+        z-index: 10071 !important;
+    }
+  </style>
 
     @include('css_file')
 
@@ -59,10 +76,49 @@
 
   <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
 
+<!-- Avant la fermeture du body -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <script>
+  <script>
 
-function Sepatateur_Milliers(param)
+    function display_sweet_alerte2(title, message, type, buttonClass) {
+        // Vérifier si SweetAlert2 est disponible
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: title,
+                html: message,
+                icon: type,
+                confirmButtonText: 'Fermer',
+                confirmButtonClass: buttonClass,
+                customClass: {
+                    popup: 'animated bounceIn'
+                }
+            });
+        }
+        // Vérifier si Toastr est disponible
+        else if (typeof toastr !== 'undefined') {
+            switch(type) {
+                case 'success':
+                    toastr.success(message, title);
+                    break;
+                case 'warning':
+                    toastr.warning(message, title);
+                    break;
+                case 'error':
+                case 'danger':
+                    toastr.error(message, title);
+                    break;
+                default:
+                    toastr.info(message, title);
+            }
+        }
+        // Fallback avec alert simple
+        else {
+            alert(title + ":\n" + message);
+        }
+    }
+
+    function Sepatateur_Milliers(param)
     {
 
         var valSaisie=$(param).val().trim().replace(/\s/g,'');
@@ -100,31 +156,53 @@ function Sepatateur_Milliers(param)
     }
 
     
-        $('#close').on('click', function(){
-          setInterval(function(){
-              window.location.reload()
-          }, 500)
-        });
+    $('#close').on('click', function(){
+      setInterval(function(){
+          window.location.reload()
+      }, 1000)
+    });
 
 
-      function display_message(m_title,m_message,m_icone,m_class) {
-        swal({
-              title: m_title,
-              text: m_message,
-              icon: m_icone,
-              button: {
-                  text: "Fermer",
-                  className: m_class
-              },
-              timer: 2000,
-              buttonsStyling: true,
-              customClass: {
-                  popup: 'animated bounceInDown',
-              },
-              background: '#f0f0f0',
-          });
+    // Dans votre layout ou dans un fichier JS global
+    function display_message(title, message, type, buttonClass) {
+        // Vérifier si SweetAlert2 est disponible
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: title,
+                html: message,
+                icon: type,
+                confirmButtonText: 'OK',
+                confirmButtonClass: buttonClass,
+                customClass: {
+                    popup: 'animated bounceIn'
+                }
+            });
         }
+        // Vérifier si Toastr est disponible
+        else if (typeof toastr !== 'undefined') {
+            switch(type) {
+                case 'success':
+                    toastr.success(message, title);
+                    break;
+                case 'warning':
+                    toastr.warning(message, title);
+                    break;
+                case 'error':
+                case 'danger':
+                    toastr.error(message, title);
+                    break;
+                default:
+                    toastr.info(message, title);
+            }
+        }
+        // Fallback avec alert simple
+        else {
+            alert(title + ":\n" + message);
+        }
+    }
 
+
+     
 
 
         

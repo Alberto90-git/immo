@@ -4,14 +4,14 @@
     <title>Gestion propriétaire</title>
 @endsection
 
-
-
 @section('content')
 
-@include('notification.display_message')
 
 
 <div class="container-xxl flex-grow-1 container-p-y">
+
+    @include('notification.display_message')
+
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion propriétaire</h4>
     
     @can('ajoute-proprietaire')
@@ -30,11 +30,14 @@
     <div id="update-route" data-url="{{ route('update_proprio') }}" style="display: none;"></div>
     <div id="delete-route" data-url="{{ route('destroy_proprio') }}" style="display: none;"></div>
 
-    {{-- Modal d'ajout --}}
+    {{-- Inclusion des composants --}}
     @include('proprietaire.ajouter')
+    @include('proprietaire.liste')
     
-    {{-- ⭐ SOLUTION 2: Tout dans liste.blade.php (tableau + modals) --}}
-    @include('proprietaire.liste', ['allProprios' => $allProprios])
+    {{-- Les modals de modification --}}
+    @foreach ($allProprios as $items)
+    @include('proprietaire.modifier', ['items' => $items])
+@endforeach
 
 </div>
 

@@ -23,19 +23,21 @@ class PermissionTableSeeder extends Seeder
             'modifier-role',
             'gestion-utilisateur',
             'ajouter-utilisateur',
+            'liste-utilisateur',
             'modifier-utilisateur',
             'desactive-utilisateur',
 
         ];
 
         $labeladmin = [
-            'Gestion rôle & utilisateur',
-            'Gérer rôle',
-            'Ajouter un rôle',
-            'Consulter les rôles',
-            'Modifier  un rôle',
+            'Gestion fonction & utilisateur',
+            'Gérer fonction',
+            'Ajouter une fonction',
+            'Consulter les fonctions',
+            'Modifier  une fonction',
             'Gérer un utilisateur',
             'Ajouter un utilisateur',
+            'Consulter les utilisateurs',
             'Modifier un utilisateur',
             'Activer/Désactiver un utilisateur',
 

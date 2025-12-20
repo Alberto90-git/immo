@@ -32,6 +32,7 @@ class CreateFacturesTable extends Migration
             $table->foreign('chambre_id')->references('id')->on('chambres');
 
             $table->dateTime('date_paiement');
+            $table->string('mode_paiement')->nullable();
             $table->string('type_paiement');
             $table->integer('montant'); 
             $table->string('mois');

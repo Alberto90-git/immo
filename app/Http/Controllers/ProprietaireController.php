@@ -18,45 +18,47 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
-
-
-
 class ProprietaireController extends Controller
 {
-
     public function guide()
     {
         return view('guide');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
- public function getProprietaire()
- {
-     return Proprietaire::whereNull('delete_at')
-                        ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                        ->where(function($querry){
-                            if (Gate::none(['Is_admin'])) {
-                                $querry->where('idannexe_ref',Auth::user()->idannexe_ref);
-                            }
-                        })
-                        ->get();
- }
 
+    /**
+     * Récupérer les propriétaires selon les permissions
+     */
+    public function getProprietaire()
+    {
+        return Proprietaire::whereNull('delete_at')
+                            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                            ->where(function($query){
+                                if (Gate::none(['Is_admin'])) {
+                                    $query->where('idannexe_ref', Auth::user()->idannexe_ref);
+                                }
+                            })
+                            ->get();
+    }
+
+    /**
+     * Afficher la liste des propriétaires
+     */
     public function index()
     {
         $allProprios = $this->getProprietaire();
         return view('proprietaire.proprietaire', compact('allProprios'));
     }
 
-    
+    /**
+     * Vérifier si l'utilisateur est admin et entreprise
+     */
+    public function check_is_admin_and_entreprise()
+    {
+        return Gate::allows('Is_admin') && Auth::user()->type_compte != 'Particulier';
+    }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Créer un nouveau propriétaire via AJAX
      */
     public function create(Request $request)
     {
@@ -69,26 +71,34 @@ class ProprietaireController extends Controller
                     'prenom' => 'bail|required|string',
                     'adresse' => 'bail|required|string',
                 ],
+                [
+                    'telephone.required' => 'Le téléphone est obligatoire',
+                    'nom.required' => 'Le nom est obligatoire',
+                    'prenom.required' => 'Le prénom est obligatoire',
+                    'adresse.required' => 'L\'adresse est obligatoire',
+                ]
             );
-
 
             if ($validator->fails()) {
                 return response()->json([
+                    'status' => false,
                     'error' => $validator->errors(),
-                    "message" => "Veuillez bien renseigner les informations"
-                ]);
+                    'message' => "Veuillez bien renseigner les informations"
+                ], 422);
             }
-            $response = $this->check_is_admin_and_entreprise();
 
+            // Déterminer l'annexe
+            $response = $this->check_is_admin_and_entreprise();
             if ($response) {
                 $idannexe_ref = $request->annexe;
-            }else {
+            } else {
                 $idannexe_ref = Auth::user()->idannexe_ref;
             }
 
+            // Créer le propriétaire
             $proprio = Proprietaire::create([
-                'nom'                   => Str::upper($request->nom),
-                'prenom'                => Str::ucfirst($request->prenom),
+                'nom' => Str::upper($request->nom),
+                'prenom' => Str::ucfirst($request->prenom),
                 'telephone' => $request->telephone,
                 'adresse' => Str::ucfirst($request->adresse),
                 'iddirection_ref' => Auth::user()->iddirection_ref,
@@ -96,89 +106,158 @@ class ProprietaireController extends Controller
             ]);
 
             if ($proprio) {
-
+                // Log de l'activité
                 activity()->performedOn(new Proprietaire())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Ajout du propriétaire'.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                    ->causedBy(Auth::user()->id)
+                    ->log('Ajout du propriétaire ' . Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
+                // ⭐ Retourner l'ID au lieu de l'iteration
                 return response()->json([
                     'status' => true,
-                    'message' => Str::upper($request->nom).' '.Str::ucfirst($request->prenom)." est crée avec succès",
+                    'message' => Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . " est créé avec succès",
+                    'data' => [
+                        'id' => $proprio->id,
+                        'nom' => $proprio->nom,
+                        'prenom' => $proprio->prenom,
+                        'telephone' => $proprio->telephone,
+                        'adresse' => $proprio->adresse,
+                        'annexe_name' => get_annexee_name($proprio->idannexe_ref),
+                    ]
                 ]);
-
             }
-        }
-        catch (QueryException $e) {
+        } catch (QueryException $e) {
             return response()->json([
                 'status' => false,
-                'message' => "Echec,essayé encore",
-            ]);
+                'message' => "Échec, essayez encore",
+            ], 500);
         }
     }
 
-   
+    /**
+     * Mettre à jour un propriétaire via AJAX
+     */
     public function update(Request $request)
     {
         try {
             $validator = Validator::make(
                 $request->all(),
                 [
-                    'telephone' => 'bail|required|numeric|digits:8',
+                    'id' => 'required|exists:proprietaires,id',
+                    'telephone' => 'bail|required',
                     'nom' => 'bail|required|string',
                     'prenom' => 'bail|required|string',
                     'adresse' => 'bail|required|string',
                 ],
+                [
+                    'id.required' => 'L\'identifiant est obligatoire',
+                    'id.exists' => 'Le propriétaire n\'existe pas',
+                    'telephone.required' => 'Le téléphone est obligatoire',
+                    'nom.required' => 'Le nom est obligatoire',
+                    'prenom.required' => 'Le prénom est obligatoire',
+                    'adresse.required' => 'L\'adresse est obligatoire',
+                ]
             );
 
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $validator->errors(),
+                    'message' => "Veuillez bien renseigner les informations"
+                ], 422);
+            }
 
-            //if ($validator->fails()) {
-              //   return back()->withErrors('message','Proprietaire ajouté avec succès')->withInput();
-            //}
-
+            // Déterminer l'annexe
             $response = $this->check_is_admin_and_entreprise();
-
             if ($response) {
                 $idannexe_ref = $request->annexe;
-            }else {
+            } else {
                 $idannexe_ref = Auth::user()->idannexe_ref;
             }
 
-            $proprio = Proprietaire::where('id',$request->id)
-                                    ->update([
-                                        'nom'                   => Str::upper($request->nom),
-                                        'prenom'                => Str::ucfirst($request->prenom),
-                                        'telephone' => $request->telephone,
-                                        'adresse' => Str::ucfirst($request->adresse),
-                                        'iddirection_ref' => Auth::user()->iddirection_ref,
-                                        'idannexe_ref' => $idannexe_ref,
-                                    ]);
+            // Mettre à jour le propriétaire
+            $proprio = Proprietaire::where('id', $request->id)
+                ->update([
+                    'nom' => Str::upper($request->nom),
+                    'prenom' => Str::ucfirst($request->prenom),
+                    'telephone' => $request->telephone,
+                    'adresse' => Str::ucfirst($request->adresse),
+                    'iddirection_ref' => Auth::user()->iddirection_ref,
+                    'idannexe_ref' => $idannexe_ref,
+                ]);
+
             if ($proprio) {
+                // Récupérer les données mises à jour
+                $proprietaire = Proprietaire::find($request->id);
 
-                 activity()->performedOn(new Proprietaire())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Modification du propriétaire'.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                // Log de l'activité
+                activity()->performedOn(new Proprietaire())
+                    ->causedBy(Auth::user()->id)
+                    ->log('Modification du propriétaire ' . Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                return back()->with('success', Str::upper($request->nom).' '.Str::upper($request->prenom).' mis à jour avec succès');
+                // ⭐ Retourner l'ID au lieu de l'iteration
+                return response()->json([
+                    'status' => true,
+                    'message' => Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' mis à jour avec succès',
+                    'data' => [
+                        'id' => $proprietaire->id, // ⭐ ID utilisé pour les modals
+                        'nom' => $proprietaire->nom,
+                        'prenom' => $proprietaire->prenom,
+                        'telephone' => $proprietaire->telephone,
+                        'adresse' => $proprietaire->adresse,
+                        'annexe_name' => get_annexee_name($proprietaire->idannexe_ref),
+                    ]
+                ]);
             }
-        }
-        catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Échec, veuillez vérifier les données',
+            ], 500);
         }
     }
 
-   
+    /**
+     * Supprimer un propriétaire via AJAX (soft delete)
+     */
     public function destroy(Request $request)
     {
         try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'id' => 'required|exists:proprietaires,id'
+                ],
+                [
+                    'id.required' => 'L\'identifiant est obligatoire',
+                    'id.exists' => 'Le propriétaire n\'existe pas'
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $validator->errors(),
+                ], 422);
+            }
+
             $now = Carbon::now();
 
-            $deleted = Proprietaire::where('id', $request->id)
-                                    ->update(['delete_at' => $now]);
-
+            // Récupérer le propriétaire avant suppression
             $proprio = Proprietaire::find($request->id);
 
-            if ($deleted && $proprio) {
+            if (!$proprio) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Propriétaire introuvable',
+                ], 404);
+            }
 
+            // Soft delete du propriétaire
+            $deleted = Proprietaire::where('id', $request->id)
+                ->update(['delete_at' => $now]);
+
+            if ($deleted) {
+                // Soft delete des maisons et données associées
                 $maisonIds = Maison::where('proprio_id', $request->id)->pluck('id');
 
                 if ($maisonIds->isNotEmpty()) {
@@ -189,19 +268,29 @@ class ProprietaireController extends Controller
                     Facture::whereIn('maison_id', $maisonIds)->update(['delete_at' => $now]);
                 }
 
+                // Log de l'activité
                 activity()
                     ->performedOn($proprio)
                     ->causedBy(Auth::user())
                     ->log('Suppression du propriétaire ' . Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                return back()->with('success', 'Suppression effectuée avec succès.');
+                // Retourner la réponse pour AJAX
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Suppression effectuée avec succès.',
+                ]);
             }
 
-            return back()->with('error', 'Aucune suppression effectuée.');
+            return response()->json([
+                'status' => false,
+                'message' => 'Aucune suppression effectuée.',
+            ], 400);
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Échec, veuillez vérifier les données.');
+            return response()->json([
+                'status' => false,
+                'message' => 'Échec, veuillez vérifier les données.',
+            ], 500);
         }
     }
-
 }

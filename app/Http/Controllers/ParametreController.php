@@ -34,12 +34,11 @@ class ParametreController extends SessionController
     public function index()
     {
        try {
-
             activity()->performedOn(new Parametre())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Page paramétrage visité par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                       ->causedBy(Auth::user()->id)
+                       ->log('Page paramétrage visité par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-            $param = Parametre::get();
+            $param = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->get();
             $liste_annexe = Annexe::whereNull('status')
                                     ->where('iddirection_ref',Auth::user()->iddirection_ref)
                                     ->whereNull('blocage_annexe')
@@ -49,11 +48,9 @@ class ParametreController extends SessionController
             return view('parametre',compact('param','liste_annexe'));
 
        } catch (QueryException $e) {
-
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return redirect()->back()->with('error','Échec, veuillez vérifier les données');
        }
     }
-
 
     private function getDirectionDsignation($iduser)
     {
@@ -62,29 +59,27 @@ class ParametreController extends SessionController
                         ->pluck('designation')[0];
     }
 
-
     public function storeAnnexe(Request $request)
     {
         try {
             $validator = Validator::make(
                 $request->all(),
                 [
-                    //'designation' => 'bail|required|string',
                     'designation' => 'required|unique:annexes,designation',
-                    //'designation' => ['bail','required','string','designation','max:255',Rule::unique(Annexe::class),],
                     'adresse' => 'bail|required|string',
                     'telephone' => 'bail|required|string',
-                    'email' => 'bail|required|string',
+                    'email' => 'bail|required|email',
                 ],
                 [
                     '*.required' => 'Ce champ est obligatoire.',
+                    'email.email' => 'Veuillez entrer une adresse email valide.',
+                    'designation.unique' => 'Cette désignation existe déjà.',
                 ]);
-
 
             if ($validator->fails()) {
                 return response()->json([
                     'error' => $validator->errors(),
-                    'message' => 'Veuillez bien remplir les champs'
+                    'message' => 'Veuillez corriger les erreurs de validation'
                 ]);
             }
 
@@ -93,25 +88,148 @@ class ParametreController extends SessionController
                 'designation'      => Str::ucfirst($request->designation),
                 'siege_social'     => Str::ucfirst($request->adresse),
                 'telephone'        => $request->telephone,          
-                'email'          => $request->email,
-                'userdata'       => $this->getDirectionDsignation(Auth::user()->iddirection_ref)
+                'email'            => $request->email,
+                'userdata'         => $this->getDirectionDsignation(Auth::user()->iddirection_ref)
             ]);
 
             if ($annexe) {
-
                 Session::put(['anne_data'=>  SessionController::save_session_annexe()]);
+
+                activity()
+                    ->performedOn(new Annexe())
+                    ->causedBy(Auth::user()->id)
+                    ->log('Ajout d\'une annexe: '.Str::upper($request->designation).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
                 return response()->json([
                     'status' => true,
-                    'message' => Str::upper($request->designation).' '." est ajoutée avec succès",
+                    'message' => Str::upper($request->designation).' a été ajouté avec succès',
                 ]);
-
             }
-        }
-        catch (QueryException $e) {
+        } catch (QueryException $e) {
             return response()->json([
                 'status' => false,
-                'message' => "Echec,essayez à nouveau en chargeant peut-être la designation",
+                'message' => "Échec lors de l'ajout de l'annexe. Veuillez réessayer.",
+            ]);
+        }
+    }
+
+    public function create(Request $request)
+    {
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'cash_electronique' => 'nullable|mimes:jpeg,png,jpg|max:5120',
+                    'logo' => 'nullable|mimes:jpeg,png,jpg|max:5120',
+                ],
+                [
+                    'cash_electronique.mimes' => 'L\'image du cash électronique doit être au format JPEG, PNG ou JPG.',
+                    'logo.mimes' => 'Le logo doit être au format JPEG, PNG ou JPG.',
+                    'cash_electronique.max' => 'L\'image du cash électronique ne doit pas dépasser 5MB.',
+                    'logo.max' => 'Le logo ne doit pas dépasser 5MB.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors(),
+                    'message' => "Veuillez vérifier les fichiers uploadés"
+                ]);
+            }
+
+            // Vérifier qu'au moins un fichier est présent
+            if (!$request->hasFile('cash_electronique') && !$request->hasFile('logo')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Veuillez sélectionner au moins une image (cash électronique ou logo)"
+                ]);
+            }
+
+            $parametre = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+            
+            // Si un paramètre existe déjà, on le met à jour
+            if ($parametre) {
+                // Supprimer l'ancien cash électronique si un nouveau est uploadé
+                if ($request->hasFile('cash_electronique') && $parametre->cash_electronique_url) {
+                    $oldPath = str_replace(asset(''), '', $parametre->cash_electronique_url);
+                    if (Storage::exists("public/$oldPath")) {
+                        Storage::delete("public/$oldPath");
+                    }
+                }
+                
+                // Supprimer l'ancien logo si un nouveau est uploadé
+                if ($request->hasFile('logo') && $parametre->logo_url) {
+                    $oldPath = str_replace(asset(''), '', $parametre->logo_url);
+                    if (Storage::exists("public/$oldPath")) {
+                        Storage::delete("public/$oldPath");
+                    }
+                }
+                
+                $cashElectroniquePath = $parametre->cash_electronique_url;
+                $logoPath = $parametre->logo_url;
+            } else {
+                $cashElectroniquePath = null;
+                $logoPath = null;
+                $parametre = new Parametre();
+                $parametre->iddirection_ref = Auth::user()->iddirection_ref;
+            }
+
+            // Upload de l'image du cash électronique
+            if ($request->hasFile('cash_electronique')) {
+                $file = $request->file('cash_electronique');
+                $path = 'cash_electronique';
+                
+                if (!Storage::exists("public/$path")) {
+                    Storage::makeDirectory("public/$path", 0775, true);
+                }
+                
+                $filename = 'cash_electronique_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $file->storeAs("public/$path", $filename);
+                $cashElectroniquePath = "$path/$filename";
+            }
+
+            // Upload du logo
+            if ($request->hasFile('logo')) {
+                $file = $request->file('logo');
+                $path = 'logo';
+                
+                if (!Storage::exists("public/$path")) {
+                    Storage::makeDirectory("public/$path", 0775, true);
+                }
+                
+                $filename = 'logo_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $file->storeAs("public/$path", $filename);
+                $logoPath = "$path/$filename";
+            }
+
+            // Sauvegarde
+            $parametre->cash_electronique_url = $cashElectroniquePath;
+            $parametre->logo_url = $logoPath;
+            $parametre->save();
+
+            activity()
+                ->performedOn(new Parametre())
+                ->causedBy(Auth::user()->id)
+                ->log('Modification des images (cash électronique/logo) par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Images enregistrées avec succès",
+            ]);
+
+        } catch (QueryException $e) {
+            \Log::error('Erreur lors de l\'enregistrement des paramètres: ' . $e->getMessage());
+            
+            return response()->json([
+                'status' => false,
+                'message' => "Échec lors de l'enregistrement. Veuillez réessayer.",
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur générale: ' . $e->getMessage());
+            
+            return response()->json([
+                'status' => false,
+                'message' => "Une erreur inattendue est survenue.",
             ]);
         }
     }
@@ -158,7 +276,7 @@ class ParametreController extends SessionController
 
                 Session::put(['anne_data'=>  SessionController::save_session_annexe()]);
 
-                return back()->with('message', Str::upper($request->designation).' '.' mis à jour avec succès');
+                return back()->with('success', Str::upper($request->designation).' '.' mis à jour avec succès');
             }
         }
         catch (QueryException $e) {
@@ -189,7 +307,7 @@ class ParametreController extends SessionController
                            ->causedBy(Auth::user()->id)
                            ->log("Suppression de l'annexe ".Str::upper($objetDeleted->designation).' '.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Suppression effectuée avec succès');
+                return back()->with('success','Suppression effectuée avec succès');
                 
             }
         } catch (QueryException $e) {
@@ -197,83 +315,6 @@ class ParametreController extends SessionController
             return back()->with('error','Echéc, veuillez verifier les données');
         }
     }
-
-
-    public function create(Request $request)
-{
-    try {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'format_choisi' => 'bail|required|string',
-                'logo' => 'bail|required|mimes:jpeg,png,jpg|max:2048',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors(),
-                'message' => "Veuillez renseigner toutes les informations"
-            ]);
-        }
-
-        $exist = Parametre::count();
-        $image_link = null;
-
-        // Supprimer l'ancien logo si existant
-        if ($exist == 1) {
-            $pathdelete = get_logo(Auth::user()->iddirection_ref)?->logo_url;
-            if ($pathdelete && Storage::exists("public/$pathdelete")) {
-                Storage::delete("public/$pathdelete");
-            }
-            Parametre::truncate(); // tu n'as qu'un seul paramètre actif
-        }
-
-        // Traitement image
-        if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            $path = 'logo';
-
-            if (!Storage::exists("public/$path")) {
-                Storage::makeDirectory("public/$path", 0775, true);
-            }
-
-            $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs("public/$path", $filename);
-            $image_link = "$path/$filename"; // logos/logo_xxx.jpg
-        }
-
-        // Création du paramètre
-        $param = Parametre::create([
-            'iddirection_ref' => Auth::user()->iddirection_ref,
-            'format_choisi'   => $request->format_choisi,
-            'logo_url'        => $image_link,
-        ]);
-
-        if ($param) {
-            activity()
-                ->performedOn(new Parametre())
-                ->causedBy(Auth::user()->id)
-                ->log('Modification du paramétrage par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
-
-            return response()->json([
-                'status' => true,
-                'message' => "Paramétrage effectué avec succès",
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => "Erreur inconnue lors de l'enregistrement.",
-        ]);
-
-    } catch (QueryException $e) {
-        return response()->json([
-            'status' => false,
-            'message' => "Échec, essayez encore : " . $e->getMessage(),
-        ]);
-    }
-}
 
 
     

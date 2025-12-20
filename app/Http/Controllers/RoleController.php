@@ -39,7 +39,7 @@ class RoleController extends Controller
         // return view('roles.index',compact('roles'))
         //     ->with('i', ($request->input('page', 1) - 1) * 5);
         $roles = Role::where('name','!=','Super Admin')
-                      //->where('name','!=','Administrateur')
+                      ->where('name','!=','Administrateur')
                       ->where('iddirectionRef_role',Auth::user()->iddirection_ref)
                       ->get();
 
@@ -96,10 +96,10 @@ class RoleController extends Controller
 
         activity()->performedOn(new Role())
                            ->causedBy(Auth::user()->id)
-                           ->log('Ajout du rôle '.$request->input('name').' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                           ->log('Ajout du fonction '.$request->input('name').' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-        return redirect()->route('roles.index')
-            ->with('success', 'Rôle ajouté avec succès');
+        return redirect()->route('roles.create')
+            ->with('success', 'La fonction '. $request->input('name').' est ajoutée avec succès');
     }
     /**
      * Display the specified resource.
@@ -179,10 +179,10 @@ class RoleController extends Controller
 
         activity()->performedOn(new Role())
                            ->causedBy(Auth::user()->id)
-                           ->log('Modification du rôle '.$request->input('name').' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                           ->log('Modification du fonction '.$request->input('name').' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
         return redirect()->route('roles.index')
-            ->with('success', 'Rôle modifié avec succès');
+            ->with('success', 'La fonction '. $request->input('name').' est modifiée avec succès');
     }
     /**
      * Remove the specified resource from storage.
@@ -196,6 +196,6 @@ class RoleController extends Controller
 
         DB::table("roles")->where('id', $id)->delete();
         return redirect()->route('roles.index')
-            ->with('success', 'Rôle supprimé avec succès');
+            ->with('success', 'Fonction est supprimée avec succès');
     }
 }

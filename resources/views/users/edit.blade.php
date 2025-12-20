@@ -6,45 +6,13 @@
     @section('title')
     <title>Gestion utilisateur</title>
     @endsection
-
-    @if (Session::has("success"))
-      <div class="col-md-6 p-4">
-        <div class="toast-container">
-        <div class="bs-toast toast fade show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-            <i class="bx bx-bell me-2"></i>
-            <div class="me-auto fw-semibold">SUCCES</div>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-              {{ Session::get('success') }}
-            </div>
-        </div>
-        </div>
-      </div>
-    @elseif (Session::has("error"))
-        <div class="col-md-6 p-4">
-            <div class="toast-container">
-            <div class="bs-toast toast fade show bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                <i class="bx bx-bell me-2"></i>
-                <div class="me-auto fw-semibold">ERREUR</div>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                  {{ Session::get('error') }}
-                </div>
-            </div>
-            </div>
-        </div>
-    @endif
     
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil/Gestion utilisateur/</span>Modification</h4>
 
         <div class="ms-3 demo-inline-spacing">
             <a href="{{ route('getUserView') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp;
+                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Retour
             </a>
         </div> <br>
 
@@ -111,7 +79,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Rules<span style="color: red;">*</span></label>
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Fonctions<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             {!! Form::select('roles[]', $roles,$userRole, array('class' => 'form-control')) !!}
 

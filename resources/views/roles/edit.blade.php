@@ -4,17 +4,20 @@
 @section('content')
 
 @section('title')
-<title>Gestion rôle</title>
+<title>Gestion fonction</title>
 @endsection
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span>Gestion rôle / Modification</h4>
+
+    @include('notification.display_message')
+
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span>Gestion fonction / Modification</h4>
 
     <div class="card">
         <!-- Notifications -->
         <div class="ms-3 demo-inline-spacing">
             <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp;
+                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
             </a>
         </div>
         
@@ -33,9 +36,9 @@
 
                 <div class="col-md-6">
                     <div class="form-group ms-3">
-                        <label for="roleName" class="form-label">Nom rôle <span style="color: red;">*</span></label>
+                        <label for="roleName" class="form-label">Nom fonction <span style="color: red;">*</span></label>
                         {!! Form::text('name', null, [
-                            'placeholder' => 'Nom rôle',
+                            'placeholder' => 'Nom fonction',
                             'class' => 'form-control',
                             'id' => 'roleName',
                             'aria-describedby' => 'roleNameHelp',
@@ -279,7 +282,7 @@
 
 
                 <tr>
-                    <td class="text-nowrap">Permission rôle & utilisateur</td>
+                    <td class="text-nowrap">Permission fonction & utilisateur</td>
                     <td>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
@@ -305,10 +308,11 @@
           </table>
         </div>
         <div class="card-body">
-            <div class="mt-4">
-            <button type="submit" class="btn btn-primary me-2">Enregister</button>
-            {{-- <button type="reset" class="btn btn-outline-secondary">Effacer</button> --}}
-            </div>
+            @can('modifier-role')
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary me-2">Enregister</button>
+                </div>
+            @endcan
         </div>
         {!! Form::close() !!}
         <!-- /Notifications -->

@@ -130,7 +130,8 @@ Route::middleware('auth')->group(function () {
     #PARAMETRAGE
     Route::get('/parametrage', [ParametreController::class, 'index'])->name('parametrage');
     Route::post('add', [ParametreController::class, 'create'])->name('store_param');
-    Route::post('add-anneexe', [ParametreController::class, 'storeAnnexe'])->name('store_annexe'); Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
+    Route::post('add-anneexe', [ParametreController::class, 'storeAnnexe'])->name('store_annexe'); 
+    Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
     Route::post('update-annexe', [ParametreController::class, 'updateAnnexe'])->name('update_annexe');
     Route::post('delete-annexe', [ParametreController::class, 'destroyAnnexe'])->name('destroy_annexe');
     
@@ -141,14 +142,50 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-Route::middleware('auth')->prefix('gerer-proprietaire')->group(function () {
-
-    Route::get('create', [ProprietaireController::class, 'index'])->name('get_proprioView');
-    Route::post('add', [ProprietaireController::class, 'create'])->name('store_propre');
-    Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
-    Route::post('update', [ProprietaireController::class, 'update'])->name('update_proprio');
+Route::middleware(['auth'])->group(function () {
+    
+    // ============================================
+    // ROUTES PROPRIÉTAIRES
+    // ============================================
+    
+    // Afficher la liste des propriétaires
+    Route::get('/proprietaires', [ProprietaireController::class, 'index'])
+        ->name('proprietaires.index')
+        ->middleware('can:Consulter-proprietaire');
+    
+    // Guide (si nécessaire)
+    Route::get('/guide', [ProprietaireController::class, 'guide'])
+        ->name('guide');
+    
+    // ⭐ Créer un nouveau propriétaire (AJAX)
+    Route::post('/proprietaires/create', [ProprietaireController::class, 'create'])
+        ->name('create_propre')
+        ->middleware('can:ajoute-proprietaire');
+    
+    // ⭐ Mettre à jour un propriétaire (AJAX)
+    Route::post('/proprietaires/update', [ProprietaireController::class, 'update'])
+        ->name('update_proprio')
+        ->middleware('can:modify-proprietaire');
+    
+    // ⭐ Supprimer un propriétaire (AJAX - soft delete)
+    Route::post('/proprietaires/destroy', [ProprietaireController::class, 'destroy'])
+        ->name('destroy_proprio')
+        ->middleware('can:delete-proprietaire');
+    
 });
+
+// Route::middleware('auth')->prefix('gerer-proprietaire')->group(function () {
+
+//     // Route::get('create', [ProprietaireController::class, 'index'])->name('get_proprioView');
+//     // Route::post('add', [ProprietaireController::class, 'create'])->name('store_propre');
+//     // Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
+//     // Route::post('update', [ProprietaireController::class, 'update'])->name('update_proprio');
+    
+//     Route::get('liste', [ProprietaireController::class, 'index'])->name('get_proprioNewView');
+//     Route::post('/proprietaires/store', [ProprietaireController::class, 'store'])->name('store_propre');
+// Route::post('/proprietaires/update', [ProprietaireController::class, 'update'])->name('update_proprio');
+// Route::post('/proprietaires/destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
+// });
 
 Route::middleware('auth')->prefix('gerer-maison')->group(function () {
 

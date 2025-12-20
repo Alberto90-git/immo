@@ -34,7 +34,9 @@ class CreateLocatairesTable extends Migration
             $table->string('telephone');
             $table->string('profession');
             $table->string('quartier')->nullable();
-            $table->integer('nombre_avance');
+            $table->string('mode_paiement')->nullable();
+            $table->integer('nombre_caution');
+            $table->integer('nombre_avance')->nullable();
             $table->integer('nombre_avance_consomme');
             $table->integer('prix_mois');
             $table->integer('caution_courant');

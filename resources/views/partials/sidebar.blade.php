@@ -84,7 +84,7 @@
         <ul class="menu-sub">
           <li class="menu-item  {{ set_sous_menu(request()->is('roles') || request()->is('roles/create')) }}">
             <a href="{{ route('roles.create') }}" class="menu-link">
-              <div data-i18n="Basic">Rôle</div>
+              <div data-i18n="Basic">Fonction</div>
             </a>
           </li>
           <li class="menu-item  {{ set_sous_menu(request()->is('gerer-user')  || request()->is('gerer-user/utilisateur') || request()->is('gerer-user/add') ) }} ">
@@ -117,7 +117,7 @@
 
 
       <li class="menu-item  {{ set_collapsed(request()->is('gerer-proprietaire/create')) }}">
-        <a href="{{ route('get_proprioView') }}" class="menu-link">
+        <a href="{{ route('proprietaires.index') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-collection"></i>
           <div data-i18n="Basic">Gestion propriétaire</div>
         </a>
@@ -157,7 +157,7 @@
       <li class="menu-item  {{ set_collapsed(request()->is('gerer-facture/create')) }}">
         <a href="{{ route('get_factureView') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion des paiements</div>
+          <div data-i18n="Basic">Gestion des loyers</div>
         </a>
       </li>
 

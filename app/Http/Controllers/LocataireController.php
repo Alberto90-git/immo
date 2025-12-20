@@ -49,14 +49,13 @@ class LocataireController extends Controller
                                       ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
                                       ->whereNull('maisons.delete_at')
                                       ->whereNull('chambres.delete_at')
-                                      ->select('locataires.iddirection_ref','locataires.idannexe_ref','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','locataires.nom','locataires.prenom','locataires.profession','locataires.telephone','locataires.nombre_avance','locataires.date_entree','locataires.id','locataires.chambre_id','locataires.nombre_avance_consomme','locataires.caution_courant','locataires.caution_eau')
+                                      ->select('locataires.iddirection_ref','locataires.idannexe_ref','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','locataires.nom','locataires.prenom','locataires.profession','locataires.telephone','locataires.mode_paiement','locataires.nombre_caution','locataires.nombre_avance','locataires.date_entree','locataires.id','locataires.chambre_id','locataires.nombre_avance_consomme','locataires.caution_courant','locataires.caution_eau')
                                       ->get();
 
 
             return view('locataire.locataire', compact(['allMaison','allLocataire']));
 
        } catch (QueryException $e) {
-
             return back()->with('error','Echéc, veuillez verifier les données');
        }
     }
@@ -151,7 +150,9 @@ class LocataireController extends Controller
                     'prenom_locataire' => ['bail','required','string'],
                     'profession' => ['bail','required','string'],
                     'telephone' => ['bail','required'],
-                    'nombre_avance' => ['bail','required','string'],
+                    'mode_paiement' => ['bail','required','string'],
+                    'nombre_caution' => ['bail','required','string'],
+                    'nombre_avance' => ['bail','nullable','string'],
                     'date_entre' => ['bail','required'],
                 ],
             );
@@ -208,7 +209,9 @@ class LocataireController extends Controller
                                     'prenom'                => Str::ucfirst($request->prenom_locataire),
                                     'profession' => $request->profession,
                                     'quartier'  => $this->get_house_loocation($request->nom_maison),
+                                    'mode_paiement' => $request->mode_paiement,
                                     'telephone' => $request->telephone,
+                                    'nombre_caution' => $request->nombre_caution,
                                     'nombre_avance' => $request->nombre_avance,
                                     'prix_mois' => $request->prix_mois,
                                     'date_entree' => $request->date_entre,
@@ -283,12 +286,14 @@ class LocataireController extends Controller
                                     'prenom'                => Str::ucfirst($request->prenom_locataire),
                                     'profession' => $request->profession,
                                     'telephone' => $request->telephone,
+                                    'nombre_caution' => $request->nombre_caution,
                                     'nombre_avance' => $request->nombre_avance,
                                     'date_entree' => $request->date_entre,
                                     //'nombre_avance_consomme' => 0,
                                      'caution_courant' => $caution_courant,
                                     'caution_eau' => $caution_eau,
                                     'idannexe_ref' => $idannexe_ref,
+                                    'mode_paiement' => $request->mode_paiement,
                               ]);
 
             if ($locataire) {
@@ -301,7 +306,6 @@ class LocataireController extends Controller
             }
 
         } catch (QueryException $e) {
-
             return back()->with('error','Echéc, veuillez verifier les données');
         }
     }

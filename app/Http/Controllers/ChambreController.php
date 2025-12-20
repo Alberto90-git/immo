@@ -127,7 +127,6 @@ class ChambreController extends Controller
                                     ->get()
                                     ->pluck('nombre_chambre')[0];
 
-          // dd($nombreChambre);
 
             $nombreChambreSaved = Chambre::where('maison_id',$request->nom_maison)
                                          ->where('iddirection_ref',Auth::user()->iddirection_ref)
@@ -136,8 +135,6 @@ class ChambreController extends Controller
                                          ->whereNull('delete_at')
                                          ->count();
 
-           //dd($nombreChambreSaved);
-          // dd("ici");
 
 
             if ($nombreChambreSaved == $nombreChambre) {
@@ -323,12 +320,12 @@ class ChambreController extends Controller
                            ->causedBy(Auth::user()->id)
                            ->log('Modification de la chambre N° '.$request->numero_chambre.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                       return back()->with('message','Chambre N°'.$request->numero_chambre." est mise à jour avec succès");
+                       return back()->with('success','Chambre N°'.$request->numero_chambre." est mise à jour avec succès");
                     }
 
                 }else {
                     if($exit_chambre_numero?->numero_chambre == null){
-                        return back()->with('error','Le N°'.$request->numero_chambre." n'est encore attribué à aucune chambre dans cette maison");
+                        return back()->with('error','Le N°'.$request->numero_chambre." déjà attribué à aucune chambre dans cette maison");
                     }else {
                         return back()->with('error','Chambre N°'.$request->numero_chambre." existe déjà dans cette maison");
                     }
@@ -387,7 +384,7 @@ class ChambreController extends Controller
                            ->causedBy(Auth::user()->id)
                            ->log('Suppression de la chambre N° '.$valueDeleted->numero_chambre.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Suppression effectuée avec succès');
+                return back()->with('success','Suppression effectuée avec succès');
             }
             
         } catch (QueryException $e) {

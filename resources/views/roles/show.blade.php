@@ -1,7 +1,7 @@
 @extends('layouts.template')
 
 @section('title')
-    <title>Gestion des rôles</title>
+    <title>Gestion des fonctions</title>
 @endsection
 
 @section('content')
@@ -10,18 +10,18 @@
     <!-- Titre principal -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">
-            <span class="text-muted fw-light">Accueil /</span> Gestion des rôles / Détails
+            <span class="text-muted fw-light">Accueil /</span> Gestion des fonctions / Détails
         </h4>
         <a href="{{ route('roles.index') }}" class="btn btn-outline-dark rounded-pill">
             <i class="bx bx-arrow-back"></i> Retour
         </a>
     </div>
 
-    <!-- Informations du rôle -->
+    <!-- Informations du fonction -->
     <div class="card mb-4 shadow-sm" style="background-color: #f0f4f7;">
         <div class="card-body">
             <h5 class="card-title mb-3 text-primary">
-                <i class="bx bx-user-circle me-2"></i> Informations du rôle
+                <i class="bx bx-user-circle me-2"></i> Informations du fonction
             </h5>
             <p class="mb-0"><strong>Nom :</strong> 
                 <span class="badge bg-secondary text-white px-3 py-2 rounded-pill">
@@ -52,7 +52,7 @@
                 </div>
             @else
                 <div class="alert alert-warning mb-0">
-                    Ce rôle ne dispose d'aucune permission actuellement.
+                    Ce fonction ne dispose d'aucune permission actuellement.
                 </div>
             @endif
         </div>

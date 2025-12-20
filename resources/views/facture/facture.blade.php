@@ -4,44 +4,13 @@
 @section('content')
 
     @section('title')
-    <title>Gestion des paiements</title>
+    <title>Gestion des loyers</title>
     @endsection
 
-
-    @if (Session::has("message"))
-      <div class="col-md-6 p-4">
-        <div class="toast-container">
-        <div class="bs-toast toast fade show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-            <i class="bx bx-bell me-2"></i>
-            <div class="me-auto fw-semibold">SUCCES</div>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-              {{ Session::get('message') }}
-            </div>
-        </div>
-        </div>
-      </div>
-    @elseif (Session::has("error"))
-        <div class="col-md-6 p-4">
-            <div class="toast-container">
-            <div class="bs-toast toast fade show bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                <i class="bx bx-bell me-2"></i>
-                <div class="me-auto fw-semibold">ERREUR</div>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                  {{ Session::get('error') }}
-                </div>
-            </div>
-            </div>
-        </div>
-    @endif
+    @include('notification.display_message')
     
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion des paiements</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion des loyers</h4>
     
     @can('ajoute-locataire')
         <div class="col-md-6">
@@ -180,6 +149,20 @@
                        </span>
                </div>
 
+
+               <div class="col-6">
+                <label for="inputNanme4" class="form-label">Mode de paiement</label>
+                <select class="form-select @error('mode_paiement') is-invalid @enderror" name="mode_paiement"
+                  id="mode_paiement" aria-label="Default select example">
+                  <option selected disabled value="">Mode de paiement</option>
+                  <option value="Mobile money">Mobile money</option>
+                  <option value="Virement bancaire">Virement bancaire</option>
+                  <option value="Chèque">Chèque</option>
+                  <option value="Espèces">Espèces</option>
+                </select>
+                <span class="invalid-feedback mode_paiement_err" role="alert"></span>
+              </div> 
+
                
                
     	        <div class="modal-footer">
@@ -257,6 +240,8 @@
                                     <h3 class="list-group-item"><label class="badge rounded-pill  bg-primary">Montant:   </label>{{ number_format($item->montant ,"0",",",".") }} XOF
                                     </h3>
                                     <h3 class="list-group-item"><label class="badge rounded-pill  bg-primary">Date paiement:   </label>{{ Carbon\Carbon::parse($item->date_paiement)->format('d/m/Y') }}
+                                    </h3>
+                                    <h3 class="list-group-item"><label class="badge rounded-pill  bg-primary">Mode paiement:   </label>{{ $item->mode_paiement }}
                                     </h3>
                                     <h3 class="list-group-item"><label class="badge rounded-pill  bg-primary">Mois:   </label>{{ $item->mois }} Mois
                                     </h3>
@@ -431,6 +416,20 @@
                        <span class="invalid-feedback date_paiement_err" role="alert">
                        </span>
                      </div>
+
+
+                     <div class="col-6">
+                      <label for="inputNanme4" class="form-label">Mode de paiement</label>
+                      <select class="form-select @error('mode_paiement') is-invalid @enderror" name="mode_paiement"
+                        id="mode_paiement" aria-label="Default select example">
+                        <option selected disabled value="">Mode de paiement</option>
+                        <option value="Mobile money" {{$items->mode_paiement == 'Mobile money' ? 'selected':''}}>Mobile money</option>
+                        <option value="Virement bancaire" {{$items->mode_paiement == 'Virement bancaire' ? 'selected':''}}>Virement bancaire</option>
+                        <option value="Chèque" {{$items->mode_paiement == 'Chèque' ? 'selected':''}}>Chèque</option>
+                        <option value="Espèces" {{$items->mode_paiement == 'Espèces' ? 'selected':''}}>Espèces</option>
+                      </select>
+                      <span class="invalid-feedback mode_paiement_err" role="alert"></span>
+                    </div> 
      
                    </div>
                    <div class="modal-footer">
@@ -584,15 +583,13 @@
       
                            // alert(data.message);
                             //$("#AjouterLoyer div#afficher").html(data.message)
-                          display_message("Super !!",data.message,"success","btn btn-primary");
+                          display_message("Succès !!",data.message,"success","btn btn-primary");
                             
       
                             $("#AjouterLoyer form#formulaire")[0].reset();
                         } else {
                            // $("#AjouterLoyer div#afficher").html(data.message)
                            display_message("Erreur !!",data.message,"warning","btn btn-danger");
-                          
-      
                         }
       
                     } catch (error) {
