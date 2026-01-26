@@ -7,7 +7,50 @@ use Illuminate\Database\Eloquent\Model;
 
 class Annexe extends Model
 {
+    protected $primaryKey = 'idannexes';
+
     protected $fillable = [
-        'designation','telephone','email','siege_social','status','iddirection_ref','userdata','blocage_annexe'
+        'designation',
+        'telephone',
+        'email',
+        'siege_social',
+        'logo',
+        'cash_electronique',
+        'status',
+        'iddirection_ref',
+        'userdata',
+        'blocage_annexe'
     ];
+
+    /**
+     * Relation avec la direction
+     */
+    public function direction()
+    {
+        return $this->belongsTo(Direction::class, 'iddirection_ref', 'iddirection');
+    }
+
+    /**
+     * Récupérer le chemin complet du logo
+     */
+    public function getLogoPathAttribute()
+    {
+        if (!$this->logo) {
+            return null;
+        }
+
+        $possiblePaths = [
+            storage_path('app/public/' . $this->logo),
+            public_path('storage/' . $this->logo),
+            public_path($this->logo),
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
+    }
 }

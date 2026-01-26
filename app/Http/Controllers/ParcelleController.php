@@ -81,12 +81,13 @@ class ParcelleController extends Controller
                 ]);
             }
 
-            $response = $this->check_is_admin_and_entreprise();
-
-            if ($response) {
-                $idannexe_ref = $request->annexe;
-            }else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Veuillez sélectionner une agence dans le header"
+                ]);
             }
 
             $terrain = Parcelle::create([
@@ -138,14 +139,11 @@ class ParcelleController extends Controller
                 ],
             );
 
-            $response = $this->check_is_admin_and_entreprise();
-
-            if ($response) {
-                $idannexe_ref = $request->annexe;
-            }else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return back()->with('error', "Veuillez sélectionner une agence dans le header");
             }
-
 
             $terrain = Parcelle::where('id',$request->id)
                                     ->update([

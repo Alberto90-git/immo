@@ -2,27 +2,6 @@
 // INITIALISATION
 // ============================================
 
-
-  // Fonction wrapper pour display_sweet_alerte2 avec z-index forcé
-  function display_sweet_alert_over_modal(title, text, icon, buttonClass) {
-    // Appeler votre fonction existante
-    display_sweet_alerte2(title, text, icon, buttonClass);
-    
-    // Forcer le z-index après un court délai
-    setTimeout(function() {
-        const swalContainer = document.querySelector('.swal2-container');
-        const swalPopup = document.querySelector('.swal2-popup');
-        
-        if (swalContainer) {
-            swalContainer.style.zIndex = '10070';
-        }
-        if (swalPopup) {
-            swalPopup.style.zIndex = '10071';
-        }
-    }, 10);
-}
-
-
 let proprietaireTable;
 
 $(document).ready(function() {
@@ -119,15 +98,44 @@ function setupEventListeners() {
 // AFFICHAGE MESSAGES
 // ============================================
 
-// function display_message(title, message, type, btnClass) {
-//     Swal.fire({
-//         title: title,
-//         text: message,
-//         icon: type,
-//         confirmButtonClass: btnClass,
-//         confirmButtonText: 'OK'
-//     });
-// }
+// Fonction pour afficher les messages SweetAlert2 au-dessus des modals
+function showProprietaireMessage(title, message, type, buttonClass) {
+    // Fermer d'abord tout modal ouvert pour éviter les problèmes de z-index
+    $('.modal').modal('hide');
+
+    // Petit délai pour laisser le modal se fermer
+    setTimeout(function() {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: title,
+                html: message,
+                icon: type,
+                confirmButtonText: 'OK',
+                confirmButtonClass: buttonClass,
+                customClass: {
+                    container: 'swal-over-modal',
+                    popup: 'animated bounceIn'
+                },
+                didOpen: () => {
+                    // Forcer le z-index au-dessus des modals
+                    const swalContainer = document.querySelector('.swal2-container');
+                    if (swalContainer) {
+                        swalContainer.style.zIndex = '10070';
+                    }
+                }
+            }).then((result) => {
+                // Recharger la page après confirmation pour les succès
+                if (type === 'success') {
+                    window.location.reload();
+                }
+            });
+        } else if (typeof display_message === 'function') {
+            display_message(title, message, type, buttonClass);
+        } else {
+            alert(title + ":\n" + message);
+        }
+    }, 300);
+}
 
 function printErrorMsg(msg) {
     $.each(msg, function(key, value) {
@@ -180,23 +188,23 @@ function update_proprietaire(form, proprietaireId) {
 
             if (response.status) {
                 updateRowInTable(response.data);
-                display_message("Succès !", response.message, "success", "btn btn-primary");
                 $('#modifier' + proprietaireId).modal('hide');
+                showProprietaireMessage("Succès !", response.message, "success", "btn btn-primary");
             } else {
                 if (response.error) {
                     printErrorMsg(response.error);
                 } else {
-                    display_message("Erreur !", response.message, "warning", "btn btn-danger");
+                    showProprietaireMessage("Erreur !", response.message, "warning", "btn btn-danger");
                 }
             }
         },
         error: function(xhr) {
             $(form).find('button[type="submit"]').prop("disabled", false).html('<span class="fa fa-save"></span> Enregistrer');
-            
+
             if (xhr.status === 422) {
                 printErrorMsg(xhr.responseJSON.error);
             } else {
-                display_message("Erreur !", "Une erreur est survenue", "error", "btn btn-danger");
+                showProprietaireMessage("Erreur !", "Une erreur est survenue", "error", "btn btn-danger");
             }
         }
     });
@@ -237,13 +245,13 @@ function performDelete(proprietaireId) {
         success: function(response) {
             if (response.status) {
                 removeRowFromTable(proprietaireId);
-                display_message("Succès !", response.message, "success", "btn btn-primary");
+                showProprietaireMessage("Succès !", response.message, "success", "btn btn-primary");
             } else {
-                display_message("Erreur !", response.message, "warning", "btn btn-danger");
+                showProprietaireMessage("Erreur !", response.message, "warning", "btn btn-danger");
             }
         },
         error: function(xhr) {
-            display_message("Erreur !", "Une erreur est survenue", "error", "btn btn-danger");
+            showProprietaireMessage("Erreur !", "Une erreur est survenue", "error", "btn btn-danger");
         }
     });
 }

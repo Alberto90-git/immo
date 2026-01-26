@@ -8,14 +8,13 @@ use App\Chambre;
 use App\Prix;
 use App\Locataire;
 use App\Facture;
-use Illuminate\Http\Request; 
-use App\Http\Requests\maisonReqest;
+use App\Direction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 
 
@@ -29,23 +28,22 @@ class MaisonController extends Controller
     public function index()
     {
        try {
+            // Utiliser l'agence active centralisee
+            $idannexe_ref = get_active_annexe_id();
+
             $allProprios = Proprietaire::whereNull('delete_at')
-                                        ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                        ->where(function($querry){
-                                            if (Gate::none(['Is_admin'])) {
-                                                $querry->where('idannexe_ref',Auth::user()->idannexe_ref);
-                                            }
+                                        ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                        ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                            $query->where('idannexe_ref', $idannexe_ref);
                                         })
                                         ->get();
 
             $allMaison = Maison::join('proprietaires', 'maisons.proprio_id', '=', 'proprietaires.id')
                              ->whereNull('maisons.delete_at')
-                             ->where('maisons.iddirection_ref',Auth::user()->iddirection_ref)
-                             ->where(function($querry){
-                                if (Gate::none(['Is_admin'])) {
-                                    $querry->where('maisons.idannexe_ref',Auth::user()->idannexe_ref);
-                                }
-                            })
+                             ->where('maisons.iddirection_ref', Auth::user()->iddirection_ref)
+                             ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                $query->where('maisons.idannexe_ref', $idannexe_ref);
+                             })
                              ->whereNull('proprietaires.delete_at')
                              ->select('maisons.iddirection_ref','maisons.idannexe_ref','maisons.proprio_id','maisons.id','proprietaires.nom','proprietaires.prenom','maisons.nom_maison','maisons.quartier','maisons.nombre_chambre')
                              ->get();
@@ -54,7 +52,7 @@ class MaisonController extends Controller
 
        } catch (QueryException $e) {
 
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return back()->with('error','Echec, veuillez verifier les donnees');
        }
     }
 
@@ -64,6 +62,20 @@ class MaisonController extends Controller
     public function store(Request $request)
     {
         try {
+            // Vérifier les limites du plan d'abonnement
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if ($direction) {
+                $canCreate = $direction->canCreateMaison();
+
+                if (!$canCreate['allowed']) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $canCreate['message'],
+                        'plan_limit' => true
+                    ]);
+                }
+            }
 
             $validator = Validator::make(
                 $request->all(),
@@ -82,12 +94,13 @@ class MaisonController extends Controller
                 ]);
             }
 
-            $response = $this->check_is_admin_and_entreprise();
-
-            if ($response) {
-                $idannexe_ref = $request->annexe;
-            }else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Veuillez sélectionner une agence dans le header"
+                ]);
             }
 
              $maison = Maison::create([
@@ -105,9 +118,18 @@ class MaisonController extends Controller
                            ->causedBy(Auth::user()->id)
                            ->log('Ajout de la maison '.$request->nom_maison.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
+                // Récupérer les informations du plan pour afficher le nombre restant
+                $planInfo = $direction ? $direction->getPlanInfo() : null;
+                $messageComplet = "La maison ".$request->nom_maison." est créée avec succès.";
+
+                if ($planInfo && $planInfo['maisons_restantes'] !== 'Illimité') {
+                    $messageComplet .= " (Il vous reste {$planInfo['maisons_restantes']} maison(s) disponible(s) sur votre plan {$planInfo['nom']})";
+                }
+
                 return response()->json([
                     'status' => true,
-                    'message' => "La maison ".$request->nom_maison." est crée avec succès",
+                    'message' => $messageComplet,
+                    'plan_info' => $planInfo
                 ]);
             }
 
@@ -134,12 +156,10 @@ class MaisonController extends Controller
     {
         try {
 
-            $response = $this->check_is_admin_and_entreprise();
-
-            if ($response) {
-                $idannexe_ref = $request->annexe;
-            }else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return back()->with('error', "Veuillez sélectionner une agence dans le header");
             }
 
              $maison = Maison::where('id',$request->house_id)

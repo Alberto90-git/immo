@@ -5,6 +5,7 @@ use Spatie\Permission\Models\Role;
 use App\User;
 use App\Direction;
 use App\Annexe;
+use App\Plan;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPassword;
@@ -259,7 +259,7 @@ class UtilisateurController extends SessionController
                 }
                 
                 if (!empty($agent->password_changed_at) &&  empty($agent->status)) {
-                  
+
                     $rand = rand(1000, 999999);
                     $agent->update([
                         'last_login' => Carbon::now(),
@@ -273,11 +273,22 @@ class UtilisateurController extends SessionController
                     ];
                     //Session::put('enLigne', 'yes');
 
-                    $reponse1 = SessionController::save_session_annexe();  
-                    $reponse2 = SessionController::save_session_locataire();  
-
+                    $reponse1 = SessionController::save_session_annexe();
+                    $reponse2 = SessionController::save_session_locataire();
 
                     Session::put(['anne_data'=> $reponse1,'locataire' => $reponse2]);
+
+                    // Initialiser l'annexe active en session pour les admins d'entreprise
+                    if ($agent->is_admin == 1 && $agent->type_compte != 'Particulier') {
+                        // Prendre la première annexe disponible par défaut
+                        $firstAnnexe = Annexe::whereNull('status')
+                                            ->whereNull('blocage_annexe')
+                                            ->where('iddirection_ref', $agent->iddirection_ref)
+                                            ->first();
+                        if ($firstAnnexe) {
+                            Session::put('active_annexe_id', $firstAnnexe->idannexes);
+                        }
+                    }
 
                     Mail::to($agent->email)->send(new SendCodemail($userinfo));
 
@@ -286,16 +297,12 @@ class UtilisateurController extends SessionController
                                 ->log('Connexion au système par ' . $agent->nom . ' ' . $agent->prenom);
 
                     return redirect()->route('code_login');
-                    //return redirect()->route('home');
-                    // Log the activity
-                   
-                   //return redirect()->route('home');
+                    
                 }
             } else {
                 return redirect()->back()->with('error', 'L\'email ou le mot de passe est incorrect.');
             }
         } catch (QueryException $e) {
-           // dd($e);
             return redirect()->back()->with('error', 'Veuillez démarrer le serveur local.');
         }
     }
@@ -329,13 +336,27 @@ class UtilisateurController extends SessionController
         if ($agent != NULL) {
            Auth::login($agent);
 
+            // Initialiser l'annexe active en session pour les admins d'entreprise
+            if ($agent->is_admin == 1 && $agent->type_compte != 'Particulier') {
+                // Vérifier si une annexe n'est pas déjà sélectionnée
+                if (!Session::has('active_annexe_id')) {
+                    $firstAnnexe = Annexe::whereNull('status')
+                                        ->whereNull('blocage_annexe')
+                                        ->where('iddirection_ref', $agent->iddirection_ref)
+                                        ->first();
+                    if ($firstAnnexe) {
+                        Session::put('active_annexe_id', $firstAnnexe->idannexes);
+                    }
+                }
+            }
+
             activity()->performedOn(new User())
                            ->causedBy(Auth::user()->id)
                            ->log('Connexion au système'.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
            return redirect()->route('home');
 
-        } else { 
+        } else {
             return redirect()->route('code_login')->with('error', 'Code incorrect, veuillez entre le code envoyé à votre adresse email');
 
 
@@ -461,12 +482,20 @@ class UtilisateurController extends SessionController
                 $email_entreprise = $email;
             }
             
-            // Création de la direction
+            // Récupérer le plan Starter par défaut
+            $planStarter = Plan::starter();
+            $planId = $planStarter ? $planStarter->idplan : null;
+
+            // Création de la direction avec le plan Starter par défaut
             $direction_id = Direction::insertGetId([
                 'designation' => $designation,
                 'siege_social' => $adresse,
                 'telephone' => $telepone_entreprise,
                 'email' => $email_entreprise,
+                'idplan_ref' => $planId,
+                'abonnement_debut' => Carbon::now(),
+                'abonnement_fin' => Carbon::now()->addYear(), // 1 an d'abonnement
+                'statut_abonnement' => 'essai', // Période d'essai par défaut
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);
@@ -542,11 +571,6 @@ class UtilisateurController extends SessionController
                 ]);
                 
             } catch (\Exception $mailException) {
-                Log::error('Erreur lors de l\'envoi de l\'email', [
-                    'user_id' => $newuser->id,
-                    'error' => $mailException->getMessage()
-                ]);
-                
                 // Le compte est créé même si l'email échoue
                 return response()->json([
                     'status' => true,
@@ -556,11 +580,6 @@ class UtilisateurController extends SessionController
             
         } catch (QueryException $e) {
             DB::rollBack();
-            Log::error('Erreur lors de la création du compte', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return response()->json([
                 'status' => false,
                 'message' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.'
@@ -568,11 +587,6 @@ class UtilisateurController extends SessionController
             
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Erreur générale lors de la création du compte', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return response()->json([
                 'status' => false,
                 'message' => 'Une erreur inattendue est survenue. Veuillez réessayer.'
@@ -753,7 +767,6 @@ class UtilisateurController extends SessionController
                     'grade' => ['required', 'string', 'min:2'],
                     'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
                     'roles' => 'required',
-                    'annexe' => 'required'
                 ],
                 [
                     '*.required' => 'Ce champ est obligatoire.',
@@ -770,10 +783,19 @@ class UtilisateurController extends SessionController
                 ]);
             }
 
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Veuillez sélectionner une agence dans le header"
+                ]);
+            }
+
             $password = uniqid();
             $emailVerificationToken = Str::random(32);
             $currentUser = Auth::user();
-            
+
             DB::beginTransaction();
 
             try {
@@ -781,7 +803,7 @@ class UtilisateurController extends SessionController
                     'nom' => Str::upper($request->nom),
                     'prenom' => Str::ucfirst($request->prenom),
                     'grade' => Str::ucfirst($request->grade),
-                    'idannexe_ref' => $request->annexe,
+                    'idannexe_ref' => $idannexe_ref,
                     'iddirection_ref' => $currentUser->iddirection_ref,
                     'email' => $request->email,
                     'email_verification_token' => $emailVerificationToken,
@@ -811,10 +833,9 @@ class UtilisateurController extends SessionController
                 try {
                     Mail::to($newuser->email)->send(new VerificationEmail($userinfos));
                 } catch (\Exception $mailException) {
-                    Log::error('Erreur lors de l\'envoi de l\'email de vérification', [
-                        'user_id' => $newuser->id,
-                        'email' => $newuser->email,
-                        'error' => $mailException->getMessage()
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Enregistrement reussi mais envoie de mail échoué.'
                     ]);
                 }
 
@@ -825,25 +846,19 @@ class UtilisateurController extends SessionController
 
             } catch (\Exception $e) {
                 DB::rollback();
-                throw $e;
+                //throw $e;
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Enregistrement échoué. Veuillez réessayer.'
+                ]);
             }
 
         } catch (QueryException $e) {
-            Log::error('Erreur SQL lors de la création d\'utilisateur', [
-                'error' => $e->getMessage(),
-                'request_data' => $request->all()
-            ]);
-            
             return response()->json([
                 'status' => false,
                 'message' => 'Enregistrement échoué. Veuillez réessayer.'
             ]);
         } catch (\Exception $e) {
-            Log::error('Erreur générale lors de la création d\'utilisateur', [
-                'error' => $e->getMessage(),
-                'request_data' => $request->all()
-            ]);
-
             return response()->json([
                 'status' => false,
                 'message' => 'Enregistrement échoué. Veuillez réessayer.'
@@ -906,7 +921,6 @@ class UtilisateurController extends SessionController
                 'prenom'        => 'required',
                 'email' => ['required','string','email','max:255'],
                 'grade'        => 'required',
-                'annexe'        => 'required',
                 'roles'         => 'required'
 
             ],
@@ -922,7 +936,14 @@ class UtilisateurController extends SessionController
             ]);
         }
 
-
+        // Utiliser l'annexe active centralisée
+        $idannexe_ref = get_active_annexe_id();
+        if (!$idannexe_ref) {
+            return response()->json([
+                'status' => false,
+                'message' => "Veuillez sélectionner une agence dans le header"
+            ]);
+        }
 
         $input = $request->all();
         if (!empty($input['password'])) {
@@ -930,9 +951,12 @@ class UtilisateurController extends SessionController
         } else {
             $input = Arr::except($input, array('password'));
         }
+
+        // Ajouter l'annexe active aux données
+        $input['idannexe_ref'] = $idannexe_ref;
+
         $nom           = Str::upper($request->nom);
         $prenom        = Str::ucfirst($request->prenom);
-        $idannexe_ref          = $request->annexe;
         $iddirection_ref       = Auth::user()->iddirection_ref;
         $email               = $request->email;
         $type_compte       = Auth::user()->type_compte;

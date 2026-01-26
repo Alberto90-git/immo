@@ -15,7 +15,6 @@ use Codedge\Fpdf\Fpdf\Fpdf;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use NumberFormatter;
 
 class FactureController extends Controller
 {
@@ -23,21 +22,20 @@ class FactureController extends Controller
   public function index()
   {
     try {
+      // Utiliser l'agence active centralisee
+      $idannexe_ref = get_active_annexe_id();
+
       $allMaison = Maison::whereNull('delete_at')
                           ->where('iddirection_ref', Auth::user()->iddirection_ref)
-                          ->where(function ($querry) {
-                            if (Gate::none(['Is_admin'])) {
-                              $querry->where('idannexe_ref', Auth::user()->idannexe_ref);
-                            }
+                          ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                            $query->where('idannexe_ref', $idannexe_ref);
                           })
                           ->get();
 
       $allChambres = Chambre::join('maisons', 'chambres.maison_id', '=', 'maisons.id')
                             ->where('chambres.iddirection_ref', Auth::user()->iddirection_ref)
-                            ->where(function ($querry) {
-                              if (Gate::none(['Is_admin'])) {
-                                $querry->where('chambres.idannexe_ref', Auth::user()->idannexe_ref);
-                              }
+                            ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                              $query->where('chambres.idannexe_ref', $idannexe_ref);
                             })
                             ->whereNull('chambres.delete_at')
                             ->whereNull('maisons.delete_at')
@@ -47,10 +45,8 @@ class FactureController extends Controller
 
       $allFacture = Facture::whereNull('factures.delete_at')
                             ->where('factures.iddirection_ref', Auth::user()->iddirection_ref)
-                            ->where(function ($querry) {
-                              if (Gate::none(['Is_admin'])) {
-                                $querry->where('factures.idannexe_ref', Auth::user()->idannexe_ref);
-                              }
+                            ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                              $query->where('factures.idannexe_ref', $idannexe_ref);
                             })
                             ->join('maisons', 'factures.maison_id', '=', 'maisons.id')
                             ->join('chambres', 'factures.chambre_id', '=', 'chambres.id')
@@ -66,7 +62,7 @@ class FactureController extends Controller
       return view('facture.facture', compact(['allFacture', 'allMaison']));
     } catch (QueryException $e) {
 
-      return back()->with('error', 'Echéc, veuillez verifier les données');
+      return back()->with('error', 'Echec, veuillez verifier les donnees');
     }
   }
 
@@ -170,14 +166,14 @@ class FactureController extends Controller
             ]);
           }
 
-          $response = $this->check_is_admin_and_entreprise();
-
-          if ($response) {
-            $idannexe_ref = $request->annexe;
-          } else {
-            $idannexe_ref = Auth::user()->idannexe_ref;
+          // Utiliser l'annexe active centralisée
+          $idannexe_ref = get_active_annexe_id();
+          if (!$idannexe_ref) {
+              return response()->json([
+                  'status' => false,
+                  'message' => "Veuillez sélectionner une agence dans le header"
+              ]);
           }
-
 
           $locataire_id = Locataire::where('chambre_id', $request->numero_chambre)
                                   ->whereNull('delete_at')
@@ -313,12 +309,10 @@ class FactureController extends Controller
   {
     try {
 
-      $response = $this->check_is_admin_and_entreprise();
-
-      if ($response) {
-        $idannexe_ref = $request->annexe;
-      } else {
-        $idannexe_ref = Auth::user()->idannexe_ref;
+      // Utiliser l'annexe active centralisée
+      $idannexe_ref = get_active_annexe_id();
+      if (!$idannexe_ref) {
+          return back()->with('error', "Veuillez sélectionner une agence dans le header");
       }
 
       if ($request->type_paiement == 'direct') {
@@ -474,29 +468,21 @@ class FactureController extends Controller
             $color_border = array(200, 200, 200);
             $color_success = array(39, 174, 96);
 
-            // Récupérer les informations de l'entreprise
-            $data = get_entreprise_details_invoice(Auth::user()->iddirection_ref);
+            // Récupérer l'idannexe_ref de la facture
+            $facture = Facture::find($id);
+            $idannexe_ref = $facture ? $facture->idannexe_ref : get_active_annexe_id();
+
+            // Récupérer les informations de l'agence
+            $annexeData = get_annexe_details_for_invoice($idannexe_ref);
 
             // Position Y initiale
             $y = 10;
 
-            // Logo de l'entreprise
+            // Logo de l'agence
             $logoPath = null;
             $logoSize = 15;
-            if (isset($data[0]['logo_url']) && !empty($data[0]['logo_url'])) {
-              $possiblePaths = [
-                'storage/app/public/' . $data[0]['logo_url'],
-                'public/storage/' . $data[0]['logo_url'],
-                'storage/' . $data[0]['logo_url'],
-                $data[0]['logo_url']
-              ];
-
-              foreach ($possiblePaths as $path) {
-                if (file_exists($path)) {
-                  $logoPath = $path;
-                  break;
-                }
-              }
+            if ($annexeData && $annexeData['logo_path']) {
+              $logoPath = $annexeData['logo_path'];
             }
 
             if ($logoPath && file_exists($logoPath)) {
@@ -512,20 +498,20 @@ class FactureController extends Controller
             $fpdf->SetXY(30, $y);
             $fpdf->Cell($pageWidth - 40, 8, 'QUITTANCE DE LOYER MENSUEL', 0, 1, 'C');
 
-            // Informations entreprise
-            if ($data) {
+            // Informations agence
+            if ($annexeData) {
               $y += 8;
               $fpdf->SetFont('Arial', 'B', 9);
               $fpdf->SetTextColor(50, 50, 50);
               $fpdf->SetX(10);
-              $fpdf->Cell($pageWidth - 20, 4, utf8_decode(strtoupper($data[0]['designation'])), 0, 1, 'C');
+              $fpdf->Cell($pageWidth - 20, 4, utf8_decode(strtoupper($annexeData['designation'])), 0, 1, 'C');
 
               $fpdf->SetFont('Arial', '', 7);
               $fpdf->SetTextColor(100, 100, 100);
               $fpdf->SetX(10);
-              $fpdf->Cell($pageWidth - 20, 3, utf8_decode($data[0]['siege_social']), 0, 1, 'C');
+              $fpdf->Cell($pageWidth - 20, 3, utf8_decode($annexeData['siege_social']), 0, 1, 'C');
               $fpdf->SetX(10);
-              $fpdf->Cell($pageWidth - 20, 3, 'Tel: ' . $data[0]['telephone'] . ' - Email: ' . $data[0]['email'], 0, 1, 'C');
+              $fpdf->Cell($pageWidth - 20, 3, 'Tel: ' . $annexeData['telephone'] . ' - Email: ' . $annexeData['email'], 0, 1, 'C');
             }
 
             $y += 10;
@@ -742,6 +728,21 @@ class FactureController extends Controller
             $y += 10;
           }
 
+          // Informations de paiement mobile (Cash électronique)
+          if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
+            $fpdf->SetFont('Arial', 'B', 7);
+            $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
+            $fpdf->SetXY(10, $y);
+            $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+            $y += 4;
+
+            $fpdf->SetFont('Arial', '', 7);
+            $fpdf->SetTextColor(80, 80, 80);
+            $fpdf->SetXY(10, $y);
+            $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
+            $y = $fpdf->GetY() + 5;
+          }
+
           $date_paiement = new DateTime($date_paiement);
 
           // Code de référence
@@ -845,29 +846,21 @@ class FactureController extends Controller
       $color_border = array(200, 200, 200);
       $color_success = array(39, 174, 96);
 
-      // Récupérer les informations de l'entreprise
-      $data = get_entreprise_details_invoice(Auth::user()->iddirection_ref);
+      // Récupérer l'idannexe_ref du locataire
+      $locataire = Locataire::find($id);
+      $idannexe_ref = $locataire ? $locataire->idannexe_ref : get_active_annexe_id();
+
+      // Récupérer les informations de l'agence
+      $annexeData = get_annexe_details_for_invoice($idannexe_ref);
 
       // Position Y initiale
       $y = 10;
 
-      // Logo de l'entreprise
+      // Logo de l'agence
       $logoPath = null;
       $logoSize = 15;
-      if (isset($data[0]['logo_url']) && !empty($data[0]['logo_url'])) {
-          $possiblePaths = [
-              'storage/app/public/' . $data[0]['logo_url'],
-              'public/storage/' . $data[0]['logo_url'],
-              'storage/' . $data[0]['logo_url'],
-              $data[0]['logo_url']
-          ];
-
-          foreach ($possiblePaths as $path) {
-              if (file_exists($path)) {
-                  $logoPath = $path;
-                  break;
-              }
-          }
+      if ($annexeData && $annexeData['logo_path']) {
+          $logoPath = $annexeData['logo_path'];
       }
 
       if ($logoPath && file_exists($logoPath)) {
@@ -883,20 +876,20 @@ class FactureController extends Controller
       $fpdf->SetXY(30, $y);
       $fpdf->Cell($pageWidth - 40, 8, 'QUITTANCE DE CAUTION', 0, 1, 'C');
 
-      // Informations entreprise
-      if ($data) {
+      // Informations agence
+      if ($annexeData) {
           $y += 8;
           $fpdf->SetFont('Arial', 'B', 9);
           $fpdf->SetTextColor(50, 50, 50);
           $fpdf->SetX(10);
-          $fpdf->Cell($pageWidth - 20, 4, utf8_decode(strtoupper($data[0]['designation'])), 0, 1, 'C');
+          $fpdf->Cell($pageWidth - 20, 4, utf8_decode(strtoupper($annexeData['designation'])), 0, 1, 'C');
 
           $fpdf->SetFont('Arial', '', 7);
           $fpdf->SetTextColor(100, 100, 100);
           $fpdf->SetX(10);
-          $fpdf->Cell($pageWidth - 20, 3, utf8_decode($data[0]['siege_social']), 0, 1, 'C');
+          $fpdf->Cell($pageWidth - 20, 3, utf8_decode($annexeData['siege_social']), 0, 1, 'C');
           $fpdf->SetX(10);
-          $fpdf->Cell($pageWidth - 20, 3, 'Tel: ' . $data[0]['telephone'] . ' - Email: ' . $data[0]['email'], 0, 1, 'C');
+          $fpdf->Cell($pageWidth - 20, 3, 'Tel: ' . $annexeData['telephone'] . ' - Email: ' . $annexeData['email'], 0, 1, 'C');
       }
 
       $y += 10;
@@ -1082,6 +1075,21 @@ class FactureController extends Controller
               'C'
           );
           $y += 10;
+      }
+
+      // Informations de paiement mobile (Cash électronique)
+      if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
+          $fpdf->SetFont('Arial', 'B', 7);
+          $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
+          $fpdf->SetXY(10, $y);
+          $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+          $y += 4;
+
+          $fpdf->SetFont('Arial', '', 7);
+          $fpdf->SetTextColor(80, 80, 80);
+          $fpdf->SetXY(10, $y);
+          $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
+          $y = $fpdf->GetY() + 5;
       }
 
       $date_entre = new DateTime($date_entre);

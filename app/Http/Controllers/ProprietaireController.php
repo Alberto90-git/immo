@@ -8,13 +8,11 @@ use App\Chambre;
 use App\Prix;
 use App\Locataire;
 use App\Facture;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -26,16 +24,17 @@ class ProprietaireController extends Controller
     }
 
     /**
-     * Récupérer les propriétaires selon les permissions
+     * Recuperer les proprietaires selon l'agence active
      */
     public function getProprietaire()
     {
+        // Utiliser l'agence active centralisee
+        $idannexe_ref = get_active_annexe_id();
+
         return Proprietaire::whereNull('delete_at')
                             ->where('iddirection_ref', Auth::user()->iddirection_ref)
-                            ->where(function($query){
-                                if (Gate::none(['Is_admin'])) {
-                                    $query->where('idannexe_ref', Auth::user()->idannexe_ref);
-                                }
+                            ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                $query->where('idannexe_ref', $idannexe_ref);
                             })
                             ->get();
     }
@@ -46,7 +45,7 @@ class ProprietaireController extends Controller
     public function index()
     {
         $allProprios = $this->getProprietaire();
-        return view('proprietaire.proprietaire', compact('allProprios'));
+        return view('proprietaire.index', compact('allProprios'));
     }
 
     /**
@@ -58,7 +57,7 @@ class ProprietaireController extends Controller
     }
 
     /**
-     * Créer un nouveau propriétaire via AJAX
+     * Créer un nouveau propriétaire
      */
     public function create(Request $request)
     {
@@ -80,19 +79,14 @@ class ProprietaireController extends Controller
             );
 
             if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'error' => $validator->errors(),
-                    'message' => "Veuillez bien renseigner les informations"
-                ], 422);
+                return back()->withErrors($validator)->withInput()
+                    ->with('error', 'Veuillez bien renseigner les informations');
             }
 
-            // Déterminer l'annexe
-            $response = $this->check_is_admin_and_entreprise();
-            if ($response) {
-                $idannexe_ref = $request->annexe;
-            } else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return back()->with('error', 'Veuillez sélectionner une agence dans le header');
             }
 
             // Créer le propriétaire
@@ -111,30 +105,19 @@ class ProprietaireController extends Controller
                     ->causedBy(Auth::user()->id)
                     ->log('Ajout du propriétaire ' . Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                // ⭐ Retourner l'ID au lieu de l'iteration
-                return response()->json([
-                    'status' => true,
-                    'message' => Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . " est créé avec succès",
-                    'data' => [
-                        'id' => $proprio->id,
-                        'nom' => $proprio->nom,
-                        'prenom' => $proprio->prenom,
-                        'telephone' => $proprio->telephone,
-                        'adresse' => $proprio->adresse,
-                        'annexe_name' => get_annexee_name($proprio->idannexe_ref),
-                    ]
-                ]);
+                return redirect()->route('proprietaires.index')
+                    ->with('success', Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' a été créé avec succès');
             }
+
+            return back()->with('error', 'Échec de la création du propriétaire');
+
         } catch (QueryException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => "Échec, essayez encore",
-            ], 500);
+            return back()->with('error', 'Échec, veuillez réessayer');
         }
     }
 
     /**
-     * Mettre à jour un propriétaire via AJAX
+     * Mettre à jour un propriétaire
      */
     public function update(Request $request)
     {
@@ -159,19 +142,14 @@ class ProprietaireController extends Controller
             );
 
             if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'error' => $validator->errors(),
-                    'message' => "Veuillez bien renseigner les informations"
-                ], 422);
+                return back()->withErrors($validator)->withInput()
+                    ->with('error', 'Veuillez bien renseigner les informations');
             }
 
-            // Déterminer l'annexe
-            $response = $this->check_is_admin_and_entreprise();
-            if ($response) {
-                $idannexe_ref = $request->annexe;
-            } else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return back()->with('error', 'Veuillez sélectionner une agence dans le header');
             }
 
             // Mettre à jour le propriétaire
@@ -186,38 +164,24 @@ class ProprietaireController extends Controller
                 ]);
 
             if ($proprio) {
-                // Récupérer les données mises à jour
-                $proprietaire = Proprietaire::find($request->id);
-
                 // Log de l'activité
                 activity()->performedOn(new Proprietaire())
                     ->causedBy(Auth::user()->id)
                     ->log('Modification du propriétaire ' . Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                // ⭐ Retourner l'ID au lieu de l'iteration
-                return response()->json([
-                    'status' => true,
-                    'message' => Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' mis à jour avec succès',
-                    'data' => [
-                        'id' => $proprietaire->id, // ⭐ ID utilisé pour les modals
-                        'nom' => $proprietaire->nom,
-                        'prenom' => $proprietaire->prenom,
-                        'telephone' => $proprietaire->telephone,
-                        'adresse' => $proprietaire->adresse,
-                        'annexe_name' => get_annexee_name($proprietaire->idannexe_ref),
-                    ]
-                ]);
+                return redirect()->route('proprietaires.index')
+                    ->with('success', Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' a été mis à jour avec succès');
             }
+
+            return back()->with('error', 'Échec de la modification du propriétaire');
+
         } catch (QueryException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Échec, veuillez vérifier les données',
-            ], 500);
+            return back()->with('error', 'Échec, veuillez vérifier les données');
         }
     }
 
     /**
-     * Supprimer un propriétaire via AJAX (soft delete)
+     * Supprimer un propriétaire (soft delete)
      */
     public function destroy(Request $request)
     {
@@ -234,10 +198,7 @@ class ProprietaireController extends Controller
             );
 
             if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'error' => $validator->errors(),
-                ], 422);
+                return back()->with('error', 'Propriétaire introuvable');
             }
 
             $now = Carbon::now();
@@ -246,10 +207,7 @@ class ProprietaireController extends Controller
             $proprio = Proprietaire::find($request->id);
 
             if (!$proprio) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Propriétaire introuvable',
-                ], 404);
+                return back()->with('error', 'Propriétaire introuvable');
             }
 
             // Soft delete du propriétaire
@@ -274,23 +232,14 @@ class ProprietaireController extends Controller
                     ->causedBy(Auth::user())
                     ->log('Suppression du propriétaire ' . Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                // Retourner la réponse pour AJAX
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Suppression effectuée avec succès.',
-                ]);
+                return redirect()->route('proprietaires.index')
+                    ->with('success', Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' a été supprimé avec succès');
             }
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Aucune suppression effectuée.',
-            ], 400);
+            return back()->with('error', 'Aucune suppression effectuée');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Échec, veuillez vérifier les données.',
-            ], 500);
+            return back()->with('error', 'Échec, veuillez vérifier les données');
         }
     }
 }

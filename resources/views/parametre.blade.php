@@ -73,7 +73,7 @@
                                                     @if($item->cash_electronique_url)
                                                         <div class="mt-3">
                                                             <p><strong>Image actuelle:</strong></p>
-                                                            <img src="{{ asset($item->cash_electronique_url) }}" 
+                                                            <img src="{{ $item->cash_electronique_url }}" 
                                                                 alt="Cash électronique" 
                                                                 class="img-thumbnail"
                                                                 style="max-width: 200px; max-height: 200px;">
@@ -100,7 +100,7 @@
                                                     @if($item->logo_url)
                                                         <div class="mt-3">
                                                             <p><strong>Logo actuel:</strong></p>
-                                                            <img src="{{ asset($item->logo_url) }}" 
+                                                            <img src="{{ $item->logo_url }}" 
                                                                 alt="Logo" 
                                                                 class="img-thumbnail"
                                                                 style="max-width: 200px; max-height: 200px;">
@@ -296,20 +296,19 @@
 
                                         <div class="modal fade" id="modifier{{ $loop->iteration }}" tabindex="-1"
                                             aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="modalCenterTitle">Modification</h5>
-                                                        <button type="button" class="btn-close"
+                                                    <div class="modal-header bg-primary">
+                                                        <h5 class="modal-title text-white" id="modalCenterTitle">Modification de l'agence</h5>
+                                                        <button type="button" class="btn-close btn-close-white"
                                                             data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
-                                        
+
                                                     <div class="modal-body">
-                                                        <form class="row g-3" method="post"  action="{{ route('update_annexe') }}">
+                                                        <form class="row g-3" method="post" action="{{ route('update_annexe') }}" enctype="multipart/form-data">
                                                             @csrf
 
                                                             <input type="hidden" name="id" class="form-control" id="id" value="{{ $items->idannexes }}">
-
 
                                                             <div class="col-md-6">
                                                                 <label for="inputNanme4" class="form-label">Designation<span
@@ -330,7 +329,7 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label for="inputPassword4" class="form-label">Téléphone<span
+                                                                <label for="inputPassword4" class="form-label">Telephone<span
                                                                         style="color: red;">*</span></label>
                                                                         <input type="text" name="telephone" class="form-control"
                                                                         id="telephone{{ $loop->iteration }}"
@@ -349,10 +348,33 @@
                                                                 </span>
                                                             </div>
 
-                                                    
+                                                            <hr class="my-3">
+                                                            <h6 class="text-primary">Logo et informations de paiement</h6>
+
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Logo de l'agence</label>
+                                                                <input class="form-control" type="file" name="logo" accept="image/*">
+                                                                <small class="text-muted">Formats: JPEG, PNG. Max: 2MB</small>
+                                                                @if($items->logo)
+                                                                    <div class="mt-2">
+                                                                        <img src="{{ asset('storage/' . $items->logo) }}"
+                                                                            alt="Logo actuel" class="img-thumbnail"
+                                                                            style="max-width: 100px; max-height: 100px;">
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Cash electronique (informations)</label>
+                                                                <textarea class="form-control" name="cash_electronique" rows="3"
+                                                                    placeholder="Ex: MTN MoMo: 97000000&#10;Moov Money: 96000000">{{ $items->cash_electronique }}</textarea>
+                                                                <small class="text-muted">Ces informations apparaitront sur les factures</small>
+                                                            </div>
+
+
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                                                <button class="btn btn-primary">Enregistrer</button>
+                                                                <button class="btn btn-primary"><i class="bx bx-save me-1"></i>Enregistrer</button>
                                                             </div>
                                                         </form>
                                                     </div>

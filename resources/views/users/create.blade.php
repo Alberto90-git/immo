@@ -29,21 +29,6 @@
                     @csrf
 
                     <div class="row mb-3">
-                        <label for="nom" class="col-sm-2 col-form-label">Choisir une agence<span style="color: red;">*</span></label>
-                        <div class="col-sm-6">
-                        <select required="" class="form-select @error('annexe') is-invalid @enderror" name= "annexe" id="annexe" aria-label="Default select example">
-                            <option selected disabled value="">Choisir une agence</option>
-                            @if(isset($liste))
-                                @foreach($liste as $terme)
-                                <option  value="{{$terme->idannexes}}">{{$terme->designation}}</option>
-                                @endforeach
-                            @endif  
-                            </select>
-                            <span class="text-danger error-text annexe_err small mb-2"></span>
-                        </div>
-                    </div>
-                
-                    <div class="row mb-3">
                         <label for="nom" class="col-sm-2 col-form-label">Nom<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control  @error('nom') is-invalid @enderror" id="nom" name="nom" required>

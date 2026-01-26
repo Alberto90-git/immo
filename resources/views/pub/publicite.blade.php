@@ -35,24 +35,6 @@
                 @csrf
  
  
-                 @can('Is_admin')
-                   @if(Auth::user()->type_compte != 'Particulier')
-                   <div class="col-6">
-                     <label for="inputNanme4" class="form-label">Choisir une agence<span style="color: red;">*</span></label>
-                     <select required="" class="form-select @error('annexe') is-invalid @enderror" name="annexe" id="annexe" aria-label="Default select example">
-                         <option selected disabled value="">Choisir une agence</option>
-                         @if(Session::get('anne_data') != null)
-                           @foreach(Session::get('anne_data') as $terme)
-                             <option  value="{{$terme->idannexes}}">{{ $terme->designation }}</option>
-                           @endforeach
-                         @endif 
-                       </select>
-                           <span class="invalid-feedback annexe_err" role="alert">
-                           </span>
-                     </div>
-                   @endif
-                 @endcan
-               
                  <div class="col-6">
                    <label for="inputNanme4" class="form-label">Adresse du bien immobilier<span style="color: red;">*</span></label>
                    <input type="text" name="adresse" class="form-control" id="adresse" required="">
@@ -225,27 +207,6 @@
     
                     <div class="alert-primary bg-primary text-light" id="afficher"></div>
     
-                    @can('Is_admin')
-                      @if(Auth::user()->type_compte != 'Particulier')
-                      <div class="col-6">
-                      <label for="inputNanme4" class="form-label">Choisir une agence<span style="color: red;">*</span></label>
-                      <select required="" class="form-select @error('annexe') is-invalid @enderror" name="annexe" id="annexe" aria-label="Default select example">
-                          <option selected disabled value="">Choisir une agence</option>
-                           @if(Session::get('anne_data') != " ")
-                            @foreach(Session::get('anne_data') as $terme)
-                              <option  value="{{$terme->idannexes}}"    {{$items->idannexe_ref == $terme->idannexes ? 'selected':''}}>{{ $terme->designation }}</option>
-                            @endforeach
-                           @endif 
-                        </select>
-                        @error('annexe')
-                          <span class="invalid-feedback" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
-                        @enderror
-                       </div>
-                       @endif
-                    @endcan
-                  
                     <div class="col-6">
                       <label for="inputNanme4" class="form-label">Adresse du bien immobilier<span style="color: red;">*</span></label>
                       <input type="text" name="adresse" class="form-control @error('adresse') is-invalid @enderror" id="adresse" value="{{ $items->localisation }}" required="">

@@ -17,26 +17,6 @@
 
                   <div id="afficher" class="alert alert-warning d-none"></div>
 
-                  @can('Is_admin')
-                      @if(Auth::user()->type_compte != 'Particulier')
-                          <div class="col-md-12">
-                              <label class="form-label">Agence <span class="text-danger">*</span></label>
-                              <select class="form-select" id="annexe{{ $items->id }}" name="annexe" required>
-                                  <option value="" disabled>Choisir une agence</option>
-                                  @if(Session::get('anne_data') != ' ')
-                                      @foreach(Session::get('anne_data') as $terme)
-                                          <option value="{{ $terme->idannexes }}"
-                                              {{ $items->idannexe_ref == $terme->idannexes ? 'selected' : '' }}>
-                                              {{ $terme->designation }}
-                                          </option>
-                                      @endforeach
-                                  @endif
-                              </select>
-                              <span class="invalid-feedback annexe_err"></span>
-                          </div>
-                      @endif
-                  @endcan
-
                   <div class="col-md-6">
                       <label for="nom{{ $items->id }}" class="form-label">Nom <span class="text-danger">*</span></label>
                       <input type="text" class="form-control" id="nom{{ $items->id }}" name="nom" value="{{ $items->nom }}" required>

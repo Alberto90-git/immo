@@ -712,25 +712,542 @@
             </div>
 
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-                <!-- Fonctionnalités cards (inchangées) -->
-                <!-- ... reste du code des fonctionnalités ... -->
+                <!-- Gestion des propriétés -->
+                <div class="p-6 bg-white border border-gray-100 shadow-lg hover-lift rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-blue-50">
+                        <i class="text-3xl text-blue-600 fas fa-building"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Gestion des propriétés</h3>
+                    <p class="text-gray-600">Centralisez toutes vos propriétés en un seul endroit. Suivez les détails, les documents et l'historique de chaque bien.</p>
+                </div>
+
+                <!-- Gestion des locataires -->
+                <div class="p-6 bg-white border border-gray-100 shadow-lg hover-lift rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-green-50">
+                        <i class="text-3xl text-green-600 fas fa-users"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Gestion des locataires</h3>
+                    <p class="text-gray-600">Gérez vos locataires efficacement : contrats, paiements, communications et historique complet.</p>
+                </div>
+
+                <!-- Facturation automatique -->
+                <div class="p-6 bg-white border border-gray-100 shadow-lg hover-lift rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-purple-50">
+                        <i class="text-3xl text-purple-600 fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Facturation automatique</h3>
+                    <p class="text-gray-600">Générez automatiquement vos factures de loyer et suivez les paiements en temps réel.</p>
+                </div>
+
+                <!-- Tableau de bord -->
+                <div class="p-6 bg-white border border-gray-100 shadow-lg hover-lift rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-orange-50">
+                        <i class="text-3xl text-orange-600 fas fa-chart-pie"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Tableau de bord analytique</h3>
+                    <p class="text-gray-600">Visualisez vos performances avec des graphiques clairs : revenus, taux d'occupation, rentabilité.</p>
+                </div>
+
+                <!-- Rappels et notifications -->
+                <div class="p-6 bg-white border border-gray-100 shadow-lg hover-lift rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-red-50">
+                        <i class="text-3xl text-red-600 fas fa-bell"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Rappels intelligents</h3>
+                    <p class="text-gray-600">Ne manquez plus aucune échéance grâce aux notifications automatiques pour loyers et contrats.</p>
+                </div>
+
+                <!-- Documents et contrats -->
+                <div class="p-6 bg-white border border-gray-100 shadow-lg hover-lift rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-teal-50">
+                        <i class="text-3xl text-teal-600 fas fa-file-contract"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Documents & Contrats</h3>
+                    <p class="text-gray-600">Générez des contrats de bail personnalisés et stockez tous vos documents en toute sécurité.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Comment ça marche -->
+    <section class="py-12 sm:py-16 lg:py-20 bg-white">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
+                    Comment ça <span class="text-blue-600">marche ?</span>
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
+                    Démarrez en quelques étapes simples et gérez votre patrimoine immobilier comme un pro
+                </p>
+            </div>
+
+            <div class="grid gap-8 md:grid-cols-4">
+                <!-- Étape 1 -->
+                <div class="relative text-center">
+                    <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-3xl font-bold text-white rounded-full bg-gradient-to-r from-blue-600 to-blue-800">
+                        1
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Créez votre compte</h3>
+                    <p class="text-gray-600">Inscrivez-vous gratuitement en moins de 2 minutes</p>
+                    <div class="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-blue-200"></div>
+                </div>
+
+                <!-- Étape 2 -->
+                <div class="relative text-center">
+                    <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-3xl font-bold text-white rounded-full bg-gradient-to-r from-blue-600 to-blue-800">
+                        2
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Ajoutez vos biens</h3>
+                    <p class="text-gray-600">Renseignez vos propriétés et leurs caractéristiques</p>
+                    <div class="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-blue-200"></div>
+                </div>
+
+                <!-- Étape 3 -->
+                <div class="relative text-center">
+                    <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-3xl font-bold text-white rounded-full bg-gradient-to-r from-blue-600 to-blue-800">
+                        3
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Gérez vos locataires</h3>
+                    <p class="text-gray-600">Ajoutez vos locataires et créez leurs contrats</p>
+                    <div class="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-blue-200"></div>
+                </div>
+
+                <!-- Étape 4 -->
+                <div class="text-center">
+                    <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-3xl font-bold text-white rounded-full bg-gradient-to-r from-green-500 to-green-600">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 class="mb-3 text-xl font-bold text-gray-800">Automatisez tout</h3>
+                    <p class="text-gray-600">Laissez ImmoManager gérer les factures et rappels</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Statistiques -->
+    <section class="py-12 sm:py-16 lg:py-20 gradient-bg">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="grid gap-8 text-center text-white sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                    <div class="mb-2 text-4xl font-bold lg:text-5xl">500+</div>
+                    <p class="text-blue-100">Utilisateurs actifs</p>
+                </div>
+                <div>
+                    <div class="mb-2 text-4xl font-bold lg:text-5xl">2,500+</div>
+                    <p class="text-blue-100">Propriétés gérées</p>
+                </div>
+                <div>
+                    <div class="mb-2 text-4xl font-bold lg:text-5xl">15M+</div>
+                    <p class="text-blue-100">XOF de loyers traités</p>
+                </div>
+                <div>
+                    <div class="mb-2 text-4xl font-bold lg:text-5xl">97%</div>
+                    <p class="text-blue-100">Taux de satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Partenaires / Confiance -->
+    <section class="py-12 bg-white sm:py-16">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-8 text-center">
+                <p class="text-lg text-gray-500">Ils nous font confiance</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-8 grayscale opacity-60 lg:gap-16">
+                <div class="flex items-center justify-center w-32 h-16">
+                    <div class="flex items-center space-x-2">
+                        <i class="text-3xl text-gray-400 fas fa-building"></i>
+                        <span class="text-xl font-bold text-gray-400">Agence A</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center w-32 h-16">
+                    <div class="flex items-center space-x-2">
+                        <i class="text-3xl text-gray-400 fas fa-home"></i>
+                        <span class="text-xl font-bold text-gray-400">Immo B</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center w-32 h-16">
+                    <div class="flex items-center space-x-2">
+                        <i class="text-3xl text-gray-400 fas fa-city"></i>
+                        <span class="text-xl font-bold text-gray-400">Urban C</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center w-32 h-16">
+                    <div class="flex items-center space-x-2">
+                        <i class="text-3xl text-gray-400 fas fa-landmark"></i>
+                        <span class="text-xl font-bold text-gray-400">Groupe D</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center w-32 h-16">
+                    <div class="flex items-center space-x-2">
+                        <i class="text-3xl text-gray-400 fas fa-hotel"></i>
+                        <span class="text-xl font-bold text-gray-400">Estate E</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Portfolio Section -->
     <section id="portfolio" class="py-12 sm:py-16 lg:py-20 bg-white">
-        <!-- ... reste du code portfolio ... -->
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
+                    Aperçu de la <span class="text-blue-600">plateforme</span>
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
+                    Découvrez les interfaces intuitives et puissantes d'ImmoManager
+                </p>
+            </div>
+
+            <div class="portfolio-grid">
+                <!-- Dashboard -->
+                <div class="portfolio-item">
+                    <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-500 to-blue-700">
+                        <div class="p-8 text-center text-white">
+                            <i class="mb-4 text-5xl fas fa-tachometer-alt"></i>
+                            <h4 class="text-xl font-bold">Tableau de bord</h4>
+                            <p class="text-blue-100">Vue d'ensemble complète</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-overlay">
+                        <div class="text-center text-white">
+                            <i class="mb-2 text-3xl fas fa-eye"></i>
+                            <p class="font-semibold">Voir le détail</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestion propriétés -->
+                <div class="portfolio-item">
+                    <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-green-500 to-green-700">
+                        <div class="p-8 text-center text-white">
+                            <i class="mb-4 text-5xl fas fa-home"></i>
+                            <h4 class="text-xl font-bold">Gestion des biens</h4>
+                            <p class="text-green-100">Maisons et chambres</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-overlay">
+                        <div class="text-center text-white">
+                            <i class="mb-2 text-3xl fas fa-eye"></i>
+                            <p class="font-semibold">Voir le détail</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facturation -->
+                <div class="portfolio-item">
+                    <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-purple-500 to-purple-700">
+                        <div class="p-8 text-center text-white">
+                            <i class="mb-4 text-5xl fas fa-receipt"></i>
+                            <h4 class="text-xl font-bold">Facturation</h4>
+                            <p class="text-purple-100">Factures automatiques</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-overlay">
+                        <div class="text-center text-white">
+                            <i class="mb-2 text-3xl fas fa-eye"></i>
+                            <p class="font-semibold">Voir le détail</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="portfolio-item">
+                    <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-orange-500 to-orange-700">
+                        <div class="p-8 text-center text-white">
+                            <i class="mb-4 text-5xl fas fa-chart-bar"></i>
+                            <h4 class="text-xl font-bold">Statistiques</h4>
+                            <p class="text-orange-100">Analyses détaillées</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-overlay">
+                        <div class="text-center text-white">
+                            <i class="mb-2 text-3xl fas fa-eye"></i>
+                            <p class="font-semibold">Voir le détail</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Locataires -->
+                <div class="portfolio-item">
+                    <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-teal-500 to-teal-700">
+                        <div class="p-8 text-center text-white">
+                            <i class="mb-4 text-5xl fas fa-user-friends"></i>
+                            <h4 class="text-xl font-bold">Locataires</h4>
+                            <p class="text-teal-100">Gestion centralisée</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-overlay">
+                        <div class="text-center text-white">
+                            <i class="mb-2 text-3xl fas fa-eye"></i>
+                            <p class="font-semibold">Voir le détail</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rapports PDF -->
+                <div class="portfolio-item">
+                    <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-red-500 to-red-700">
+                        <div class="p-8 text-center text-white">
+                            <i class="mb-4 text-5xl fas fa-file-pdf"></i>
+                            <h4 class="text-xl font-bold">Rapports PDF</h4>
+                            <p class="text-red-100">Export automatique</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-overlay">
+                        <div class="text-center text-white">
+                            <i class="mb-2 text-3xl fas fa-eye"></i>
+                            <p class="font-semibold">Voir le détail</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Témoignages Section -->
     <section class="py-12 sm:py-16 lg:py-20 bg-gray-50">
-        <!-- ... reste du code témoignages ... -->
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
+                    Ce que disent nos <span class="text-blue-600">clients</span>
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
+                    Découvrez les retours de nos utilisateurs satisfaits
+                </p>
+            </div>
+
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Témoignage 1 -->
+                <div class="p-6 bg-white shadow-lg testimonial-card rounded-2xl lg:p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="mb-6 italic text-gray-600">"ImmoManager a révolutionné ma façon de gérer mes 5 appartements. Je gagne un temps précieux chaque mois sur la facturation et le suivi des paiements."</p>
+                    <div class="flex items-center">
+                        <div class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white bg-blue-600 rounded-full">
+                            KA
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Kokou Amavi</h4>
+                            <p class="text-sm text-gray-500">Propriétaire à Cotonou</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Témoignage 2 -->
+                <div class="p-6 bg-white shadow-lg testimonial-card rounded-2xl lg:p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="mb-6 italic text-gray-600">"En tant qu'agence immobilière, nous gérons plus de 50 biens. ImmoManager nous permet de tout centraliser et d'offrir un meilleur service à nos clients."</p>
+                    <div class="flex items-center">
+                        <div class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white bg-green-600 rounded-full">
+                            AS
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Agence Sunrise</h4>
+                            <p class="text-sm text-gray-500">Agence immobilière, Porto-Novo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Témoignage 3 -->
+                <div class="p-6 bg-white shadow-lg testimonial-card rounded-2xl lg:p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="mb-6 italic text-gray-600">"Les rappels automatiques m'ont permis de réduire les retards de paiement de 80%. Le tableau de bord est très intuitif et facile à utiliser."</p>
+                    <div class="flex items-center">
+                        <div class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white bg-purple-600 rounded-full">
+                            MD
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Marie Dossou</h4>
+                            <p class="text-sm text-gray-500">Investisseur immobilier</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Tarifs Section -->
     <section id="tarifs" class="py-12 sm:py-16 lg:py-20 bg-white">
-        <!-- ... reste du code tarifs ... -->
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
+                    Des tarifs <span class="text-blue-600">adaptés</span> à vos besoins
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
+                    Choisissez le plan qui correspond à la taille de votre patrimoine
+                </p>
+            </div>
+
+            <div class="grid gap-8 md:grid-cols-3">
+                <!-- Plan Starter -->
+                <div class="p-6 bg-white border border-gray-200 pricing-card rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Starter</h3>
+                        <span class="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">Débutant</span>
+                    </div>
+                    <p class="mb-6 text-gray-500">Idéal pour démarrer</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-800">54 000</span>
+                        <span class="text-gray-500">XOF/an</span>
+                    </div>
+                    <ul class="mb-8 space-y-3">
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Jusqu'à <strong class="mx-1">5 maisons</strong>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Tableau de bord complet
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Gestion des locataires
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Facturation automatique
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Export PDF
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="mr-3 fas fa-times"></i>
+                            Création d'annexes
+                        </li>
+                    </ul>
+                    <a href="#compte" class="block w-full py-3 text-center text-blue-600 transition-colors border-2 border-blue-600 rounded-full hover:bg-blue-600 hover:text-white">
+                        Commencer
+                    </a>
+                </div>
+
+                <!-- Plan Standard (Featured) -->
+                <div class="p-6 bg-white border-2 border-blue-600 pricing-card featured rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Standard</h3>
+                        <span class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded-full">Populaire</span>
+                    </div>
+                    <p class="mb-6 text-gray-500">Pour les propriétaires actifs</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-blue-600">120 000</span>
+                        <span class="text-gray-500">XOF/an</span>
+                    </div>
+                    <ul class="mb-8 space-y-3">
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Jusqu'à <strong class="mx-1">20 maisons</strong>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Tableau de bord avancé
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Gestion des locataires
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Facturation automatique
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Statistiques détaillées
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Export PDF/Excel
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="mr-3 fas fa-times"></i>
+                            Création d'annexes
+                        </li>
+                    </ul>
+                    <a href="#compte" class="block w-full py-3 text-center text-white transition-colors bg-blue-600 rounded-full hover:bg-blue-700">
+                        Choisir ce plan
+                    </a>
+                </div>
+
+                <!-- Plan Premium -->
+                <div class="p-6 bg-white border border-gray-200 pricing-card rounded-2xl lg:p-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Premium</h3>
+                        <span class="px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-100 rounded-full">Pro</span>
+                    </div>
+                    <p class="mb-6 text-gray-500">Pour les agences immobilières</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-800">180 000</span>
+                        <span class="text-gray-500">XOF/an</span>
+                    </div>
+                    <ul class="mb-8 space-y-3">
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            <strong class="mx-1">Maisons illimitées</strong>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Jusqu'à <strong class="mx-1">2 annexes</strong>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Toutes les fonctionnalités
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Multi-utilisateurs
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Statistiques avancées
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Support prioritaire
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Formation incluse
+                        </li>
+                    </ul>
+                    <a href="#compte" class="block w-full py-3 text-center text-blue-600 transition-colors border-2 border-blue-600 rounded-full hover:bg-blue-600 hover:text-white">
+                        Nous contacter
+                    </a>
+                </div>
+            </div>
+
+            <!-- Note informative -->
+            <div class="p-6 mt-12 text-center bg-blue-50 rounded-2xl">
+                <p class="text-gray-600">
+                    <i class="mr-2 text-blue-600 fas fa-info-circle"></i>
+                    Tous les plans incluent une <strong>période d'essai gratuite</strong>. Pas de frais cachés.
+                </p>
+            </div>
+        </div>
     </section>
 
     <!-- Créer un compte Section - Formulaire d'inscription complet -->
@@ -937,18 +1454,325 @@
 
     <!-- FAQ Section -->
     <section class="py-12 sm:py-16 lg:py-20 bg-gray-50">
-        <!-- ... reste du code FAQ ... -->
+        <div class="px-4 mx-auto max-w-4xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
+                    Questions <span class="text-blue-600">fréquentes</span>
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
+                    Trouvez rapidement les réponses à vos questions
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- FAQ 1 -->
+                <div class="faq-item active bg-white rounded-xl shadow-sm">
+                    <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
+                        <h3 class="text-lg font-semibold text-gray-800">Comment puis-je commencer à utiliser ImmoManager ?</h3>
+                        <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-600 pb-6">C'est très simple ! Créez un compte gratuit en cliquant sur "Créer un compte", renseignez vos informations et vous pourrez immédiatement ajouter vos propriétés et commencer à gérer votre patrimoine. Aucune carte bancaire n'est requise pour l'offre gratuite.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-item bg-white rounded-xl shadow-sm">
+                    <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
+                        <h3 class="text-lg font-semibold text-gray-800">Mes données sont-elles sécurisées ?</h3>
+                        <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-600 pb-6">Absolument. Nous utilisons un chiffrement SSL de bout en bout et nos serveurs sont hébergés dans des centres de données sécurisés. Vos données sont sauvegardées quotidiennement et ne sont jamais partagées avec des tiers.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item bg-white rounded-xl shadow-sm">
+                    <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
+                        <h3 class="text-lg font-semibold text-gray-800">Puis-je changer de plan à tout moment ?</h3>
+                        <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-600 pb-6">Oui, vous pouvez passer à un plan supérieur à tout moment. La différence de prix sera calculée au prorata. Vous pouvez également rétrograder à la fin de votre période d'abonnement.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item bg-white rounded-xl shadow-sm">
+                    <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
+                        <h3 class="text-lg font-semibold text-gray-800">Comment fonctionne la facturation automatique ?</h3>
+                        <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-600 pb-6">Une fois vos locataires et les montants de loyer configurés, ImmoManager génère automatiquement les factures à chaque échéance. Vous pouvez personnaliser les modèles de factures et configurer des rappels automatiques en cas de retard de paiement.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item bg-white rounded-xl shadow-sm">
+                    <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
+                        <h3 class="text-lg font-semibold text-gray-800">Y a-t-il une application mobile ?</h3>
+                        <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-600 pb-6">ImmoManager est entièrement responsive et fonctionne parfaitement sur tous les appareils mobiles via votre navigateur. Une application native iOS et Android est en cours de développement et sera bientôt disponible.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 6 -->
+                <div class="faq-item bg-white rounded-xl shadow-sm">
+                    <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
+                        <h3 class="text-lg font-semibold text-gray-800">Proposez-vous une assistance technique ?</h3>
+                        <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-600 pb-6">Oui, notre équipe de support est disponible pour vous aider. Les utilisateurs gratuits bénéficient d'un support par email, tandis que les plans payants incluent un support prioritaire avec des temps de réponse garantis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Contact Section -->
     <section id="contact" class="py-12 sm:py-16 lg:py-20 bg-white">
-        <!-- ... reste du code contact ... -->
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
+                    Contactez-<span class="text-blue-600">nous</span>
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
+                    Une question ? Notre équipe est là pour vous aider
+                </p>
+            </div>
+
+            <div class="grid gap-12 lg:grid-cols-2">
+                <!-- Informations de contact -->
+                <div>
+                    <h3 class="mb-6 text-2xl font-bold text-gray-800">Nos coordonnées</h3>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="flex items-center justify-center w-12 h-12 mr-4 rounded-xl bg-blue-50">
+                                <i class="text-xl text-blue-600 fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Adresse</h4>
+                                <p class="text-gray-600">Cotonou, Bénin<br>Quartier Akpakpa</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center justify-center w-12 h-12 mr-4 rounded-xl bg-green-50">
+                                <i class="text-xl text-green-600 fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Téléphone</h4>
+                                <p class="text-gray-600">+229 XX XX XX XX</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center justify-center w-12 h-12 mr-4 rounded-xl bg-purple-50">
+                                <i class="text-xl text-purple-600 fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Email</h4>
+                                <p class="text-gray-600">contact@immomanager.com</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center justify-center w-12 h-12 mr-4 rounded-xl bg-orange-50">
+                                <i class="text-xl text-orange-600 fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Horaires</h4>
+                                <p class="text-gray-600">Lun - Ven : 8h00 - 18h00<br>Sam : 9h00 - 13h00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Réseaux sociaux -->
+                    <div class="mt-8">
+                        <h4 class="mb-4 font-semibold text-gray-800">Suivez-nous</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="flex items-center justify-center w-10 h-10 text-blue-600 transition-colors bg-blue-100 rounded-full hover:bg-blue-600 hover:text-white">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 text-blue-400 transition-colors bg-blue-100 rounded-full hover:bg-blue-400 hover:text-white">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 text-pink-600 transition-colors bg-pink-100 rounded-full hover:bg-pink-600 hover:text-white">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 text-blue-700 transition-colors bg-blue-100 rounded-full hover:bg-blue-700 hover:text-white">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de contact -->
+                <div class="p-6 bg-gray-50 rounded-2xl lg:p-8">
+                    <h3 class="mb-6 text-2xl font-bold text-gray-800">Envoyez-nous un message</h3>
+
+                    <form id="contact-form">
+                        <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                            <div>
+                                <label for="contact_nom" class="block mb-2 text-sm font-medium text-gray-700">Nom</label>
+                                <input type="text" id="contact_nom" name="contact_nom" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Votre nom" required>
+                            </div>
+                            <div>
+                                <label for="contact_prenom" class="block mb-2 text-sm font-medium text-gray-700">Prénom</label>
+                                <input type="text" id="contact_prenom" name="contact_prenom" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Votre prénom" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="contact_email" class="block mb-2 text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="contact_email" name="contact_email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="votre@email.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="contact_sujet" class="block mb-2 text-sm font-medium text-gray-700">Sujet</label>
+                            <select id="contact_sujet" name="contact_sujet" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                                <option value="">Sélectionnez un sujet</option>
+                                <option value="information">Demande d'information</option>
+                                <option value="demo">Demande de démonstration</option>
+                                <option value="support">Support technique</option>
+                                <option value="partenariat">Partenariat</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="contact_message" class="block mb-2 text-sm font-medium text-gray-700">Message</label>
+                            <textarea id="contact_message" name="contact_message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Votre message..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full px-6 py-4 font-bold text-white transition-colors bg-blue-600 rounded-xl hover:bg-blue-700">
+                            <i class="mr-2 fas fa-paper-plane"></i>
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section CTA finale -->
+    <section class="py-12 sm:py-16 lg:py-20 gradient-bg">
+        <div class="px-4 mx-auto text-center max-w-4xl sm:px-6 lg:px-8">
+            <h2 class="mb-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl lg:text-5xl">
+                Prêt à simplifier votre gestion immobilière ?
+            </h2>
+            <p class="mb-8 text-lg text-blue-100 lg:text-xl">
+                Rejoignez des centaines de propriétaires qui font confiance à ImmoManager
+            </p>
+            <div class="flex flex-col justify-center gap-4 sm:flex-row">
+                <a href="#compte" class="px-8 py-4 text-lg font-bold text-blue-600 transition-all bg-white rounded-full hover:bg-blue-50 hover-lift">
+                    <i class="mr-2 fas fa-rocket"></i>
+                    Créer un compte gratuit
+                </a>
+                <a href="#contact" class="px-8 py-4 text-lg font-bold text-white transition-all border-2 border-white rounded-full hover:bg-white hover:text-blue-600">
+                    <i class="mr-2 fas fa-phone"></i>
+                    Nous contacter
+                </a>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
     <footer class="py-12 text-white bg-gray-900 lg:py-16" role="contentinfo">
-        <!-- ... reste du code footer ... -->
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="grid gap-8 mb-12 md:grid-cols-2 lg:grid-cols-4">
+                <!-- Logo et description -->
+                <div class="lg:col-span-1">
+                    <a href="/" class="flex items-center mb-4 space-x-2">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-800">
+                            <i class="text-white fas fa-home"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-white">ImmoManager</span>
+                    </a>
+                    <p class="mb-6 text-gray-400">
+                        La solution complète pour gérer votre patrimoine immobilier en toute simplicité.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 transition-colors hover:text-white">
+                            <i class="text-xl fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 transition-colors hover:text-white">
+                            <i class="text-xl fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 transition-colors hover:text-white">
+                            <i class="text-xl fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 transition-colors hover:text-white">
+                            <i class="text-xl fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Liens rapides -->
+                <div>
+                    <h4 class="mb-4 text-lg font-bold text-white">Liens rapides</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#accueil" class="text-gray-400 transition-colors hover:text-white">Accueil</a></li>
+                        <li><a href="#fonctionnalites" class="text-gray-400 transition-colors hover:text-white">Fonctionnalités</a></li>
+                        <li><a href="#tarifs" class="text-gray-400 transition-colors hover:text-white">Tarifs</a></li>
+                        <li><a href="#contact" class="text-gray-400 transition-colors hover:text-white">Contact</a></li>
+                        <li><a href="{{ route('login') }}" class="text-gray-400 transition-colors hover:text-white">Connexion</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="mb-4 text-lg font-bold text-white">Services</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Gestion locative</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Facturation</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Statistiques</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Contrats</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Légal -->
+                <div>
+                    <h4 class="mb-4 text-lg font-bold text-white">Légal</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Politique de confidentialité</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Mentions légales</a></li>
+                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Barre de séparation -->
+            <div class="pt-8 border-t border-gray-800">
+                <div class="flex flex-col items-center justify-between md:flex-row">
+                    <p class="mb-4 text-gray-400 md:mb-0">
+                        &copy; {{ date('Y') }} ImmoManager. Tous droits réservés.
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-400">Paiements sécurisés</span>
+                        <div class="flex space-x-2">
+                            <i class="text-2xl text-gray-400 fab fa-cc-visa"></i>
+                            <i class="text-2xl text-gray-400 fab fa-cc-mastercard"></i>
+                            <i class="text-2xl text-gray-400 fas fa-mobile-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <!-- Bouton retour en haut -->
+    <button id="back-to-top" class="fixed z-50 hidden p-3 text-white transition-all bg-blue-600 rounded-full shadow-lg bottom-8 right-8 hover:bg-blue-700" aria-label="Retour en haut">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -959,15 +1783,14 @@
         // Données des plans d'abonnement
         const plans = {
             particulier: [
-                { id: 'gratuit', nom: 'Gratuit', prix: 0, periode: 'illimité', proprietes: 2, features: ['Tableau de bord basique', 'Gestion des loyers', '2 propriétés maximum'] },
-                { id: 'basique', nom: 'Basique', prix: 25000, periode: 'an', proprietes: 3, features: ['Tableau de bord complet', 'Gestion avancée', '3 propriétés maximum', 'Support standard'] },
-                { id: 'avance', nom: 'Avancé', prix: 50000, periode: 'an', proprietes: 5, features: ['Toutes les fonctionnalités', '5 propriétés maximum', 'Support prioritaire', 'Statistiques avancées'] }
+                { id: 'starter', nom: 'Starter', prix: 54000, periode: 'an', proprietes: 5, annexes: 0, features: ['Jusqu\'à 5 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', 'Export PDF'] },
+                { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'] },
+                { id: 'premium', nom: 'Premium', prix: 180000, periode: 'an', proprietes: 'Illimitées', annexes: 2, features: ['Maisons illimitées', 'Jusqu\'à 2 annexes', 'Toutes les fonctionnalités', 'Multi-utilisateurs', 'Formation incluse'] }
             ],
             entreprise: [
-                { id: 'gratuit', nom: 'Gratuit', prix: 0, periode: 'illimité', proprietes: 2, features: ['Tableau de bord basique', 'Gestion des loyers', '2 propriétés maximum'] },
-                { id: 'starter', nom: 'Starter', prix: 50000, periode: 'an', proprietes: 10, features: ['Gestion multi-utilisateurs', '10 propriétés maximum', 'Support standard', 'API basique'] },
-                { id: 'premium', nom: 'Premium', prix: 100000, periode: 'an', proprietes: 25, features: ['Fonctionnalités avancées', '25 propriétés maximum', 'Support prioritaire', 'API complète'] },
-                { id: 'professionnel', nom: 'Professionnel', prix: 300000, periode: 'an', proprietes: 'Illimitées', features: ['Toutes les fonctionnalités', 'Propriétés illimitées', 'Support dédié 24/7', 'API complète'] }
+                { id: 'starter', nom: 'Starter', prix: 54000, periode: 'an', proprietes: 5, annexes: 0, features: ['Jusqu\'à 5 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', 'Export PDF'] },
+                { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'], featured: true },
+                { id: 'premium', nom: 'Premium', prix: 180000, periode: 'an', proprietes: 'Illimitées', annexes: 2, features: ['Maisons illimitées', 'Jusqu\'à 2 annexes', 'Toutes les fonctionnalités', 'Multi-utilisateurs', 'Formation incluse'] }
             ]
         };
         
@@ -1188,6 +2011,46 @@
             window.addEventListener('scroll', handleHeaderScroll);
             // Appeler une fois au chargement pour initialiser l'état
             handleHeaderScroll();
+
+            // Bouton retour en haut
+            const backToTopBtn = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 500) {
+                    backToTopBtn.classList.remove('hidden');
+                } else {
+                    backToTopBtn.classList.add('hidden');
+                }
+            });
+
+            if (backToTopBtn) {
+                backToTopBtn.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // Formulaire de contact
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    // Simuler l'envoi du formulaire
+                    Swal.fire({
+                        title: 'Message envoyé !',
+                        text: 'Nous vous répondrons dans les plus brefs délais.',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#1e40af'
+                    });
+
+                    // Réinitialiser le formulaire
+                    contactForm.reset();
+                });
+            }
         });
         
         // Navigation entre les étapes

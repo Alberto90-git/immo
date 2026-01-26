@@ -16,6 +16,7 @@ use App\Http\Controllers\ParcelleController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\EntrepriseController;
 use App\Http\Controllers\PubliciteController;
+use App\Http\Controllers\PlanController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -130,15 +131,30 @@ Route::middleware('auth')->group(function () {
     #PARAMETRAGE
     Route::get('/parametrage', [ParametreController::class, 'index'])->name('parametrage');
     Route::post('add', [ParametreController::class, 'create'])->name('store_param');
-    Route::post('add-anneexe', [ParametreController::class, 'storeAnnexe'])->name('store_annexe'); 
+    Route::post('add-anneexe', [ParametreController::class, 'storeAnnexe'])->name('store_annexe');
     Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
     Route::post('update-annexe', [ParametreController::class, 'updateAnnexe'])->name('update_annexe');
     Route::post('delete-annexe', [ParametreController::class, 'destroyAnnexe'])->name('destroy_annexe');
+
+    # API pour la gestion centralisée de l'agence active
+    Route::post('/api/set-active-annexe', [ParametreController::class, 'setActiveAnnexe'])->name('api.set_active_annexe');
+    Route::get('/api/get-active-annexe', [ParametreController::class, 'getActiveAnnexe'])->name('api.get_active_annexe');
     
     #PROFILE
     Route::get('/profile',[HomeController::class, 'profile'])->name('profileView');
     Route::post('update-profile', [HomeController::class, 'updateProfile'])->name('modifier_profile');
     Route::post('change-password', [UtilisateurController::class, 'updatePassword'])->name('modifierPassword');
+
+    # GESTION DES PLANS ET ABONNEMENTS
+    Route::prefix('plans')->group(function () {
+        Route::get('/', [PlanController::class, 'index'])->name('plans.index');
+        Route::get('/all', [PlanController::class, 'getPlans'])->name('plans.all');
+        Route::get('/current', [PlanController::class, 'getCurrentPlan'])->name('plans.current');
+        Route::get('/check-maison', [PlanController::class, 'checkMaisonLimit'])->name('plans.check-maison');
+        Route::get('/check-annexe', [PlanController::class, 'checkAnnexeLimit'])->name('plans.check-annexe');
+        Route::get('/usage-stats', [PlanController::class, 'getUsageStats'])->name('plans.usage-stats');
+        Route::post('/change', [PlanController::class, 'changePlan'])->name('plans.change');
+    });
 
 });
 

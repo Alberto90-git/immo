@@ -44,31 +44,47 @@ class HomeController extends Controller
      */
     public function index()
     {
-        try { 
+        try {
             $element = array();
 
+            // Utiliser l'agence active centralisee
+            $idannexe_ref = get_active_annexe_id();
+
             $element['nombreProprio'] = Proprietaire::whereNull('delete_at')
-                                                    ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                                    ->where(function($querry){
-                                                        if (Gate::none(['Is_admin'])) {
-                                                            $querry->where('idannexe_ref',Auth::user()->idannexe_ref);
-                                                        }
+                                                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                                    ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                        $query->where('idannexe_ref', $idannexe_ref);
                                                     })
                                                     ->count();
 
-            $element['nombreMaison'] = Maison::whereNull('delete_at')->count();
-        
-            $element['nombreLocataire'] = Locataire::whereNull('delete_at')->where('status',true)->count();
-            $element['nombreChambre'] = Chambre::whereNull('delete_at')->count();
+            $element['nombreMaison'] = Maison::whereNull('delete_at')
+                                            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                            ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                $query->where('idannexe_ref', $idannexe_ref);
+                                            })
+                                            ->count();
+
+            $element['nombreLocataire'] = Locataire::whereNull('delete_at')
+                                                    ->where('status', true)
+                                                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                                    ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                        $query->where('idannexe_ref', $idannexe_ref);
+                                                    })
+                                                    ->count();
+
+            $element['nombreChambre'] = Chambre::whereNull('delete_at')
+                                                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                                ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                    $query->where('idannexe_ref', $idannexe_ref);
+                                                })
+                                                ->count();
 
             //TOUS LES LOCATAIRES
             $element['locataire'] = Locataire::whereNull('locataires.delete_at')
-                                            ->where('locataires.status',true)
-                                            ->where('locataires.iddirection_ref',Auth::user()->iddirection_ref)
-                                            ->where(function($querry){
-                                                if (Gate::none(['Is_admin'])) {
-                                                    $querry->where('locataires.idannexe_ref',Auth::user()->idannexe_ref);
-                                                }
+                                            ->where('locataires.status', true)
+                                            ->where('locataires.iddirection_ref', Auth::user()->iddirection_ref)
+                                            ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                $query->where('locataires.idannexe_ref', $idannexe_ref);
                                             })
                                             ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
                                             ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
@@ -76,22 +92,20 @@ class HomeController extends Controller
 
             $element['proprioMaison'] = Proprietaire::whereNull('proprietaires.delete_at')
                                             ->join('maisons', 'maisons.proprio_id', '=', 'proprietaires.id')
-                                            ->where('proprietaires.iddirection_ref',Auth::user()->iddirection_ref)
-                                            ->where(function($querry){
-                                                if (Gate::none(['Is_admin'])) {
-                                                    $querry->where('proprietaires.idannexe_ref',Auth::user()->idannexe_ref);
-                                                }
+                                            ->where('proprietaires.iddirection_ref', Auth::user()->iddirection_ref)
+                                            ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                $query->where('proprietaires.idannexe_ref', $idannexe_ref);
                                             })
                                             ->whereNull('maisons.delete_at')
                                             ->get();
 
 
-            return view('home',['data' => $element]);
-            
+            return view('home', ['data' => $element]);
+
         } catch (QueryException $e) {
             //throw $th;
         }
-       
+
     }
 
     //LISTE DES LOCATAIRES

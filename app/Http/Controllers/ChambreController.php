@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 
 class ChambreController extends Controller
@@ -25,24 +24,23 @@ class ChambreController extends Controller
     public function index()
     {
        try {
+            // Utiliser l'agence active centralisee
+            $idannexe_ref = get_active_annexe_id();
+
             $allMaison = Maison::whereNull('delete_at')
-                                ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                ->where(function($querry){
-                                    if (Gate::none(['Is_admin'])) {
-                                        $querry->where('maisons.idannexe_ref',Auth::user()->idannexe_ref);
-                                    }
+                                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                    $query->where('maisons.idannexe_ref', $idannexe_ref);
                                 })
                                 ->get();
 
             $allChambres = Chambre::join('maisons', 'chambres.maison_id', '=', 'maisons.id')
                              ->whereNull('chambres.delete_at')
                              ->whereNull('maisons.delete_at')
-                             ->where('chambres.iddirection_ref',Auth::user()->iddirection_ref)
-                             ->where(function($querry){
-                                if (Gate::none(['Is_admin'])) {
-                                    $querry->where('chambres.idannexe_ref',Auth::user()->idannexe_ref);
-                                }
-                            })
+                             ->where('chambres.iddirection_ref', Auth::user()->iddirection_ref)
+                             ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                $query->where('chambres.idannexe_ref', $idannexe_ref);
+                             })
                              ->select('chambres.prix_chambre','chambres.iddirection_ref','chambres.idannexe_ref','chambres.maison_id','chambres.id','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','chambres.etat')
                              ->get();
 
@@ -51,7 +49,7 @@ class ChambreController extends Controller
 
        } catch (QueryException $e) {
 
-            return back()->with('error',"Echéc, veuillez verifier les données");
+            return back()->with('error',"Echec, veuillez verifier les donnees");
        }
     }
 
@@ -70,12 +68,10 @@ class ChambreController extends Controller
 
         }else{
 
-            $response = $this->check_is_admin_and_entreprise();
-
-            if ($response) {
-                $idannexe_ref = $annexe;
-            }else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return false;
             }
 
             $prix = Prix::create([
@@ -118,24 +114,36 @@ class ChambreController extends Controller
                 ]);
             }
 
-           // dd(Auth::user()->idannexe_ref);
+            // Utiliser l'annexe active centralisée
+            $idannexe_ref = get_active_annexe_id();
+            if (!$idannexe_ref) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Veuillez sélectionner une agence dans le header"
+                ]);
+            }
 
-            $nombreChambre = Maison::where('id',$request->nom_maison)
-                                    ->whereNull('delete_at')
-                                    ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                    ->where('idannexe_ref',$request->annexe)
-                                    ->get()
-                                    ->pluck('nombre_chambre')[0];
+            $maison = Maison::where('id', $request->nom_maison)
+                            ->whereNull('delete_at')
+                            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                            ->where('idannexe_ref', $idannexe_ref)
+                            ->first();
 
+            if (!$maison) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Maison introuvable ou non autorisée"
+                ]);
+            }
 
-            $nombreChambreSaved = Chambre::where('maison_id',$request->nom_maison)
-                                         ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                         ->where('idannexe_ref',$request->annexe)
-                                         ->where('etat',false)
+            $nombreChambre = $maison->nombre_chambre;
+
+            $nombreChambreSaved = Chambre::where('maison_id', $request->nom_maison)
+                                         ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                         ->where('idannexe_ref', $idannexe_ref)
+                                         ->where('etat', false)
                                          ->whereNull('delete_at')
                                          ->count();
-
-
 
             if ($nombreChambreSaved == $nombreChambre) {
 
@@ -143,13 +151,13 @@ class ChambreController extends Controller
                                          'status' => false,
                                          'message' => "Le nombre maximal de chambre pour cette maison est ".$nombreChambre,
                                         ]);
-            }else {
+            } else {
 
                 //VERIFIER SI LA CHAMBRE EXISTE DANS CETTE DEJA
                 $chambreExiste = Chambre::where('numero_chambre', $request->numero_chambre)
                                           ->where('maison_id', $request->nom_maison)
-                                          ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                         ->where('idannexe_ref',$request->annexe)
+                                          ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                          ->where('idannexe_ref', $idannexe_ref)
                                           ->whereNull('delete_at')
                                           ->count();
 
@@ -160,15 +168,7 @@ class ChambreController extends Controller
                             'message' => 'Le n°'.$request->numero_chambre." est déjà attribué à une chambre dans cette maison",
                       ]);
 
-                }else{
-
-                    $response = $this->check_is_admin_and_entreprise();
-
-                    if ($response) {
-                        $idannexe_ref = $request->annexe;
-                    }else {
-                        $idannexe_ref = Auth::user()->idannexe_ref;
-                    }
+                } else {
 
                   $chambreId = Chambre::insertGetId([
                                             'maison_id' => $request->nom_maison,
@@ -208,6 +208,7 @@ class ChambreController extends Controller
             }
         }
         catch (QueryException $e) {
+            dd($e);
             return response()->json([
                 'status' => false,
                 'message' => "Echec,essayez encore",
@@ -220,15 +221,9 @@ class ChambreController extends Controller
     {
         try {
 
-            $response = $this->check_is_admin_and_entreprise();
+            // Utiliser l'annexe active centralisée (le paramètre $idannexe_ref est déjà passé)
+            $idannexe_ref = get_active_annexe_id() ?? $idannexe_ref;
 
-            if ($response) {
-                $idannexe_ref = $idannexe_ref;
-            }else {
-                $idannexe_ref = Auth::user()->idannexe_ref;
-            }
-
-            
              $prixOff = Prix::where('iddirection_ref',$iddirection_ref)
                             ->where('idannexe_ref',$idannexe_ref)
                             ->where('maison_id',$maison_id)
@@ -269,14 +264,10 @@ class ChambreController extends Controller
     {
         try {
 
-           //VERIFIER SI LA CHAMBRE EXISTE DANS CETTE DEJA
-
-           $response = $this->check_is_admin_and_entreprise();
-
-           if ($response) {
-               $idannexe_ref = $request->annexe;
-           }else {
-               $idannexe_ref = Auth::user()->idannexe_ref;
+           // Utiliser l'annexe active centralisée
+           $idannexe_ref = get_active_annexe_id();
+           if (!$idannexe_ref) {
+               return back()->with('error', "Veuillez sélectionner une agence dans le header");
            }
 
            $existe_deja = Chambre::where('id',$request->chambre_id)

@@ -16,23 +16,6 @@
 
                   <div id="afficher" class="alert alert-primary d-none"></div>
 
-                  @can('Is_admin')
-                      @if(Auth::user()->type_compte != 'Particulier')
-                          <div class="col-md-12">
-                              <label class="form-label">Agence <span class="text-danger">*</span></label>
-                              <select class="form-select" id="annexe" name="annexe" required>
-                                  <option value="" disabled selected>Choisir une agence</option>
-                                  @if(Session::get('anne_data') != " ")
-                                      @foreach(Session::get('anne_data') as $terme)
-                                          <option value="{{ $terme->idannexes }}">{{ $terme->designation }}</option>
-                                      @endforeach
-                                  @endif 
-                              </select>
-                              <span class="invalid-feedback annexe_err"></span>
-                          </div>
-                      @endif
-                  @endcan
-
                   <div class="col-md-6">
                       <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
                       <input type="text" class="form-control" id="nom" name="nom" placeholder="Nom du propriétaire" required>
@@ -83,36 +66,13 @@
 </style>
 
 <script>
-
-
-// Fonction wrapper pour display_sweet_alerte2 avec z-index forcé
-function display_sweet_alert_over_modal(title, text, icon, buttonClass) {
-    // Appeler votre fonction existante
-    display_sweet_alerte2(title, text, icon, buttonClass);
-    
-    // Forcer le z-index après un court délai
-    setTimeout(function() {
-        const swalContainer = document.querySelector('.swal2-container');
-        const swalPopup = document.querySelector('.swal2-popup');
-        
-        if (swalContainer) {
-            swalContainer.style.zIndex = '10070';
-        }
-        if (swalPopup) {
-            swalPopup.style.zIndex = '10071';
-        }
-    }, 10);
-}
-
-
-
 function save_proprietaire() {
     const formattedPhone = validateAndFormatPhone('telephone');
     if (!formattedPhone) return;
 
     var data = new FormData();
     var form_data = $('#formulaireProprietaire').serializeArray();
-    
+
     $.each(form_data, function(key, input) {
         if (input.name === "telephone") {
             data.append("telephone", formattedPhone);
@@ -141,25 +101,25 @@ function save_proprietaire() {
 
             if (response.status) {
                 addRowToTable(response.data);
-                display_sweet_alert_over_modal("Succès !", response.message, "success", "btn btn-primary");
                 $('#AjouerProprietaire').modal('hide');
                 $("#formulaireProprietaire")[0].reset();
+                showProprietaireMessage("Succès !", response.message, "success", "btn btn-primary");
             } else {
                 if (response.error) {
                     printErrorMsg(response.error);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !", response.message, "warning", "btn btn-danger");
+                    showProprietaireMessage("Erreur !", response.message, "warning", "btn btn-danger");
                 }
             }
         },
         error: function(xhr) {
             $("#AjouerProprietaire button[data-bs-dismiss='modal']").prop("disabled", false);
             $("#AjouerProprietaire button#valider").prop("disabled", false).html('<span class="fa fa-save"></span> Enregistrer');
-            
+
             if (xhr.status === 422) {
                 printErrorMsg(xhr.responseJSON.error);
             } else {
-                display_sweet_alert_over_modal("Erreur !", "Une erreur est survenue", "error", "btn btn-danger");
+                showProprietaireMessage("Erreur !", "Une erreur est survenue", "error", "btn btn-danger");
             }
         }
     });

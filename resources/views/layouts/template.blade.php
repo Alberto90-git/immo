@@ -53,6 +53,15 @@
           @include('partials.navbar')
 
           <div class="content-wrapper">
+            <!-- Alerte admin sans agence sélectionnée -->
+            @if(is_admin_without_annexe_selected())
+              <div class="alert alert-warning alert-dismissible fade show m-3" role="alert">
+                <i class="bx bx-error-circle me-2"></i>
+                <strong>Attention !</strong> Veuillez sélectionner une agence dans le header pour pouvoir effectuer des opérations.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            @endif
+
             <!-- Content -->
 
             @yield('content')

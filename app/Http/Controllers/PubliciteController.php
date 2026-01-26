@@ -64,17 +64,17 @@ class PubliciteController extends Controller
                         $images->storeAs('public/'.$path, $image_name);
                         $image_link="$path/$image_name";
                     }
-                    
-                }
-                
-                $response = $this->check_is_admin_and_entreprise();
 
-                if ($response) {
-                    $idannexe_ref = $request->annexe;
-                }else {
-                    $idannexe_ref = Auth::user()->idannexe_ref;
                 }
-        
+
+                // Utiliser l'annexe active centralisée
+                $idannexe_ref = get_active_annexe_id();
+                if (!$idannexe_ref) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Veuillez sélectionner une agence dans le header"
+                    ]);
+                }
 
                 $pub = Publicite::create([
                                 'iddirection_ref' => Auth::user()->iddirection_ref,
@@ -147,15 +147,12 @@ class PubliciteController extends Controller
                         $image_link="$path/$image_name";
                     }
                 }
-                
-                $response = $this->check_is_admin_and_entreprise();
 
-                if ($response) {
-                    $idannexe_ref = $request->annexe;
-                }else {
-                    $idannexe_ref = Auth::user()->idannexe_ref;
+                // Utiliser l'annexe active centralisée
+                $idannexe_ref = get_active_annexe_id();
+                if (!$idannexe_ref) {
+                    return redirect()->back()->with('error', "Veuillez sélectionner une agence dans le header");
                 }
-        
 
                 $pub = Publicite::where('id',$request->id)
                                 ->update([

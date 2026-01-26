@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
-use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -27,23 +26,21 @@ class LocataireController extends Controller
     public function index()
     {
        try {
+            // Utiliser l'agence active centralisee
+            $idannexe_ref = get_active_annexe_id();
 
             $allMaison = Maison::whereNull('delete_at')
-                                ->where('iddirection_ref',Auth::user()->iddirection_ref)
-                                ->where(function($querry){
-                                    if (Gate::none(['Is_admin'])) {
-                                        $querry->where('idannexe_ref',Auth::user()->idannexe_ref);
-                                    }
+                                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                    $query->where('idannexe_ref', $idannexe_ref);
                                 })
                                 ->get();
 
-            $allLocataire = Locataire::where('locataires.status',true)
+            $allLocataire = Locataire::where('locataires.status', true)
                                       ->whereNull('locataires.delete_at')
-                                      ->where('locataires.iddirection_ref',Auth::user()->iddirection_ref)
-                                      ->where(function($querry){
-                                        if (Gate::none(['Is_admin'])) {
-                                            $querry->where('locataires.idannexe_ref',Auth::user()->idannexe_ref);
-                                        }
+                                      ->where('locataires.iddirection_ref', Auth::user()->iddirection_ref)
+                                      ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                        $query->where('locataires.idannexe_ref', $idannexe_ref);
                                       })
                                       ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
                                       ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
@@ -56,7 +53,7 @@ class LocataireController extends Controller
             return view('locataire.locataire', compact(['allMaison','allLocataire']));
 
        } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return back()->with('error','Echec, veuillez verifier les donnees');
        }
     }
 
@@ -193,15 +190,15 @@ class LocataireController extends Controller
                     $caution_courant = str_replace(" ", "", $request->caution_courant);
                 }
 
-
-                $response = $this->check_is_admin_and_entreprise();
-
-                if ($response) {
-                    $idannexe_ref = $request->annexe;
-                }else {
-                    $idannexe_ref = Auth::user()->idannexe_ref;
+                // Utiliser l'annexe active centralisée
+                $idannexe_ref = get_active_annexe_id();
+                if (!$idannexe_ref) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Veuillez sélectionner une agence dans le header"
+                    ]);
                 }
-                
+
                 $locataires = Locataire::create([
                                     'maison_id' => $request->nom_maison,
                                     'chambre_id' => $request->numero_chambre,
@@ -272,14 +269,12 @@ class LocataireController extends Controller
                     $caution_courant = str_replace(" ", "", $request->caution_courant);
                 }
 
-                $response = $this->check_is_admin_and_entreprise();
-
-                if ($response) {
-                    $idannexe_ref = $request->annexe;
-                }else {
-                    $idannexe_ref = Auth::user()->idannexe_ref;
+                // Utiliser l'annexe active centralisée
+                $idannexe_ref = get_active_annexe_id();
+                if (!$idannexe_ref) {
+                    return back()->with('error', "Veuillez sélectionner une agence dans le header");
                 }
-                
+
              $locataire = Locataire::where('id',$request->locataire_id)
                               ->update([
                                     'nom'                   => Str::upper($request->nom_locataire),

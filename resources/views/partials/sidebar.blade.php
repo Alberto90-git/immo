@@ -68,166 +68,157 @@
 
     <ul class="menu-inner py-1">
 
-      <li class="menu-item  {{ set_collapsed(request()->is('parametrage')) }}">
-        <a href="{{ route('parametrage') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-home-circle"></i>
-          <div data-i18n="Analytics">Paramétrage</div>
-        </a>
-      </li>
-
-
-      <li class="menu-item  {{ set_collapsed(request()->is('roles') || request()->is('roles/create') || request()->is('gerer-user/utilisateur') || request()->is('gerer-user/add') ) }}   {{ set_show(request()->is('roles') || request()->is('roles/create') || request()->is('gerer-user/utilisateur') || request()->is('gerer-user/add')  || request()->is('password-off-line') ) }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-          <div data-i18n="Authentications">Gestion utilisateur</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item  {{ set_sous_menu(request()->is('roles') || request()->is('roles/create')) }}">
-            <a href="{{ route('roles.create') }}" class="menu-link">
-              <div data-i18n="Basic">Fonction</div>
-            </a>
-          </li>
-          <li class="menu-item  {{ set_sous_menu(request()->is('gerer-user')  || request()->is('gerer-user/utilisateur') || request()->is('gerer-user/add') ) }} ">
-            <a href="{{ route('getUserView') }}" class="menu-link">
-              <div data-i18n="Basic">Utilisateur</div>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      {{-- <a href="pages-account-settings-account.html" class="menu-link">
-        <div data-i18n="Account">Account</div>
-      </a> --}}
-
-
-      <li class="menu-item">
-        <a href="{{ route('getViewCompte') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-home-circle"></i>
-          <div data-i18n="Analytics">Gestion entreprise</div>
-        </a>
-      </li>
-
-
-      <li class="menu-item {{ set_collapsed(request()->is('home')) }}">
+      <!-- Accueil -->
+      <li class="menu-item {{ request()->routeIs('home') ? 'active' : '' }}">
         <a href="{{ route('home') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-home-circle"></i>
-          <div data-i18n="Analytics">Accueil</div>
+          <i class="menu-icon tf-icons bx bx-home-smile"></i>
+          <div data-i18n="Accueil">Accueil</div>
         </a>
       </li>
 
+      <!-- Parametrage -->
+      <li class="menu-item {{ request()->routeIs('parametrage') ? 'active' : '' }}">
+        <a href="{{ route('parametrage') }}" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-cog"></i>
+          <div data-i18n="Parametrage">Parametrage</div>
+        </a>
+      </li>
 
-      <li class="menu-item  {{ set_collapsed(request()->is('gerer-proprietaire/create')) }}">
+      <!-- Gestion utilisateur -->
+      <li class="menu-item {{ request()->is('roles*') || request()->is('gerer-user*') || request()->is('password-off-line') ? 'active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons bx bx-user-circle"></i>
+          <div data-i18n="Gestion utilisateur">Gestion utilisateur</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->is('roles*') ? 'active' : '' }}">
+            <a href="{{ route('roles.create') }}" class="menu-link">
+              <div data-i18n="Fonction">Fonction</div>
+            </a>
+          </li>
+          <li class="menu-item {{ request()->is('gerer-user*') ? 'active' : '' }}">
+            <a href="{{ route('getUserView') }}" class="menu-link">
+              <div data-i18n="Utilisateur">Utilisateur</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Gestion entreprise -->
+      <li class="menu-item {{ request()->routeIs('getViewCompte') ? 'active' : '' }}">
+        <a href="{{ route('getViewCompte') }}" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-building"></i>
+          <div data-i18n="Gestion entreprise">Gestion entreprise</div>
+        </a>
+      </li>
+
+      <!-- Gestion proprietaire -->
+      <li class="menu-item {{ request()->is('gerer-proprietaire*') || request()->routeIs('proprietaires.index') ? 'active' : '' }}">
         <a href="{{ route('proprietaires.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion propriétaire</div>
+          <i class="menu-icon tf-icons bx bx-user-pin"></i>
+          <div data-i18n="Gestion proprietaire">Gestion proprietaire</div>
         </a>
       </li>
 
-
-      <li class="menu-item  {{ set_collapsed(request()->is('gerer-maison/create')) }}">
+      <!-- Gestion des maisons -->
+      <li class="menu-item {{ request()->is('gerer-maison*') ? 'active' : '' }}">
         <a href="{{ route('get_maisonView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion des maisons</div>
+          <i class="menu-icon tf-icons bx bx-home-alt"></i>
+          <div data-i18n="Gestion des maisons">Gestion des maisons</div>
         </a>
       </li>
 
-      <li class="menu-item  {{ set_collapsed(request()->is('gerer-chambre/create')) }}">
+      <!-- Gestion des chambres -->
+      <li class="menu-item {{ request()->is('gerer-chambre*') ? 'active' : '' }}">
         <a href="{{ route('get_chambreView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion des chambres</div>
+          <i class="menu-icon tf-icons bx bx-door-open"></i>
+          <div data-i18n="Gestion des chambres">Gestion des chambres</div>
         </a>
       </li>
 
-      {{-- <li class="menu-item {{ Route::is('gerer-proprietaire.create') ? 'active' : '' }}"> 
-        <a href="{{ route('get_prixView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion des prix</div>
-        </a>
-      </li> --}}
-
-
-      <li class="menu-item  {{ set_collapsed(request()->is('gerer-locataire/create')) }}">
+      <!-- Gestion des locataires -->
+      <li class="menu-item {{ request()->is('gerer-locataire*') ? 'active' : '' }}">
         <a href="{{ route('get_locataireView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion des locataires</div>
+          <i class="menu-icon tf-icons bx bx-user-check"></i>
+          <div data-i18n="Gestion des locataires">Gestion des locataires</div>
         </a>
       </li>
 
-
-      <li class="menu-item  {{ set_collapsed(request()->is('gerer-facture/create')) }}">
+      <!-- Gestion des loyers -->
+      <li class="menu-item {{ request()->is('gerer-facture*') ? 'active' : '' }}">
         <a href="{{ route('get_factureView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion des loyers</div>
+          <i class="menu-icon tf-icons bx bx-money"></i>
+          <div data-i18n="Gestion des loyers">Gestion des loyers</div>
         </a>
       </li>
 
-
-      <li class="menu-item  {{ set_collapsed(request()->is('client') || request()->is('parcelle')) }}  {{ set_show(request()->is('client') || request()->is('parcelle') ) }}">
+      <!-- Gestion des dossiers -->
+      <li class="menu-item {{ request()->is('client') || request()->is('parcelle') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-          <div data-i18n="Authentications">Gestion des dossiers</div>
+          <i class="menu-icon tf-icons bx bx-folder-open"></i>
+          <div data-i18n="Gestion des dossiers">Gestion des dossiers</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item  {{ set_sous_menu(request()->is('client')) }}">
+          <li class="menu-item {{ request()->is('client') ? 'active' : '' }}">
             <a href="{{ route('getViewClient') }}" class="menu-link">
-              <div data-i18n="Basic">Dossier client</div>
+              <div data-i18n="Dossier client">Dossier client</div>
             </a>
           </li>
-          <li class="menu-item  {{ set_sous_menu(request()->is('parcelle')) }}">
+          <li class="menu-item {{ request()->is('parcelle') ? 'active' : '' }}">
             <a href="{{ route('getViewParcelle') }}" class="menu-link">
-              <div data-i18n="Basic">Dossier parcelle</div>
+              <div data-i18n="Dossier parcelle">Dossier parcelle</div>
             </a>
           </li>
         </ul>
       </li>
 
-
-      <li class="menu-item  {{ set_collapsed(request()->is('gerer-statistique-list') || request()->is('finance') ||  request()->is('statistique-recu')  ||  request()->is('statistique-dossier')  ) }}   {{ set_show(request()->is('gerer-statistique-list') || request()->is('finance') ||  request()->is('statistique-recu')  ||  request()->is('statistique-dossier')  ) }}">
+      <!-- Gestion reporting -->
+      <li class="menu-item {{ request()->is('gerer-statistique*') || request()->is('finance') || request()->is('statistique-recu') || request()->is('statistique-dossier') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-          <div data-i18n="Authentications">Gestion reporting</div>
+          <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
+          <div data-i18n="Gestion reporting">Gestion reporting</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item  {{ set_sous_menu(request()->is('gerer-statistique-list')) }}">
+          <li class="menu-item {{ request()->is('gerer-statistique*') ? 'active' : '' }}">
             <a href="{{ route('get_statistiqueView') }}" class="menu-link">
-              <div data-i18n="Basic">P/M/C/L</div>
+              <div data-i18n="P/M/C/L">P/M/C/L</div>
             </a>
           </li>
-          <li class="menu-item  {{ set_sous_menu(request()->is('finance')) }}">
+          <li class="menu-item {{ request()->is('finance') ? 'active' : '' }}">
             <a href="{{ route('getFinance') }}" class="menu-link">
-              <div data-i18n="Basic">Finance</div>
+              <div data-i18n="Finance">Finance</div>
             </a>
           </li>
-          <li class="menu-item  {{ set_sous_menu(request()->is('statistique-recu')) }}">
+          <li class="menu-item {{ request()->is('statistique-recu') ? 'active' : '' }}">
             <a href="{{ route('getRecu') }}" class="menu-link">
-              <div data-i18n="Basic">Réçu</div>
+              <div data-i18n="Recu">Recu</div>
             </a>
           </li>
-          <li class="menu-item  {{ set_sous_menu(request()->is('statistique-dossier')) }}">
+          <li class="menu-item {{ request()->is('statistique-dossier') ? 'active' : '' }}">
             <a href="{{ route('getDossier') }}" class="menu-link">
-              <div data-i18n="Basic">Gestion dossier</div>
+              <div data-i18n="Gestion dossier">Gestion dossier</div>
             </a>
           </li>
         </ul>
       </li>
 
-
-      <li class="menu-item {{ set_collapsed(request()->is('publicite/pub')) }}"> 
+      <!-- Gestion publicite -->
+      <li class="menu-item {{ request()->is('publicite*') ? 'active' : '' }}">
         <a href="{{ route('pub_displaying') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Gestion publicité</div>
+          <i class="menu-icon tf-icons bx bx-speaker"></i>
+          <div data-i18n="Gestion publicite">Gestion publicite</div>
         </a>
       </li>
 
-
-      <li class="menu-item {{ set_collapsed(request()->is('historique')) }}"> 
+      <!-- Log connexion -->
+      <li class="menu-item {{ request()->is('historique') ? 'active' : '' }}">
         <a href="{{ route('historique') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-collection"></i>
-          <div data-i18n="Basic">Log connexion</div>
+          <i class="menu-icon tf-icons bx bx-history"></i>
+          <div data-i18n="Log connexion">Log connexion</div>
         </a>
       </li>
 
-
+      <!-- Deconnexion -->
       <li class="menu-item">
         <a class="menu-link" href="{{ route('logout') }}"
             onclick="event.preventDefault();
@@ -235,11 +226,11 @@
               <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                 @csrf
               </form>
-              <i class="bx bx-power-off me-2"></i>
-              <span>Quitter</span>
+              <i class="menu-icon tf-icons bx bx-power-off text-danger"></i>
+              <span class="text-danger">Quitter</span>
         </a>
       </li>
 
-   
+
     </ul>
   </aside>

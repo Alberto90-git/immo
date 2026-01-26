@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Annexe;
 use App\Direction;
+use App\Plan;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Gate;
 
@@ -345,6 +346,7 @@ if (!function_exists("nom_mois")) {
     function nom_mois($numero)
     {
         try {
+            $nom = '';
             if ($numero == '01') {
                 $nom = 'Janvier';
             }
@@ -474,5 +476,381 @@ if (!function_exists("nom_mois")) {
         }
 
         return 'montant trop élevé';
+    }
+}
+
+/**
+ * Fonctions helpers pour la gestion des plans d'abonnement
+ */
+
+if (!function_exists("get_current_plan")) {
+    /**
+     * Récupère le plan actuel de l'utilisateur connecté
+     *
+     * @return Plan|null
+     */
+    function get_current_plan()
+    {
+        try {
+            if (!Auth::check()) {
+                return null;
+            }
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if (!$direction) {
+                return null;
+            }
+
+            return $direction->plan ?? Plan::starter();
+        } catch (QueryException $e) {
+            return null;
+        }
+    }
+}
+
+if (!function_exists("get_plan_info")) {
+    /**
+     * Récupère les informations du plan de l'utilisateur connecté
+     *
+     * @return array|null
+     */
+    function get_plan_info()
+    {
+        try {
+            if (!Auth::check()) {
+                return null;
+            }
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if (!$direction) {
+                return null;
+            }
+
+            return $direction->getPlanInfo();
+        } catch (QueryException $e) {
+            return null;
+        }
+    }
+}
+
+if (!function_exists("can_create_maison")) {
+    /**
+     * Vérifie si l'utilisateur peut créer une nouvelle maison
+     *
+     * @return array ['allowed' => bool, 'message' => string]
+     */
+    function can_create_maison()
+    {
+        try {
+            if (!Auth::check()) {
+                return ['allowed' => false, 'message' => 'Vous devez être connecté.'];
+            }
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if (!$direction) {
+                return ['allowed' => false, 'message' => 'Direction non trouvée.'];
+            }
+
+            return $direction->canCreateMaison();
+        } catch (QueryException $e) {
+            return ['allowed' => false, 'message' => 'Erreur lors de la vérification.'];
+        }
+    }
+}
+
+if (!function_exists("can_create_annexe")) {
+    /**
+     * Vérifie si l'utilisateur peut créer une nouvelle annexe
+     *
+     * @return array ['allowed' => bool, 'message' => string]
+     */
+    function can_create_annexe()
+    {
+        try {
+            if (!Auth::check()) {
+                return ['allowed' => false, 'message' => 'Vous devez être connecté.'];
+            }
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if (!$direction) {
+                return ['allowed' => false, 'message' => 'Direction non trouvée.'];
+            }
+
+            return $direction->canCreateAnnexe();
+        } catch (QueryException $e) {
+            return ['allowed' => false, 'message' => 'Erreur lors de la vérification.'];
+        }
+    }
+}
+
+if (!function_exists("get_all_plans")) {
+    /**
+     * Récupère tous les plans actifs
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    function get_all_plans()
+    {
+        try {
+            return Plan::actifs();
+        } catch (QueryException $e) {
+            return collect([]);
+        }
+    }
+}
+
+if (!function_exists("format_price")) {
+    /**
+     * Formate un prix en XOF
+     *
+     * @param float $price
+     * @return string
+     */
+    function format_price($price)
+    {
+        return number_format($price, 0, ',', ' ') . ' XOF';
+    }
+}
+
+if (!function_exists("is_abonnement_actif")) {
+    /**
+     * Vérifie si l'abonnement de l'utilisateur est actif
+     *
+     * @return bool
+     */
+    function is_abonnement_actif()
+    {
+        try {
+            if (!Auth::check()) {
+                return false;
+            }
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if (!$direction) {
+                return false;
+            }
+
+            return $direction->hasAbonnementActif();
+        } catch (QueryException $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists("get_abonnement_status")) {
+    /**
+     * Récupère le statut de l'abonnement avec plus de détails
+     *
+     * @return array
+     */
+    function get_abonnement_status()
+    {
+        try {
+            if (!Auth::check()) {
+                return [
+                    'actif' => false,
+                    'statut' => 'non_connecte',
+                    'message' => 'Vous devez être connecté.'
+                ];
+            }
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if (!$direction) {
+                return [
+                    'actif' => false,
+                    'statut' => 'erreur',
+                    'message' => 'Direction non trouvée.'
+                ];
+            }
+
+            $plan = $direction->plan ?? Plan::starter();
+            $isActif = $direction->hasAbonnementActif();
+            $isExpire = $direction->isAbonnementExpire();
+
+            return [
+                'actif' => $isActif,
+                'statut' => $direction->statut_abonnement,
+                'plan_nom' => $plan ? $plan->nom : 'Aucun',
+                'plan_code' => $plan ? $plan->code : null,
+                'date_fin' => $direction->abonnement_fin,
+                'expire' => $isExpire,
+                'message' => $isActif ? 'Abonnement actif' : ($isExpire ? 'Abonnement expiré' : 'Abonnement inactif')
+            ];
+        } catch (QueryException $e) {
+            return [
+                'actif' => false,
+                'statut' => 'erreur',
+                'message' => 'Erreur lors de la vérification.'
+            ];
+        }
+    }
+}
+
+/**
+ * Fonctions helpers pour la gestion centralisée de l'agence active
+ */
+
+if (!function_exists("get_active_annexe_id")) {
+    /**
+     * Retourne l'ID de l'annexe active
+     * - Pour les admins : utilise la session
+     * - Pour les autres : utilise leur idannexe_ref
+     *
+     * @return int|null
+     */
+    function get_active_annexe_id()
+    {
+        try {
+            if (!Auth::check()) {
+                return null;
+            }
+
+            $user = Auth::user();
+
+            // Si l'utilisateur est admin et type entreprise, on utilise la session
+            if ($user->is_admin == 1 && $user->type_compte != 'Particulier') {
+                return session('active_annexe_id');
+            }
+
+            // Pour les autres utilisateurs, on utilise leur annexe de référence
+            return $user->idannexe_ref;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
+
+if (!function_exists("has_active_annexe")) {
+    /**
+     * Vérifie si une annexe active est définie
+     *
+     * @return bool
+     */
+    function has_active_annexe()
+    {
+        return get_active_annexe_id() !== null;
+    }
+}
+
+if (!function_exists("is_admin_without_annexe_selected")) {
+    /**
+     * Vérifie si l'utilisateur est un admin sans annexe sélectionnée
+     * Utile pour afficher une alerte
+     *
+     * @return bool
+     */
+    function is_admin_without_annexe_selected()
+    {
+        try {
+            if (!Auth::check()) {
+                return false;
+            }
+
+            $user = Auth::user();
+
+            // Vérifier si c'est un admin d'entreprise
+            if ($user->is_admin == 1 && $user->type_compte != 'Particulier') {
+                // Vérifier si une annexe est sélectionnée en session
+                return !session()->has('active_annexe_id') || session('active_annexe_id') === null;
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists("get_active_annexe_name")) {
+    /**
+     * Retourne le nom de l'annexe active
+     *
+     * @return string
+     */
+    function get_active_annexe_name()
+    {
+        $annexeId = get_active_annexe_id();
+
+        if (!$annexeId) {
+            return 'Aucune agence';
+        }
+
+        return get_annexee_name($annexeId);
+    }
+}
+
+if (!function_exists("get_active_annexe")) {
+    /**
+     * Retourne l'objet Annexe active complet
+     *
+     * @return Annexe|null
+     */
+    function get_active_annexe()
+    {
+        $annexeId = get_active_annexe_id();
+
+        if (!$annexeId) {
+            return null;
+        }
+
+        try {
+            return Annexe::where('idannexes', $annexeId)->first();
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
+
+if (!function_exists("get_annexe_details_for_invoice")) {
+    /**
+     * Retourne les détails de l'agence pour les factures
+     *
+     * @param int $idannexe_ref
+     * @return array|null
+     */
+    function get_annexe_details_for_invoice($idannexe_ref)
+    {
+        try {
+            $annexe = Annexe::where('idannexes', $idannexe_ref)->first();
+
+            if (!$annexe) {
+                return null;
+            }
+
+            // Trouver le chemin du logo
+            $logoPath = null;
+            if ($annexe->logo) {
+                $possiblePaths = [
+                    storage_path('app/public/' . $annexe->logo),
+                    public_path('storage/' . $annexe->logo),
+                    public_path($annexe->logo),
+                    $annexe->logo
+                ];
+
+                foreach ($possiblePaths as $path) {
+                    if (file_exists($path)) {
+                        $logoPath = $path;
+                        break;
+                    }
+                }
+            }
+
+            return [
+                'designation' => $annexe->designation,
+                'telephone' => $annexe->telephone,
+                'email' => $annexe->email,
+                'siege_social' => $annexe->siege_social,
+                'logo_path' => $logoPath,
+                'cash_electronique' => $annexe->cash_electronique
+            ];
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

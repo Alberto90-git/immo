@@ -11,11 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Carbon\Carbon;  
 use Illuminate\Support\Facades\Storage;
-use App\Publicite;
-use Illuminate\Support\Facades\Gate;
 
 
 
@@ -62,6 +59,21 @@ class ParametreController extends SessionController
     public function storeAnnexe(Request $request)
     {
         try {
+            // Vérifier les limites du plan d'abonnement pour les annexes
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+
+            if ($direction) {
+                $canCreate = $direction->canCreateAnnexe();
+
+                if (!$canCreate['allowed']) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $canCreate['message'],
+                        'plan_limit' => true
+                    ]);
+                }
+            }
+
             $validator = Validator::make(
                 $request->all(),
                 [
@@ -87,7 +99,7 @@ class ParametreController extends SessionController
                 'iddirection_ref'  => Auth::user()->iddirection_ref,
                 'designation'      => Str::ucfirst($request->designation),
                 'siege_social'     => Str::ucfirst($request->adresse),
-                'telephone'        => $request->telephone,          
+                'telephone'        => $request->telephone,
                 'email'            => $request->email,
                 'userdata'         => $this->getDirectionDsignation(Auth::user()->iddirection_ref)
             ]);
@@ -100,9 +112,18 @@ class ParametreController extends SessionController
                     ->causedBy(Auth::user()->id)
                     ->log('Ajout d\'une annexe: '.Str::upper($request->designation).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
+                // Récupérer les informations du plan pour afficher le nombre restant
+                $planInfo = $direction ? $direction->getPlanInfo() : null;
+                $messageComplet = Str::upper($request->designation).' a été ajouté avec succès.';
+
+                if ($planInfo && $planInfo['annexes_restantes'] > 0) {
+                    $messageComplet .= " (Il vous reste {$planInfo['annexes_restantes']} annexe(s) disponible(s))";
+                }
+
                 return response()->json([
                     'status' => true,
-                    'message' => Str::upper($request->designation).' a été ajouté avec succès',
+                    'message' => $messageComplet,
+                    'plan_info' => $planInfo
                 ]);
             }
         } catch (QueryException $e) {
@@ -165,13 +186,14 @@ class ParametreController extends SessionController
                     }
                 }
                 
-                $cashElectroniquePath = $parametre->cash_electronique_url;
-                $logoPath = $parametre->logo_url;
+                $cashElectroniquePath = $parametre->getRawOriginal('cash_electronique_url');
+                $logoPath = $parametre->getRawOriginal('logo_url');
             } else {
                 $cashElectroniquePath = null;
                 $logoPath = null;
                 $parametre = new Parametre();
                 $parametre->iddirection_ref = Auth::user()->iddirection_ref;
+                $parametre->format_choisi = 'default';
             }
 
             // Upload de l'image du cash électronique
@@ -218,14 +240,12 @@ class ParametreController extends SessionController
             ]);
 
         } catch (QueryException $e) {
-            \Log::error('Erreur lors de l\'enregistrement des paramètres: ' . $e->getMessage());
-            
+
             return response()->json([
                 'status' => false,
-                'message' => "Échec lors de l'enregistrement. Veuillez réessayer.",
+                'message' => "Échec lors de l'enregistrement. Veuillez réessayer.  ddddd",
             ]);
         } catch (\Exception $e) {
-            \Log::error('Erreur générale: ' . $e->getMessage());
             
             return response()->json([
                 'status' => false,
@@ -245,20 +265,57 @@ class ParametreController extends SessionController
                     'adresse' => 'bail|required|string',
                     'telephone' => 'bail|required|string',
                     'email' => 'bail|required|string',
+                    'logo' => 'nullable|mimes:jpeg,png,jpg|max:2048',
                 ],
+                [
+                    'logo.mimes' => 'Le logo doit être au format JPEG, PNG ou JPG.',
+                    'logo.max' => 'Le logo ne doit pas dépasser 2MB.',
+                ]
             );
 
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
 
+            // Récupérer l'annexe existante
+            $annexe = Annexe::where('idannexes', $request->id)->first();
 
-            $annexes = Annexe::where('idannexes',$request->id)
-                            ->update([
-                                'iddirection_ref'  => Auth::user()->iddirection_ref,
-                                'designation'      => Str::ucfirst($request->designation),
-                                'siege_social'     => Str::ucfirst($request->adresse),
-                                'telephone'        => $request->telephone,          
-                                'email'          => $request->email,
-                                'userdata'       => $this->getDirectionDsignation(Auth::user()->iddirection_ref)
-                            ]);
+            if (!$annexe) {
+                return back()->with('error', 'Annexe non trouvée.');
+            }
+
+            // Préparer les données à mettre à jour
+            $updateData = [
+                'iddirection_ref'  => Auth::user()->iddirection_ref,
+                'designation'      => Str::ucfirst($request->designation),
+                'siege_social'     => Str::ucfirst($request->adresse),
+                'telephone'        => $request->telephone,
+                'email'            => $request->email,
+                'userdata'         => $this->getDirectionDsignation(Auth::user()->iddirection_ref),
+                'cash_electronique' => $request->cash_electronique,
+            ];
+
+            // Upload du logo si présent
+            if ($request->hasFile('logo')) {
+                // Supprimer l'ancien logo
+                if ($annexe->logo && Storage::exists("public/{$annexe->logo}")) {
+                    Storage::delete("public/{$annexe->logo}");
+                }
+
+                $file = $request->file('logo');
+                $path = 'annexes/logos';
+
+                if (!Storage::exists("public/$path")) {
+                    Storage::makeDirectory("public/$path", 0775, true);
+                }
+
+                $filename = 'logo_annexe_' . $request->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs("public/$path", $filename);
+                $updateData['logo'] = "$path/$filename";
+            }
+
+            $annexes = Annexe::where('idannexes', $request->id)->update($updateData);
+
             if ($annexes) {
 
                 $existeDirection = Direction::where('iddirection',$request->id)->first();
@@ -269,20 +326,25 @@ class ParametreController extends SessionController
                                 'iddirection'  => Auth::user()->iddirection_ref,
                                 'designation'      => Str::ucfirst($request->designation),
                                 'siege_social'     => Str::ucfirst($request->adresse),
-                                'telephone'        => $request->telephone,          
+                                'telephone'        => $request->telephone,
                                 'email'          => $request->email,
                             ]);
                 }
 
                 Session::put(['anne_data'=>  SessionController::save_session_annexe()]);
 
-                return back()->with('success', Str::upper($request->designation).' '.' mis à jour avec succès');
+                activity()->performedOn(new Annexe())
+                          ->causedBy(Auth::user()->id)
+                          ->log('Modification de l\'annexe ' . Str::upper($request->designation) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+                return back()->with('success', Str::upper($request->designation).' mis à jour avec succès');
             }
         }
         catch (QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
                 return back()->with('error', 'Cette désignation existe déjà.');
             }
+            return back()->with('error', 'Erreur lors de la mise à jour.');
         }
     }
 
@@ -308,7 +370,7 @@ class ParametreController extends SessionController
                            ->log("Suppression de l'annexe ".Str::upper($objetDeleted->designation).' '.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
                 return back()->with('success','Suppression effectuée avec succès');
-                
+
             }
         } catch (QueryException $e) {
 
@@ -316,6 +378,119 @@ class ParametreController extends SessionController
         }
     }
 
+    /**
+     * Définir l'annexe active en session (pour les admins)
+     */
+    public function setActiveAnnexe(Request $request)
+    {
+        try {
+            // Vérifier que l'utilisateur est admin et type entreprise
+            if (Auth::user()->is_admin != 1 || Auth::user()->type_compte == 'Particulier') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Vous n\'êtes pas autorisé à effectuer cette action.'
+                ], 403);
+            }
 
-    
+            $validator = Validator::make($request->all(), [
+                'annexe_id' => 'required|integer'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID d\'annexe invalide',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Vérifier que l'annexe appartient à la direction de l'utilisateur
+            $annexe = Annexe::where('idannexes', $request->annexe_id)
+                           ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                           ->whereNull('status')
+                           ->whereNull('blocage_annexe')
+                           ->first();
+
+            if (!$annexe) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Annexe non trouvée ou non autorisée.'
+                ], 404);
+            }
+
+            // Stocker l'annexe active en session
+            Session::put('active_annexe_id', $request->annexe_id);
+
+            activity()->performedOn($annexe)
+                      ->causedBy(Auth::user()->id)
+                      ->log('Changement d\'agence active vers ' . $annexe->designation . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Agence "' . $annexe->designation . '" sélectionnée avec succès.',
+                'data' => [
+                    'id' => $annexe->idannexes,
+                    'nom' => $annexe->designation,
+                    'adresse' => $annexe->siege_social,
+                    'telephone' => $annexe->telephone,
+                    'email' => $annexe->email
+                ]
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erreur lors du changement d\'agence.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Récupérer l'annexe active actuelle
+     */
+    public function getActiveAnnexe()
+    {
+        try {
+            $annexeId = get_active_annexe_id();
+
+            if (!$annexeId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Aucune agence active.',
+                    'data' => null
+                ]);
+            }
+
+            $annexe = Annexe::where('idannexes', $annexeId)
+                           ->whereNull('status')
+                           ->first();
+
+            if (!$annexe) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Agence non trouvée.',
+                    'data' => null
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Agence active récupérée.',
+                'data' => [
+                    'id' => $annexe->idannexes,
+                    'nom' => $annexe->designation,
+                    'adresse' => $annexe->siege_social,
+                    'telephone' => $annexe->telephone,
+                    'email' => $annexe->email
+                ]
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erreur lors de la récupération de l\'agence.'
+            ], 500);
+        }
+    }
+
 }

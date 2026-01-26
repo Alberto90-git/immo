@@ -35,24 +35,6 @@
                @csrf
               
 
-                @can('Is_admin')
-                @if(Auth::user()->type_compte != 'Particulier')
-                <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Choisir une annexe<span style="color: red;">*</span></label>
-                  <select required="" class="form-select @error('annexe') is-invalid @enderror" name="annexe" id="annexe" aria-label="Default select example">
-                      <option selected disabled value="">Choisir une annexe</option>
-                       @if(!empty(Session::get('anne_data')))
-                        @foreach(Session::get('anne_data') as $terme)
-                          <option  value="{{$terme->idannexes}}">{{ $terme->designation }}</option>
-                        @endforeach
-                       @endif 
-                    </select>
-                        <span class="invalid-feedback annexe_err" role="alert">
-                        </span>
-                  </div>
-                  @endif
-                @endcan
-                
                 <div class="col-6">
                   <label for="inputNanme4" class="form-label">Nom client<span style="color: red;">*</span></label>
                   <input type="text" name="nom" class="form-control" id="nom" required="">
@@ -265,25 +247,7 @@
                      <input type="hidden" name="id" class="form-control" id="id" value="{{ $items->id}} ">
  
  
-                   @can('Is_admin')
-                   @if(Auth::user()->type_compte != 'Particulier')
-                     <div class="col-12">
-                     <label for="inputNanme4" class="form-label">Choisir une annexe<span style="color: red;">*</span></label>
-                     <select required="" class="form-select @error('annexe') is-invalid @enderror" name="annexe" id="annexe" aria-label="Default select example">
-                         <option selected disabled value="">Choisir une annexe</option>
-                          @if(!empty(Session::get('anne_data')))
-                           @foreach(Session::get('anne_data') as $terme)
-                             <option  value="{{$terme->idannexes}}"    {{$items->idannexe_ref == $terme->idannexes ? 'selected':''}}>{{ $terme->designation }}</option>
-                           @endforeach
-                          @endif 
-                       </select>
-                           <span class="invalid-feedback annexe_err" role="alert">
-                           </span>
-                      </div>
-                      @endif
-                   @endcan
- 
-                     <div class="col-6">
+                   <div class="col-6">
                        <label for="inputNanme4" class="form-label">Nom<span style="color: red;">*</span></label>
                        <input type="text" name="nom" value="{{ $items->nom }}" class="form-control" id="nom">
                      </div>

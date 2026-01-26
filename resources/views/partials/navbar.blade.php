@@ -3,6 +3,9 @@
 
     @php
         $agences = get_agences_liste();
+        $isAdminEntreprise = Auth::user()->is_admin == 1 && Auth::user()->type_compte != 'Particulier';
+        $activeAnnexeId = get_active_annexe_id();
+        $activeAnnexeName = get_active_annexe_name();
     @endphp
 
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
@@ -12,35 +15,37 @@
     </div>
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-        <!-- Search -->
-        {{-- <div class="navbar-nav align-items-center">
-            <div class="nav-item d-flex align-items-center">
-                <i class="bx bx-search fs-4 lh-0"></i>
-                <input type="text" class="form-control border-0 shadow-none" placeholder="Search..."
-                    aria-label="Search..." />
-            </div>
-        </div> --}}
-        <!-- /Search -->
 
-        <!-- Sélecteur d'agence -->
-        <div class="nav-item ms-3 position-relative">
-            <select class="form-select form-select-sm" id="agence-select" aria-label="Sélection d'agence">
-                <option value="" selected disabled>Choisir une agence</option>
-                @if (isset($agences))
-                    @foreach ($agences as $agence)
-                        <option value="{{ $agence->id }}">{{ $agence->designation }}</option>
-                    @endforeach
-                @endif
-            </select>
-            <div class="agence-loading" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-                <div class="spinner-border spinner-border-sm" role="status">
-                    <span class="visually-hidden">Loading...</span>
+        @if($isAdminEntreprise)
+            <!-- Sélecteur d'agence pour les admins d'entreprise -->
+            <div class="nav-item ms-3 position-relative">
+                <select class="form-select form-select-sm" id="agence-select" aria-label="Sélection d'agence">
+                    <option value="" {{ !$activeAnnexeId ? 'selected' : '' }} disabled>Choisir une agence</option>
+                    @if (isset($agences))
+                        @foreach ($agences as $agence)
+                            <option value="{{ $agence->idannexes }}" {{ $activeAnnexeId == $agence->idannexes ? 'selected' : '' }}>
+                                {{ $agence->designation }}
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
+                <div class="agence-loading" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        @else
+            <!-- Badge affichant le nom de l'agence pour les non-admins -->
+            <div class="nav-item ms-3">
+                <span class="badge bg-primary rounded-pill px-3 py-2">
+                    <i class="bx bx-building me-1"></i>
+                    {{ $activeAnnexeName }}
+                </span>
+            </div>
+        @endif
 
         <ul class="navbar-nav flex-row align-items-center ms-auto">
-           
 
             <!-- User -->
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -177,48 +182,46 @@
         background-color: #012970;
         color: white;
     }
+
+    /* Style pour le badge d'agence des non-admins */
+    .badge.bg-primary {
+        background-color: #012970 !important;
+        font-size: 0.85rem;
+    }
 </style>
 
+@if($isAdminEntreprise)
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const agenceSelect = document.getElementById('agence-select');
         const loadingIndicator = document.querySelector('.agence-loading');
         const agenceToast = new bootstrap.Toast(document.getElementById('agence-toast'));
-        
+
         if (agenceSelect) {
-            // Récupérer la sélection précédente si elle existe
-            const savedAgence = localStorage.getItem('selectedAgence');
-            if (savedAgence) {
-                agenceSelect.value = savedAgence;
-            }
-            
             // Écouter les changements de sélection
             agenceSelect.addEventListener('change', function() {
                 const selectedAgenceId = this.value;
                 if (!selectedAgenceId) return;
-                
-                localStorage.setItem('selectedAgence', selectedAgenceId);
-                
+
                 // Afficher l'indicateur de chargement
                 loadingIndicator.style.display = 'block';
-                
-                // Effectuer la requête AJAX
-                fetchAgenceData(selectedAgenceId);
+
+                // Effectuer la requête AJAX pour définir l'agence active
+                setActiveAnnexe(selectedAgenceId);
             });
         }
-        
-        function fetchAgenceData(agenceId) {
-            // Configuration de la requête AJAX
+
+        function setActiveAnnexe(agenceId) {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            
-            fetch('/api/agence-data', {
+
+            fetch('{{ route("api.set_active_annexe") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ agence_id: agenceId })
+                body: JSON.stringify({ annexe_id: agenceId })
             })
             .then(response => {
                 if (!response.ok) {
@@ -229,13 +232,22 @@
             .then(data => {
                 // Cacher l'indicateur de chargement
                 loadingIndicator.style.display = 'none';
-                
-                // Traiter la réponse
-                if (data.success) {
-                    showToast('Succès', 'Les données de l\'agence ont été chargées avec succès.', 'success');
-                    
-                    // Mettre à jour l'interface utilisateur avec les données reçues
-                    updateUIWithAgenceData(data.data);
+
+                if (data.status) {
+                    showToast('Succès', data.message, 'success');
+
+                    // Mettre à jour le titre de la page
+                    if (data.data && data.data.nom) {
+                        document.title = `Immo | ${data.data.nom}`;
+                    }
+
+                    // Déclencher un événement pour informer les autres composants
+                    window.dispatchEvent(new CustomEvent('agenceChanged', { detail: data.data }));
+
+                    // Recharger la page après un court délai pour mettre à jour les données
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1000);
                 } else {
                     showToast('Erreur', data.message || 'Une erreur s\'est produite.', 'error');
                 }
@@ -243,34 +255,17 @@
             .catch(error => {
                 // Cacher l'indicateur de chargement
                 loadingIndicator.style.display = 'none';
-                
+
                 // Afficher un message d'erreur
-                showToast('Erreur', 'Impossible de charger les données de l\'agence.', 'error');
+                showToast('Erreur', 'Impossible de changer d\'agence.', 'error');
                 console.error('Erreur:', error);
             });
         }
-        
-        function updateUIWithAgenceData(data) {
-            // Ici, vous pouvez mettre à jour votre interface utilisateur
-            // avec les données reçues de l'agence
-            
-            // Exemple: Mettre à jour le titre de la page
-            if (data.nom) {
-                document.title = `Immo | ${data.nom}`;
-            }
-            
-            // Exemple: Mettre à jour des statistiques ou d'autres éléments UI
-            console.log('Données agence reçues:', data);
-            
-            // Vous pourriez aussi déclencher un événement personnalisé
-            // pour informer d'autres composants que les données ont changé
-            window.dispatchEvent(new CustomEvent('agenceChanged', { detail: data }));
-        }
-        
+
         function showToast(title, message, type = 'info') {
             const toastHeader = document.querySelector('#agence-toast .toast-header');
             const toastBody = document.querySelector('#agence-toast .toast-body');
-            
+
             // Changer la couleur en fonction du type
             if (type === 'success') {
                 toastHeader.style.backgroundColor = '#198754';
@@ -279,12 +274,13 @@
             } else {
                 toastHeader.style.backgroundColor = '#012970';
             }
-            
+
             // Mettre à jour le contenu du toast
             toastBody.textContent = message;
-            
+
             // Afficher le toast
             agenceToast.show();
         }
     });
 </script>
+@endif
