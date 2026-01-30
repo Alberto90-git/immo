@@ -22,6 +22,8 @@ use App\Mail\ResetPassword;
 use App\Mail\SendCodemail;
 use App\Mail\VerificationEmail;
 use App\Rules\MatchOldPassword;
+use App\Jobs\SendSubscriptionInvoiceJob;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 
 
@@ -415,15 +417,12 @@ class UtilisateurController extends SessionController
                         'code_pays' => ['required'],
                         'telephone' => ['required'],
                         'type_compte' => ['required', 'string'],
-                        'mot_de_passe' => ['required', 'string', 'min:8'],
-                        'Confirmer_mot_de_passe' => ['required','same:mot_de_passe','string', 'min:8'],
                     ],
                     [
                         '*.required' => 'Ce champ est obligatoire.',
                         'email.unique' => 'L\'adresse mail est déjà utilisé',
                         'nom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
                         'prenom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
-                        'Confirmer_mot_de_passe.same' => 'Le mot de passe de confirmation ne correspond pas.',
                     ]
                 );
             } else {
@@ -436,8 +435,6 @@ class UtilisateurController extends SessionController
                         'code_pays' => ['required'],
                         'telephone' => ['required'],
                         'type_compte' => ['required', 'string'],
-                        'mot_de_passe' => ['required', 'string', 'min:8'],
-                        'Confirmer_mot_de_passe' => ['required','same:mot_de_passe','string', 'min:8'],
                         'designation' => ['required', 'string'],
                         'adresse' => ['required', 'string'],
                         'email_entreprise' => ['required','string','email','max:255'],
@@ -446,7 +443,6 @@ class UtilisateurController extends SessionController
                         '*.required' => 'Ce champ est obligatoire.',
                         'email.unique' => 'L\'adresse mail est déjà utilisé',
                         '*.min' => 'Le :attribute doit avoir au moins :min caractères.',
-                        'Confirmer_mot_de_passe.same' => 'Le mot de passe de confirmation ne correspond pas.',
                     ]
                 );
             }
@@ -466,7 +462,7 @@ class UtilisateurController extends SessionController
             $email = $request->email;
             $grade = 'Administrateur';
             $type_compte = $request->type_compte;
-            $mot_de_passe = $request->mot_de_passe;
+            $mot_de_passe = Str::random(12);
             
             // Gestion des données de l'entreprise
             if ($type_compte === 'Entreprise') {
@@ -482,11 +478,21 @@ class UtilisateurController extends SessionController
                 $email_entreprise = $email;
             }
             
-            // Récupérer le plan Starter par défaut
-            $planStarter = Plan::starter();
-            $planId = $planStarter ? $planStarter->idplan : null;
+            // Récupérer le plan sélectionné par l'utilisateur (défaut = essai)
+            $planCode = $request->plan_code ?? 'essai';
+            $planSelectionne = Plan::where('code', $planCode)->first();
+            if (!$planSelectionne) {
+                $planSelectionne = Plan::essai();
+            }
+            $planId = $planSelectionne ? $planSelectionne->idplan : null;
 
-            // Création de la direction avec le plan Starter par défaut
+            // Durée : 14 jours pour essai (gratuit), 12 mois pour plans payants
+            $isPlanGratuit = $planSelectionne && floatval($planSelectionne->prix_annuel) == 0;
+            $abonnementFin = $isPlanGratuit
+                ? Carbon::now()->addDays(14)
+                : Carbon::now()->addYear();
+
+            // Création de la direction avec le plan sélectionné
             $direction_id = Direction::insertGetId([
                 'designation' => $designation,
                 'siege_social' => $adresse,
@@ -494,13 +500,13 @@ class UtilisateurController extends SessionController
                 'email' => $email_entreprise,
                 'idplan_ref' => $planId,
                 'abonnement_debut' => Carbon::now(),
-                'abonnement_fin' => Carbon::now()->addYear(), // 1 an d'abonnement
-                'statut_abonnement' => 'essai', // Période d'essai par défaut
+                'abonnement_fin' => $abonnementFin,
+                'statut_abonnement' => 'essai', // En attente de validation admin
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);
             
-            // Création de l'annexe
+            // Création de l'annexe (bloquée par défaut, en attente de validation admin)
             $annexe_id = Annexe::insertGetId([
                 'iddirection_ref' => $direction_id,
                 'designation' => $designation,
@@ -508,11 +514,12 @@ class UtilisateurController extends SessionController
                 'telephone' => $telepone_entreprise,
                 'email' => $email_entreprise,
                 'userdata' => $designation,
+                'blocage_annexe' => Carbon::now(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);
-            
-            // Création de l'utilisateur
+
+            // Création de l'utilisateur (bloqué par défaut, en attente de validation admin)
             $newuser = User::create([
                 'iddirection_ref' => $direction_id,
                 'idannexe_ref' => $annexe_id,
@@ -524,6 +531,7 @@ class UtilisateurController extends SessionController
                 'email_verification_token' => Str::random(32),
                 'email_verified' => 0,
                 'is_admin' => true,
+                'blocage_entreprise' => Carbon::now(),
                 'password' => Hash::make($mot_de_passe),
                 'password_changed_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -560,17 +568,63 @@ class UtilisateurController extends SessionController
             User::where('id', $newuser->id)->update(['mail_token_at' => Carbon::now()]);
             
             DB::commit();
-            
+
+            // Préparer les données pour la facture d'abonnement
+            $planData = $planSelectionne ? [
+                'nom' => $planSelectionne->nom,
+                'code' => $planSelectionne->code,
+                'prix_annuel' => $planSelectionne->prix_annuel,
+                'max_maisons' => $planSelectionne->max_maisons,
+                'max_annexes' => $planSelectionne->max_annexes,
+            ] : [
+                'nom' => 'Essai',
+                'code' => 'essai',
+                'prix_annuel' => 0,
+                'max_maisons' => 2,
+                'max_annexes' => 0,
+            ];
+
+            $invoiceData = [
+                'user' => [
+                    'nom' => $nom,
+                    'prenom' => $prenom,
+                    'email' => $email,
+                    'telephone' => $telepone_entreprise,
+                ],
+                'plan' => $planData,
+                'direction' => [
+                    'designation' => $designation,
+                    'abonnement_debut' => Carbon::now()->toDateString(),
+                    'abonnement_fin' => $abonnementFin->toDateString(),
+                ],
+            ];
+
+            // Envoi de la facture d'abonnement par email (synchrone)
+            try {
+                $invoiceService = new \App\Services\SubscriptionInvoiceService();
+                $pdfContent = $invoiceService->generate($invoiceData);
+                $invoiceData['pdf_content'] = $pdfContent;
+                Mail::to($email)->send(new \App\Mail\SubscriptionInvoiceMail($invoiceData));
+            } catch (\Exception $invoiceException) {
+                Log::error('Erreur envoi facture inscription: ' . $invoiceException->getMessage(), [
+                    'email' => $email,
+                    'trace' => $invoiceException->getTraceAsString(),
+                ]);
+            }
+
             // Envoi de l'email de vérification
             try {
                 Mail::to($newuser->email)->send(new VerificationEmail($userinfos));
-                
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Votre compte a été créé avec succès! Un email de confirmation vous a été envoyé.'
                 ]);
-                
+
             } catch (\Exception $mailException) {
+                Log::error('Erreur envoi email vérification: ' . $mailException->getMessage(), [
+                    'email' => $email,
+                ]);
                 // Le compte est créé même si l'email échoue
                 return response()->json([
                     'status' => true,

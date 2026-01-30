@@ -841,6 +841,29 @@ if (!function_exists("get_annexe_details_for_invoice")) {
                 }
             }
 
+            // Fallback: chercher le logo dans le Parametre de la direction
+            if (!$logoPath && $annexe->iddirection_ref) {
+                $parametre = \App\Parametre::where('iddirection_ref', $annexe->iddirection_ref)->first();
+                if ($parametre) {
+                    $rawLogoUrl = $parametre->getRawOriginal('logo_url');
+                    if ($rawLogoUrl) {
+                        $possiblePaths = [
+                            storage_path('app/public/' . $rawLogoUrl),
+                            public_path('storage/' . $rawLogoUrl),
+                            public_path($rawLogoUrl),
+                            $rawLogoUrl
+                        ];
+
+                        foreach ($possiblePaths as $path) {
+                            if (file_exists($path)) {
+                                $logoPath = $path;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             return [
                 'designation' => $annexe->designation,
                 'telephone' => $annexe->telephone,

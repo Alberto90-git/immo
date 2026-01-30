@@ -143,7 +143,7 @@ Route::middleware('auth')->group(function () {
     #PROFILE
     Route::get('/profile',[HomeController::class, 'profile'])->name('profileView');
     Route::post('update-profile', [HomeController::class, 'updateProfile'])->name('modifier_profile');
-    Route::post('change-password', [UtilisateurController::class, 'updatePassword'])->name('modifierPassword');
+    Route::post('change-password', [HomeController::class, 'updatePassword'])->name('modifierPassword');
 
     # GESTION DES PLANS ET ABONNEMENTS
     Route::prefix('plans')->group(function () {

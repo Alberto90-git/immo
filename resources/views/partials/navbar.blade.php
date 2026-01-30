@@ -18,23 +18,32 @@
 
         @if($isAdminEntreprise)
             <!-- Sélecteur d'agence pour les admins d'entreprise -->
-            <div class="nav-item ms-3 position-relative">
-                <select class="form-select form-select-sm" id="agence-select" aria-label="Sélection d'agence">
-                    <option value="" {{ !$activeAnnexeId ? 'selected' : '' }} disabled>Choisir une agence</option>
-                    @if (isset($agences))
-                        @foreach ($agences as $agence)
-                            <option value="{{ $agence->idannexes }}" {{ $activeAnnexeId == $agence->idannexes ? 'selected' : '' }}>
-                                {{ $agence->designation }}
-                            </option>
-                        @endforeach
-                    @endif
-                </select>
-                <div class="agence-loading" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="visually-hidden">Loading...</span>
+            @if((Auth::user()->type_compte != 'Particulier') && (Auth::user()->is_admin == 1))
+                <div class="nav-item ms-3 position-relative">
+                    <select class="form-select form-select-sm" id="agence-select" aria-label="Sélection d'agence">
+                        <option value="" {{ !$activeAnnexeId ? 'selected' : '' }} disabled>Choisir une agence</option>
+                        @if (isset($agences))
+                            @foreach ($agences as $agence)
+                                <option value="{{ $agence->idannexes }}" {{ $activeAnnexeId == $agence->idannexes ? 'selected' : '' }}>
+                                    {{ $agence->designation }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                    <div class="agence-loading" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="nav-item ms-3">
+                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                        <i class="bx bx-building me-1"></i>
+                        {{ $activeAnnexeName }}
+                    </span>
+                </div>
+            @endif
         @else
             <!-- Badge affichant le nom de l'agence pour les non-admins -->
             <div class="nav-item ms-3">
@@ -79,23 +88,13 @@
                     <li>
                         <a class="dropdown-item" href="{{ route('profileView') }}">
                             <i class="bx bx-user me-2"></i>
-                            <span class="align-middle">Mon Profile</span>
+                            <span class="align-middle">Mon Profil</span>
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
-                            <i class="bx bx-cog me-2"></i>
-                            <span class="align-middle">Settings</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            <span class="d-flex align-items-center align-middle">
-                                <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
-                                <span class="flex-grow-1 align-middle">Billing</span>
-                                <span
-                                    class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-                            </span>
+                        <a class="dropdown-item" href="{{ route('profileView') }}#password">
+                            <i class="bx bx-lock-alt me-2"></i>
+                            <span class="align-middle">Mot de passe</span>
                         </a>
                     </li>
                     <li>

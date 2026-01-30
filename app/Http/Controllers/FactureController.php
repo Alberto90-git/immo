@@ -636,7 +636,7 @@ class FactureController extends Controller
 
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell(0, 6, 'Mode paiement :'.$mode_paiement, 0, 1);
+            $fpdf->Cell(0, 6, 'Mode paiement :'.utf8_decode($mode_paiement), 0, 1);
             $y += 8;
             // Tableau des détails
             $colDesc = 70;
@@ -770,14 +770,14 @@ class FactureController extends Controller
           $fpdf->SetX(($pageWidth - 30) / 2 + 20);
           $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
 
-          $signatureY += 20;
+          $signatureY += 15;
 
           // Lignes de signature
-          // $lineLength = 40;
-          // $fpdf->Line(($pageWidth - 30) / 4, $signatureY, ($pageWidth - 30) / 4 + $lineLength, $signatureY);
-          // $fpdf->Line(($pageWidth - 30) / 4 * 3 - $lineLength / 2, $signatureY, ($pageWidth - 30) / 4 * 3 + $lineLength / 2, $signatureY);
+          $lineLength = 40;
+          $fpdf->Line(($pageWidth - 30) / 4, $signatureY, ($pageWidth - 30) / 4 + $lineLength, $signatureY);
+          $fpdf->Line(($pageWidth - 30) / 4 * 3 - $lineLength / 2, $signatureY, ($pageWidth - 30) / 4 * 3 + $lineLength / 2, $signatureY);
 
-          // $signatureY += 5;
+          $signatureY += 3;
 
           // Noms sous les signatures
           $fpdf->SetFont('Arial', 'I', 6);
@@ -985,7 +985,7 @@ class FactureController extends Controller
 
       $fpdf->SetFont('Arial', 'B', 7);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell(0, 6, 'Mode paiement :'.$mode_paiement, 0, 1);
+      $fpdf->Cell(0, 6, 'Mode paiement :'.utf8_decode($mode_paiement), 0, 1);
       $y += 8;
 
 
@@ -1113,20 +1113,20 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'I', 7);
       $fpdf->SetTextColor(100, 100, 100);
       $fpdf->SetXY(10, $signatureY);
-      $fpdf->Cell(($pageWidth - 30) / 2, 4, 'Signature du locataire', 0, 0, 'C');
+      $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du locataire'), 0, 0, 'C');
 
       // Signature responsable
       $fpdf->SetX(($pageWidth - 30) / 2 + 20);
-      $fpdf->Cell(($pageWidth - 30) / 2, 4, 'Signature du responsable', 0, 1, 'C');
+      $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
 
-      $signatureY += 10;
+      $signatureY += 15;
 
       // Lignes de signature
-      //$lineLength = 40;
-      //$fpdf->Line(($pageWidth - 30) / 4, $signatureY, ($pageWidth - 30) / 4 + $lineLength, $signatureY);
-      //$fpdf->Line(($pageWidth - 30) / 4 * 3 - $lineLength / 2, $signatureY, ($pageWidth - 30) / 4 * 3 + $lineLength / 2, $signatureY);
+      $lineLength = 40;
+      $fpdf->Line(($pageWidth - 30) / 4, $signatureY, ($pageWidth - 30) / 4 + $lineLength, $signatureY);
+      $fpdf->Line(($pageWidth - 30) / 4 * 3 - $lineLength / 2, $signatureY, ($pageWidth - 30) / 4 * 3 + $lineLength / 2, $signatureY);
 
-      $signatureY += 5;
+      $signatureY += 3;
 
       // Noms sous les signatures
       $fpdf->SetFont('Arial', 'I', 6);

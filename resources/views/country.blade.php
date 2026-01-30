@@ -156,5 +156,4 @@
     <option value="+249">Soudan</option>
     <option value="+597">Suriname</option>
     <option value="+268">Swaziland</option>
-   
 </select>

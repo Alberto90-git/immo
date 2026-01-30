@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Plan;
+use App\User;
+use App\Annexe;
 use App\Direction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
+use App\Services\SubscriptionInvoiceService;
+use App\Mail\SubscriptionInvoiceMail;
 use Carbon\Carbon;
 
 class PlanController extends Controller
@@ -204,16 +210,60 @@ class PlanController extends Controller
                 ], 400);
             }
 
-            // Activer le nouveau plan (ici on suppose que le paiement a déjà été traité)
-            $direction->activerPlan($request->plan_id);
+            // Mettre à jour le plan (en attente de validation admin)
+            $direction->idplan_ref = $newPlan->idplan;
+            $direction->abonnement_debut = Carbon::now();
+            $direction->abonnement_fin = Carbon::now()->addYear();
+            $direction->statut_abonnement = 'essai'; // En attente de validation
+            $direction->save();
+
+            // Bloquer l'entreprise pour validation admin
+            User::where('iddirection_ref', $direction->iddirection)
+                ->update(['blocage_entreprise' => Carbon::now()]);
+            Annexe::where('iddirection_ref', $direction->iddirection)
+                ->update(['blocage_annexe' => Carbon::now()]);
+
+            // Envoyer la facture du nouveau plan par email
+            try {
+                $user = Auth::user();
+                $invoiceData = [
+                    'user' => [
+                        'nom' => $user->nom,
+                        'prenom' => $user->prenom,
+                        'email' => $user->email,
+                        'telephone' => $direction->telephone ?? '',
+                    ],
+                    'plan' => [
+                        'nom' => $newPlan->nom,
+                        'code' => $newPlan->code,
+                        'prix_annuel' => $newPlan->prix_annuel,
+                        'max_maisons' => $newPlan->max_maisons,
+                        'max_annexes' => $newPlan->max_annexes,
+                    ],
+                    'direction' => [
+                        'designation' => $direction->designation,
+                        'abonnement_debut' => Carbon::now()->toDateString(),
+                        'abonnement_fin' => Carbon::now()->addYear()->toDateString(),
+                    ],
+                ];
+
+                $invoiceService = new SubscriptionInvoiceService();
+                $pdfContent = $invoiceService->generate($invoiceData);
+                $invoiceData['pdf_content'] = $pdfContent;
+                Mail::to($user->email)->send(new SubscriptionInvoiceMail($invoiceData));
+            } catch (\Exception $e) {
+                Log::error('Erreur envoi facture upgrade: ' . $e->getMessage(), [
+                    'email' => Auth::user()->email,
+                ]);
+            }
 
             activity()->performedOn($direction)
                 ->causedBy(Auth::user()->id)
-                ->log('Changement de plan vers ' . $newPlan->nom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+                ->log('Demande de changement de plan vers ' . $newPlan->nom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
             return response()->json([
                 'status' => true,
-                'message' => "Votre abonnement a été mis à jour vers le plan {$newPlan->nom}.",
+                'message' => "Votre demande de passage au plan {$newPlan->nom} a été enregistrée. Une facture vous a été envoyée par email. Votre compte sera activé après validation par l'administrateur.",
                 'plan_info' => $direction->getPlanInfo()
             ]);
         } catch (QueryException $e) {

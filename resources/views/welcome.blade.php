@@ -10,8 +10,17 @@
     
     <title>ImmoManager - Votre partenaire de gestion immobilière</title>
     
-    <!-- Favicon corrigé -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><text y='50%' x='50%' dominant-baseline='middle' text-anchor='middle' font-size='400'>🏠</text></svg>">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ImmoManager">
+    <link rel="apple-touch-icon" href="/logo/LOGO.jpg">
     
     <!-- Chargement optimisé des ressources -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1273,7 +1282,6 @@
                     <div class="step active" id="step-1">1</div>
                     <div class="step" id="step-2">2</div>
                     <div class="step" id="step-3">3</div>
-                    <div class="step" id="step-4">4</div>
                 </div>
                 
                 <!-- Formulaire étape 1: Type de compte -->
@@ -1394,56 +1402,26 @@
                     </div>
                 </div>
                 
-                <!-- Formulaire étape 3: Plan d'abonnement -->
+                <!-- Formulaire étape 3: Plan d'abonnement et finalisation -->
                 <div class="step-form" id="step-form-3">
                     <h3 class="mb-4">Choisissez votre plan</h3>
                     <div id="plans-container">
                         <!-- Les plans seront chargés dynamiquement -->
                     </div>
-                    
-                    <div class="form-navigation">
-                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">
-                            <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Précédent
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep(4)" id="btn-next-3" disabled>
-                            Suivant <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Formulaire étape 4: Sécurité et finalisation -->
-                <div class="step-form" id="step-form-4">
-                    <h3 class="mb-4">Sécurité du compte</h3>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                        <div class="password-strength">
-                            <div class="password-strength-bar" id="password-strength-bar"></div>
-                        </div>
-                        <div class="form-text">
-                            Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.
-                        </div>
-                        <div class="invalid-feedback" id="password-feedback"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                        <div class="invalid-feedback">Les mots de passe ne correspondent pas.</div>
-                    </div>
-                    
-                    <div class="mb-3 form-check">
+
+                    <div class="mb-3 mt-4 form-check">
                         <input type="checkbox" class="form-check-input" id="conditions" required>
                         <label class="form-check-label" for="conditions">
                             J'accepte les <a href="#" class="text-primary">conditions générales d'utilisation</a> et la <a href="#" class="text-primary">politique de confidentialité</a>.
                         </label>
                         <div class="invalid-feedback">Vous devez accepter les conditions pour continuer.</div>
                     </div>
-                    
+
                     <div class="form-navigation">
-                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3)">
+                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">
                             <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Précédent
                         </button>
-                        <button type="button" class="btn btn-success" id="btn-submit" onclick="submitForm()">
+                        <button type="button" class="btn btn-success" id="btn-submit" onclick="submitForm()" disabled>
                             <i class="fas fa-check me-2" aria-hidden="true"></i> Créer mon compte
                         </button>
                     </div>
@@ -1783,13 +1761,15 @@
         // Données des plans d'abonnement
         const plans = {
             particulier: [
+                { id: 'essai', nom: 'Essai Gratuit', prix: 0, periode: '14 jours', proprietes: 2, annexes: 0, features: ['Jusqu\'à 2 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', '14 jours gratuits'], featured: true },
                 { id: 'starter', nom: 'Starter', prix: 54000, periode: 'an', proprietes: 5, annexes: 0, features: ['Jusqu\'à 5 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', 'Export PDF'] },
                 { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'] },
                 { id: 'premium', nom: 'Premium', prix: 180000, periode: 'an', proprietes: 'Illimitées', annexes: 2, features: ['Maisons illimitées', 'Jusqu\'à 2 annexes', 'Toutes les fonctionnalités', 'Multi-utilisateurs', 'Formation incluse'] }
             ],
             entreprise: [
+                { id: 'essai', nom: 'Essai Gratuit', prix: 0, periode: '14 jours', proprietes: 2, annexes: 0, features: ['Jusqu\'à 2 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', '14 jours gratuits'], featured: true },
                 { id: 'starter', nom: 'Starter', prix: 54000, periode: 'an', proprietes: 5, annexes: 0, features: ['Jusqu\'à 5 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', 'Export PDF'] },
-                { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'], featured: true },
+                { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'] },
                 { id: 'premium', nom: 'Premium', prix: 180000, periode: 'an', proprietes: 'Illimitées', annexes: 2, features: ['Maisons illimitées', 'Jusqu\'à 2 annexes', 'Toutes les fonctionnalités', 'Multi-utilisateurs', 'Formation incluse'] }
             ]
         };
@@ -1827,12 +1807,6 @@
             
             // Validation en temps réel de l'email
             document.getElementById('email').addEventListener('blur', validateEmail);
-            
-            // Force du mot de passe
-            document.getElementById('password').addEventListener('input', checkPasswordStrength);
-            
-            // Confirmation du mot de passe
-            document.getElementById('confirm_password').addEventListener('input', validatePasswordConfirmation);
 
             // Gestion du menu mobile
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -2065,30 +2039,30 @@
                 document.getElementById(`step-${currentStep}`).classList.add('active');
                 
                 // Mettre à jour la barre de progression
-                document.getElementById('progress-bar').style.width = `${(currentStep-1) * 25}%`;
-                
+                document.getElementById('progress-bar').style.width = `${(currentStep-1) * 50}%`;
+
                 // Charger les plans si on arrive à l'étape 3
                 if (currentStep === 3) {
                     loadPlans();
                 }
-                
+
                 // Empêcher le scroll vers le haut
                 return false;
             }
             return false;
         }
-        
+
         function prevStep(step) {
             document.getElementById(`step-form-${currentStep}`).classList.remove('active');
             document.getElementById(`step-${currentStep}`).classList.remove('active');
-            
+
             currentStep = step;
-            
+
             document.getElementById(`step-form-${currentStep}`).classList.add('active');
             document.getElementById(`step-${currentStep}`).classList.add('active');
-            
+
             // Mettre à jour la barre de progression
-            document.getElementById('progress-bar').style.width = `${(currentStep-1) * 25}%`;
+            document.getElementById('progress-bar').style.width = `${(currentStep-1) * 50}%`;
             
             // Empêcher le scroll vers le haut
             return false;
@@ -2184,92 +2158,26 @@
                     document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
                     this.classList.add('selected');
                     selectedPlan = plan;
-                    document.getElementById('btn-next-3').disabled = false;
+                    document.getElementById('btn-submit').disabled = false;
                 });
                 
                 container.appendChild(planElement);
             });
         }
         
-        // Vérification de la force du mot de passe
-        function checkPasswordStrength() {
-            const password = document.getElementById('password').value;
-            const strengthBar = document.getElementById('password-strength-bar');
-            const feedback = document.getElementById('password-feedback');
-            
-            // Réinitialiser
-            strengthBar.className = 'password-strength-bar';
-            feedback.textContent = '';
-            document.getElementById('password').classList.remove('is-invalid');
-            
-            if (password.length === 0) {
-                return;
-            }
-            
-            // Critères de force
-            let strength = 0;
-            let messages = [];
-            
-            if (password.length >= 8) strength++;
-            else messages.push('au moins 8 caractères');
-            
-            if (/[A-Z]/.test(password)) strength++;
-            else messages.push('une lettre majuscule');
-            
-            if (/[a-z]/.test(password)) strength++;
-            else messages.push('une lettre minuscule');
-            
-            if (/[0-9]/.test(password)) strength++;
-            else messages.push('un chiffre');
-            
-            if (/[^A-Za-z0-9]/.test(password)) strength++;
-            else messages.push('un caractère spécial');
-            
-            // Mettre à jour l'affichage
-            if (strength <= 2) {
-                strengthBar.className = 'password-strength-bar weak';
-                feedback.textContent = 'Faible: ' + messages.join(', ');
-                document.getElementById('password').classList.add('is-invalid');
-            } else if (strength <= 4) {
-                strengthBar.className = 'password-strength-bar medium';
-                feedback.textContent = 'Moyen';
-            } else {
-                strengthBar.className = 'password-strength-bar strong';
-                feedback.textContent = 'Fort';
-            }
-        }
-        
-        // Validation de la confirmation du mot de passe
-        function validatePasswordConfirmation() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password');
-            
-            if (confirmPassword.value !== password) {
-                confirmPassword.classList.add('is-invalid');
-                return false;
-            } else {
-                confirmPassword.classList.remove('is-invalid');
-                return true;
-            }
-        }
-        
         // Soumission du formulaire
         async function submitForm() {
-            if (!validateStep(4)) {
+            if (!selectedPlan) {
+                Swal.fire('Erreur', 'Veuillez sélectionner un plan d\'abonnement.', 'error');
                 return;
             }
-            
-            if (!validatePasswordConfirmation()) {
-                Swal.fire('Erreur', 'Les mots de passe ne correspondent pas.', 'error');
-                return;
-            }
-            
+
             if (!document.getElementById('conditions').checked) {
                 document.getElementById('conditions').classList.add('is-invalid');
                 Swal.fire('Erreur', 'Vous devez accepter les conditions générales.', 'error');
                 return;
             }
-            
+
             // Récupérer les données du formulaire
             const formData = {
                 type_compte: accountType === 'particulier' ? 'Particulier' : 'Entreprise',
@@ -2278,8 +2186,7 @@
                 email: document.getElementById('email').value,
                 code_pays: document.getElementById('code_pays').value,
                 telephone: document.getElementById('telephone').value,
-                mot_de_passe: document.getElementById('password').value,
-                Confirmer_mot_de_passe: document.getElementById('confirm_password').value,
+                plan_code: selectedPlan.id,
                 _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             };
             
@@ -2344,6 +2251,71 @@
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Créer mon compte';
             }
+        }
+    </script>
+
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999; background:linear-gradient(135deg,#1e40af 0%,#3b82f6 100%); color:#fff; padding:16px 20px; box-shadow:0 -4px 20px rgba(0,0,0,0.15); animation:slideUp 0.4s ease-out;">
+        <div style="max-width:600px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                <img src="/logo/LOGO.jpg" alt="ImmoManager" style="width:44px; height:44px; border-radius:10px; border:2px solid rgba(255,255,255,0.3);">
+                <div>
+                    <div style="font-weight:700; font-size:15px;">Installer ImmoManager</div>
+                    <div style="font-size:12px; opacity:0.85;">Accédez rapidement depuis votre écran d'accueil</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; flex-shrink:0;">
+                <button id="pwa-install-dismiss" style="background:transparent; border:1px solid rgba(255,255,255,0.4); color:#fff; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:13px;">Plus tard</button>
+                <button id="pwa-install-btn" style="background:#fff; color:#1e40af; border:none; padding:8px 18px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px;">Installer</button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    </style>
+
+    <!-- PWA Service Worker Registration & Install Prompt -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('SW registration failed: ', error);
+                    });
+            });
+        }
+
+        let deferredPrompt = null;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+        if (!isStandalone) {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const dismissed = localStorage.getItem('pwa-install-dismissed');
+                if (!dismissed) {
+                    document.getElementById('pwa-install-banner').style.display = 'block';
+                }
+            });
+
+            document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        document.getElementById('pwa-install-banner').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                }
+            });
+
+            document.getElementById('pwa-install-dismiss').addEventListener('click', () => {
+                document.getElementById('pwa-install-banner').style.display = 'none';
+                localStorage.setItem('pwa-install-dismissed', Date.now());
+            });
         }
     </script>
 

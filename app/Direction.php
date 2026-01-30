@@ -71,7 +71,10 @@ class Direction extends Model
         }
 
         if ($this->statut_abonnement === 'essai') {
-            return true; // Période d'essai autorisée
+            if ($this->abonnement_fin && Carbon::parse($this->abonnement_fin)->isPast()) {
+                return false; // Période d'essai expirée
+            }
+            return true;
         }
 
         if ($this->abonnement_fin && Carbon::parse($this->abonnement_fin)->isPast()) {

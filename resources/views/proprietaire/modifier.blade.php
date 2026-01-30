@@ -1,4 +1,3 @@
-{{-- Utiliser $items->id comme identifiant unique au lieu de $loop->iteration --}}
 <div class="modal fade" id="modifier{{ $items->id }}" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">

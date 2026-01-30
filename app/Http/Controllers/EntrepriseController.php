@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Annexe;
+use App\Direction;
 use Carbon\Carbon;
 
 class EntrepriseController extends Controller
@@ -11,15 +12,23 @@ class EntrepriseController extends Controller
     public function display_compte_entreprise()
     {
         $data = User::join('directions', 'users.iddirection_ref', '=', 'directions.iddirection')
+                     ->leftJoin('plans', 'directions.idplan_ref', '=', 'plans.idplan')
                      ->whereNull('users.status')
-                     //->whereNull('blocage_entreprise')
                      ->where('is_admin',true)
+                     ->select(
+                         'users.*',
+                         'directions.designation',
+                         'directions.iddirection',
+                         'directions.statut_abonnement',
+                         'directions.abonnement_debut',
+                         'directions.abonnement_fin',
+                         'plans.nom as plan_nom',
+                         'plans.prix_annuel as plan_prix'
+                     )
                      ->get();
 
         $dataannexe = Annexe::where('designation','!=','All Digital Agency')
                             ->get();
-
-        //dd($dataannexe);
 
         return view('entreprise.liste_compte', compact(['data','data','dataannexe','dataannexe']));
     }
@@ -31,28 +40,27 @@ class EntrepriseController extends Controller
 
         if (empty($checkstatut->first()?->blocage_entreprise)) {
 
-            for($debut = 0; $debut < count($checkstatut); $debut++){
-                User::where('iddirection_ref',$checkstatut->first()->iddirection_ref)
-                    ->update(['blocage_entreprise' => Carbon::now()]);
-            }
-            
+            User::where('iddirection_ref', $ids)
+                ->update(['blocage_entreprise' => Carbon::now()]);
 
-            Annexe::where('iddirection_ref',$ids)
+            Annexe::where('iddirection_ref', $ids)
                     ->update(['blocage_annexe' => Carbon::now()]);
 
-            return redirect()->back()->with('success', 'Bloqué avec succès ');
+            return redirect()->back()->with('success', 'Bloqué avec succès');
         } else {
 
-            for($debut = 0; $debut < count($checkstatut); $debut++){
-                User::where('iddirection_ref',$checkstatut->first()->iddirection_ref)
-                    ->update(['blocage_entreprise' => null]);
-            }
+            User::where('iddirection_ref', $ids)
+                ->update(['blocage_entreprise' => null]);
 
-            Annexe::where('iddirection_ref',$ids)
+            Annexe::where('iddirection_ref', $ids)
                     ->update(['blocage_annexe' => null]);
 
-            return redirect()->back()->with('success', 'Débloqué avec succès ');
-            
+            // Activer l'abonnement lors de la validation
+            Direction::where('iddirection', $ids)
+                ->update(['statut_abonnement' => 'actif']);
+
+            return redirect()->back()->with('success', 'Abonnement validé et compte débloqué avec succès');
+
         }
     }
 }

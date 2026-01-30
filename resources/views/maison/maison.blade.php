@@ -27,15 +27,16 @@
 
     @include('notification.display_message')
 
-
-    <div class="col-md-6">
-      <div class="demo-inline-spacing">
-        <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
-          data-bs-target="#AjouerMaison">
-          <span class="bx bx-plus"></span>
-        </button>
-      </div>
-    </div><br/>
+    @can('ajoute-maison')
+      <div class="col-md-6">
+        <div class="demo-inline-spacing">
+          <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
+            data-bs-target="#AjouerMaison">
+            <span class="bx bx-plus"></span>
+          </button>
+        </div>
+      </div><br/>
+    @endcan
 
 
     <div class="modal fade" id="AjouerMaison" tabindex="-1" aria-hidden="true">

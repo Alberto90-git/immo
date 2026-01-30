@@ -55,6 +55,14 @@ class Plan extends Model
     }
 
     /**
+     * Récupère le plan Essai
+     */
+    public static function essai()
+    {
+        return self::where('code', 'essai')->first();
+    }
+
+    /**
      * Récupère le plan Starter
      */
     public static function starter()

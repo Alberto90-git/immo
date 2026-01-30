@@ -76,33 +76,42 @@
         </a>
       </li>
 
-      <!-- Parametrage -->
-      <li class="menu-item {{ request()->routeIs('parametrage') ? 'active' : '' }}">
-        <a href="{{ route('parametrage') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-cog"></i>
-          <div data-i18n="Parametrage">Parametrage</div>
-        </a>
-      </li>
+      @can('parametrage')
+        <li class="menu-item {{ request()->routeIs('parametrage') ? 'active' : '' }}">
+          <a href="{{ route('parametrage') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-cog"></i>
+            <div data-i18n="Parametrage">Parametrage</div>
+          </a>
+        </li>
+      @endcan
 
       <!-- Gestion utilisateur -->
-      <li class="menu-item {{ request()->is('roles*') || request()->is('gerer-user*') || request()->is('password-off-line') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-user-circle"></i>
-          <div data-i18n="Gestion utilisateur">Gestion utilisateur</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('roles*') ? 'active' : '' }}">
-            <a href="{{ route('roles.create') }}" class="menu-link">
-              <div data-i18n="Fonction">Fonction</div>
-            </a>
-          </li>
-          <li class="menu-item {{ request()->is('gerer-user*') ? 'active' : '' }}">
-            <a href="{{ route('getUserView') }}" class="menu-link">
-              <div data-i18n="Utilisateur">Utilisateur</div>
-            </a>
-          </li>
-        </ul>
-      </li>
+      @can('gestion-role-utilisateur')
+        <li class="menu-item {{ request()->is('roles*') || request()->is('gerer-user*') || request()->is('password-off-line') ? 'active open' : '' }}">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-user-circle"></i>
+            <div data-i18n="Gestion utilisateur">Gestion utilisateur</div>
+          </a>
+         
+          <ul class="menu-sub">
+            @can('gestion-role')
+              <li class="menu-item {{ request()->is('roles*') ? 'active' : '' }}">
+                <a href="{{ route('roles.create') }}" class="menu-link">
+                  <div data-i18n="Fonction">Fonction</div>
+                </a>
+              </li>
+            @endcan
+
+            @can('gestion-utilisateur')
+              <li class="menu-item {{ request()->is('gerer-user*') ? 'active' : '' }}">
+                <a href="{{ route('getUserView') }}" class="menu-link">
+                  <div data-i18n="Utilisateur">Utilisateur</div>
+                </a>
+              </li>
+            @endcan
+          </ul>
+        </li>
+      @endcan
 
       <!-- Gestion entreprise -->
       <li class="menu-item {{ request()->routeIs('getViewCompte') ? 'active' : '' }}">
@@ -112,95 +121,117 @@
         </a>
       </li>
 
-      <!-- Gestion proprietaire -->
-      <li class="menu-item {{ request()->is('gerer-proprietaire*') || request()->routeIs('proprietaires.index') ? 'active' : '' }}">
-        <a href="{{ route('proprietaires.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-user-pin"></i>
-          <div data-i18n="Gestion proprietaire">Gestion proprietaire</div>
-        </a>
-      </li>
+      @can('gestion-proprietaire')
+        <li class="menu-item {{ request()->is('gerer-proprietaire*') || request()->routeIs('proprietaires.index') ? 'active' : '' }}">
+          <a href="{{ route('proprietaires.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user-pin"></i>
+            <div data-i18n="Gestion proprietaire">Gestion proprietaire</div>
+          </a>
+        </li>
+      @endcan
 
-      <!-- Gestion des maisons -->
-      <li class="menu-item {{ request()->is('gerer-maison*') ? 'active' : '' }}">
-        <a href="{{ route('get_maisonView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-home-alt"></i>
-          <div data-i18n="Gestion des maisons">Gestion des maisons</div>
-        </a>
-      </li>
+      @can('gestion-maison')
+        <li class="menu-item {{ request()->is('gerer-maison*') ? 'active' : '' }}">
+          <a href="{{ route('get_maisonView') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-home-alt"></i>
+            <div data-i18n="Gestion des maisons">Gestion des maisons</div>
+          </a>
+        </li>
+      @endcan
 
-      <!-- Gestion des chambres -->
-      <li class="menu-item {{ request()->is('gerer-chambre*') ? 'active' : '' }}">
-        <a href="{{ route('get_chambreView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-door-open"></i>
-          <div data-i18n="Gestion des chambres">Gestion des chambres</div>
-        </a>
-      </li>
+      @can('gestion-chambre')
+        <li class="menu-item {{ request()->is('gerer-chambre*') ? 'active' : '' }}">
+          <a href="{{ route('get_chambreView') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-door-open"></i>
+            <div data-i18n="Gestion des chambres">Gestion des chambres</div>
+          </a>
+        </li>
+      @endcan
 
-      <!-- Gestion des locataires -->
-      <li class="menu-item {{ request()->is('gerer-locataire*') ? 'active' : '' }}">
-        <a href="{{ route('get_locataireView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-user-check"></i>
-          <div data-i18n="Gestion des locataires">Gestion des locataires</div>
-        </a>
-      </li>
+      @can('gestion-locataire') 
+        <li class="menu-item {{ request()->is('gerer-locataire*') ? 'active' : '' }}">
+          <a href="{{ route('get_locataireView') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user-check"></i>
+            <div data-i18n="Gestion des locataires">Gestion des locataires</div>
+          </a>
+        </li>
+      @endcan
 
-      <!-- Gestion des loyers -->
-      <li class="menu-item {{ request()->is('gerer-facture*') ? 'active' : '' }}">
-        <a href="{{ route('get_factureView') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-money"></i>
-          <div data-i18n="Gestion des loyers">Gestion des loyers</div>
-        </a>
-      </li>
+      @can('gestion-paiement')
+        <li class="menu-item {{ request()->is('gerer-facture*') ? 'active' : '' }}">
+          <a href="{{ route('get_factureView') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-money"></i>
+            <div data-i18n="Gestion des loyers">Gestion des loyers</div>
+          </a>
+        </li>
+      @endcan
 
-      <!-- Gestion des dossiers -->
-      <li class="menu-item {{ request()->is('client') || request()->is('parcelle') ? 'active open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-folder-open"></i>
-          <div data-i18n="Gestion des dossiers">Gestion des dossiers</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('client') ? 'active' : '' }}">
-            <a href="{{ route('getViewClient') }}" class="menu-link">
-              <div data-i18n="Dossier client">Dossier client</div>
-            </a>
-          </li>
-          <li class="menu-item {{ request()->is('parcelle') ? 'active' : '' }}">
-            <a href="{{ route('getViewParcelle') }}" class="menu-link">
-              <div data-i18n="Dossier parcelle">Dossier parcelle</div>
-            </a>
-          </li>
-        </ul>
-      </li>
+      @can('gestion-dossier')
+        <li class="menu-item {{ request()->is('client') || request()->is('parcelle') ? 'active open' : '' }}">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-folder-open"></i>
+            <div data-i18n="Gestion des dossiers">Gestion des dossiers</div>
+          </a>
+          <ul class="menu-sub">
+            @can('dossier-client')
+              <li class="menu-item {{ request()->is('client') ? 'active' : '' }}">
+                <a href="{{ route('getViewClient') }}" class="menu-link">
+                  <div data-i18n="Dossier client">Dossier client</div>
+                </a>
+              </li>
+            @endcan
+            @can('dossier-parcelle')
+              <li class="menu-item {{ request()->is('parcelle') ? 'active' : '' }}">
+                <a href="{{ route('getViewParcelle') }}" class="menu-link">
+                  <div data-i18n="Dossier parcelle">Dossier parcelle</div>
+                </a>
+              </li>
+            @endcan
+          </ul>
+        </li>
+      @endcan
 
-      <!-- Gestion reporting -->
+      @can('gestion-statistique')
       <li class="menu-item {{ request()->is('gerer-statistique*') || request()->is('finance') || request()->is('statistique-recu') || request()->is('statistique-dossier') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
           <div data-i18n="Gestion reporting">Gestion reporting</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item {{ request()->is('gerer-statistique*') ? 'active' : '' }}">
-            <a href="{{ route('get_statistiqueView') }}" class="menu-link">
-              <div data-i18n="P/M/C/L">P/M/C/L</div>
-            </a>
-          </li>
-          <li class="menu-item {{ request()->is('finance') ? 'active' : '' }}">
-            <a href="{{ route('getFinance') }}" class="menu-link">
-              <div data-i18n="Finance">Finance</div>
-            </a>
-          </li>
-          <li class="menu-item {{ request()->is('statistique-recu') ? 'active' : '' }}">
-            <a href="{{ route('getRecu') }}" class="menu-link">
-              <div data-i18n="Recu">Recu</div>
-            </a>
-          </li>
-          <li class="menu-item {{ request()->is('statistique-dossier') ? 'active' : '' }}">
-            <a href="{{ route('getDossier') }}" class="menu-link">
-              <div data-i18n="Gestion dossier">Gestion dossier</div>
-            </a>
-          </li>
+          @can('proprio-house-chambre-locataire')
+            <li class="menu-item {{ request()->is('gerer-statistique*') ? 'active' : '' }}">
+              <a href="{{ route('get_statistiqueView') }}" class="menu-link">
+                <div data-i18n="P/M/C/L">P/M/C/L</div>
+              </a>
+            </li>
+          @endcan
+
+          @can('financier')
+            <li class="menu-item {{ request()->is('finance') ? 'active' : '' }}">
+              <a href="{{ route('getFinance') }}" class="menu-link">
+                <div data-i18n="Finance">Finance</div>
+              </a>
+            </li>
+          @endcan
+
+          @can('ancien-recu')
+            <li class="menu-item {{ request()->is('statistique-recu') ? 'active' : '' }}">
+              <a href="{{ route('getRecu') }}" class="menu-link">
+                <div data-i18n="Recu">Recu</div>
+              </a>
+            </li>
+          @endcan
+
+          @can('gestion-sta-dossier')
+            <li class="menu-item {{ request()->is('statistique-dossier') ? 'active' : '' }}">
+              <a href="{{ route('getDossier') }}" class="menu-link">
+                <div data-i18n="Gestion dossier">Gestion dossier</div>
+              </a>
+            </li>
+          @endcan
         </ul>
       </li>
+      @endcan
 
       <!-- Gestion publicite -->
       <li class="menu-item {{ request()->is('publicite*') ? 'active' : '' }}">
@@ -210,11 +241,28 @@
         </a>
       </li>
 
-      <!-- Log connexion -->
+      @can('historique')
       <li class="menu-item {{ request()->is('historique') ? 'active' : '' }}">
         <a href="{{ route('historique') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-history"></i>
           <div data-i18n="Log connexion">Log connexion</div>
+        </a>
+      </li>
+      @endcan
+
+      <!-- Mon Abonnement -->
+      <li class="menu-item {{ request()->routeIs('plans.index') ? 'active' : '' }}">
+        <a href="{{ route('plans.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-credit-card"></i>
+          <div data-i18n="Mon Abonnement">Mon Abonnement</div>
+        </a>
+      </li>
+
+      <!-- Mon Profil -->
+      <li class="menu-item {{ request()->routeIs('profileView') ? 'active' : '' }}">
+        <a href="{{ route('profileView') }}" class="menu-link">
+          <i class="menu-icon tf-icons bx bx-user"></i>
+          <div data-i18n="Mon Profil">Mon Profil</div>
         </a>
       </li>
 
