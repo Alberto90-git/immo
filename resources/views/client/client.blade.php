@@ -3,30 +3,32 @@
 
 @section('content')
   @section('title')
-  <title>Gestion client</title>
+  <title>Gestion besoins</title>
   @endsection
 
   @include('notification.display_message')
   
     
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion des dossiers client</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span>Gestion des besoins</h4>
 
-    <div class="col-md-6">
-      <div class="demo-inline-spacing">
-        <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
-          data-bs-target="#AjouerClient">
-          <span class="bx bx-plus"></span>
-        </button>
-      </div>
-    </div><br/>
+    @can('ajouter-client')
+      <div class="col-md-6">
+        <div class="demo-inline-spacing">
+          <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
+            data-bs-target="#AjouerClient">
+            <span class="bx bx-plus"></span>
+          </button>
+        </div>
+      </div><br/>
+    @endcan
 
 
     <div class="modal fade" id="AjouerClient" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalCenterTitle">Ajouter un dossier client</h5>
+            <h5 class="modal-title" id="modalCenterTitle">Ajouter un besoin</h5>
             <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -89,7 +91,7 @@
 
     <!-- Hoverable Table rows -->
     <div class="card">
-      <h5 class="card-header text-center">Liste des dossiers client</h5>
+      <h5 class="card-header text-center">Liste des besoins</h5>
       <div class="table-responsive text-nowrap">
         <table id="example" class="table table-hover border-primary" style="width:100%" >
           <thead>
@@ -114,7 +116,7 @@
                       @if($item->status == '')
                       <span class="badge rounded-pill bg-success">En attente</span>
                       @else
-                      <span class="badge rounded-pill bg-danger">Dossier cloturé</span>
+                      <span class="badge rounded-pill bg-danger">besoin cloturé</span>
                       @endif
                     </td>
                     <td>
@@ -190,7 +192,7 @@
         <div class="modal-dialog modal-sm" role="document">
           <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modalCenterTitle">Supprimer un propriétaire</h5>
+                <h5 class="modal-title" id="modalCenterTitle">Supprimer un besoin</h5>
                 <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
             <div class="modal-body">
@@ -215,12 +217,12 @@
         <div class="modal-dialog modal-sm" role="document">
           <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modalCenterTitle">Cloturer un dossier</h5>
+                <h5 class="modal-title" id="modalCenterTitle">Cloturer un besoin</h5>
                 <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
             <div class="modal-body">
                 <form class="row g-3" method="post" action="{{ route('cloture_client') }}">
-                    Voulez-vous vraiment cloturer ce dossier ? 
+                    Voulez-vous vraiment cloturer ce besoin ? 
                     @csrf
                    <input type="hidden" name="id" class="form-control" id="id" value="{{ $items->id}} ">
                     <div class="modal-footer">
@@ -305,7 +307,7 @@
           let ttt = document.getElementById(telephones);
       
             jQuery('#tt').inputmask({
-            "mask": "99 99 99 99"
+            "mask": "99 99 99 99 99"
             })
       
           }
@@ -316,7 +318,7 @@
       
       
         jQuery("#telephone").inputmask({
-          "mask": "99 99 99 99"
+          "mask": "99 99 99 99 99"
         })
         
       
@@ -352,7 +354,6 @@
                     
                 },
                 success: function(data) {
-      
       
                     $("#AjouerClient button#close").prop("disabled", false);
                     $("#AjouerClient button#valider").prop("disabled", false);

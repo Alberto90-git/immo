@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan migrate:*)",
+      "Bash(cd /c/Users/altchegnon/Documents/immo && php artisan config:clear && php artisan route:clear && php artisan view:clear && php artisan cache:clear 2>&1)",
+      "Bash(cd /c/Users/altchegnon/Documents/immo && php -l app/Http/Controllers/ParametreController.php && php -l app/Http/Controllers/HomeController.php && php -l app/ContratConfig.php && php -l resources/views/pdf/contrat.blade.php 2>&1)",
+      "Bash(cd /c/Users/altchegnon/Documents/immo && php artisan view:clear 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php artisan db:seed --class=PermissionTableSeeder 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php artisan tinker --execute=\"use Spatie\\\\Permission\\\\Models\\\\Permission; Permission::firstOrCreate\\(['name' => 'envoi-document'], ['label' => 'Envoi de documents', 'guard_name' => 'web']\\); Permission::where\\('name', 'envoi-document'\\)->update\\(['group' => 'envoi']\\); echo 'Permission envoi-document OK';\" 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php artisan route:list --name=envoi 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php artisan config:clear && php artisan view:clear 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php -r \"require 'vendor/autoload.php'; echo 'Autoload OK';\" 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php -l app/Http/Controllers/EnvoiDocumentController.php && php -l app/Services/PdfGeneratorService.php && php -l app/Services/WhatsAppService.php && php -l app/Mail/DocumentMail.php && php -l app/EnvoiDocument.php 2>&1)",
+      "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php artisan storage:link 2>&1)",
+      "Bash(php:*)",
+      "Bash(composer show:*)"
+    ]
+  }
+}

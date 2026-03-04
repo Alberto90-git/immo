@@ -21,7 +21,7 @@
     <div class="card mb-4 shadow-sm" style="background-color: #f0f4f7;">
         <div class="card-body">
             <h5 class="card-title mb-3 text-primary">
-                <i class="bx bx-user-circle me-2"></i> Informations du fonction
+                <i class="bx bx-user-circle me-2"></i> Informations de la fonction
             </h5>
             <p class="mb-0"><strong>Nom :</strong> 
                 <span class="badge bg-secondary text-white px-3 py-2 rounded-pill">
@@ -52,7 +52,7 @@
                 </div>
             @else
                 <div class="alert alert-warning mb-0">
-                    Ce fonction ne dispose d'aucune permission actuellement.
+                    Cette fonction ne dispose d'aucune permission actuellement.
                 </div>
             @endif
         </div>

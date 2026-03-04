@@ -409,14 +409,33 @@
         color: #718096;
         font-size: 0.8rem;
         margin-bottom: 0.25rem;
+        max-height: 2rem;
+        opacity: 1;
+        overflow: hidden;
+        transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
       }
 
       .requirement.valid {
-        color:rgb(17, 18, 17);
+        max-height: 0;
+        opacity: 0;
+        margin-bottom: 0;
       }
 
       .requirement i {
         font-size: 0.7rem;
+      }
+
+      .password-requirements {
+        transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+        overflow: hidden;
+      }
+
+      .password-requirements.all-valid {
+        max-height: 0 !important;
+        opacity: 0;
+        padding: 0;
+        margin: 0;
+        border: none;
       }
 
       /* Form groups with enhanced styling */
@@ -687,7 +706,7 @@
         Object.keys(requirements).forEach(req => {
           const element = document.getElementById(req);
           const icon = element.querySelector('i');
-          
+
           if (requirements[req]) {
             element.classList.add('valid');
             icon.classList.remove('bx-x');
@@ -698,6 +717,15 @@
             icon.classList.add('bx-x');
           }
         });
+
+        // Masquer le bloc entier si tous les critères sont remplis
+        const allValid = Object.values(requirements).every(Boolean);
+        const requirementsBlock = document.querySelector('.password-requirements');
+        if (allValid) {
+          requirementsBlock.classList.add('all-valid');
+        } else {
+          requirementsBlock.classList.remove('all-valid');
+        }
 
         // Calculate strength
         const validCount = Object.values(requirements).filter(Boolean).length;

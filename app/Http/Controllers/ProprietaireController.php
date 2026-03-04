@@ -36,6 +36,7 @@ class ProprietaireController extends Controller
                             ->when($idannexe_ref, function($query) use ($idannexe_ref) {
                                 $query->where('idannexe_ref', $idannexe_ref);
                             })
+                            ->with('annexe:idannexes,designation')
                             ->get();
     }
 

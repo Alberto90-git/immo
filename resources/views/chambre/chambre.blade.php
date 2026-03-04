@@ -23,14 +23,16 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion chambre</h4>
 
-    <div class="col-md-6">
-        <div class="demo-inline-spacing">
-            <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
-                data-bs-target="#AjouerChambre">
-                <span class="bx bx-plus"></span>
-            </button>
-        </div>
-    </div><br/>
+    @can('ajoute-chambre')
+        <div class="col-md-6">
+            <div class="demo-inline-spacing">
+                <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#AjouerChambre">
+                    <span class="bx bx-plus"></span>
+                </button>
+            </div>
+        </div><br/>
+    @endcan
 
     <!-- Modal Ajout -->
     <div class="modal fade" id="AjouerChambre" tabindex="-1" aria-hidden="true">

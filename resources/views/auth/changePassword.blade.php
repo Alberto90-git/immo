@@ -367,6 +367,56 @@
             border-radius: 3px;
         }
 
+        /* Password requirements */
+        .password-requirements {
+            margin-top: 0.75rem;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+            overflow: hidden;
+        }
+
+        .password-requirements h6 {
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #718096;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            max-height: 2rem;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+        }
+
+        .requirement.valid {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .requirement i {
+            font-size: 0.7rem;
+        }
+
+        .password-requirements.all-valid {
+            max-height: 0 !important;
+            opacity: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
             .card-body {
@@ -489,6 +539,24 @@
                                     <div class="password-strength-bar" id="password-strength-bar"></div>
                                 </div>
                                 <small class="form-text text-muted" id="password-strength-text"></small>
+                                <div class="password-requirements" id="passwordRequirementsBlock">
+                                    <h6>Critères de sécurité :</h6>
+                                    <div class="requirement" id="req-minLength">
+                                        <i class="bx bx-x"></i> Au moins 8 caractères
+                                    </div>
+                                    <div class="requirement" id="req-hasUpper">
+                                        <i class="bx bx-x"></i> Une lettre majuscule
+                                    </div>
+                                    <div class="requirement" id="req-hasLower">
+                                        <i class="bx bx-x"></i> Une lettre minuscule
+                                    </div>
+                                    <div class="requirement" id="req-hasNumber">
+                                        <i class="bx bx-x"></i> Un chiffre
+                                    </div>
+                                    <div class="requirement" id="req-hasSpecial">
+                                        <i class="bx bx-x"></i> Un caractère spécial
+                                    </div>
+                                </div>
                             </div>
 
                             <button class="btn btn-primary d-grid w-100" id="form_submit1" type="submit" name="Confirmer1">Modifier</button>
@@ -516,45 +584,65 @@
             });
         });
 
-        // Password strength indicator
+        // Password strength + criteria checker
         const passwordInput = document.getElementById('Nouveau_mot_de_passe');
-        const strengthBar = document.getElementById('password-strength-bar');
-        const strengthText = document.getElementById('password-strength-text');
+        const strengthBar   = document.getElementById('password-strength-bar');
+        const strengthText  = document.getElementById('password-strength-text');
 
-        if (passwordInput && strengthBar && strengthText) {
+        const criteria = {
+            'req-minLength' : pwd => pwd.length >= 8,
+            'req-hasUpper'  : pwd => /[A-Z]/.test(pwd),
+            'req-hasLower'  : pwd => /[a-z]/.test(pwd),
+            'req-hasNumber' : pwd => /\d/.test(pwd),
+            'req-hasSpecial': pwd => /[@$!%*#?&]/.test(pwd),
+        };
+
+        if (passwordInput) {
             passwordInput.addEventListener('input', function() {
                 const password = this.value;
-                let strength = 0;
-                let text = '';
 
-                // Check password strength
-                if (password.length > 0) {
-                    if (password.length < 6) {
-                        strength = 20;
-                        text = 'Très faible';
-                        strengthBar.style.backgroundColor = '#e53e3e';
-                    } else if (password.length < 8) {
-                        strength = 40;
-                        text = 'Faible';
-                        strengthBar.style.backgroundColor = '#ed8936';
-                    } else if (password.length < 10) {
-                        strength = 60;
-                        text = 'Moyen';
-                        strengthBar.style.backgroundColor = '#ecc94b';
-                    } else if (/[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
-                        strength = 100;
-                        text = 'Très fort';
-                        strengthBar.style.backgroundColor = '#38a169';
+                // Mettre à jour chaque critère
+                let validCount = 0;
+                Object.entries(criteria).forEach(([id, test]) => {
+                    const el   = document.getElementById(id);
+                    const icon = el.querySelector('i');
+                    const ok   = test(password);
+
+                    if (ok) {
+                        el.classList.add('valid');
+                        icon.classList.replace('bx-x', 'bx-check');
+                        validCount++;
                     } else {
-                        strength = 80;
-                        text = 'Fort';
-                        strengthBar.style.backgroundColor = '#48bb78';
+                        el.classList.remove('valid');
+                        icon.classList.replace('bx-check', 'bx-x');
                     }
-                }
+                });
 
-                strengthBar.style.width = strength + '%';
-                strengthText.textContent = text;
-                strengthText.style.color = strengthBar.style.backgroundColor;
+                // Masquer le bloc entier si tous les critères sont remplis
+                const block = document.getElementById('passwordRequirementsBlock');
+                block.classList.toggle('all-valid', validCount === Object.keys(criteria).length);
+
+                // Barre de force
+                if (strengthBar && strengthText) {
+                    let strength = 0, text = '', color = '';
+                    if (password.length === 0) {
+                        strength = 0; text = ''; color = '';
+                    } else if (validCount <= 1) {
+                        strength = 20; text = 'Très faible'; color = '#e53e3e';
+                    } else if (validCount === 2) {
+                        strength = 40; text = 'Faible'; color = '#ed8936';
+                    } else if (validCount === 3) {
+                        strength = 60; text = 'Moyen'; color = '#ecc94b';
+                    } else if (validCount === 4) {
+                        strength = 80; text = 'Fort'; color = '#48bb78';
+                    } else {
+                        strength = 100; text = 'Très fort'; color = '#38a169';
+                    }
+                    strengthBar.style.width           = strength + '%';
+                    strengthBar.style.backgroundColor = color;
+                    strengthText.textContent          = text;
+                    strengthText.style.color          = color;
+                }
             });
         }
 

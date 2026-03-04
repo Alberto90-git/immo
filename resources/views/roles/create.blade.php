@@ -16,11 +16,13 @@
 
     <div class="card">
         <!-- Notifications -->
-        <div class="ms-3 demo-inline-spacing">
-            <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
-            </a>
-        </div>
+        @can('liste-role')
+            <div class="ms-3 demo-inline-spacing">
+                <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
+                    <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
+                </a>
+            </div>
+        @endcan
 
         @if (count($errors) > 0)
             <div class="col-md-6 p-4">
@@ -258,7 +260,7 @@
                 </tr>
 
                 <tr>
-                    <td class="text-nowrap">Gestion des dossiers</td>
+                    <td class="text-nowrap">Gestion des besoins & annoces</td>
                     <td>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
@@ -279,6 +281,30 @@
                         </div>
                     </td>
                 </tr>
+
+                <tr>
+                    <td class="text-nowrap">Gestion des abonnements</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label text-dark">
+                                <input type="checkbox" id="selectAllAbonnement" class="form-check-input select-all">
+                                Tout sélectionner
+                            </label>
+                        </div>
+                
+                        <div class="d-flex flex-wrap">
+                            @foreach($abonnement as $abonnement)
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        {{ Form::checkbox('permission[]', $abonnement->id, false, ['class' => 'form-check-input permission-abonnement']) }}
+                                        {{ $abonnement->label }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+
 
                 <tr>
                     <td class="text-nowrap">Gestion publicité</td>
@@ -366,6 +392,8 @@
     setupSelectAll('selectAllPaiement', 'permission-paiement');
     setupSelectAll('selectAllSta', 'permission-sta');
     setupSelectAll('selectAllDossier', 'permission-dossier');
+
+    setupSelectAll('selectAllAbonnement', 'permission-abonnement');
     setupSelectAll('selectAllPub', 'permission-pub');
     setupSelectAll('selectAllUser', 'permission-user');
 </script>

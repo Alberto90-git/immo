@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Immo Manager web site officiel</title>
+  <title>Lokativ web site officiel</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -41,7 +41,7 @@
   <header id="header" class="fixed-top ">
     <div class="container d-flex align-items-center">
 
-      <h1 class="logo me-auto"><a href="{{ route('accueil') }}">Immo Manager</a></h1>
+      <h1 class="logo me-auto"><a href="{{ route('accueil') }}">Lokativ</a></h1>
       <nav id="navbar" class="navbar">
         <ul>
           <li><a class="nav-link scrollto active" href="#hero">Accueil</a></li>
@@ -814,19 +814,19 @@
         <div class="faq-list">
           <ul>
             <li data-aos="fade-up" data-aos-delay="100">
-              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">Comment accèder à  la plateforme Immo Manager ? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">Comment accèder à  la plateforme Lokativ ? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
               <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
                 <p>
-                  Avant de pouvoir utiliser Immo Manager, vous devez créer d'abord un compte selon votre besoin, c'est-à-dire un <strong>compte personnel</strong> ou un <strong>compte entreprise</strong>.
+                  Avant de pouvoir utiliser Lokativ, vous devez créer d'abord un compte selon votre besoin, c'est-à-dire un <strong>compte personnel</strong> ou un <strong>compte entreprise</strong>.
                 </p>
               </div>
             </li>
 
             <li data-aos="fade-up" data-aos-delay="200">
-              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-2" class="collapsed">Combien coûte l'accès à la plateforme Immo Manager ? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-2" class="collapsed">Combien coûte l'accès à la plateforme Lokativ ? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
               <div id="faq-list-2" class="collapse" data-bs-parent=".faq-list">
                 <p>
-                  Le coût pour accèder à la plateforme Immo Manager est en fonction de votre compte crée et surtout du type d'abonnement choisi lors de votre inscription.
+                  Le coût pour accèder à la plateforme Lokativ est en fonction de votre compte crée et surtout du type d'abonnement choisi lors de votre inscription.
                 </p>
               </div>
             </li>
@@ -835,7 +835,7 @@
               <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-3" class="collapsed">Le paiement pour utiliser la plateforme est-elle définitif ? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
               <div id="faq-list-3" class="collapse" data-bs-parent=".faq-list">
                 <p>
-                  Pour utiliser les services de Immo Manager, il faut effectuer un paiement chaque année. Les services sont rénouvellées à chaque année. Au cas où vous n'aurez pas à respecter votre contrat, vous verrez votre compte bloqué jusqu'à nouvel ordre.
+                  Pour utiliser les services de Lokativ, il faut effectuer un paiement chaque année. Les services sont rénouvellées à chaque année. Au cas où vous n'aurez pas à respecter votre contrat, vous verrez votre compte bloqué jusqu'à nouvel ordre.
                 </p>
               </div>
             </li>
@@ -886,7 +886,7 @@
               <div class="email">
                 <i class="bi bi-envelope"></i>
                 <h4>Email:</h4>
-                <p>immomanager@gmail.com</p>
+                <p>contact@lokativ.com</p>
               </div>
 
               <div class="phone">
@@ -964,7 +964,7 @@
               Abomey-calavi, Gbodjè-Amanhoun<br>
               United States <br><br>
               <strong>Tél:</strong> +229 610 822 60<br>
-              <strong>Email:</strong> immomanager@gmail.com<br>
+              <strong>Email:</strong> contact@lokativ.com<br>
             </p>
           </div>
 

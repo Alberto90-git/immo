@@ -72,7 +72,7 @@
 
   <div class="container">
     <div class="header">
-      <h1>Bienvenue chez Immo Manager</h1>
+      <h1>Bienvenue chez Lokativ</h1>
     </div>
     <div class="content">
       <p>Hello {{ $user ? $user['email'] : '' }},</p>
@@ -90,7 +90,7 @@
       <p>Si vous avez des questions, n'hésitez pas à répondre à cet e-mail.</p>
     </div>
     <div class="footer">
-      <p>&copy; 2024 Immo Manager. Tous droits réservés.</p>
+      <p>&copy; 2024 Lokativ. Tous droits réservés.</p>
       <p><a href="#">Politique de confidentialité</a> | <a href="#">Se désabonner</a></p>
     </div>
   </div>

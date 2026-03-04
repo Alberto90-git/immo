@@ -4,9 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Mail\NotificationEmail;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use App\Console\Commands\CheckSubscriptionExpiration;
+use App\Services\WhatsAppService;
 
 class Kernel extends ConsoleKernel
 {
@@ -16,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        CheckSubscriptionExpiration::class,
     ];
 
     /**
@@ -27,26 +26,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->call(function(){
+        $schedule->command('subscription:check-expiration')->dailyAt('08:00');
 
-            $composer = DB::table('users')->count();
-
-            $oeuvre = DB::table('users')->count();
-
-            $user_email = DB::table('users')->select('email')->get()
-                              ->pluck('email')[0];
-
-            $user = [
-                'composers' => $composer,
-                'oeuvre' => $oeuvre,
-                'email' => $user_email
-            ];
-            
-            Mail::to($user_email)->send(new NotificationEmail($user));
-            
-
-        })->everyMinute();
+        $schedule->call(function () {
+            (new WhatsAppService())->nettoyerFichiersTemp();
+        })->daily()->name('whatsapp-temp-cleanup')->withoutOverlapping();
     }
 
     /**

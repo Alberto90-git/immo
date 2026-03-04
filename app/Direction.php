@@ -21,7 +21,10 @@ class Direction extends Model
         'idplan_ref',
         'abonnement_debut',
         'abonnement_fin',
-        'statut_abonnement'
+        'statut_abonnement',
+        'derniere_notification_abonnement',
+        'kkiapay_transaction_id',
+        'fedapay_transaction_id',
     ];
 
     protected $casts = [
@@ -35,6 +38,25 @@ class Direction extends Model
     public function plan()
     {
         return $this->belongsTo(Plan::class, 'idplan_ref', 'idplan');
+    }
+
+    /**
+     * Relation avec les utilisateurs
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class, 'iddirection_ref', 'iddirection');
+    }
+
+    /**
+     * Retourne le nombre de jours avant l'expiration (négatif si expiré)
+     */
+    public function getJoursAvantExpiration()
+    {
+        if (!$this->abonnement_fin) {
+            return null;
+        }
+        return Carbon::today()->diffInDays(Carbon::parse($this->abonnement_fin), false);
     }
 
     /**

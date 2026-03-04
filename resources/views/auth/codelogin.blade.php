@@ -9,6 +9,7 @@
     <title>Immo | Code de vérification</title>
 
     <meta name="description" content="Vérification OTP pour accéder à votre compte Immo" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('css_file')
 
     <script src="assetsV2/vendor/js/helpers.js"></script>
@@ -462,6 +463,23 @@
                         @include('display_message')
 
                         <h4 class="mb-2">Vérification</h4>
+
+                        {{-- Statut envoi OTP --}}
+                        <div id="otp-status" style="margin-bottom:1.5rem;">
+                            <div id="otp-sending" style="display:flex;align-items:center;justify-content:center;gap:8px;color:#667eea;font-size:0.9rem;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;">
+                                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                                </svg>
+                                Envoi du code en cours…
+                            </div>
+                            <div id="otp-sent" style="display:none;background:rgba(72,187,120,0.12);border-radius:10px;padding:8px 14px;color:#2f855a;font-size:0.88rem;">
+                                <strong>✓</strong> Code envoyé à <span id="otp-email-display">votre e-mail</span>
+                            </div>
+                            <div id="otp-error" style="display:none;background:rgba(245,101,101,0.1);border-radius:10px;padding:8px 14px;color:#c53030;font-size:0.88rem;">
+                                <span id="otp-error-msg">Erreur d'envoi.</span>
+                            </div>
+                        </div>
+
                         <p class="mb-4">Saisissez le code OTP envoyé à votre e-mail</p>
 
                         <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('code_submit') }}">
@@ -489,13 +507,13 @@
                             </button>
                         </form>
 
-                        <!--<div class="resend-container">
-                            <p class="text-muted mb-2">Vous n'avez pas reçu le code ?</p>
+                        <div class="resend-container">
+                            <p style="color:#a0aec0;font-size:0.88rem;margin-bottom:0.5rem;">Vous n'avez pas reçu le code ?</p>
                             <a href="#" class="resend-link" id="resendLink">Renvoyer le code</a>
-                            <div class="timer" id="timer" style="display: none;">
-                                Vous pourrez renvoyer le code dans <span id="countdown">60</span> secondes
+                            <div class="timer" id="timer" style="display:none;">
+                                Renvoi disponible dans <span id="countdown">60</span>s
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -506,156 +524,142 @@
     @include('js_file')
 
     <script>
-        // OTP Input handling
-        const otpInputs = document.querySelectorAll('.otp-input');
+        const otpInputs  = document.querySelectorAll('.otp-input');
         const hiddenInput = document.getElementById('code');
-        const submitBtn = document.getElementById('submitBtn');
-        const form = document.getElementById('formAuthentication');
+        const submitBtn  = document.getElementById('submitBtn');
+        const form       = document.getElementById('formAuthentication');
+        const resendLink = document.getElementById('resendLink');
+        const timerDiv   = document.getElementById('timer');
+        const countdownSpan = document.getElementById('countdown');
 
-        // Focus on first input
-        otpInputs[0].focus();
-
+        // ── OTP inputs navigation ────────────────────────────────────────
         otpInputs.forEach((input, index) => {
-            input.addEventListener('input', function(e) {
-                // Only allow numbers
+            input.addEventListener('input', function () {
                 this.value = this.value.replace(/\D/g, '');
-
-                // Add filled class if input has value
-                if (this.value) {
-                    this.classList.add('filled');
-                } else {
-                    this.classList.remove('filled');
-                }
-
-                // Update hidden input
+                this.classList.toggle('filled', !!this.value);
                 updateHiddenInput();
-
-                // Move to next input
-                if (this.value && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-
-                // Submit form if all inputs are filled
-                if (index === otpInputs.length - 1 && this.value) {
-                    setTimeout(() => {
-                        if (isFormComplete()) {
-                            submitBtn.focus();
-                        }
-                    }, 100);
-                }
+                if (this.value && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                if (index === otpInputs.length - 1 && isFormComplete()) submitBtn.focus();
             });
 
-            input.addEventListener('keydown', function(e) {
-                // Handle backspace
+            input.addEventListener('keydown', function (e) {
                 if (e.key === 'Backspace' && !this.value && index > 0) {
-                    otpInputs[index - 1].focus();
                     otpInputs[index - 1].value = '';
                     otpInputs[index - 1].classList.remove('filled');
+                    otpInputs[index - 1].focus();
                     updateHiddenInput();
                 }
-
-                // Handle arrow keys
-                if (e.key === 'ArrowLeft' && index > 0) {
-                    otpInputs[index - 1].focus();
-                }
-                if (e.key === 'ArrowRight' && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
+                if (e.key === 'ArrowLeft'  && index > 0)                    otpInputs[index - 1].focus();
+                if (e.key === 'ArrowRight' && index < otpInputs.length - 1) otpInputs[index + 1].focus();
             });
 
-            input.addEventListener('paste', function(e) {
+            input.addEventListener('paste', function (e) {
                 e.preventDefault();
-                const paste = e.clipboardData.getData('text');
-                const numbers = paste.replace(/\D/g, '').substring(0, 6);
-
-                // Fill inputs with pasted numbers
-                for (let i = 0; i < numbers.length && i < otpInputs.length; i++) {
-                    otpInputs[i].value = numbers[i];
-                    otpInputs[i].classList.add('filled');
-                }
-
+                const numbers = e.clipboardData.getData('text').replace(/\D/g, '').substring(0, 6);
+                numbers.split('').forEach((n, i) => {
+                    if (otpInputs[i]) { otpInputs[i].value = n; otpInputs[i].classList.add('filled'); }
+                });
                 updateHiddenInput();
-
-                // Focus on next empty input or submit button
-                const nextEmptyIndex = numbers.length < otpInputs.length ? numbers.length : -1;
-                if (nextEmptyIndex >= 0) {
-                    otpInputs[nextEmptyIndex].focus();
-                } else {
-                    submitBtn.focus();
-                }
+                const next = numbers.length < otpInputs.length ? otpInputs[numbers.length] : submitBtn;
+                next.focus();
             });
         });
 
         function updateHiddenInput() {
-            const code = Array.from(otpInputs).map(input => input.value).join('');
+            const code = Array.from(otpInputs).map(i => i.value).join('');
             hiddenInput.value = code;
-
-            // Enable/disable submit button
             submitBtn.disabled = code.length !== 6;
         }
 
         function isFormComplete() {
-            return Array.from(otpInputs).every(input => input.value.length === 1);
+            return Array.from(otpInputs).every(i => i.value.length === 1);
         }
 
-        // Form submission with loading state
-        form.addEventListener('submit', function(e) {
-            if (!isFormComplete()) {
-                e.preventDefault();
-                otpInputs.find(input => !input.value).focus();
-                return;
-            }
-
+        form.addEventListener('submit', function (e) {
+            if (!isFormComplete()) { e.preventDefault(); otpInputs[0].focus(); return; }
             submitBtn.classList.add('btn-loading');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Vérification...';
+            submitBtn.textContent = 'Vérification…';
         });
 
-        // Resend functionality with timer
-        let countdownTimer;
-        const resendLink = document.getElementById('resendLink');
-        const timerDiv = document.getElementById('timer');
-        const countdownSpan = document.getElementById('countdown');
+        // ── Envoi OTP via AJAX ───────────────────────────────────────────
+        const OTP_URL   = "{{ route('send_login_otp') }}";
+        const CSRF      = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                        || "{{ csrf_token() }}";
 
-        resendLink.addEventListener('click', function(e) {
-            e.preventDefault();
+        function showOtpSending() {
+            document.getElementById('otp-sending').style.display = 'flex';
+            document.getElementById('otp-sent').style.display    = 'none';
+            document.getElementById('otp-error').style.display   = 'none';
+        }
+        function showOtpSent(email) {
+            document.getElementById('otp-sending').style.display = 'none';
+            document.getElementById('otp-sent').style.display    = 'block';
+            document.getElementById('otp-error').style.display   = 'none';
+            if (email) document.getElementById('otp-email-display').textContent = email;
+        }
+        function showOtpError(msg) {
+            document.getElementById('otp-sending').style.display = 'none';
+            document.getElementById('otp-sent').style.display    = 'none';
+            document.getElementById('otp-error').style.display   = 'block';
+            document.getElementById('otp-error-msg').textContent = msg;
+        }
 
-            // Disable resend link
-            this.style.pointerEvents = 'none';
-            this.style.opacity = '0.5';
+        async function sendOtp() {
+            showOtpSending();
+            try {
+                const res  = await fetch(OTP_URL, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                });
+                const data = await res.json();
+                if (data.status) {
+                    showOtpSent(data.message.replace('Code envoyé à ', ''));
+                    startResendCooldown(60);
+                } else {
+                    showOtpError(data.message);
+                    // Si anti-spam, lancer le compte à rebours avec le temps restant
+                    if (data.remaining) startResendCooldown(data.remaining);
+                }
+            } catch (e) {
+                showOtpError('Erreur réseau. Veuillez réessayer.');
+            }
+        }
 
-            // Show timer
-            timerDiv.style.display = 'block';
+        // ── Compte à rebours "Renvoyer" ──────────────────────────────────
+        let countdownTimer = null;
 
-            // Start countdown
-            let seconds = 60;
-            countdownSpan.textContent = seconds;
-
+        function startResendCooldown(seconds) {
+            resendLink.style.pointerEvents = 'none';
+            resendLink.style.opacity       = '0.4';
+            timerDiv.style.display         = 'block';
+            countdownSpan.textContent      = seconds;
+            clearInterval(countdownTimer);
             countdownTimer = setInterval(() => {
                 seconds--;
                 countdownSpan.textContent = seconds;
-
                 if (seconds <= 0) {
                     clearInterval(countdownTimer);
-                    timerDiv.style.display = 'none';
+                    timerDiv.style.display         = 'none';
                     resendLink.style.pointerEvents = 'auto';
-                    resendLink.style.opacity = '1';
+                    resendLink.style.opacity       = '1';
                 }
             }, 1000);
+        }
 
-            // Here you would normally make an AJAX call to resend the code
-            console.log('Resending OTP code...');
+        resendLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            sendOtp();
         });
 
-        // Auto-focus on input errors
-        window.addEventListener('load', function() {
+        // ── Déclenchement automatique au chargement ──────────────────────
+        window.addEventListener('load', function () {
+            // Réinitialiser les champs si erreur de code
             if (document.querySelector('.alert-danger')) {
-                otpInputs.forEach(input => {
-                    input.value = '';
-                    input.classList.remove('filled');
-                });
-                otpInputs[0].focus();
+                otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
             }
+            otpInputs[0].focus();
+            sendOtp(); // ← envoi automatique dès l'arrivée sur la page
         });
     </script>
 </body>

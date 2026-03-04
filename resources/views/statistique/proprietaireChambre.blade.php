@@ -192,87 +192,87 @@
     
     <script>
 
-        $.ajaxSetup({
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });   
+  
+  
+      $('#maison_choisie').on('change',function(e)
+      {
+        //alert($(this).val());
+  
+        var maison_choisie = $(this).val();
+  
+          if(maison_choisie === null )
+          {
+              alert('Merci de sélectionner un nom');
+              return false;
           }
-        });   
-    
-    
-         $('#maison_choisie').on('change',function(e)
-        {
-          //alert($(this).val());
-    
-          var maison_choisie = $(this).val();
-    
-            if(maison_choisie === null )
-            {
-                alert('Merci de sélectionner un nom');
-                return false;
-            }
-            else
-            {
-              // alert(code_banque);
-                return $.ajax
-                ({
-                    url: '{{ url('locataireStatistique') }}',
-                    data: {house_recu:maison_choisie},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        //$('#echeance').val(data.echeance);
-                        $('#list_locataire_recu').html(data.list_locataire);
-                        $('#house_adrese_recu').html(data.infor_house) ;
-                        $('#pdfRecuLocataire').html(data.valeur2) ;
-                        //$('#tableData').append(data.table_data);
-                    },
-                    error:function(data) 
-                    {
-                      //alert(data.infor_proprio);
-    
-                    },
-               });
-            }
-        });
-    
-    
-    
-        $('#proprioId').on('change',function(e)
-        {
-          //alert($(this).val());
-    
-          var proprioId = $(this).val();
-    
-            if(proprioId === null )
-            {
-                alert('Merci de sélectionner un nom');
-                return false;
-            }
-            else
-            {
-              // alert(code_banque);
-                return $.ajax
-                ({
-                    url: '{{ url('houseStatistique') }}',
-                    data: {idRecu:proprioId},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        //$('#echeance').val(data.echeance);
-                        $('#list_recu').html(data.list_house);
-                        $('#proprio_adrese').html(data.infor_proprio);
-                        $('#pdfRecu').html(data.valeur);
-                        //$('#tableData').append(data.table_data);
-                    },
-                    error:function(data)
-                    {
-                      //alert(data.infor_proprio);
-    
-                    },
-               });
-            }
-        });
-        </script>
-    @endsection
+          else
+          {
+            // alert(code_banque);
+              return $.ajax
+              ({
+                  url: '{{ url('locataireStatistique') }}',
+                  data: {house_recu:maison_choisie},
+                  type: 'GET',
+                  cache: false,
+                  dataType: 'json',
+                  success: function (data) {
+                      //$('#echeance').val(data.echeance);
+                      $('#list_locataire_recu').html(data.list_locataire);
+                      $('#house_adrese_recu').html(data.infor_house) ;
+                      $('#pdfRecuLocataire').html(data.valeur2) ;
+                      //$('#tableData').append(data.table_data);
+                  },
+                  error:function(data) 
+                  {
+                    //alert(data.infor_proprio);
+  
+                  },
+              });
+          }
+      });
+  
+  
+  
+      $('#proprioId').on('change',function(e)
+      {
+        //alert($(this).val());
+  
+        var proprioId = $(this).val();
+  
+          if(proprioId === null )
+          {
+              alert('Merci de sélectionner un nom');
+              return false;
+          }
+          else
+          {
+            // alert(code_banque);
+              return $.ajax
+              ({
+                  url: '{{ url('houseStatistique') }}',
+                  data: {idRecu:proprioId},
+                  type: 'GET',
+                  cache: false,
+                  dataType: 'json',
+                  success: function (data) {
+                      //$('#echeance').val(data.echeance);
+                      $('#list_recu').html(data.list_house);
+                      $('#proprio_adrese').html(data.infor_proprio);
+                      $('#pdfRecu').html(data.valeur);
+                      //$('#tableData').append(data.table_data);
+                  },
+                  error:function(data)
+                  {
+                    //alert(data.infor_proprio);
+  
+                  },
+              });
+          }
+      });
+    </script>
+@endsection

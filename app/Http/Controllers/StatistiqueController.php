@@ -29,7 +29,14 @@ class StatistiqueController extends Controller
                             })
                             ->join('maisons', 'maisons.proprio_id', '=', 'proprietaires.id')
                             ->join('annexes', 'annexes.idannexes', '=', 'proprietaires.idannexe_ref')
-                             ->whereNull('maisons.delete_at')
+                            ->whereNull('maisons.delete_at')
+                            ->select(
+                                'proprietaires.id', 'proprietaires.nom', 'proprietaires.prenom',
+                                'proprietaires.telephone', 'proprietaires.adresse', 'proprietaires.idannexe_ref',
+                                'maisons.id as maison_id', 'maisons.nom_maison', 'maisons.quartier',
+                                'maisons.type_maison', 'maisons.nombre_chambre',
+                                'annexes.designation as annexe_designation'
+                            )
                             ->get();
 	}
 
@@ -75,8 +82,9 @@ class StatistiqueController extends Controller
     {
 
     	$element = $this->getAllProprioWithHouse();
+    	$annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
 
-    	$pdf = PDF::loadView('pdf.proprio_house',compact('element'))->setOptions(['defaultFont' => 'sans-serif']);
+    	$pdf = PDF::loadView('pdf.proprio_house',compact('element','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
     	$pdf->output();
 
@@ -89,21 +97,24 @@ class StatistiqueController extends Controller
 
     // filter house and chambre based on propriotor
 
+    private function getProprietaire($id)
+    {
+        return Proprietaire::where('id', $id)
+                            ->whereNull('delete_at')
+                            ->select('nom', 'prenom')
+                            ->first();
+    }
+
     private function getProprietaireNom($id)
     {
-      return Proprietaire::where('id',$id)
-                          ->whereNull('delete_at')
-                          ->select('nom')
-                          ->get()
-                          ->pluck('nom')[0];
+        $p = $this->getProprietaire($id);
+        return $p ? $p->nom : '';
     }
 
     private function getProprietairePrenom($id)
     {
-      return Proprietaire::where('id',$id)
-                          ->whereNull('delete_at')
-                          ->get()
-                          ->pluck('prenom')[0];
+        $p = $this->getProprietaire($id);
+        return $p ? $p->prenom : '';
     }
 
     
@@ -182,16 +193,13 @@ class StatistiqueController extends Controller
     //TELECHARGER PDF DES MAISONS  AVEC LEURS CHAMBRES FILTER BY PROPRITOR
     public function getHouseChambrePdf(Request $request)
     {
-        $element2['nom']     = Proprietaire::where('id',$request->id)
-                               ->whereNull('delete_at')
-                               ->select('nom')
-                               ->get()
-                              ->pluck('nom')[0];
+        $proprio = Proprietaire::where('id', $request->id)
+                                ->whereNull('delete_at')
+                                ->select('nom', 'prenom')
+                                ->first();
 
-        $element2['prenom']    = Proprietaire::where('id',$request->id)
-                               ->whereNull('delete_at')
-                               ->get()
-                              ->pluck('prenom')[0];
+        $element2['nom']    = $proprio ? $proprio->nom : '';
+        $element2['prenom'] = $proprio ? $proprio->prenom : '';
 
          $element2['house'] = Maison::where('maisons.proprio_id',$request->id)
                                    ->join('chambres', 'chambres.maison_id', '=', 'maisons.id')
@@ -207,7 +215,8 @@ class StatistiqueController extends Controller
                                    ->whereNull('maisons.delete_at')
                                    ->get();
 
-        $pdf = PDF::loadView('pdf.house_chambre',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.house_chambre',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 
@@ -246,7 +255,8 @@ class StatistiqueController extends Controller
                                     //->where('locataires.status',true)
                                     ->get();
 
-        $pdf = PDF::loadView('pdf.house_locataire',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.house_locataire',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 
@@ -606,7 +616,9 @@ class StatistiqueController extends Controller
                             })
                           ->get();
 
-        return view('statistique.financier',['data' => $data]);
+        $pourcentages = get_all_pourcentages_for_direction();
+
+        return view('statistique.financier',['data' => $data, 'pourcentages' => $pourcentages]);
     }
 
     //GET LE MONTANT A PAYER AU PROPRIETAIRE POUR CHAQUE
@@ -714,7 +726,8 @@ class StatistiqueController extends Controller
         }
 
 
-        $pdf = PDF::loadView('pdf.proprio_solde',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.proprio_solde',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 
@@ -812,7 +825,8 @@ class StatistiqueController extends Controller
         }
 
 
-        $pdf = PDF::loadView('pdf.agence_solde',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.agence_solde',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 
@@ -928,7 +942,8 @@ class StatistiqueController extends Controller
         }
 
 
-        $pdf = PDF::loadView('pdf.solde_general',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.solde_general',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 
@@ -1025,7 +1040,8 @@ class StatistiqueController extends Controller
         $element2['donnees'] = $this->get_client_liste($request->date_debut,$request->date_fin); 
 
 
-        $pdf = PDF::loadView('pdf.client_dossier',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.client_dossier',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 
@@ -1114,7 +1130,8 @@ class StatistiqueController extends Controller
 
 
 
-        $pdf = PDF::loadView('pdf.parcelle_dossier',compact('element2'))->setOptions(['defaultFont' => 'sans-serif']);
+        $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
+        $pdf = PDF::loadView('pdf.parcelle_dossier',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);
 
         $pdf->output();
 

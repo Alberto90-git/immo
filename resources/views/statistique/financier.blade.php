@@ -86,7 +86,13 @@
                                         <label>Pourcentage de gestion<span style="color: red;">*</span></label>
                                         <select class="form-select" name="pourcentage" id="pourcentage">
                                             <option selected disabled>Choisir un pourcentage</option>
-                                            <option value="10">10 %</option>
+                                            @if(isset($pourcentages))
+                                                @foreach($pourcentages as $pct)
+                                                    <option value="{{ $pct }}">{{ $pct }} %</option>
+                                                @endforeach
+                                            @else
+                                                <option value="10">10 %</option>
+                                            @endif
                                         </select>
                                     </div>
                             
@@ -163,7 +169,13 @@
                                         <label>Pourcentage de gestion<span style="color: red;">*</span></label>
                                         <select class="form-select" name="pourcentage2" id="pourcentage2">
                                             <option selected disabled>Choisir un pourcentage</option>
-                                            <option value="10">10 %</option>
+                                            @if(isset($pourcentages))
+                                                @foreach($pourcentages as $pct)
+                                                    <option value="{{ $pct }}">{{ $pct }} %</option>
+                                                @endforeach
+                                            @else
+                                                <option value="10">10 %</option>
+                                            @endif
                                         </select>
                                     </div>
                             
@@ -224,7 +236,13 @@
                                         <label>Pourcentage de gestion<span style="color: red;">*</span></label>
                                         <select class="form-select" name="pourcentage_general" id="pourcentage_general">
                                             <option selected disabled>Choisir un pourcentage</option>
-                                            <option value="10">10 %</option>
+                                            @if(isset($pourcentages))
+                                                @foreach($pourcentages as $pct)
+                                                    <option value="{{ $pct }}">{{ $pct }} %</option>
+                                                @endforeach
+                                            @else
+                                                <option value="10">10 %</option>
+                                            @endif
                                         </select>
                                     </div>
                             
@@ -287,10 +305,54 @@
         });   
     
     
+        // Auto-sélection du pourcentage quand un propriétaire est choisi
+        $('#proprietaire').on('change', function() {
+            var proprietaireId = $(this).val();
+            if (proprietaireId) {
+                $.ajax({
+                    url: '{{ route("api.get_pourcentage_proprietaire") }}',
+                    data: { proprietaire_id: proprietaireId },
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.status && data.pourcentage) {
+                            var pctValue = parseFloat(data.pourcentage);
+                            var selectEl = $('#pourcentage');
+                            // Vérifier si l'option existe, sinon l'ajouter
+                            if (selectEl.find('option[value="' + pctValue + '"]').length === 0) {
+                                selectEl.append('<option value="' + pctValue + '">' + pctValue + ' %</option>');
+                            }
+                            selectEl.val(pctValue);
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#proprietaire2').on('change', function() {
+            var proprietaireId = $(this).val();
+            if (proprietaireId) {
+                $.ajax({
+                    url: '{{ route("api.get_pourcentage_proprietaire") }}',
+                    data: { proprietaire_id: proprietaireId },
+                    type: 'GET',
+                    success: function(data) {
+                        if (data.status && data.pourcentage) {
+                            var pctValue = parseFloat(data.pourcentage);
+                            var selectEl = $('#pourcentage2');
+                            if (selectEl.find('option[value="' + pctValue + '"]').length === 0) {
+                                selectEl.append('<option value="' + pctValue + '">' + pctValue + ' %</option>');
+                            }
+                            selectEl.val(pctValue);
+                        }
+                    }
+                });
+            }
+        });
+
         $('#date_fin').on('change',function(e)
         {
           //alert($(this).val());
-    
+
           var proprietaire = $('#proprietaire').val();
           var pourcentage = $('#pourcentage').val();
           var date_debut = $('#date_debut').val();

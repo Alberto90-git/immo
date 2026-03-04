@@ -120,9 +120,39 @@
             padding-top: 40px;
             border-top: 1px solid #333;
         }
+        .agency-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .agency-header img {
+            max-width: 60px;
+            max-height: 60px;
+            margin-bottom: 5px;
+        }
+        .agency-header h2 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin: 3px 0;
+        }
+        .agency-header p {
+            color: #7f8c8d;
+            font-size: 10px;
+            margin: 2px 0;
+        }
     </style>
 </head>
 <body>
+
+@if(isset($annexeData) && $annexeData)
+<div class="agency-header">
+    @if(!empty($annexeData['logo_base64']))
+        <img src="{{ $annexeData['logo_base64'] }}" alt="Logo">
+    @endif
+    <h2>{{ strtoupper($annexeData['designation']) }}</h2>
+    <p>{{ $annexeData['siege_social'] }}</p>
+    <p>Tel: {{ $annexeData['telephone'] }} - Email: {{ $annexeData['email'] }}</p>
+</div>
+@endif
 
 <div class="header">
     <h1>FICHE DE PAIE PROPRIETAIRE</h1>

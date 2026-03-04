@@ -30,6 +30,7 @@ class FactureController extends Controller
                           ->when($idannexe_ref, function($query) use ($idannexe_ref) {
                             $query->where('idannexe_ref', $idannexe_ref);
                           })
+                          ->select('id', 'nom_maison')
                           ->get();
 
       $allChambres = Chambre::join('maisons', 'chambres.maison_id', '=', 'maisons.id')
@@ -81,6 +82,7 @@ class FactureController extends Controller
         }
       })
       ->whereNull('delete_at')
+      ->select('id', 'numero_chambre')
       ->get();
 
     foreach ($val as  $cont) {
@@ -96,26 +98,21 @@ class FactureController extends Controller
   {
 
     $vide = Chambre::where('id', $request->numero_chambre_got)
-      ->get()
-      ->pluck('type_chambre')[0];
+      ->value('type_chambre');
 
     $sonPrix = Prix::where('chambre_id', $request->numero_chambre_got)
       ->whereNull('delete_at')
       ->where('status', true)
-      ->get()
-      ->pluck('prix')[0];
+      ->value('prix');
 
-    $nom = Locataire::where('chambre_id', $request->numero_chambre_got)
+    $locataire = Locataire::where('chambre_id', $request->numero_chambre_got)
       ->whereNull('delete_at')
       ->where('status', true)
-      ->get()
-      ->pluck('nom')[0];
+      ->select('nom', 'prenom')
+      ->first();
 
-    $prenom = Locataire::where('chambre_id', $request->numero_chambre_got)
-      ->whereNull('delete_at')
-      ->where('status', true)
-      ->get()
-      ->pluck('prenom')[0];
+    $nom    = $locataire ? $locataire->nom    : '';
+    $prenom = $locataire ? $locataire->prenom : '';
 
 
 
@@ -713,21 +710,6 @@ class FactureController extends Controller
         
         
 
-          // Mentions légales
-          if ($y < 160) {
-            $fpdf->SetFont('Arial', 'I', 7);
-            $fpdf->SetTextColor(100, 100, 100);
-            $fpdf->SetXY(10, $y);
-            $fpdf->MultiCell(
-              $pageWidth - 20,
-              3,
-              utf8_decode('Cette quittance fait foi de paiement du loyer pour la période indiquée.'),
-              0,
-              'C'
-            );
-            $y += 10;
-          }
-
           // Informations de paiement mobile (Cash électronique)
           if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
             $fpdf->SetFont('Arial', 'B', 7);
@@ -741,6 +723,21 @@ class FactureController extends Controller
             $fpdf->SetXY(10, $y);
             $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
             $y = $fpdf->GetY() + 5;
+          }
+
+          // Mentions légales
+          if ($y < 160) {
+            $fpdf->SetFont('Arial', 'I', 7);
+            $fpdf->SetTextColor(100, 100, 100);
+            $fpdf->SetXY(10, $y);
+            $fpdf->MultiCell(
+              $pageWidth - 20,
+              3,
+              utf8_decode('Cette quittance fait foi de paiement du loyer pour la période indiquée.'),
+              0,
+              'C'
+            );
+            $y += 10;
           }
 
           $date_paiement = new DateTime($date_paiement);
@@ -769,6 +766,12 @@ class FactureController extends Controller
           // Signature responsable
           $fpdf->SetX(($pageWidth - 30) / 2 + 20);
           $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
+
+          // Image de signature du responsable (si disponible)
+          if ($annexeData && !empty($annexeData['signature_path']) && file_exists($annexeData['signature_path'])) {
+              $sigImgX = ($pageWidth - 30) / 4 * 3 - 12;
+              $fpdf->Image($annexeData['signature_path'], $sigImgX, $signatureY + 2, 25, 12);
+          }
 
           $signatureY += 15;
 
@@ -1062,6 +1065,21 @@ class FactureController extends Controller
           $y = $fpdf->GetY() + 8;
       }
 
+      // Informations de paiement mobile (Cash électronique)
+      if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
+          $fpdf->SetFont('Arial', 'B', 7);
+          $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
+          $fpdf->SetXY(10, $y);
+          $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+          $y += 4;
+
+          $fpdf->SetFont('Arial', '', 7);
+          $fpdf->SetTextColor(80, 80, 80);
+          $fpdf->SetXY(10, $y);
+          $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
+          $y = $fpdf->GetY() + 5;
+      }
+
       // Mentions légales
       if ($y < 160) {
           $fpdf->SetFont('Arial', 'I', 7);
@@ -1077,20 +1095,8 @@ class FactureController extends Controller
           $y += 10;
       }
 
-      // Informations de paiement mobile (Cash électronique)
-      if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
-          $fpdf->SetFont('Arial', 'B', 7);
-          $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
-          $fpdf->SetXY(10, $y);
-          $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
-          $y += 4;
 
-          $fpdf->SetFont('Arial', '', 7);
-          $fpdf->SetTextColor(80, 80, 80);
-          $fpdf->SetXY(10, $y);
-          $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
-          $y = $fpdf->GetY() + 5;
-      }
+      
 
       $date_entre = new DateTime($date_entre);
 
@@ -1118,6 +1124,12 @@ class FactureController extends Controller
       // Signature responsable
       $fpdf->SetX(($pageWidth - 30) / 2 + 20);
       $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
+
+      // Image de signature du responsable (si disponible)
+      if ($annexeData && !empty($annexeData['signature_path']) && file_exists($annexeData['signature_path'])) {
+          $sigImgX = ($pageWidth - 30) / 4 * 3 - 12;
+          $fpdf->Image($annexeData['signature_path'], $sigImgX, $signatureY + 2, 25, 12);
+      }
 
       $signatureY += 15;
 

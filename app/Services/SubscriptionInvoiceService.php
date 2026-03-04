@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Codedge\Fpdf\Fpdf\Fpdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionInvoiceService
 {
@@ -17,6 +18,7 @@ class SubscriptionInvoiceService
      */
     public function generate(array $data): string
     {
+      try {
         $fpdf = new Fpdf('P', 'mm', 'A4');
         $fpdf->SetAutoPageBreak(true, 15);
         $fpdf->AddPage();
@@ -38,7 +40,7 @@ class SubscriptionInvoiceService
         $fpdf->SetFont('Arial', 'B', 20);
         $fpdf->SetTextColor($primaryR, $primaryG, $primaryB);
         $fpdf->SetXY(45, $y);
-        $fpdf->Cell(0, 10, 'ImmoManager', 0, 1);
+        $fpdf->Cell(0, 10, 'Lokativ', 0, 1);
 
         $fpdf->SetFont('Arial', '', 9);
         $fpdf->SetTextColor(100, 100, 100);
@@ -167,15 +169,36 @@ class SubscriptionInvoiceService
         $fpdf->SetTextColor(100, 100, 100);
         $fpdf->SetXY(15, $y);
         $fpdf->MultiCell($pageWidth - 30, 4, utf8_decode(
-            "Cette facture a été générée automatiquement lors de la création de votre compte ImmoManager.\n" .
+            "Cette facture a été générée automatiquement lors de la création de votre compte Lokativ.\n" .
             "Pour toute question, contactez notre support."
         ), 0, 'C');
 
         $fpdf->SetY(-15);
         $fpdf->SetFont('Arial', 'I', 7);
         $fpdf->SetTextColor($primaryR, $primaryG, $primaryB);
-        $fpdf->Cell(0, 4, utf8_decode('ImmoManager - Facture générée le ') . date('d/m/Y H:i'), 0, 0, 'C');
+        $fpdf->Cell(0, 4, utf8_decode('Lokativ - Facture générée le ') . date('d/m/Y H:i'), 0, 0, 'C');
 
-        return $fpdf->Output('S');
+        $pdfContent = $fpdf->Output('S');
+
+        if (empty($pdfContent)) {
+            Log::error('SubscriptionInvoiceService: Le PDF généré est vide', [
+                'user_email' => $data['user']['email'] ?? 'inconnu',
+            ]);
+            throw new \RuntimeException('Le contenu PDF généré est vide');
+        }
+
+        Log::info('SubscriptionInvoiceService: PDF généré avec succès', [
+            'taille' => strlen($pdfContent),
+            'user_email' => $data['user']['email'] ?? 'inconnu',
+        ]);
+
+        return $pdfContent;
+      } catch (\Exception $e) {
+        Log::error('SubscriptionInvoiceService: Erreur lors de la génération du PDF', [
+            'message' => $e->getMessage(),
+            'user_email' => $data['user']['email'] ?? 'inconnu',
+        ]);
+        throw $e;
+      }
     }
 }

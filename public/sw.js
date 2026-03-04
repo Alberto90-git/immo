@@ -1,4 +1,4 @@
-const CACHE_NAME = 'immomanager-v1';
+const CACHE_NAME = 'lokativ-v3';
 const STATIC_ASSETS = [
     '/',
     '/favicon.ico',
@@ -29,12 +29,16 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch - network-first for navigation, cache-first for assets
+// Fetch - network-first for navigation, cache-first for same-origin assets
 self.addEventListener('fetch', (event) => {
     const { request } = event;
 
     // Skip non-GET requests
     if (request.method !== 'GET') return;
+
+    // Skip cross-origin requests (CDN, extensions, etc.)
+    const url = new URL(request.url);
+    if (url.origin !== self.location.origin) return;
 
     // Network-first for HTML pages
     if (request.mode === 'navigate') {
@@ -52,7 +56,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Cache-first for static assets
+    // Cache-first for same-origin static assets
     event.respondWith(
         caches.match(request)
             .then((cached) => {
@@ -65,6 +69,8 @@ self.addEventListener('fetch', (event) => {
                         });
                     }
                     return response;
+                }).catch(() => {
+                    return new Response('', { status: 408, statusText: 'Offline' });
                 });
             })
     );

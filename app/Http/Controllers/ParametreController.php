@@ -5,6 +5,13 @@ namespace App\Http\Controllers;
 use App\Parametre;
 use App\Annexe;
 use App\Direction;
+use App\PourcentageGestion;
+use App\Proprietaire;
+use App\Publicite;
+use App\ContratConfig;
+use App\PlatformConfig;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Carbon\Carbon;  
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 
 
@@ -22,10 +30,19 @@ class ParametreController extends SessionController
 {
     public function  welcome_page()
     {
-            /*$publicites =  Publicite::whereNull('delete_at')
-                                    ->get();*/
-                                    
-                return view('/welcome');
+        $publicites = Publicite::notDeleted()
+                        ->notExpired()
+                        ->whereNotNull('image_url')
+                        ->orderBy('published_at', 'desc')
+                        ->get();
+
+        $paymentConfig    = PlatformConfig::getConfig();
+        $paymentEnabled   = $paymentConfig->isOperational();
+        $paymentProvider  = $paymentConfig->getActiveProvider();
+        $paymentPublicKey = $paymentEnabled ? $paymentConfig->getActivePublicKey() : null;
+        $paymentSandbox   = $paymentConfig->getActiveSandbox();
+
+        return view('/welcome', compact('publicites', 'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox'));
     }
 
     public function index()
@@ -42,7 +59,24 @@ class ParametreController extends SessionController
                                    ->where('annexes.designation','!=','All Digital Agency')
                                     ->get();
                                     
-            return view('parametre',compact('param','liste_annexe'));
+            $pourcentageGeneral = PourcentageGestion::where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->where('type', 'general')
+                ->whereNull('delete_at')
+                ->first();
+
+            $pourcentageGroupes = PourcentageGestion::where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->where('type', 'groupe')
+                ->whereNull('delete_at')
+                ->with('proprietaires')
+                ->get();
+
+            $proprietaires_list = Proprietaire::where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->whereNull('delete_at')
+                ->get();
+
+            $contratConfig = ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+
+            return view('parametre', compact('param', 'liste_annexe', 'pourcentageGeneral', 'pourcentageGroupes', 'proprietaires_list', 'contratConfig'));
 
        } catch (QueryException $e) {
             return redirect()->back()->with('error','Échec, veuillez vérifier les données');
@@ -266,10 +300,13 @@ class ParametreController extends SessionController
                     'telephone' => 'bail|required|string',
                     'email' => 'bail|required|string',
                     'logo' => 'nullable|mimes:jpeg,png,jpg|max:2048',
+                    'signature' => 'nullable|mimes:jpeg,png,jpg|max:2048',
                 ],
                 [
                     'logo.mimes' => 'Le logo doit être au format JPEG, PNG ou JPG.',
                     'logo.max' => 'Le logo ne doit pas dépasser 2MB.',
+                    'signature.mimes' => 'La signature doit être au format JPEG, PNG ou JPG.',
+                    'signature.max' => 'La signature ne doit pas dépasser 2MB.',
                 ]
             );
 
@@ -314,6 +351,25 @@ class ParametreController extends SessionController
                 $updateData['logo'] = "$path/$filename";
             }
 
+            // Upload de la signature si présente
+            if ($request->hasFile('signature')) {
+                // Supprimer l'ancienne signature
+                if ($annexe->signature && Storage::exists("public/{$annexe->signature}")) {
+                    Storage::delete("public/{$annexe->signature}");
+                }
+
+                $file = $request->file('signature');
+                $path = 'annexes/signatures';
+
+                if (!Storage::exists("public/$path")) {
+                    Storage::makeDirectory("public/$path", 0775, true);
+                }
+
+                $filename = 'signature_annexe_' . $request->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs("public/$path", $filename);
+                $updateData['signature'] = "$path/$filename";
+            }
+
             $annexes = Annexe::where('idannexes', $request->id)->update($updateData);
 
             if ($annexes) {
@@ -330,6 +386,8 @@ class ParametreController extends SessionController
                                 'email'          => $request->email,
                             ]);
                 }
+
+                Cache::forget("annexe_details_{$request->id}");
 
                 Session::put(['anne_data'=>  SessionController::save_session_annexe()]);
 
@@ -493,4 +551,388 @@ class ParametreController extends SessionController
         }
     }
 
+    // ==========================================
+    // POURCENTAGE DE GESTION
+    // ==========================================
+
+    public function storePourcentageGeneral(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'pourcentage' => 'required|numeric|min:0|max:100',
+            ], [
+                'pourcentage.required' => 'Le pourcentage est obligatoire.',
+                'pourcentage.numeric' => 'Le pourcentage doit être un nombre.',
+                'pourcentage.min' => 'Le pourcentage minimum est 0.',
+                'pourcentage.max' => 'Le pourcentage maximum est 100.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $validator->errors(),
+                    'message' => 'Veuillez corriger les erreurs de validation'
+                ]);
+            }
+
+            $existing = PourcentageGestion::where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->where('type', 'general')
+                ->whereNull('delete_at')
+                ->first();
+
+            if ($existing) {
+                $existing->pourcentage = $request->pourcentage;
+                $existing->save();
+            } else {
+                PourcentageGestion::create([
+                    'iddirection_ref' => Auth::user()->iddirection_ref,
+                    'type' => 'general',
+                    'nom' => null,
+                    'pourcentage' => $request->pourcentage,
+                    'is_active' => false,
+                ]);
+            }
+
+            activity()->performedOn(new PourcentageGestion())
+                ->causedBy(Auth::user()->id)
+                ->log('Modification du pourcentage général par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Pourcentage général enregistré avec succès',
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Échec lors de l\'enregistrement.',
+            ]);
+        }
+    }
+
+    public function togglePourcentage(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => 'ID invalide']);
+            }
+
+            $pourcentage = PourcentageGestion::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->whereNull('delete_at')
+                ->first();
+
+            if (!$pourcentage) {
+                return response()->json(['status' => false, 'message' => 'Élément non trouvé.']);
+            }
+
+            $pourcentage->is_active = !$pourcentage->is_active;
+            $pourcentage->save();
+
+            $statut = $pourcentage->is_active ? 'activé' : 'désactivé';
+
+            activity()->performedOn($pourcentage)
+                ->causedBy(Auth::user()->id)
+                ->log("Pourcentage {$pourcentage->type} {$statut} par " . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Pourcentage {$statut} avec succès",
+                'is_active' => $pourcentage->is_active,
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json(['status' => false, 'message' => 'Erreur lors de la mise à jour.']);
+        }
+    }
+
+    public function storeGroupePourcentage(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'nom' => 'required|string|max:255',
+                'pourcentage' => 'required|numeric|min:0|max:100',
+                'proprietaires' => 'required|array|min:1',
+                'proprietaires.*' => 'integer|exists:proprietaires,id',
+            ], [
+                'nom.required' => 'Le nom du groupe est obligatoire.',
+                'pourcentage.required' => 'Le pourcentage est obligatoire.',
+                'proprietaires.required' => 'Veuillez sélectionner au moins un propriétaire.',
+                'proprietaires.min' => 'Veuillez sélectionner au moins un propriétaire.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $validator->errors(),
+                    'message' => 'Veuillez corriger les erreurs de validation'
+                ]);
+            }
+
+            // Vérifier qu'aucun propriétaire sélectionné n'appartient déjà à un autre groupe
+            $existingAssignments = DB::table('pourcentage_gestion_proprietaire')
+                ->join('pourcentage_gestions', 'pourcentage_gestions.id', '=', 'pourcentage_gestion_proprietaire.pourcentage_gestion_id')
+                ->whereIn('pourcentage_gestion_proprietaire.proprietaire_id', $request->proprietaires)
+                ->where('pourcentage_gestions.iddirection_ref', Auth::user()->iddirection_ref)
+                ->whereNull('pourcentage_gestions.delete_at')
+                ->count();
+
+            if ($existingAssignments > 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Un ou plusieurs propriétaires appartiennent déjà à un groupe. Retirez-les d\'abord de leur groupe actuel.',
+                ]);
+            }
+
+            $groupe = PourcentageGestion::create([
+                'iddirection_ref' => Auth::user()->iddirection_ref,
+                'type' => 'groupe',
+                'nom' => $request->nom,
+                'pourcentage' => $request->pourcentage,
+                'is_active' => false,
+            ]);
+
+            $groupe->proprietaires()->sync($request->proprietaires);
+
+            activity()->performedOn($groupe)
+                ->causedBy(Auth::user()->id)
+                ->log('Création du groupe de pourcentage "' . $request->nom . '" par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Groupe "' . $request->nom . '" créé avec succès',
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json(['status' => false, 'message' => 'Échec lors de la création du groupe.']);
+        }
+    }
+
+    public function updateGroupePourcentage(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|integer',
+                'nom' => 'required|string|max:255',
+                'pourcentage' => 'required|numeric|min:0|max:100',
+                'proprietaires' => 'required|array|min:1',
+                'proprietaires.*' => 'integer|exists:proprietaires,id',
+            ], [
+                'nom.required' => 'Le nom du groupe est obligatoire.',
+                'pourcentage.required' => 'Le pourcentage est obligatoire.',
+                'proprietaires.required' => 'Veuillez sélectionner au moins un propriétaire.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $validator->errors(),
+                    'message' => 'Veuillez corriger les erreurs de validation'
+                ]);
+            }
+
+            $groupe = PourcentageGestion::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->where('type', 'groupe')
+                ->whereNull('delete_at')
+                ->first();
+
+            if (!$groupe) {
+                return response()->json(['status' => false, 'message' => 'Groupe non trouvé.']);
+            }
+
+            // Vérifier les conflits (en excluant le groupe courant)
+            $existingAssignments = DB::table('pourcentage_gestion_proprietaire')
+                ->join('pourcentage_gestions', 'pourcentage_gestions.id', '=', 'pourcentage_gestion_proprietaire.pourcentage_gestion_id')
+                ->whereIn('pourcentage_gestion_proprietaire.proprietaire_id', $request->proprietaires)
+                ->where('pourcentage_gestion_proprietaire.pourcentage_gestion_id', '!=', $request->id)
+                ->where('pourcentage_gestions.iddirection_ref', Auth::user()->iddirection_ref)
+                ->whereNull('pourcentage_gestions.delete_at')
+                ->count();
+
+            if ($existingAssignments > 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Un ou plusieurs propriétaires appartiennent déjà à un autre groupe.',
+                ]);
+            }
+
+            $groupe->update([
+                'nom' => $request->nom,
+                'pourcentage' => $request->pourcentage,
+            ]);
+
+            $groupe->proprietaires()->sync($request->proprietaires);
+
+            activity()->performedOn($groupe)
+                ->causedBy(Auth::user()->id)
+                ->log('Modification du groupe "' . $request->nom . '" par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Groupe mis à jour avec succès',
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json(['status' => false, 'message' => 'Échec lors de la mise à jour.']);
+        }
+    }
+
+    public function destroyGroupePourcentage(Request $request)
+    {
+        try {
+            $groupe = PourcentageGestion::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->where('type', 'groupe')
+                ->whereNull('delete_at')
+                ->first();
+
+            if (!$groupe) {
+                return response()->json(['status' => false, 'message' => 'Groupe non trouvé.']);
+            }
+
+            $groupe->proprietaires()->detach();
+            $groupe->update(['delete_at' => Carbon::now()]);
+
+            activity()->performedOn($groupe)
+                ->causedBy(Auth::user()->id)
+                ->log('Suppression du groupe "' . $groupe->nom . '" par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Groupe supprimé avec succès',
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json(['status' => false, 'message' => 'Échec lors de la suppression.']);
+        }
+    }
+
+    public function getPourcentageForProprietaire(Request $request)
+    {
+        try {
+            $pourcentage = get_pourcentage_gestion($request->proprietaire_id);
+            return response()->json([
+                'status' => true,
+                'pourcentage' => $pourcentage,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'pourcentage' => 10,
+            ]);
+        }
+    }
+
+    public function storeContratConfig(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'titre_contrat' => 'required|string|max:255',
+                'sous_titre'    => 'nullable|string|max:500',
+                'articles'      => 'required|array|min:1',
+                'articles.*.titre'   => 'required|string|max:255',
+                'articles.*.contenu' => 'required|string',
+            ], [
+                'titre_contrat.required' => 'Le titre du contrat est obligatoire.',
+                'articles.required'      => 'Ajoutez au moins un article.',
+                'articles.min'           => 'Ajoutez au moins un article.',
+                'articles.*.titre.required'   => 'Chaque article doit avoir un titre.',
+                'articles.*.contenu.required' => 'Chaque article doit avoir un contenu.',
+            ]);
+
+            if ($validator->fails()) {
+                if ($request->expectsJson()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+                }
+                return back()->withErrors($validator)->with('active_tab', 'contrat');
+            }
+
+            ContratConfig::updateOrCreate(
+                ['iddirection_ref' => Auth::user()->iddirection_ref],
+                [
+                    'titre_contrat' => $request->titre_contrat,
+                    'sous_titre'    => $request->sous_titre,
+                    'articles'      => $request->articles,
+                ]
+            );
+
+            activity()->performedOn(new ContratConfig())
+                ->causedBy(Auth::user())
+                ->log('Modification du modèle de contrat par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            if ($request->expectsJson()) {
+                return response()->json(['status' => true, 'message' => 'Modèle de contrat enregistré avec succès.']);
+            }
+            return back()->with('success', 'Modèle de contrat enregistré avec succès.')->with('active_tab', 'contrat');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['status' => false, 'message' => 'Échec, veuillez réessayer.']);
+            }
+            return back()->with('error', 'Échec, veuillez réessayer.')->with('active_tab', 'contrat');
+        }
+    }
+
+    public function resetContratConfig(Request $request)
+    {
+        try {
+            ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->delete();
+
+            activity()->performedOn(new ContratConfig())
+                ->causedBy(Auth::user())
+                ->log('Réinitialisation du modèle de contrat par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return back()->with('success', 'Modèle de contrat remis aux valeurs par défaut.')->with('active_tab', 'contrat');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Échec de la réinitialisation.')->with('active_tab', 'contrat');
+        }
+    }
+
+    public function storeCommConfig(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'email_envoi'           => 'nullable|email|max:255',
+                'whatsapp_numero_envoi' => 'nullable|string|max:50',
+            ], [
+                'email_envoi.email' => 'L\'adresse email d\'envoi est invalide.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => implode(' ', $validator->errors()->all()),
+                ]);
+            }
+
+            Parametre::updateOrCreate(
+                ['iddirection_ref' => Auth::user()->iddirection_ref],
+                [
+                    'email_envoi'           => $request->email_envoi,
+                    'whatsapp_numero_envoi' => $request->whatsapp_numero_envoi,
+                ]
+            );
+
+            activity()->performedOn(new Parametre())
+                ->causedBy(Auth::user())
+                ->log('Modification de la configuration communication par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Configuration communication enregistrée avec succès.',
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Échec lors de l\'enregistrement. Veuillez réessayer.',
+            ]);
+        }
+    }
 }

@@ -7,11 +7,12 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Immo | Connexion</title>
+    <title>Lokativ | Connexion</title>
 
     <meta name="description" content="Page de connexion à Immo, application de gestion des agences immobiliers, des maisons, chambres, locataires" />
 
     @include('css_file')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <!-- Helpers -->
     <script src="assetsV2/vendor/js/helpers.js"></script>
@@ -192,18 +193,6 @@
         color: #a0aec0;
       }
 
-      .input-group-text {
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-left: none;
-        border-radius: 0 12px 12px 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .input-group-text:hover {
-        background: rgba(255, 255, 255, 0.2);
-      }
 
       .btn-primary {
         background: var(--primary-gradient);
@@ -365,7 +354,7 @@
               </div>
               /Logo -->
               
-              <h4 class="mb-1">Bienvenue sur <strong>Immo</strong> ! <span class="welcome-emoji">👋</span></h4>
+              <h4 class="mb-1">Bienvenue sur <strong>Lokativ</strong> ! <span class="welcome-emoji">👋</span></h4>
 
               @include('display_message')
 
@@ -391,26 +380,41 @@
                   @enderror
                 </div>
                 
-                <div class="mb-3 form-password-toggle">
-                  <div class="d-flex justify-content-between">
-                    <label class="form-label" for="password">Mot de passe</label>
-                    <a href="{{ route('getEmail') }}">
-                      <small>Mot de passe oublié ?</small>
-                    </a>
+                <div class="mb-3">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <label class="form-label" for="password" style="margin-bottom:0;">Mot de passe</label>
+                    <a href="{{ route('getEmail') }}" style="font-size:0.8rem;">Mot de passe oublié ?</a>
                   </div>
-                  <div class="input-group input-group-merge">
+                  <div id="password-group"
+                       style="display:flex;align-items:stretch;
+                              border:2px solid rgba(255,255,255,0.3);
+                              border-radius:12px;overflow:hidden;
+                              background:rgba(255,255,255,0.1);
+                              backdrop-filter:blur(10px);
+                              transition:border-color 0.3s,box-shadow 0.3s;">
                     <input
                       type="password"
                       id="password"
-                      class="form-control"
                       name="password"
                       placeholder="••••••••••••"
-                      aria-describedby="password" 
                       required
+                      style="flex:1;border:none;background:transparent;
+                             padding:0.75rem 1rem;font-size:1rem;
+                             color:#2d3748;outline:none;min-width:0;"
                     />
-                    <span class="input-group-text cursor-pointer" id="togglePassword">
-                      <i class="bx bx-hide" id="toggleIcon"></i>
-                    </span>
+                    <button type="button" id="togglePassword"
+                            aria-label="Afficher/masquer le mot de passe"
+                            style="background:transparent;
+                                   border:none;
+                                   border-left:1px solid rgba(255,255,255,0.25);
+                                   padding:0 1rem;
+                                   cursor:pointer;
+                                   color:#a0aec0;
+                                   font-size:1.1rem;
+                                   transition:color 0.2s;
+                                   flex-shrink:0;">
+                      <i class="fas fa-eye-slash" id="toggleIcon"></i>
+                    </button>
                   </div>
                 </div>
                 
@@ -429,7 +433,7 @@
               </form>
 
               <p class="text-center">
-                <span>Nouveau sur la plateforme ?</span>
+                <span class="text-white">Nouveau sur la plateforme ?</span>
                 <a href="{{ route('accueil') }}">
                   <span>Créer un compte</span>
                 </a>
@@ -447,19 +451,34 @@
     
     <script>
       // Toggle password visibility
-      document.getElementById('togglePassword').addEventListener('click', function() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('toggleIcon');
-        
-        if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
-          toggleIcon.classList.remove('bx-hide');
-          toggleIcon.classList.add('bx-show');
-        } else {
-          passwordInput.type = 'password';
-          toggleIcon.classList.remove('bx-show');
-          toggleIcon.classList.add('bx-hide');
-        }
+      document.getElementById('togglePassword').addEventListener('click', function () {
+        const input = document.getElementById('password');
+        const icon  = document.getElementById('toggleIcon');
+        const show  = input.type === 'password';
+
+        input.type = show ? 'text' : 'password';
+        icon.classList.toggle('fa-eye-slash', !show);
+        icon.classList.toggle('fa-eye',        show);
+        this.style.color = show ? '#667eea' : '#a0aec0';
+      });
+
+      // Focus/blur styling sur le groupe password
+      const pwInput = document.getElementById('password');
+      const pwGroup = document.getElementById('password-group');
+      pwInput.addEventListener('focus', function () {
+        pwGroup.style.borderColor = '#667eea';
+        pwGroup.style.boxShadow   = '0 0 0 3px rgba(102,126,234,0.15)';
+      });
+      pwInput.addEventListener('blur', function () {
+        pwGroup.style.borderColor = 'rgba(255,255,255,0.3)';
+        pwGroup.style.boxShadow   = 'none';
+      });
+
+      // Hover sur le bouton toggle
+      const toggleBtn = document.getElementById('togglePassword');
+      toggleBtn.addEventListener('mouseenter', function () { this.style.color = '#667eea'; });
+      toggleBtn.addEventListener('mouseleave', function () {
+        if (document.getElementById('password').type === 'password') this.style.color = '#a0aec0';
       });
 
       // Form submission with loading state
@@ -470,16 +489,12 @@
         submitBtn.textContent = 'Connexion en cours...';
       });
 
-      // Add input focus animations
-      const inputs = document.querySelectorAll('.form-control');
-      inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          this.parentElement.style.transform = 'translateY(-2px)';
-        });
-        
-        input.addEventListener('blur', function() {
-          this.parentElement.style.transform = 'translateY(0)';
-        });
+      // Focus animations sur les autres champs (email uniquement)
+      document.getElementById('email').addEventListener('focus', function () {
+        this.style.transform = 'translateY(-2px)';
+      });
+      document.getElementById('email').addEventListener('blur', function () {
+        this.style.transform = 'translateY(0)';
       });
     </script>
   </body>

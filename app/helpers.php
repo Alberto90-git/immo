@@ -10,6 +10,7 @@ use App\Direction;
 use App\Plan;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
 
 
 
@@ -192,10 +193,13 @@ if (!function_exists("get_logo")) {
 
     function get_logo($id_direction)
     {
+        if (!$id_direction) return null;
         try {
-            $reponse = Parametre::where('iddirection_ref', $id_direction)
-                ->first();
-            return $reponse;
+            return Cache::remember("logo_direction_{$id_direction}", 300, function () use ($id_direction) {
+                return Parametre::where('iddirection_ref', $id_direction)
+                    ->select('id', 'iddirection_ref', 'logo_url', 'cash_electronique', 'status_line')
+                    ->first();
+            });
         } catch (QueryException $e) {
             return;
         }
@@ -207,11 +211,9 @@ if (!function_exists("get_status_entreprise")) {
     function get_status_entreprise($id_direction, $id_annexe)
     {
         try {
-            $reponse = Annexe::where('iddirection_ref', $id_direction)
+            return Annexe::where('iddirection_ref', $id_direction)
                 ->where('idannexes', $id_annexe)
-                ->get()
-                ->pluck('designation')[0];
-            return $reponse;
+                ->value('designation');
         } catch (QueryException $e) {
             return;
         }
@@ -330,11 +332,7 @@ if (!function_exists("get_status_line")) {
     function get_status_line()
     {
         try {
-            $reponse = Parametre::select('status_line')
-                ->get()
-                ->pluck('status_line')[0];
-
-            return $reponse;
+            return Parametre::value('status_line');
         } catch (QueryException $e) {
             return;
         }
@@ -483,6 +481,32 @@ if (!function_exists("nom_mois")) {
  * Fonctions helpers pour la gestion des plans d'abonnement
  */
 
+if (!function_exists("get_current_direction")) {
+    /**
+     * Retourne la Direction de l'utilisateur connecté (memoïsée pour la requête en cours)
+     */
+    function get_current_direction()
+    {
+        static $cache = [];
+
+        if (!Auth::check()) {
+            return null;
+        }
+
+        $id = Auth::user()->iddirection_ref;
+
+        if (!array_key_exists($id, $cache)) {
+            try {
+                $cache[$id] = Direction::with('plan')->find($id);
+            } catch (QueryException $e) {
+                $cache[$id] = null;
+            }
+        }
+
+        return $cache[$id];
+    }
+}
+
 if (!function_exists("get_current_plan")) {
     /**
      * Récupère le plan actuel de l'utilisateur connecté
@@ -492,16 +516,10 @@ if (!function_exists("get_current_plan")) {
     function get_current_plan()
     {
         try {
-            if (!Auth::check()) {
-                return null;
-            }
-
-            $direction = Direction::find(Auth::user()->iddirection_ref);
-
+            $direction = get_current_direction();
             if (!$direction) {
                 return null;
             }
-
             return $direction->plan ?? Plan::starter();
         } catch (QueryException $e) {
             return null;
@@ -518,16 +536,10 @@ if (!function_exists("get_plan_info")) {
     function get_plan_info()
     {
         try {
-            if (!Auth::check()) {
-                return null;
-            }
-
-            $direction = Direction::find(Auth::user()->iddirection_ref);
-
+            $direction = get_current_direction();
             if (!$direction) {
                 return null;
             }
-
             return $direction->getPlanInfo();
         } catch (QueryException $e) {
             return null;
@@ -544,16 +556,10 @@ if (!function_exists("can_create_maison")) {
     function can_create_maison()
     {
         try {
-            if (!Auth::check()) {
-                return ['allowed' => false, 'message' => 'Vous devez être connecté.'];
-            }
-
-            $direction = Direction::find(Auth::user()->iddirection_ref);
-
+            $direction = get_current_direction();
             if (!$direction) {
                 return ['allowed' => false, 'message' => 'Direction non trouvée.'];
             }
-
             return $direction->canCreateMaison();
         } catch (QueryException $e) {
             return ['allowed' => false, 'message' => 'Erreur lors de la vérification.'];
@@ -570,16 +576,10 @@ if (!function_exists("can_create_annexe")) {
     function can_create_annexe()
     {
         try {
-            if (!Auth::check()) {
-                return ['allowed' => false, 'message' => 'Vous devez être connecté.'];
-            }
-
-            $direction = Direction::find(Auth::user()->iddirection_ref);
-
+            $direction = get_current_direction();
             if (!$direction) {
                 return ['allowed' => false, 'message' => 'Direction non trouvée.'];
             }
-
             return $direction->canCreateAnnexe();
         } catch (QueryException $e) {
             return ['allowed' => false, 'message' => 'Erreur lors de la vérification.'];
@@ -625,16 +625,10 @@ if (!function_exists("is_abonnement_actif")) {
     function is_abonnement_actif()
     {
         try {
-            if (!Auth::check()) {
-                return false;
-            }
-
-            $direction = Direction::find(Auth::user()->iddirection_ref);
-
+            $direction = get_current_direction();
             if (!$direction) {
                 return false;
             }
-
             return $direction->hasAbonnementActif();
         } catch (QueryException $e) {
             return false;
@@ -659,7 +653,7 @@ if (!function_exists("get_abonnement_status")) {
                 ];
             }
 
-            $direction = Direction::find(Auth::user()->iddirection_ref);
+            $direction = get_current_direction();
 
             if (!$direction) {
                 return [
@@ -816,32 +810,24 @@ if (!function_exists("get_annexe_details_for_invoice")) {
      */
     function get_annexe_details_for_invoice($idannexe_ref)
     {
+        if (!$idannexe_ref) return null;
+
         try {
-            $annexe = Annexe::where('idannexes', $idannexe_ref)->first();
+            $annexe = Cache::remember("annexe_details_{$idannexe_ref}", 120, function () use ($idannexe_ref) {
+                return Annexe::where('idannexes', $idannexe_ref)
+                    ->select('idannexes', 'designation', 'telephone', 'email', 'siege_social', 'logo', 'signature', 'cash_electronique', 'iddirection_ref')
+                    ->first();
+            });
 
             if (!$annexe) {
                 return null;
             }
 
-            // Trouver le chemin du logo
-            $logoPath = null;
-            if ($annexe->logo) {
-                $possiblePaths = [
-                    storage_path('app/public/' . $annexe->logo),
-                    public_path('storage/' . $annexe->logo),
-                    public_path($annexe->logo),
-                    $annexe->logo
-                ];
+            // Résoudre les chemins via les accesseurs du modèle
+            $logoPath = $annexe->logo_path;
+            $signaturePath = $annexe->signature_path;
 
-                foreach ($possiblePaths as $path) {
-                    if (file_exists($path)) {
-                        $logoPath = $path;
-                        break;
-                    }
-                }
-            }
-
-            // Fallback: chercher le logo dans le Parametre de la direction
+            // Fallback logo: chercher dans le Parametre de la direction
             if (!$logoPath && $annexe->iddirection_ref) {
                 $parametre = \App\Parametre::where('iddirection_ref', $annexe->iddirection_ref)->first();
                 if ($parametre) {
@@ -864,16 +850,114 @@ if (!function_exists("get_annexe_details_for_invoice")) {
                 }
             }
 
+            // Convertir en base64 pour les vues DomPDF (Blade)
+            $logoBase64 = null;
+            if ($logoPath && file_exists($logoPath)) {
+                $mime = mime_content_type($logoPath) ?: 'image/jpeg';
+                $logoBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($logoPath));
+            }
+
+            $signatureBase64 = null;
+            if ($signaturePath && file_exists($signaturePath)) {
+                $mime = mime_content_type($signaturePath) ?: 'image/jpeg';
+                $signatureBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($signaturePath));
+            }
+
             return [
                 'designation' => $annexe->designation,
                 'telephone' => $annexe->telephone,
                 'email' => $annexe->email,
                 'siege_social' => $annexe->siege_social,
                 'logo_path' => $logoPath,
-                'cash_electronique' => $annexe->cash_electronique
+                'logo_base64' => $logoBase64,
+                'cash_electronique' => $annexe->cash_electronique,
+                'signature_path' => $signaturePath,
+                'signature_base64' => $signatureBase64,
             ];
         } catch (\Exception $e) {
             return null;
+        }
+    }
+}
+
+if (!function_exists("get_pourcentage_gestion")) {
+    /**
+     * Retourne le pourcentage de gestion actif pour un propriétaire donné.
+     * Priorité : groupe actif > pourcentage général actif > fallback 10
+     */
+    function get_pourcentage_gestion($proprietaire_id)
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Auth::check()) {
+                return 10;
+            }
+
+            $directionId = \Illuminate\Support\Facades\Auth::user()->iddirection_ref;
+
+            // 1. Vérifier si le propriétaire appartient à un groupe actif
+            $groupePourcentage = \App\PourcentageGestion::where('iddirection_ref', $directionId)
+                ->where('type', 'groupe')
+                ->where('is_active', true)
+                ->whereNull('delete_at')
+                ->whereHas('proprietaires', function ($query) use ($proprietaire_id) {
+                    $query->where('proprietaires.id', $proprietaire_id);
+                })
+                ->first();
+
+            if ($groupePourcentage) {
+                return (float) $groupePourcentage->pourcentage;
+            }
+
+            // 2. Fallback : pourcentage général actif
+            $generalPourcentage = \App\PourcentageGestion::where('iddirection_ref', $directionId)
+                ->where('type', 'general')
+                ->where('is_active', true)
+                ->whereNull('delete_at')
+                ->first();
+
+            if ($generalPourcentage) {
+                return (float) $generalPourcentage->pourcentage;
+            }
+
+            // 3. Fallback par défaut
+            return 10;
+
+        } catch (\Exception $e) {
+            return 10;
+        }
+    }
+}
+
+if (!function_exists("get_all_pourcentages_for_direction")) {
+    /**
+     * Retourne tous les pourcentages actifs pour la direction courante.
+     * Utilisé pour remplir les dropdowns dans financier.blade.php.
+     */
+    function get_all_pourcentages_for_direction()
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Auth::check()) {
+                return collect([10]);
+            }
+
+            $directionId = \Illuminate\Support\Facades\Auth::user()->iddirection_ref;
+
+            $pourcentages = \App\PourcentageGestion::where('iddirection_ref', $directionId)
+                ->whereNull('delete_at')
+                ->where('is_active', true)
+                ->pluck('pourcentage')
+                ->unique()
+                ->sort()
+                ->values();
+
+            if ($pourcentages->isEmpty()) {
+                return collect([10]);
+            }
+
+            return $pourcentages;
+
+        } catch (\Exception $e) {
+            return collect([10]);
         }
     }
 }

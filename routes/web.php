@@ -17,6 +17,10 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\EntrepriseController;
 use App\Http\Controllers\PubliciteController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\EnvoiDocumentController;
+use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\PlatformConfigController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +45,14 @@ use Illuminate\Support\Facades\Gate;
 
 Route::get('/', [ParametreController::class, 'welcome_page'])->name('accueil');
 
+// Pages légales (publiques)
+Route::prefix('legal')->name('legal.')->group(function () {
+    Route::get('conditions-utilisation', fn() => view('legal.cgu'))->name('cgu');
+    Route::get('confidentialite', fn() => view('legal.confidentialite'))->name('confidentialite');
+    Route::get('mentions-legales', fn() => view('legal.mentions'))->name('mentions');
+    Route::get('cookies', fn() => view('legal.cookies'))->name('cookies');
+});
+
 
 
 
@@ -56,8 +68,15 @@ Route::post('creation-compte', [UtilisateurController::class, 'saveAdminCompte']
 
 Route::post('login-check', [UtilisateurController::class, 'HandleLogin'])->name('login_check');
 
+// Config KKiaPay publique (pour welcome page, sans auth)
+Route::get('platform/kkiapay-public', [PlatformConfigController::class, 'publicConfig'])->name('platform.kkiapay.public');
+
 
 Route::middleware('auth')->group(function () {
+
+    // Routes Super Admin — Configuration plateforme KKiaPay
+    Route::get('platform/kkiapay-config', [PlatformConfigController::class, 'getAdminConfig'])->name('platform.kkiapay.config');
+    Route::post('platform/kkiapay-config', [PlatformConfigController::class, 'update'])->name('platform.kkiapay.update');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
    //aax
@@ -100,6 +119,7 @@ Route::post('password-submit', [UtilisateurController::class, 'updatePassword'])
 
 //SOUMETTRE LE CODE RECU
 Route::post('code-submit', [UtilisateurController::class, 'code_submit'])->name('code_submit');
+Route::post('send-login-otp', [UtilisateurController::class, 'sendLoginOtp'])->name('send_login_otp');
 
 //SOUMETTRE LA MOD DU PWD
 Route::post('changement', [UtilisateurController::class, 'reinitilisationPassword'])->name('changementPwd') ;
@@ -135,6 +155,18 @@ Route::middleware('auth')->group(function () {
     Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
     Route::post('update-annexe', [ParametreController::class, 'updateAnnexe'])->name('update_annexe');
     Route::post('delete-annexe', [ParametreController::class, 'destroyAnnexe'])->name('destroy_annexe');
+
+    # POURCENTAGE DE GESTION
+    Route::post('pourcentage-general', [ParametreController::class, 'storePourcentageGeneral'])->name('store_pourcentage_general');
+    Route::post('pourcentage-toggle', [ParametreController::class, 'togglePourcentage'])->name('toggle_pourcentage');
+    Route::post('pourcentage-groupe', [ParametreController::class, 'storeGroupePourcentage'])->name('store_pourcentage_groupe');
+    Route::post('pourcentage-groupe-update', [ParametreController::class, 'updateGroupePourcentage'])->name('update_pourcentage_groupe');
+    Route::post('pourcentage-groupe-delete', [ParametreController::class, 'destroyGroupePourcentage'])->name('destroy_pourcentage_groupe');
+    Route::get('/api/get-pourcentage-proprietaire', [ParametreController::class, 'getPourcentageForProprietaire'])->name('api.get_pourcentage_proprietaire');
+
+    # MODELE DE CONTRAT
+    Route::post('contrat-config', [ParametreController::class, 'storeContratConfig'])->name('store_contrat_config');
+    Route::post('contrat-config-reset', [ParametreController::class, 'resetContratConfig'])->name('reset_contrat_config');
 
     # API pour la gestion centralisée de l'agence active
     Route::post('/api/set-active-annexe', [ParametreController::class, 'setActiveAnnexe'])->name('api.set_active_annexe');
@@ -249,9 +281,8 @@ Route::middleware('auth')->prefix('gerer-locataire')->group(function () {
     Route::get('get_prix', [LocataireController::class, 'getPrix']);
 
     Route::post('download-contrat', [HomeController::class, 'getcontratpdf'])->name('download_contrat');
+    Route::get('api/locataires-contrat', [HomeController::class, 'getLocatairesForContrat'])->name('api.locataires_contrat');
 
-
-    
 });
 
 
@@ -396,9 +427,33 @@ Route::middleware('auth')->group(function () {
     Route::post('add', [PubliciteController::class, 'create'])->name('store_pub');
     Route::post('update', [PubliciteController::class, 'update_pub'])->name('update_pub');
     Route::post('destroy', [PubliciteController::class, 'destroy'])->name('destroy_pub');
+    Route::post('add-image', [PubliciteController::class, 'addImage'])->name('pub_add_image');
+    Route::post('remove-image', [PubliciteController::class, 'removeImage'])->name('pub_remove_image');
 
-    
+  });
 
+
+  Route::middleware('auth')->prefix('notifications')->group(function () {
+    Route::get('/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread_count');
+    Route::get('/recent', [NotificationController::class, 'getRecent'])->name('notifications.recent');
+    Route::post('/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark_read');
+    Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark_all_read');
+  });
+
+  Route::middleware('auth')->prefix('envoi-document')->group(function () {
+    Route::get('/', [EnvoiDocumentController::class, 'index'])->name('envoi_document.index');
+    Route::post('/envoyer', [EnvoiDocumentController::class, 'envoyer'])->name('envoi_document.envoyer');
+    Route::get('/historique', [EnvoiDocumentController::class, 'historique'])->name('envoi_document.historique');
+  });
+
+  Route::middleware('auth')->post('comm-config', [ParametreController::class, 'storeCommConfig'])->name('store_comm_config');
+
+  Route::middleware('auth')->prefix('whatsapp')->group(function () {
+    Route::get('/status',     [WhatsAppController::class, 'status'])->name('whatsapp.status');
+    Route::get('/qr',         [WhatsAppController::class, 'qr'])->name('whatsapp.qr');
+    Route::get('/qr-image',   [WhatsAppController::class, 'qrImage'])->name('whatsapp.qr_image');
+    Route::post('/connect',   [WhatsAppController::class, 'connect'])->name('whatsapp.connect');
+    Route::post('/disconnect',[WhatsAppController::class, 'disconnect'])->name('whatsapp.disconnect');
   });
 
 

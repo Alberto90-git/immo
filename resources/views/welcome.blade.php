@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="ImmoManager - Plateforme complète de gestion immobilière. Automatisez vos tâches, optimisez vos revenus et gérez votre patrimoine en toute simplicité.">
+    <meta name="description" content="Lokativ - Plateforme complète de gestion immobilière. Automatisez vos tâches, optimisez vos revenus et gérez votre patrimoine en toute simplicité.">
     <meta name="keywords" content="immobilier, gestion locative, propriété, loyers, patrimoine, investissement">
     
-    <title>ImmoManager - Votre partenaire de gestion immobilière</title>
+    <title>Lokativ - Votre partenaire de gestion immobilière</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -17,9 +17,10 @@
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1e40af">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ImmoManager">
+    <meta name="apple-mobile-web-app-title" content="Lokativ">
     <link rel="apple-touch-icon" href="/logo/LOGO.jpg">
     
     <!-- Chargement optimisé des ressources -->
@@ -34,7 +35,7 @@
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "ImmoManager",
+      "name": "Lokativ",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web Browser",
       "description": "Plateforme complète de gestion immobilière",
@@ -101,8 +102,15 @@
 
         .glass-effect {
             backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 767px) {
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.25);
+                border: 2px solid rgba(255, 255, 255, 0.5);
+            }
         }
 
         .hover-lift {
@@ -130,7 +138,7 @@
         }
 
         .header-scrolled {
-            background: white;
+            background: white !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
@@ -143,10 +151,30 @@
         }
 
         .header-scrolled .logo-text {
-            background: linear-gradient(to right, #1e40af, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            background: linear-gradient(to right, #1e40af, #3b82f6) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            color: transparent !important;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-scrolled .hamburger span {
+            background-color: #1e40af !important;
+        }
+
+        .header-scrolled #mobile-menu-btn {
+            color: #1e40af !important;
+        }
+
+        /* Boutons header scrollé */
+        .header-scrolled .header-btn-login {
+            color: #1e40af !important;
+            background: #eff6ff !important;
+        }
+
+        .header-scrolled .header-btn-register {
+            color: #ffffff !important;
+            background: #1e40af !important;
         }
 
         /* Mobile menu responsive */
@@ -229,6 +257,32 @@
 
         .mobile-menu-cta {
             margin-top: 2rem;
+        }
+
+        .mobile-menu-cta a {
+            border-bottom: none !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 700 !important;
+            font-size: 1rem !important;
+        }
+
+        .mobile-menu-cta a:first-child {
+            color: #1e40af !important;
+            background: white !important;
+        }
+
+        .mobile-menu-cta a:first-child:hover {
+            color: #1e40af !important;
+            background: #eff6ff !important;
+        }
+
+        .mobile-menu-cta a:last-child {
+            color: white !important;
+            background: #2563eb !important;
+        }
+
+        .mobile-menu-cta a:last-child:hover {
+            background: #1d4ed8 !important;
         }
 
         /* Hamburger menu animation */
@@ -543,6 +597,32 @@
             will-change: transform;
         }
 
+        /* Amélioration de la lisibilité mobile */
+        @media (max-width: 767px) {
+            .hero-content h1,
+            .hero-content p {
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero-content .glass-effect {
+                background: rgba(255, 255, 255, 0.25);
+                border: 2px solid rgba(255, 255, 255, 0.5);
+            }
+
+            /* Meilleur contraste pour les boutons CTA sur mobile */
+            .gradient-bg a,
+            .gradient-bg button {
+                text-shadow: none;
+            }
+
+            /* Boutons outline plus lisibles sur mobile */
+            .pricing-card a {
+                font-weight: 700;
+                padding-top: 0.875rem;
+                padding-bottom: 0.875rem;
+            }
+        }
+
         /* Styles pour les témoignages */
         .testimonial-card {
             transition: all 0.3s ease;
@@ -561,12 +641,12 @@
     <nav id="main-header" class="fixed z-50 w-full header-transparent" aria-label="Navigation principale">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="flex items-center justify-between py-4">
-                <a href="/" class="flex items-center space-x-2" aria-label="ImmoManager - Retour à l'accueil">
+                <a href="/" class="flex items-center space-x-2" aria-label="Lokativ - Retour à l'accueil">
                     <div class="flex items-center justify-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-blue-800">
                         <i class="text-sm text-white fas fa-home sm:text-base" aria-hidden="true"></i>
                     </div>
                     <span class="text-xl font-bold text-white logo-text sm:text-2xl">
-                        ImmoManager
+                        Lokativ
                     </span>
                 </a>
 
@@ -577,10 +657,10 @@
                     <a href="#tarifs" class="text-white transition-colors nav-link hover:text-blue-300">Tarifs</a>
                     <a href="#contact" class="text-white transition-colors nav-link hover:text-blue-300">Contact</a>
 
-                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-semibold text-blue-600 transition-colors bg-white rounded-full lg:px-6 hover:bg-blue-50 lg:text-base">
+                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-semibold text-blue-600 transition-colors bg-white rounded-full header-btn-login lg:px-6 hover:bg-blue-50 lg:text-base">
                         Se connecter
                     </a>
-                    <a href="#compte" class="px-4 py-2 text-sm font-semibold text-white transition-colors bg-blue-600 rounded-full lg:px-6 hover:bg-blue-700 lg:text-base">
+                    <a href="#compte" class="px-4 py-2 text-sm font-semibold text-white transition-colors bg-blue-600 rounded-full header-btn-register lg:px-6 hover:bg-blue-700 lg:text-base">
                         Créer un compte
                     </a>
                 </div>
@@ -648,8 +728,8 @@
                             <i class="mr-2 fas fa-rocket" aria-hidden="true"></i>
                             Démarrer gratuitement
                         </a>
-                        <button
-                            class="px-6 py-3 text-base font-bold text-white transition-all rounded-full glass-effect lg:px-8 lg:py-4 lg:text-lg hover:bg-white hover:text-blue-600">
+                        <button id="btn-voir-demo"
+                            class="px-6 py-3 text-base font-bold text-white transition-all border-2 border-white rounded-full lg:px-8 lg:py-4 lg:text-lg hover:bg-white hover:text-blue-600" style="background: rgba(255,255,255,0.2);">
                             <i class="mr-2 fas fa-play-circle" aria-hidden="true"></i>
                             Voir la démo
                         </button>
@@ -697,11 +777,11 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#compte"
+                        <button id="btn-essayer-demo"
                             class="block w-full py-3 mt-4 text-sm font-bold text-center text-white transition-all bg-gradient-to-r from-green-400 to-blue-500 lg:py-4 rounded-xl hover:from-green-500 hover:to-blue-600 lg:text-base">
                             <i class="mr-2 fas fa-play" aria-hidden="true"></i>
-                            Essayer la démo
-                        </a>
+                            Voir la démo
+                        </button>
                     </div>
                 </div>
             </div>
@@ -827,7 +907,7 @@
                         <i class="fas fa-check"></i>
                     </div>
                     <h3 class="mb-3 text-xl font-bold text-gray-800">Automatisez tout</h3>
-                    <p class="text-gray-600">Laissez ImmoManager gérer les factures et rappels</p>
+                    <p class="text-gray-600">Laissez Lokativ gérer les factures et rappels</p>
                 </div>
             </div>
         </div>
@@ -898,6 +978,148 @@
         </div>
     </section>
 
+    <!-- Section Biens Immobiliers / Publicités -->
+    @if(isset($publicites) && $publicites->count() > 0)
+    <section id="biens" class="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-blue-50 to-white">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-12 text-center lg:mb-16">
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
+                    Nos offres du moment
+                </span>
+                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl">
+                    Biens <span class="text-blue-600">Immobiliers</span> Disponibles
+                </h2>
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg">
+                    Découvrez nos dernières offres immobilières disponibles
+                </p>
+            </div>
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach($publicites as $pub)
+                <div class="overflow-hidden transition-all duration-300 bg-white shadow-lg group rounded-2xl hover:shadow-2xl hover:-translate-y-1">
+                    <!-- Image / Carrousel -->
+                    <div class="relative overflow-hidden" style="height: 220px;">
+                        @php $pubImages = $pub->images; @endphp
+                        @if(count($pubImages) > 1)
+                            <!-- Carrousel -->
+                            <div class="pub-carousel" data-pub-id="{{ $pub->id }}" style="height:100%; position:relative;">
+                                @foreach($pubImages as $idx => $img)
+                                <div class="pub-slide" style="position:absolute; inset:0; transition:opacity 0.5s; opacity:{{ $idx === 0 ? '1' : '0' }};">
+                                    <img src="{{ asset('storage/'.$img) }}" alt="{{ $pub->localisation }}"
+                                         class="object-cover w-full h-full">
+                                </div>
+                                @endforeach
+                                <!-- Indicateurs -->
+                                <div class="absolute flex space-x-1 transform -translate-x-1/2 bottom-3 left-1/2">
+                                    @foreach($pubImages as $idx => $img)
+                                    <button class="pub-dot w-2 h-2 rounded-full transition-all {{ $idx === 0 ? 'bg-white scale-125' : 'bg-white/50' }}"
+                                            onclick="goToSlide({{ $pub->id }}, {{ $idx }})"></button>
+                                    @endforeach
+                                </div>
+                                <!-- Flèches -->
+                                <button class="absolute p-1 text-white transform -translate-y-1/2 rounded-full left-2 top-1/2 bg-black/30 hover:bg-black/50" onclick="prevSlide({{ $pub->id }})">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <button class="absolute p-1 text-white transform -translate-y-1/2 rounded-full right-2 top-1/2 bg-black/30 hover:bg-black/50" onclick="nextSlide({{ $pub->id }})">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+                        @elseif(count($pubImages) === 1)
+                            <img src="{{ asset('storage/'.$pubImages[0]) }}" alt="{{ $pub->localisation }}"
+                                 class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110">
+                        @endif
+
+                        <!-- Badge Nouveau -->
+                        @if($pub->published_at && $pub->published_at->diffInDays(now()) < 3)
+                        <div class="absolute top-3 left-3">
+                            <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full shadow-lg">
+                                Nouveau
+                            </span>
+                        </div>
+                        @endif
+
+                        <!-- Badge Prix -->
+                        <div class="absolute top-3 right-3">
+                            <span class="px-3 py-1 text-sm font-bold text-white rounded-full shadow-lg bg-blue-600/90">
+                                {{ number_format($pub->price, 0, ',', '.') }} XOF
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Contenu -->
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ $pub->localisation }}</h3>
+                        </div>
+
+                        <p class="mb-4 text-sm text-gray-500 line-clamp-2">{{ $pub->description }}</p>
+
+                        <div class="flex items-center gap-4 mb-4 text-sm text-gray-600">
+                            <div class="flex items-center gap-1">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                <span>{{ $pub->Superficie }} m²</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                <span>{{ $pub->telephone }}</span>
+                            </div>
+                        </div>
+
+                        <a href="tel:{{ preg_replace('/\s+/', '', $pub->telephone) }}" class="flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-semibold text-white transition-all bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            Contacter
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <script>
+    // Carrousel simple pour les publicités
+    (function() {
+        var carousels = {};
+
+        document.querySelectorAll('.pub-carousel').forEach(function(el) {
+            var pubId = el.dataset.pubId;
+            var slides = el.querySelectorAll('.pub-slide');
+            var dots = el.querySelectorAll('.pub-dot');
+            carousels[pubId] = { slides: slides, dots: dots, current: 0, total: slides.length };
+
+            // Auto-slide
+            setInterval(function() {
+                nextSlide(parseInt(pubId));
+            }, 4000);
+        });
+
+        window.goToSlide = function(pubId, index) {
+            var c = carousels[pubId];
+            if (!c) return;
+            c.slides.forEach(function(s, i) { s.style.opacity = i === index ? '1' : '0'; });
+            c.dots.forEach(function(d, i) {
+                d.className = d.className.replace(/bg-white\/50|bg-white scale-125/g, '').trim();
+                d.classList.add(i === index ? 'bg-white' : 'bg-white/50');
+                if (i === index) d.classList.add('scale-125');
+            });
+            c.current = index;
+        };
+
+        window.nextSlide = function(pubId) {
+            var c = carousels[pubId];
+            if (!c) return;
+            goToSlide(pubId, (c.current + 1) % c.total);
+        };
+
+        window.prevSlide = function(pubId) {
+            var c = carousels[pubId];
+            if (!c) return;
+            goToSlide(pubId, (c.current - 1 + c.total) % c.total);
+        };
+    })();
+    </script>
+    @endif
+
     <!-- Portfolio Section -->
     <section id="portfolio" class="py-12 sm:py-16 lg:py-20 bg-white">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -906,7 +1128,7 @@
                     Aperçu de la <span class="text-blue-600">plateforme</span>
                 </h2>
                 <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
-                    Découvrez les interfaces intuitives et puissantes d'ImmoManager
+                    Découvrez les interfaces intuitives et puissantes d'Lokativ
                 </p>
             </div>
 
@@ -1040,7 +1262,7 @@
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <p class="mb-6 italic text-gray-600">"ImmoManager a révolutionné ma façon de gérer mes 5 appartements. Je gagne un temps précieux chaque mois sur la facturation et le suivi des paiements."</p>
+                    <p class="mb-6 italic text-gray-600">"Lokativ a révolutionné ma façon de gérer mes 5 appartements. Je gagne un temps précieux chaque mois sur la facturation et le suivi des paiements."</p>
                     <div class="flex items-center">
                         <div class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white bg-blue-600 rounded-full">
                             KA
@@ -1063,7 +1285,7 @@
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <p class="mb-6 italic text-gray-600">"En tant qu'agence immobilière, nous gérons plus de 50 biens. ImmoManager nous permet de tout centraliser et d'offrir un meilleur service à nos clients."</p>
+                    <p class="mb-6 italic text-gray-600">"En tant qu'agence immobilière, nous gérons plus de 50 biens. Lokativ nous permet de tout centraliser et d'offrir un meilleur service à nos clients."</p>
                     <div class="flex items-center">
                         <div class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white bg-green-600 rounded-full">
                             AS
@@ -1113,7 +1335,49 @@
                 </p>
             </div>
 
-            <div class="grid gap-8 md:grid-cols-3">
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                <!-- Plan Essai -->
+                <div class="p-6 bg-white border-2 border-green-500 pricing-card rounded-2xl lg:p-8" style="position:relative;">
+                    <span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:600;">Gratuit</span>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Essai</h3>
+                        <span class="px-3 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">14 jours</span>
+                    </div>
+                    <p class="mb-6 text-gray-500">Découvrez la plateforme</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-green-600">Gratuit</span>
+                    </div>
+                    <ul class="mb-8 space-y-3">
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Jusqu'à <strong class="mx-1">2 maisons</strong>
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Tableau de bord complet
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Gestion des locataires
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            Facturation automatique
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="mr-3 text-green-500 fas fa-check"></i>
+                            <strong class="mx-1">14 jours gratuits</strong>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="mr-3 fas fa-times"></i>
+                            Création d'annexes
+                        </li>
+                    </ul>
+                    <a href="#compte" class="block w-full py-3 text-center text-white transition-colors bg-green-500 rounded-full hover:bg-green-600">
+                        Essayer gratuitement
+                    </a>
+                </div>
+
                 <!-- Plan Starter -->
                 <div class="p-6 bg-white border border-gray-200 pricing-card rounded-2xl lg:p-8">
                     <div class="flex items-center justify-between mb-4">
@@ -1264,7 +1528,7 @@
         <div class="px-4 mx-auto max-w-4xl sm:px-6 lg:px-8">
             <div class="mb-12 text-center lg:mb-16">
                 <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl lg:mb-6">
-                    Créer votre compte <span class="text-blue-600">ImmoManager</span>
+                    Créer votre compte <span class="text-blue-600">Lokativ</span>
                 </h2>
                 <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg lg:text-xl">
                     Rejoignez notre plateforme en quelques étapes simples. Commencez à gérer votre patrimoine immobilier en quelques minutes.
@@ -1412,7 +1676,7 @@
                     <div class="mb-3 mt-4 form-check">
                         <input type="checkbox" class="form-check-input" id="conditions" required>
                         <label class="form-check-label" for="conditions">
-                            J'accepte les <a href="#" class="text-primary">conditions générales d'utilisation</a> et la <a href="#" class="text-primary">politique de confidentialité</a>.
+                            J'accepte les <a href="{{ route('legal.cgu') }}" target="_blank" class="text-primary">conditions générales d'utilisation</a> et la <a href="{{ route('legal.confidentialite') }}" target="_blank" class="text-primary">politique de confidentialité</a>.
                         </label>
                         <div class="invalid-feedback">Vous devez accepter les conditions pour continuer.</div>
                     </div>
@@ -1422,7 +1686,8 @@
                             <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Précédent
                         </button>
                         <button type="button" class="btn btn-success" id="btn-submit" onclick="submitForm()" disabled>
-                            <i class="fas fa-check me-2" aria-hidden="true"></i> Créer mon compte
+                            <i class="fas fa-check me-2" aria-hidden="true"></i>
+                            <span id="btn-submit-label">Créer mon compte</span>
                         </button>
                     </div>
                 </div>
@@ -1446,7 +1711,7 @@
                 <!-- FAQ 1 -->
                 <div class="faq-item active bg-white rounded-xl shadow-sm">
                     <div class="faq-question flex items-center justify-between p-6 cursor-pointer">
-                        <h3 class="text-lg font-semibold text-gray-800">Comment puis-je commencer à utiliser ImmoManager ?</h3>
+                        <h3 class="text-lg font-semibold text-gray-800">Comment puis-je commencer à utiliser Lokativ ?</h3>
                         <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
                     </div>
                     <div class="faq-answer px-6">
@@ -1483,7 +1748,7 @@
                         <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
                     </div>
                     <div class="faq-answer px-6">
-                        <p class="text-gray-600 pb-6">Une fois vos locataires et les montants de loyer configurés, ImmoManager génère automatiquement les factures à chaque échéance. Vous pouvez personnaliser les modèles de factures et configurer des rappels automatiques en cas de retard de paiement.</p>
+                        <p class="text-gray-600 pb-6">Une fois vos locataires et les montants de loyer configurés, Lokativ génère automatiquement les factures à chaque échéance. Vous pouvez personnaliser les modèles de factures et configurer des rappels automatiques en cas de retard de paiement.</p>
                     </div>
                 </div>
 
@@ -1494,7 +1759,7 @@
                         <i class="fas fa-chevron-down text-blue-600 faq-icon transition-transform duration-300"></i>
                     </div>
                     <div class="faq-answer px-6">
-                        <p class="text-gray-600 pb-6">ImmoManager est entièrement responsive et fonctionne parfaitement sur tous les appareils mobiles via votre navigateur. Une application native iOS et Android est en cours de développement et sera bientôt disponible.</p>
+                        <p class="text-gray-600 pb-6">Lokativ est entièrement responsive et fonctionne parfaitement sur tous les appareils mobiles via votre navigateur. Une application native iOS et Android est en cours de développement et sera bientôt disponible.</p>
                     </div>
                 </div>
 
@@ -1556,7 +1821,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold text-gray-800">Email</h4>
-                                <p class="text-gray-600">contact@immomanager.com</p>
+                                <p class="text-gray-600">contact@lokativ.com</p>
                             </div>
                         </div>
 
@@ -1646,14 +1911,14 @@
                 Prêt à simplifier votre gestion immobilière ?
             </h2>
             <p class="mb-8 text-lg text-blue-100 lg:text-xl">
-                Rejoignez des centaines de propriétaires qui font confiance à ImmoManager
+                Rejoignez des centaines de propriétaires qui font confiance à Lokativ
             </p>
             <div class="flex flex-col justify-center gap-4 sm:flex-row">
                 <a href="#compte" class="px-8 py-4 text-lg font-bold text-blue-600 transition-all bg-white rounded-full hover:bg-blue-50 hover-lift">
                     <i class="mr-2 fas fa-rocket"></i>
                     Créer un compte gratuit
                 </a>
-                <a href="#contact" class="px-8 py-4 text-lg font-bold text-white transition-all border-2 border-white rounded-full hover:bg-white hover:text-blue-600">
+                <a href="#contact" class="px-8 py-4 text-lg font-bold text-white transition-all border-2 border-white rounded-full hover:bg-white hover:text-blue-600" style="background: rgba(255,255,255,0.15);">
                     <i class="mr-2 fas fa-phone"></i>
                     Nous contacter
                 </a>
@@ -1671,7 +1936,7 @@
                         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-800">
                             <i class="text-white fas fa-home"></i>
                         </div>
-                        <span class="text-2xl font-bold text-white">ImmoManager</span>
+                        <span class="text-2xl font-bold text-white">Lokativ</span>
                     </a>
                     <p class="mb-6 text-gray-400">
                         La solution complète pour gérer votre patrimoine immobilier en toute simplicité.
@@ -1720,10 +1985,10 @@
                 <div>
                     <h4 class="mb-4 text-lg font-bold text-white">Légal</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Conditions d'utilisation</a></li>
-                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Politique de confidentialité</a></li>
-                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Mentions légales</a></li>
-                        <li><a href="#" class="text-gray-400 transition-colors hover:text-white">Cookies</a></li>
+                        <li><a href="{{ route('legal.cgu') }}" class="text-gray-400 transition-colors hover:text-white">Conditions d'utilisation</a></li>
+                        <li><a href="{{ route('legal.confidentialite') }}" class="text-gray-400 transition-colors hover:text-white">Politique de confidentialité</a></li>
+                        <li><a href="{{ route('legal.mentions') }}" class="text-gray-400 transition-colors hover:text-white">Mentions légales</a></li>
+                        <li><a href="{{ route('legal.cookies') }}" class="text-gray-400 transition-colors hover:text-white">Cookies</a></li>
                     </ul>
                 </div>
             </div>
@@ -1732,7 +1997,7 @@
             <div class="pt-8 border-t border-gray-800">
                 <div class="flex flex-col items-center justify-between md:flex-row">
                     <p class="mb-4 text-gray-400 md:mb-0">
-                        &copy; {{ date('Y') }} ImmoManager. Tous droits réservés.
+                        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.
                     </p>
                     <div class="flex items-center space-x-4">
                         <span class="text-gray-400">Paiements sécurisés</span>
@@ -1756,9 +2021,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if(($paymentProvider ?? 'none') === 'kkiapay' && ($paymentEnabled ?? false))
+    <!-- KKiaPay SDK -->
+    <script src="https://cdn.kkiapay.me/k.js"></script>
+    @elseif(($paymentProvider ?? 'none') === 'fedapay' && ($paymentEnabled ?? false))
+    <!-- FedaPay SDK -->
+    <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+    @endif
     
     <script>
-        // Données des plans d'abonnement
+        // ===== Configuration prestataire de paiement (injectée depuis le serveur) =====
+        const PAYMENT_ENABLED    = @json($paymentEnabled ?? false);
+        const PAYMENT_PROVIDER   = @json($paymentProvider ?? 'none');
+        const PAYMENT_PUBLIC_KEY = @json($paymentPublicKey ?? '');
+        const PAYMENT_SANDBOX    = @json($paymentSandbox ?? true);
+
+        // ===== Données des plans d'abonnement =====
         const plans = {
             particulier: [
                 { id: 'essai', nom: 'Essai Gratuit', prix: 0, periode: '14 jours', proprietes: 2, annexes: 0, features: ['Jusqu\'à 2 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', '14 jours gratuits'], featured: true },
@@ -2138,10 +2416,18 @@
                 planElement.className = 'plan-card';
                 planElement.setAttribute('data-plan', plan.id);
                 
+                const isPaidPlan    = plan.prix > 0;
+                const providerLabel = PAYMENT_PROVIDER === 'fedapay' ? 'FedaPay' : 'KKiaPay';
+                const paymentBadge = (isPaidPlan && PAYMENT_ENABLED)
+                    ? `<span class="badge" style="background:#10b981;font-size:11px;">
+                           <i class="fas fa-credit-card me-1"></i>Paiement ${providerLabel}
+                       </span>`
+                    : '';
+
                 planElement.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h5 class="mb-1">${plan.nom}</h5>
+                            <h5 class="mb-1">${plan.nom} ${paymentBadge}</h5>
                             <p class="mb-1">Jusqu'à ${plan.proprietes} propriétés</p>
                         </div>
                         <div class="text-end">
@@ -2152,6 +2438,12 @@
                     <ul class="mt-3 mb-0">
                         ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
                     </ul>
+                    ${isPaidPlan && PAYMENT_ENABLED
+                        ? `<div class="mt-2 pt-2 border-top" style="font-size:12px;color:#065f46;">
+                               <i class="fas fa-shield-alt me-1"></i>
+                               Paiement sécurisé via ${providerLabel} — Mobile Money &amp; carte bancaire
+                           </div>`
+                        : ''}
                 `;
                 
                 planElement.addEventListener('click', function() {
@@ -2159,13 +2451,24 @@
                     this.classList.add('selected');
                     selectedPlan = plan;
                     document.getElementById('btn-submit').disabled = false;
+
+                    // Mettre à jour le label du bouton selon le mode de paiement
+                    const isPaid = plan.prix > 0;
+                    const label  = document.getElementById('btn-submit-label');
+                    if (isPaid && PAYMENT_ENABLED) {
+                        label.textContent = 'Payer et créer mon compte';
+                        document.getElementById('btn-submit').className = 'btn btn-primary';
+                    } else {
+                        label.textContent = 'Créer mon compte';
+                        document.getElementById('btn-submit').className = 'btn btn-success';
+                    }
                 });
                 
                 container.appendChild(planElement);
             });
         }
         
-        // Soumission du formulaire
+        // ===== Soumission du formulaire =====
         async function submitForm() {
             if (!selectedPlan) {
                 Swal.fire('Erreur', 'Veuillez sélectionner un plan d\'abonnement.', 'error');
@@ -2178,78 +2481,189 @@
                 return;
             }
 
-            // Récupérer les données du formulaire
-            const formData = {
-                type_compte: accountType === 'particulier' ? 'Particulier' : 'Entreprise',
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
-                email: document.getElementById('email').value,
-                code_pays: document.getElementById('code_pays').value,
-                telephone: document.getElementById('telephone').value,
-                plan_code: selectedPlan.id,
-                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            };
-            
-            if (accountType === 'entreprise') {
-                formData.designation = document.getElementById('designation').value;
-                formData.adresse = document.getElementById('adresse').value;
-                formData.telepone_entreprise = document.getElementById('code_pays').value + document.getElementById('telephone').value;
-                formData.email_entreprise = document.getElementById('email_entreprise').value;
-            }
-            
-            // Afficher l'animation de chargement
             const submitBtn = document.getElementById('btn-submit');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création en cours...';
-            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Traitement...';
+
+            const isPlanGratuit = selectedPlan.prix === 0;
+
+            // Si plan payant et prestataire activé → passer par le widget de paiement
+            if (!isPlanGratuit && PAYMENT_ENABLED) {
+                initiatePayment(submitBtn);
+            } else {
+                // Plan gratuit ou aucun prestataire actif → création directe
+                await createAccount(null, submitBtn);
+            }
+        }
+
+        // ===== Ouverture du widget de paiement (KKiaPay ou FedaPay) =====
+        function initiatePayment(submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Ouverture du paiement...';
+
+            if (PAYMENT_PROVIDER === 'kkiapay') {
+                openKkiapayWidget({
+                    amount:  selectedPlan.prix,
+                    api_key: PAYMENT_PUBLIC_KEY,
+                    sandbox: PAYMENT_SANDBOX,
+                    email:   document.getElementById('email').value,
+                    name:    document.getElementById('prenom').value + ' ' + document.getElementById('nom').value,
+                    phone:   document.getElementById('telephone').value,
+                    data:    JSON.stringify({ plan_code: selectedPlan.id }),
+                });
+
+                addSuccessListener(async function(response) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
+                    await createAccount(response.transactionId, submitBtn);
+                });
+
+                addFailedListener(function() {
+                    Swal.fire({
+                        title: 'Paiement échoué',
+                        text: 'Le paiement KKiaPay n\'a pas abouti. Veuillez réessayer.',
+                        icon: 'error', confirmButtonText: 'Réessayer', confirmButtonColor: '#1e40af',
+                    });
+                    resetSubmitBtn(submitBtn);
+                });
+
+                addCloseListener(function() { resetSubmitBtn(submitBtn); });
+
+            } else if (PAYMENT_PROVIDER === 'fedapay') {
+                FedaPay.init({
+                    public_key:  PAYMENT_PUBLIC_KEY,
+                    transaction: {
+                        amount:      selectedPlan.prix,
+                        description: 'Abonnement Lokativ — ' + selectedPlan.nom,
+                    },
+                    customer: {
+                        email:     document.getElementById('email').value,
+                        firstname: document.getElementById('prenom').value,
+                        lastname:  document.getElementById('nom').value,
+                    },
+                    onComplete: async function(resp) {
+                        if (resp.reason === FedaPay.DIALOG_DISMISSED) {
+                            resetSubmitBtn(submitBtn);
+                            return;
+                        }
+                        var trans = resp.transaction;
+                        if (trans && trans.status === 'approved') {
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
+                            await createAccount(String(trans.id), submitBtn);
+                        } else {
+                            Swal.fire({
+                                title: 'Paiement échoué',
+                                text: 'Le paiement FedaPay n\'a pas été approuvé. Veuillez réessayer.',
+                                icon: 'error', confirmButtonText: 'Réessayer', confirmButtonColor: '#1e40af',
+                            });
+                            resetSubmitBtn(submitBtn);
+                        }
+                    }
+                }).open();
+            }
+        }
+
+        function resetSubmitBtn(submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Créer mon compte';
+        }
+
+        // ===== Création du compte (après paiement ou directement) =====
+        async function createAccount(transactionId, submitBtn) {
+            const formData = {
+                type_compte: accountType === 'particulier' ? 'Particulier' : 'Entreprise',
+                nom:         document.getElementById('nom').value,
+                prenom:      document.getElementById('prenom').value,
+                email:       document.getElementById('email').value,
+                code_pays:   document.getElementById('code_pays').value,
+                telephone:   document.getElementById('telephone').value,
+                plan_code:   selectedPlan.id,
+                _token:      document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            };
+
+            if (transactionId) {
+                formData.transaction_id = transactionId;
+            }
+
+            if (accountType === 'entreprise') {
+                formData.designation           = document.getElementById('designation').value;
+                formData.adresse               = document.getElementById('adresse').value;
+                formData.telepone_entreprise   = document.getElementById('code_pays').value + document.getElementById('telephone').value;
+                formData.email_entreprise      = document.getElementById('email_entreprise').value;
+            }
+
             try {
-                // Envoyer la requête AJAX
                 const response = await fetch("{{ route('creation_compte') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': formData._token
+                        'Accept':       'application/json',
+                        'X-CSRF-TOKEN': formData._token,
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(formData),
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.status === true) {
                     Swal.fire({
-                        title: 'Succès!',
-                        text: data.message,
-                        icon: 'success',
-                        confirmButtonText: 'OK'
+                        title:             'Compte créé !',
+                        text:              data.message,
+                        icon:              'success',
+                        confirmButtonText: 'Se connecter',
+                        confirmButtonColor: '#1e40af',
                     }).then(() => {
-                        // Redirection vers la page de connexion
                         window.location.href = "{{ route('login') }}";
                     });
                 } else {
-                    Swal.fire('Erreur', data.message, 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Créer mon compte';
-                    
-                    // Afficher les erreurs de validation
+                    if (submitBtn) resetSubmitBtn(submitBtn);
+
+                    let firstErrorStep = null;
+                    const errorLines   = [];
+
                     if (data.error) {
                         Object.keys(data.error).forEach(field => {
+                            const msg   = data.error[field][0];
+                            errorLines.push(msg);
                             const input = document.getElementById(field);
                             if (input) {
                                 input.classList.add('is-invalid');
                                 const feedback = input.nextElementSibling;
                                 if (feedback && feedback.classList.contains('invalid-feedback')) {
-                                    feedback.textContent = data.error[field][0];
+                                    feedback.textContent = msg;
+                                }
+                                if (!firstErrorStep) {
+                                    const stepEl = input.closest('.step-form');
+                                    if (stepEl) {
+                                        firstErrorStep = parseInt(stepEl.id.replace('step-form-', ''));
+                                    }
                                 }
                             }
                         });
                     }
+
+                    const errorHtml = errorLines.length
+                        ? '<ul class="text-start ps-3 mb-0">' + errorLines.map(m => `<li>${m}</li>`).join('') + '</ul>'
+                        : data.message;
+
+                    Swal.fire({
+                        title:             'Erreur',
+                        html:              errorHtml,
+                        icon:              'error',
+                        confirmButtonText: 'Corriger',
+                    }).then(() => {
+                        if (firstErrorStep && firstErrorStep !== currentStep) {
+                            document.getElementById(`step-form-${currentStep}`).classList.remove('active');
+                            document.getElementById(`step-${currentStep}`).classList.remove('active');
+                            currentStep = firstErrorStep;
+                            document.getElementById(`step-form-${currentStep}`).classList.add('active');
+                            document.getElementById(`step-${currentStep}`).classList.add('active');
+                            document.getElementById('progress-bar').style.width = `${(currentStep - 1) * 50}%`;
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('Erreur:', error);
                 Swal.fire('Erreur', 'Une erreur est survenue. Veuillez réessayer.', 'error');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Créer mon compte';
+                if (submitBtn) resetSubmitBtn(submitBtn);
             }
         }
     </script>
@@ -2258,9 +2672,9 @@
     <div id="pwa-install-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999; background:linear-gradient(135deg,#1e40af 0%,#3b82f6 100%); color:#fff; padding:16px 20px; box-shadow:0 -4px 20px rgba(0,0,0,0.15); animation:slideUp 0.4s ease-out;">
         <div style="max-width:600px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; gap:12px; flex:1;">
-                <img src="/logo/LOGO.jpg" alt="ImmoManager" style="width:44px; height:44px; border-radius:10px; border:2px solid rgba(255,255,255,0.3);">
+                <img src="/logo/LOGO.jpg" alt="Lokativ" style="width:44px; height:44px; border-radius:10px; border:2px solid rgba(255,255,255,0.3);">
                 <div>
-                    <div style="font-weight:700; font-size:15px;">Installer ImmoManager</div>
+                    <div style="font-weight:700; font-size:15px;">Installer Lokativ</div>
                     <div style="font-size:12px; opacity:0.85;">Accédez rapidement depuis votre écran d'accueil</div>
                 </div>
             </div>
@@ -2317,6 +2731,325 @@
                 localStorage.setItem('pwa-install-dismissed', Date.now());
             });
         }
+    </script>
+
+    {{-- ===== MODAL VIDÉO DÉMO ===== --}}
+    <div id="modal-demo" role="dialog" aria-modal="true" aria-label="Vidéo de démonstration"
+         style="display:none;position:fixed;inset:0;z-index:10500;background:rgba(0,0,0,0.85);
+                align-items:center;justify-content:center;padding:16px;">
+
+        {{-- Overlay cliquable pour fermer --}}
+        <div onclick="closeDemoModal()" style="position:absolute;inset:0;cursor:pointer;"></div>
+
+        {{-- Contenu du modal --}}
+        <div style="position:relative;width:100%;max-width:900px;z-index:1;">
+
+            {{-- Header --}}
+            <div style="display:flex;align-items:center;justify-content:space-between;
+                        margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:36px;height:36px;border-radius:50%;
+                                background:linear-gradient(135deg,#1e40af,#3b82f6);
+                                display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-home" style="color:#fff;font-size:14px;"></i>
+                    </div>
+                    <div>
+                        <p style="margin:0;font-weight:700;color:#fff;font-size:15px;">Lokativ</p>
+                        <p style="margin:0;color:#93c5fd;font-size:12px;">Démonstration de la plateforme</p>
+                    </div>
+                </div>
+                <button onclick="closeDemoModal()" aria-label="Fermer"
+                        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+                               color:#fff;width:36px;height:36px;border-radius:50%;font-size:16px;
+                               cursor:pointer;display:flex;align-items:center;justify-content:center;
+                               transition:background 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.25)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            {{-- Conteneur iframe 16/9 --}}
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;
+                        border-radius:16px;box-shadow:0 25px 60px rgba(0,0,0,0.5);
+                        background:#000;">
+                <iframe id="demo-iframe"
+                        src=""
+                        title="Démonstration Lokativ"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:16px;">
+                </iframe>
+
+                {{-- Placeholder affiché avant que la vidéo se charge --}}
+                <div id="demo-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;
+                            align-items:center;justify-content:center;background:#111827;border-radius:16px;">
+                    <div style="width:72px;height:72px;border-radius:50%;
+                                background:linear-gradient(135deg,#1e40af,#3b82f6);
+                                display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+                                animation:pulse 2s ease-in-out infinite;">
+                        <i class="fas fa-play" style="color:#fff;font-size:28px;margin-left:4px;"></i>
+                    </div>
+                    <p style="color:#fff;font-weight:700;font-size:18px;margin:0 0 6px;">
+                        Chargement de la démo...
+                    </p>
+                    <p style="color:#9ca3af;font-size:13px;margin:0;">Veuillez patienter</p>
+                </div>
+            </div>
+
+            {{-- Footer CTA --}}
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+                        gap:12px;margin-top:14px;">
+                <p style="margin:0;color:#d1d5db;font-size:13px;">
+                    <i class="fas fa-star" style="color:#f59e0b;margin-right:4px;"></i>
+                    Prêt à démarrer ? Créez votre compte gratuitement en 2 minutes.
+                </p>
+                <a href="#compte" onclick="closeDemoModal()"
+                   style="padding:9px 22px;background:linear-gradient(135deg,#10b981,#3b82f6);
+                          color:#fff;border-radius:50px;font-weight:700;font-size:13px;
+                          text-decoration:none;white-space:nowrap;transition:opacity 0.2s;"
+                   onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                    <i class="fas fa-rocket" style="margin-right:6px;"></i>Démarrer gratuitement
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== BANNIÈRE CONSENTEMENT COOKIES ===== --}}
+    <div id="cookie-banner" role="dialog" aria-label="Consentement aux cookies"
+         style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+                background:rgba(17,24,39,0.97);backdrop-filter:blur(8px);
+                border-top:3px solid #3b82f6;padding:20px 24px;">
+        <div style="max-width:1200px;margin:0 auto;">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
+                <div style="flex:1;min-width:280px;">
+                    <p style="margin:0 0 6px;font-size:15px;font-weight:700;color:#fff;">
+                        <i class="fas fa-cookie-bite" style="color:#f59e0b;margin-right:8px;"></i>
+                        Ce site utilise des cookies
+                    </p>
+                    <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.5;">
+                        Nous utilisons des cookies essentiels au fonctionnement du site et, avec votre consentement,
+                        des cookies d'analyse et de préférences pour améliorer votre expérience.
+                        <a href="{{ route('legal.cookies') }}" style="color:#60a5fa;text-decoration:underline;" target="_blank">En savoir plus</a>
+                    </p>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+                    <button id="cookie-reject" onclick="lokativCookies('essential')"
+                            style="padding:9px 20px;background:transparent;border:1px solid #4b5563;color:#9ca3af;
+                                   border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                            onmouseover="this.style.borderColor='#9ca3af';this.style.color='#fff';"
+                            onmouseout="this.style.borderColor='#4b5563';this.style.color='#9ca3af';">
+                        Refuser
+                    </button>
+                    <button id="cookie-customize" onclick="lokativCookiePanel()"
+                            style="padding:9px 20px;background:transparent;border:1px solid #3b82f6;color:#60a5fa;
+                                   border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(59,130,246,0.1)';"
+                            onmouseout="this.style.background='transparent';">
+                        Personnaliser
+                    </button>
+                    <button id="cookie-accept" onclick="lokativCookies('all')"
+                            style="padding:9px 24px;background:#3b82f6;border:none;color:#fff;
+                                   border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;"
+                            onmouseover="this.style.background='#2563eb';"
+                            onmouseout="this.style.background='#3b82f6';">
+                        Tout accepter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Panneau de personnalisation cookies --}}
+    <div id="cookie-panel" role="dialog" aria-label="Personnaliser les cookies" aria-modal="true"
+         style="display:none;position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);">
+        <div style="background:#fff;border-radius:16px;max-width:480px;width:90%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display:flex;align-items:center;justify-content:between;margin-bottom:20px;">
+                <h3 style="margin:0;font-size:18px;font-weight:700;color:#111827;flex:1;">
+                    <i class="fas fa-sliders-h" style="color:#3b82f6;margin-right:8px;"></i>
+                    Personnaliser les cookies
+                </h3>
+                <button onclick="document.getElementById('cookie-panel').style.display='none';"
+                        style="background:none;border:none;font-size:20px;color:#6b7280;cursor:pointer;padding:4px;float:right;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            {{-- Nécessaires --}}
+            <div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#111827;">
+                            <i class="fas fa-lock" style="color:#10b981;margin-right:6px;"></i>Essentiels
+                        </p>
+                        <p style="margin:0;font-size:12px;color:#6b7280;">Indispensables au fonctionnement</p>
+                    </div>
+                    <span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;">Toujours actifs</span>
+                </div>
+            </div>
+
+            {{-- Analytiques --}}
+            <div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#111827;">
+                            <i class="fas fa-chart-bar" style="color:#f59e0b;margin-right:6px;"></i>Analytiques
+                        </p>
+                        <p style="margin:0;font-size:12px;color:#6b7280;">Amélioration de l'expérience</p>
+                    </div>
+                    <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                        <input type="checkbox" id="toggle-analytics" style="opacity:0;width:0;height:0;">
+                        <span id="toggle-analytics-span" onclick="toggleCookieSwitch('analytics')"
+                              style="position:absolute;inset:0;background:#d1d5db;border-radius:50px;transition:0.3s;cursor:pointer;">
+                            <span id="toggle-analytics-dot"
+                                  style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.3s;"></span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Préférences --}}
+            <div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:20px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#111827;">
+                            <i class="fas fa-heart" style="color:#8b5cf6;margin-right:6px;"></i>Préférences
+                        </p>
+                        <p style="margin:0;font-size:12px;color:#6b7280;">Mémorisation de vos paramètres</p>
+                    </div>
+                    <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                        <input type="checkbox" id="toggle-prefs" style="opacity:0;width:0;height:0;">
+                        <span id="toggle-prefs-span" onclick="toggleCookieSwitch('prefs')"
+                              style="position:absolute;inset:0;background:#d1d5db;border-radius:50px;transition:0.3s;cursor:pointer;">
+                            <span id="toggle-prefs-dot"
+                                  style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.3s;"></span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button onclick="lokativCookiesSave()"
+                        style="flex:1;padding:10px;background:#3b82f6;border:none;color:#fff;border-radius:50px;font-weight:700;font-size:14px;cursor:pointer;">
+                    Enregistrer mes choix
+                </button>
+                <button onclick="lokativCookies('all')"
+                        style="flex:1;padding:10px;background:#f1f5f9;border:1px solid #e2e8f0;color:#374151;border-radius:50px;font-weight:600;font-size:14px;cursor:pointer;">
+                    Tout accepter
+                </button>
+            </div>
+            <p style="margin-top:12px;text-align:center;font-size:11px;color:#9ca3af;">
+                <a href="{{ route('legal.cookies') }}" style="color:#60a5fa;">Politique de cookies</a> &nbsp;·&nbsp;
+                <a href="{{ route('legal.confidentialite') }}" style="color:#60a5fa;">Confidentialité</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        var cookieStates = { analytics: false, prefs: false };
+
+        function getCookie(name) {
+            var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return m ? m.pop() : null;
+        }
+        function setCookie(name, value, days) {
+            var d = new Date(); d.setTime(d.getTime() + days * 864e5);
+            document.cookie = name + '=' + value + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+        }
+
+        // Afficher la bannière si pas encore de consentement
+        if (!getCookie('lokativ_consent')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+        }
+
+        window.lokativCookies = function(choice) {
+            setCookie('lokativ_consent', choice, 365);
+            document.getElementById('cookie-banner').style.display = 'none';
+            document.getElementById('cookie-panel').style.display = 'none';
+            if (choice === 'all') {
+                setCookie('lokativ_analytics', '1', 365);
+                setCookie('lokativ_prefs', '1', 365);
+            } else {
+                setCookie('lokativ_analytics', '0', 365);
+                setCookie('lokativ_prefs', '0', 365);
+            }
+        };
+
+        window.lokativCookiePanel = function() {
+            document.getElementById('cookie-panel').style.removeProperty('display');
+            document.getElementById('cookie-panel').style.display = 'flex';
+        };
+
+        window.toggleCookieSwitch = function(type) {
+            cookieStates[type] = !cookieStates[type];
+            var span = document.getElementById('toggle-' + type + '-span');
+            var dot = document.getElementById('toggle-' + type + '-dot');
+            if (cookieStates[type]) {
+                span.style.background = '#3b82f6';
+                dot.style.left = '22px';
+            } else {
+                span.style.background = '#d1d5db';
+                dot.style.left = '2px';
+            }
+        };
+
+        window.lokativCookiesSave = function() {
+            setCookie('lokativ_consent', 'custom', 365);
+            setCookie('lokativ_analytics', cookieStates.analytics ? '1' : '0', 365);
+            setCookie('lokativ_prefs', cookieStates.prefs ? '1' : '0', 365);
+            document.getElementById('cookie-banner').style.display = 'none';
+            document.getElementById('cookie-panel').style.display = 'none';
+        };
+    })();
+    </script>
+
+    {{-- ===== JS MODAL VIDÉO DÉMO ===== --}}
+    <script>
+    (function () {
+        // ⚠️ Remplacez VIDEO_ID par l'identifiant de votre vidéo YouTube
+        // Ex : pour https://www.youtube.com/watch?v=dQw4w9WgXcQ → VIDEO_ID = dQw4w9WgXcQ
+        var YOUTUBE_VIDEO_ID = 'Qf8eSKxztQk';
+        var BASE_URL = 'https://www.youtube.com/embed/' + YOUTUBE_VIDEO_ID
+                     + '?autoplay=1&rel=0&modestbranding=1&color=white';
+
+        var modal      = document.getElementById('modal-demo');
+        var iframe     = document.getElementById('demo-iframe');
+        var placeholder = document.getElementById('demo-placeholder');
+
+        function openDemoModal() {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            // Charger la vidéo avec autoplay
+            placeholder.style.display = 'flex';
+            iframe.src = BASE_URL;
+            iframe.onload = function () {
+                placeholder.style.display = 'none';
+            };
+        }
+
+        window.closeDemoModal = function () {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            // Stopper la vidéo en vidant le src
+            iframe.src = '';
+            placeholder.style.display = 'flex';
+        };
+
+        // Fermer avec Échap
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                window.closeDemoModal();
+            }
+        });
+
+        // Brancher les boutons
+        ['btn-voir-demo', 'btn-essayer-demo'].forEach(function (id) {
+            var btn = document.getElementById(id);
+            if (btn) btn.addEventListener('click', openDemoModal);
+        });
+    })();
     </script>
 
 </body>

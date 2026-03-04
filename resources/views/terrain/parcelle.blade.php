@@ -4,30 +4,32 @@
 @section('content')
 
   @section('title')
-    <title>Gestion reporting</title>
+    <title>Gestion annonce</title>
   @endsection
 
   @include('notification.display_message')
     
     
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion des dossiers parcelle</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion des annonces</h4>
 
-    <div class="col-md-6">
-      <div class="demo-inline-spacing">
-        <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
-          data-bs-target="#AjouerParcelle">
-          <span class="bx bx-plus"></span>
-        </button>
-      </div>
-    </div><br/>
+    @can('ajouter-parcelle')
+      <div class="col-md-6">
+        <div class="demo-inline-spacing">
+          <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
+            data-bs-target="#AjouerParcelle">
+            <span class="bx bx-plus"></span>
+          </button>
+        </div>
+      </div><br/>
+    @endcan
 
 
     <div class="modal fade" id="AjouerParcelle" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalCenterTitle">Ajouter un dossier d'une parcelle</h5>
+            <h5 class="modal-title" id="modalCenterTitle">Ajouter une annonce</h5>
             <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -91,7 +93,7 @@
 
     <!-- Hoverable Table rows -->
     <div class="card">
-      <h5 class="card-header text-center">Liste des dossiers de parcelle</h5>
+      <h5 class="card-header text-center">Liste des annonces</h5>
       <div class="table-responsive text-nowrap">
         <table id="example" class="table table-hover border-primary" style="width:100%" >
           <thead>
@@ -194,7 +196,7 @@
         <div class="modal-dialog modal-sm" role="document">
           <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modalCenterTitle">Suppression d'un dossier</h5>
+                <h5 class="modal-title" id="modalCenterTitle">Suppression d'une annonce</h5>
                 <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
             <div class="modal-body">
@@ -219,7 +221,7 @@
         <div class="modal-dialog modal-sm" role="document">
           <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="modalCenterTitle">Cloturer un dossier</h5>
+                <h5 class="modal-title" id="modalCenterTitle">Cloturer une annonce</h5>
                 <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
             <div class="modal-body">

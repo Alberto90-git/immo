@@ -15,11 +15,13 @@
 
     <div class="card">
         <!-- Notifications -->
-        <div class="ms-3 demo-inline-spacing">
-            <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
-            </a>
-        </div>
+        @can('liste-role')
+            <div class="ms-3 demo-inline-spacing">
+                <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
+                    <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
+                </a>
+            </div>
+        @endcan
         
         <div class="table-responsive">
             
@@ -235,7 +237,7 @@
                 </tr>
 
                 <tr>
-                    <td class="text-nowrap">Gestion des dossiers</td>
+                    <td class="text-nowrap">Gestion des besoins & annoces</td>
                     <td>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
@@ -279,6 +281,30 @@
                         </div>
                     </td>
                 </tr>
+
+                <tr>
+                    <td class="text-nowrap">Gestion des abonnements</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label text-dark">
+                                <input type="checkbox" id="selectAllAbonnement" class="form-check-input select-all">
+                                Tout sélectionner
+                            </label>
+                        </div>
+                
+                        <div class="d-flex flex-wrap">
+                            @foreach($permissionPub as $permissionPub)
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        {{ Form::checkbox('permission[]', $permissionPub->id, in_array($permissionPub->id, $rolePermissions) ? true : false, ['class' => 'form-check-input permission-abonnement']) }}
+                                        {{ $permissionPub->label }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+
 
 
                 <tr>
@@ -366,10 +392,6 @@
 </script>
 
 <script>
-
-
-
-
     // Fonction de sélection pour chaque groupe
     document.getElementById('selectAllParametrage').addEventListener('change', function() {
         const checkboxes = document.querySelectorAll('.permission-parametrage');
@@ -425,5 +447,12 @@
         const checkboxes = document.querySelectorAll('.permission-user');
         checkboxes.forEach(checkbox => checkbox.checked = this.checked);
     });
+
+    document.getElementById('selectAllAbonnement').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.permission-abonnement');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+
+    
 </script>
 @endsection

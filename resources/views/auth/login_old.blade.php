@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Connexion - Immo Manager</title>
+  <title>Connexion - Lokativ</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -49,7 +49,7 @@
 
                             <div class="d-flex justify-content-center py-4">
                               
-                                <span class="d-none d-lg-block"><h4>Bienvenue sur <strong>Immo Manager</strong> </h4></span>
+                                <span class="d-none d-lg-block"><h4>Bienvenue sur <strong>Lokativ</strong> </h4></span>
                              
                                 
                             </div>

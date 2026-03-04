@@ -56,7 +56,7 @@
             </g>
           </svg>
         </span>
-        <span class="app-brand-text demo menu-text fw-bolder ms-2">Immo</span>
+        <span class="app-brand-text demo menu-text fw-bolder ms-2">Lokativ</span>
       </a>
 
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -166,24 +166,33 @@
         </li>
       @endcan
 
+      @can('envoi-document')
+        <li class="menu-item {{ request()->is('envoi-document*') ? 'active' : '' }}">
+          <a href="{{ route('envoi_document.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-send"></i>
+            <div data-i18n="Envoi Documents">Envoi Documents</div>
+          </a>
+        </li>
+      @endcan
+
       @can('gestion-dossier')
         <li class="menu-item {{ request()->is('client') || request()->is('parcelle') ? 'active open' : '' }}">
           <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-folder-open"></i>
-            <div data-i18n="Gestion des dossiers">Gestion des dossiers</div>
+            <div data-i18n="Gestion des dossiers">Gestion des besoins & annonces</div>
           </a>
           <ul class="menu-sub">
             @can('dossier-client')
               <li class="menu-item {{ request()->is('client') ? 'active' : '' }}">
                 <a href="{{ route('getViewClient') }}" class="menu-link">
-                  <div data-i18n="Dossier client">Dossier client</div>
+                  <div data-i18n="Dossier client">Besoins client</div>
                 </a>
               </li>
             @endcan
             @can('dossier-parcelle')
               <li class="menu-item {{ request()->is('parcelle') ? 'active' : '' }}">
                 <a href="{{ route('getViewParcelle') }}" class="menu-link">
-                  <div data-i18n="Dossier parcelle">Dossier parcelle</div>
+                  <div data-i18n="Dossier parcelle">Annonces des biens</div>
                 </a>
               </li>
             @endcan
@@ -225,7 +234,7 @@
           @can('gestion-sta-dossier')
             <li class="menu-item {{ request()->is('statistique-dossier') ? 'active' : '' }}">
               <a href="{{ route('getDossier') }}" class="menu-link">
-                <div data-i18n="Gestion dossier">Gestion dossier</div>
+                <div data-i18n="Gestion dossier">Gestion des besoins & annonces</div>
               </a>
             </li>
           @endcan
@@ -234,12 +243,14 @@
       @endcan
 
       <!-- Gestion publicite -->
-      <li class="menu-item {{ request()->is('publicite*') ? 'active' : '' }}">
-        <a href="{{ route('pub_displaying') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-speaker"></i>
-          <div data-i18n="Gestion publicite">Gestion publicite</div>
-        </a>
-      </li>
+      @can('gestion-publicite')
+        <li class="menu-item {{ request()->is('publicite*') ? 'active' : '' }}">
+          <a href="{{ route('pub_displaying') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-speaker"></i>
+            <div data-i18n="Gestion publicite">Gestion publicité</div>
+          </a>
+        </li>
+      @endcan
 
       @can('historique')
       <li class="menu-item {{ request()->is('historique') ? 'active' : '' }}">
@@ -251,12 +262,15 @@
       @endcan
 
       <!-- Mon Abonnement -->
-      <li class="menu-item {{ request()->routeIs('plans.index') ? 'active' : '' }}">
-        <a href="{{ route('plans.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-credit-card"></i>
-          <div data-i18n="Mon Abonnement">Mon Abonnement</div>
-        </a>
-      </li>
+      @can('gestion-abonnement')
+        <li class="menu-item {{ request()->routeIs('plans.index') ? 'active' : '' }}">
+          <a href="{{ route('plans.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-credit-card"></i>
+            <div data-i18n="Mon Abonnement">Mon Abonnement</div>
+          </a>
+        </li>
+      @endcan
+      
 
       <!-- Mon Profil -->
       <li class="menu-item {{ request()->routeIs('profileView') ? 'active' : '' }}">

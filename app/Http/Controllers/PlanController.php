@@ -6,6 +6,9 @@ use App\Plan;
 use App\User;
 use App\Annexe;
 use App\Direction;
+use App\PlatformConfig;
+use App\Services\KkiapayService;
+use App\Services\FedapayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -22,12 +25,21 @@ class PlanController extends Controller
      */
     public function index()
     {
-        $plans = Plan::actifs();
+        $plans     = Plan::actifs();
         $direction = Direction::find(Auth::user()->iddirection_ref);
         $currentPlan = $direction ? $direction->plan : null;
-        $planInfo = $direction ? $direction->getPlanInfo() : null;
+        $planInfo    = $direction ? $direction->getPlanInfo() : null;
 
-        return view('plans.index', compact('plans', 'currentPlan', 'planInfo', 'direction'));
+        $paymentConfig   = PlatformConfig::getConfig();
+        $paymentEnabled  = $paymentConfig->isOperational();
+        $paymentProvider = $paymentConfig->getActiveProvider();
+        $paymentPublicKey = $paymentEnabled ? $paymentConfig->getActivePublicKey() : null;
+        $paymentSandbox  = $paymentConfig->getActiveSandbox();
+
+        return view('plans.index', compact(
+            'plans', 'currentPlan', 'planInfo', 'direction',
+            'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox'
+        ));
     }
 
     /**
@@ -178,7 +190,8 @@ class PlanController extends Controller
             }
 
             $request->validate([
-                'plan_id' => 'required|exists:plans,idplan'
+                'plan_id'        => 'required|exists:plans,idplan',
+                'transaction_id' => 'nullable|string',
             ]);
 
             $direction = Direction::find(Auth::user()->iddirection_ref);
@@ -210,40 +223,98 @@ class PlanController extends Controller
                 ], 400);
             }
 
-            // Mettre à jour le plan (en attente de validation admin)
-            $direction->idplan_ref = $newPlan->idplan;
+            // ── Vérification du paiement si plan payant + prestataire actif ────────
+            $isPlanPaye    = floatval($newPlan->prix_annuel) > 0;
+            $paymentConfig = PlatformConfig::getConfig();
+            $paiementValide = false;
+
+            if ($isPlanPaye && $paymentConfig->isOperational()) {
+                $transactionId = $request->input('transaction_id');
+
+                if (empty($transactionId)) {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Un paiement est requis pour passer à ce plan. Veuillez effectuer le paiement.',
+                    ], 422);
+                }
+
+                if ($paymentConfig->isKkiapayActive()) {
+                    $svc = new KkiapayService(
+                        $paymentConfig->kkiapay_private_key,
+                        $paymentConfig->getActiveSandbox()
+                    );
+                    $verification = $svc->verifyTransaction($transactionId);
+                    if (!$verification['success']) {
+                        return response()->json([
+                            'status'  => false,
+                            'message' => 'Paiement KKiaPay invalide ou non confirmé. Veuillez réessayer.',
+                        ], 422);
+                    }
+                } else {
+                    $svc = new FedapayService(
+                        $paymentConfig->fedapay_secret_key,
+                        $paymentConfig->getActiveSandbox()
+                    );
+                    $verification = $svc->verifyTransaction($transactionId);
+                    if (!$verification['success']) {
+                        return response()->json([
+                            'status'  => false,
+                            'message' => 'Paiement FedaPay invalide ou non confirmé. Veuillez réessayer.',
+                        ], 422);
+                    }
+                }
+
+                $paiementValide = true;
+            }
+            // ────────────────────────────────────────────────────────────────────
+
+            // Mise à jour du plan
+            $direction->idplan_ref      = $newPlan->idplan;
             $direction->abonnement_debut = Carbon::now();
-            $direction->abonnement_fin = Carbon::now()->addYear();
-            $direction->statut_abonnement = 'essai'; // En attente de validation
-            $direction->save();
+            $direction->abonnement_fin   = Carbon::now()->addYear();
 
-            // Bloquer l'entreprise pour validation admin
-            User::where('iddirection_ref', $direction->iddirection)
-                ->update(['blocage_entreprise' => Carbon::now()]);
-            Annexe::where('iddirection_ref', $direction->iddirection)
-                ->update(['blocage_annexe' => Carbon::now()]);
+            if ($paiementValide) {
+                // Paiement confirmé → activation directe
+                $direction->statut_abonnement = 'actif';
+                $direction->save();
+                // Débloquer l'entreprise et les annexes
+                User::where('iddirection_ref', $direction->iddirection)
+                    ->update(['blocage_entreprise' => null]);
+                Annexe::where('iddirection_ref', $direction->iddirection)
+                    ->update(['blocage_annexe' => null]);
+                $successMessage = "Votre abonnement au plan {$newPlan->nom} est maintenant actif. Une facture vous a été envoyée par email.";
+            } else {
+                // Sans paiement → suspension en attente de validation admin
+                $direction->statut_abonnement = 'essai';
+                $direction->save();
+                User::where('iddirection_ref', $direction->iddirection)
+                    ->update(['blocage_entreprise' => Carbon::now()]);
+                Annexe::where('iddirection_ref', $direction->iddirection)
+                    ->update(['blocage_annexe' => Carbon::now()]);
+                $successMessage = "Votre demande de passage au plan {$newPlan->nom} a été enregistrée. Une facture vous a été envoyée par email. Votre compte sera activé après validation par l'administrateur.";
+            }
 
-            // Envoyer la facture du nouveau plan par email
+            // Envoyer la facture dans tous les cas
             try {
                 $user = Auth::user();
                 $invoiceData = [
                     'user' => [
-                        'nom' => $user->nom,
-                        'prenom' => $user->prenom,
-                        'email' => $user->email,
+                        'nom'       => $user->nom,
+                        'prenom'    => $user->prenom,
+                        'email'     => $user->email,
                         'telephone' => $direction->telephone ?? '',
                     ],
                     'plan' => [
-                        'nom' => $newPlan->nom,
-                        'code' => $newPlan->code,
+                        'nom'         => $newPlan->nom,
+                        'code'        => $newPlan->code,
                         'prix_annuel' => $newPlan->prix_annuel,
                         'max_maisons' => $newPlan->max_maisons,
                         'max_annexes' => $newPlan->max_annexes,
                     ],
                     'direction' => [
-                        'designation' => $direction->designation,
+                        'designation'     => $direction->designation,
                         'abonnement_debut' => Carbon::now()->toDateString(),
-                        'abonnement_fin' => Carbon::now()->addYear()->toDateString(),
+                        'abonnement_fin'   => Carbon::now()->addYear()->toDateString(),
                     ],
                 ];
 
@@ -259,12 +330,12 @@ class PlanController extends Controller
 
             activity()->performedOn($direction)
                 ->causedBy(Auth::user()->id)
-                ->log('Demande de changement de plan vers ' . $newPlan->nom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+                ->log('Changement de plan vers ' . $newPlan->nom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom . ($paiementValide ? ' (paiement confirmé)' : ''));
 
             return response()->json([
-                'status' => true,
-                'message' => "Votre demande de passage au plan {$newPlan->nom} a été enregistrée. Une facture vous a été envoyée par email. Votre compte sera activé après validation par l'administrateur.",
-                'plan_info' => $direction->getPlanInfo()
+                'status'   => true,
+                'message'  => $successMessage,
+                'plan_info' => $direction->getPlanInfo(),
             ]);
         } catch (QueryException $e) {
             return response()->json([

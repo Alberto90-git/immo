@@ -69,11 +69,14 @@ class RoleController extends Controller
         //$permissionMotPasse = Permission::where("group", "changePwd")->get();
         $permissionDossier = Permission::where("group", "dossiers")->get();
         $permissionPub = Permission::where("group", "pubs")->get();
+        $abonnement = Permission::where("group", "abonnement")->get();
+
+        
 
 
         return view('roles.create', compact('permission', 'permissionParametrage',
          'permissionProprio','permissionMaison','permissionChambre','permissionPrix','permissionLocataire','permissionPaiement','permissionStatistique'
-         ,'permissionDossier','permissionPub'));
+         ,'permissionDossier','permissionPub','abonnement'));
     }
 
     /**
@@ -143,6 +146,8 @@ class RoleController extends Controller
         //$permissionMotPasse = Permission::where("group", "changePwd")->get();
         $permissionDossier = Permission::where("group", "dossiers")->get();
         $permissionPub = Permission::where("group", "pubs")->get();
+        $abonnement = Permission::where("group", "abonnement")->get();
+
 
 
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
@@ -152,7 +157,7 @@ class RoleController extends Controller
 
          return view('roles.edit', compact('role','rolePermissions','permission', 'permissionParametrage',
          'permissionProprio','permissionMaison','permissionChambre','permissionPrix','permissionLocataire',
-         'permissionPaiement','permissionStatistique','permissionDossier','permissionPub'));
+         'permissionPaiement','permissionStatistique','permissionDossier','permissionPub','abonnement'));
     }
 
     /**

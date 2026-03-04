@@ -73,11 +73,11 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Facture d'abonnement ImmoManager</h1>
+      <h1>Facture d'abonnement Lokativ</h1>
     </div>
     <div class="content">
       <p>Bonjour {{ $invoiceData['user']['nom'] }} {{ $invoiceData['user']['prenom'] }},</p>
-      <p>Merci d'avoir créé votre compte sur <strong>ImmoManager</strong> ! Veuillez trouver ci-joint la facture de votre abonnement.</p>
+      <p>Merci d'avoir créé votre compte sur <strong>Lokativ</strong> ! Veuillez trouver ci-joint la facture de votre abonnement.</p>
 
       <div class="plan-box">
         <h3>Plan {{ $invoiceData['plan']['nom'] }}</h3>
@@ -96,7 +96,7 @@
       <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
     </div>
     <div class="footer">
-      <p>&copy; {{ date('Y') }} ImmoManager. Tous droits réservés.</p>
+      <p>&copy; {{ date('Y') }} Lokativ. Tous droits réservés.</p>
     </div>
   </div>
 </body>

@@ -1,6 +1,7 @@
 {
-    "name": "ImmoManager - Gestion Immobilière",
-    "short_name": "ImmoManager",
+    "name": "Lokativ - Gestion Immobilière",
+    "short_name": "Lokativ",
+    "id": "/",
     "description": "Plateforme complète de gestion immobilière. Automatisez vos tâches, optimisez vos revenus et gérez votre patrimoine en toute simplicité.",
     "start_url": "/",
     "display": "standalone",
@@ -17,15 +18,15 @@
         },
         {
             "src": "/logo/LOGO.jpg",
-            "sizes": "192x192",
+            "sizes": "800x800",
             "type": "image/jpeg",
             "purpose": "any"
         },
         {
             "src": "/logo/logo2.jpg",
-            "sizes": "512x512",
+            "sizes": "800x800",
             "type": "image/jpeg",
-            "purpose": "any maskable"
+            "purpose": "maskable"
         }
     ]
 }

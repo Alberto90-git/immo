@@ -23,7 +23,7 @@
                         aria-controls="navs-pills-justified-dossier_client"
                         aria-selected="true">
 
-                        <i class="tf-icons bx bx-home"></i> Dossier client
+                        <i class="tf-icons bx bx-home"></i> Besoin des clients
                         {{-- <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger">3</span> --}}
                     </button>
                     </li>
@@ -38,7 +38,7 @@
                         aria-controls="navs-pills-justified-dossier_parcelle"
                         aria-selected="false"
                     >
-                        <i class="tf-icons bx bx-user"></i> Dossier parcelle
+                        <i class="tf-icons bx bx-user"></i> Annoces des biens
                     </button>
                     </li>
                     
@@ -84,7 +84,7 @@
                                     <th scope="col">Zone voulue</th>
                                     <th scope="col">Superficie</th>
                                     <th scope="col">Budget</th>
-                                    <th scope="col">Date cloture du dossier</th>
+                                    <th scope="col">Date cloture du besoin</th>
                                   </tr>
                                 </thead>
                                 <tbody id="list_clients">
@@ -128,13 +128,13 @@
                                 <thead>
                               <tr>
                                 <th scope="col">Agence</th>
-                                <th scope="col">Nom & prénom propriétaire</th>
+                                <th scope="col">Nom & prénom annonceur</th>
                                 <th scope="col">Téléphone</th>
                                 <th scope="col">Quartier parcelle</th>
                                 <th scope="col">Superficie</th>
                                 <th scope="col">Prix</th>
                                 <th scope="col">Acheteur</th>
-                                <th scope="col">Date cloture du dossier</th>
+                                <th scope="col">Date cloture annonce</th>
                               </tr>
                             </thead>
                             <tbody id="list_parcelles">

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -86,37 +87,37 @@ class PermissionTableSeeder extends Seeder
 
 
 
-        $permissionstraitemnt = [
-            'ajouter-publicite',
+        // $permissionstraitemnt = [
+        //     'ajouter-publicite',
 
-            'modifier-publicite',
+        //     'modifier-publicite',
 
-            'list-publicite',
+        //     'list-publicite',
 
-            'delete-publicite',
+        //     'delete-publicite',
             
-            'desactive-publicite',
-        ];
+        //     'desactive-publicite',
+        // ];
 
 
-        $labelt = [
-            'Ajouter pub',
+        // $labelt = [
+        //     'Ajouter pub',
            
-            'Modifier pub',
+        //     'Modifier pub',
 
-            'Consulter pub',
+        //     'Consulter pub',
 
-            'Suprimer pub',
+        //     'Suprimer pub',
             
-            'Désactive pub'
-        ];
+        //     'Désactive pub'
+        // ];
 
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
+        // collect($permissionstraitemnt)->zip(collect($labelt))
+        //     ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
 
-        foreach ($permissionstraitemnt as $traiement) {
-            Permission::where('name', $traiement)->update(['group' => 'pubs']);
-        }
+        // foreach ($permissionstraitemnt as $traiement) {
+        //     Permission::where('name', $traiement)->update(['group' => 'pubs']);
+        // }
 
 
 
@@ -355,7 +356,7 @@ class PermissionTableSeeder extends Seeder
             'Menu P/M/C/L',
             'Menu financier',
             'Menu réçu',
-            'Gestion dossier',
+            'Gestion des besoins & annonces',
         ];
 
         collect($permissionstraitemnt)->zip(collect($labelt))
@@ -413,23 +414,23 @@ class PermissionTableSeeder extends Seeder
         ];
 
         $labelt = [
-            'Gestion des dossiers',
+            'Gestion des besoins & annoces',
 
-            'Gestion des clients',
-            'Gestion des parcelles',
+            'Besoin des clients',
+            'Annoces des biens',
 
-            'Ajouter parcelle',
-            'Modifier parcelle',
-            'Supprimer parcelle',
-            'Cloturer parcelle',
-            'Consulter liste parcelle',
+            'Ajouter annonce',
+            'Modifier annonce',
+            'Supprimer annonce',
+            'Cloturer annonce',
+            'Consulter liste annonce',
 
 
-            'Ajouter client',
-            'Modifier client',
-            'Supprimer client',
-            'Cloturer client',
-            'Consulter liste client',
+            'Ajouter besoin',
+            'Modifier besoin',
+            'Supprimer besoin',
+            'Cloturer besoin',
+            'Consulter liste besoin',
         ];
 
         collect($permissionstraitemnt)->zip(collect($labelt))
@@ -438,6 +439,85 @@ class PermissionTableSeeder extends Seeder
         foreach ($permissionstraitemnt as $traiement) {
 
             Permission::where('name', $traiement)->update(['group' => 'dossiers']);
+        }
+
+
+
+        
+        $permissionstraitemnt = [
+            'gestion-publicite',
+
+            'ajouter-publicite',
+            'modifier-publicite',
+            'supprimer-publicite',
+            'ajouter-image',
+            'voir-detail-publicite',
+
+        ];
+
+        $labelt = [
+            'Gestion publicité',
+
+            'Ajouter publicité',
+            'Modifier publicité',
+            'Supprimer publicité',
+            'Ajouter image',
+            'Voir détail publicité',
+
+        ];
+
+        collect($permissionstraitemnt)->zip(collect($labelt))
+            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
+
+        foreach ($permissionstraitemnt as $traiement) {
+
+            Permission::where('name', $traiement)->update(['group' => 'pubs']);
+        }
+
+
+        $permissionstraitemnt = [
+            'gestion-abonnement',
+
+            'change-abonnement',
+
+            'voir-abonnement',
+
+        ];
+
+
+        $labelt = [
+            'Gestion abonnement',
+
+            'Changer abonnement',
+
+            'Voir abonnement',
+        ];
+
+        collect($permissionstraitemnt)->zip(collect($labelt))
+            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
+
+        foreach ($permissionstraitemnt as $traiement) {
+            Permission::where('name', $traiement)->update(['group' => 'abonnement']);
+        }
+
+        // Envoi de documents
+        Permission::firstOrCreate(
+            ['name' => 'envoi-document'],
+            ['label' => 'Envoi de documents', 'group' => 'envoi']
+        );
+        Permission::where('name', 'envoi-document')->update(['group' => 'envoi']);
+
+        // Configuration prestataire de paiement — réservée à admin@immo.net uniquement
+        Permission::firstOrCreate(
+            ['name' => 'config-paiement'],
+            ['label' => 'Configuration prestataire de paiement', 'group' => 'plateforme']
+        );
+        Permission::where('name', 'config-paiement')->update(['group' => 'plateforme']);
+
+        // Assigner directement à l'utilisateur admin@immo.net (pas au rôle)
+        $superAdmin = User::where('email', 'admin@immo.net')->first();
+        if ($superAdmin) {
+            $superAdmin->givePermissionTo('config-paiement');
         }
 
 

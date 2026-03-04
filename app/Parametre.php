@@ -10,9 +10,11 @@ class Parametre extends Model
     
     protected $fillable = [
         'iddirection_ref',
-        'format_choisi', // À supprimer ou garder si utilisé ailleurs
-        'cash_electronique_url', // Nouveau champ
+        'format_choisi',
+        'cash_electronique_url',
         'logo_url',
+        'email_envoi',
+        'whatsapp_numero_envoi',
     ];
 
 

@@ -23,6 +23,10 @@ use App\Mail\SendCodemail;
 use App\Mail\VerificationEmail;
 use App\Rules\MatchOldPassword;
 use App\Jobs\SendSubscriptionInvoiceJob;
+use App\Jobs\SendLoginCodeJob;
+use App\PlatformConfig;
+use App\Services\KkiapayService;
+use App\Services\FedapayService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 
@@ -199,24 +203,11 @@ class UtilisateurController extends SessionController
                
                 $response = $this->update_code_login($request->email,$rand);
                 
-                if ($response)
-                {
-                    
-                   try {
-                            $userinfo = [
-                                'code_login' => $rand,
-                                'email' => $request->email
-                            ];
-
-                            Mail::to($request->email)->send(new SendCodemail($userinfo));
-                            return redirect()->route('code_login');
-
-                   } catch (\Throwable $th) {
-                        //throw $th;
-                   }
-                  //return redirect()->route('home')->with('success', 'Mot de passe change avec succès');
-                }else {
-                   return redirect()->back()->with('error', 'Il y a un soucis');
+                if ($response) {
+                    Session::put('otp_pending_email', $request->email);
+                    return redirect()->route('code_login');
+                } else {
+                    return redirect()->back()->with('error', 'Il y a un soucis');
                 }
 
             }
@@ -292,7 +283,8 @@ class UtilisateurController extends SessionController
                         }
                     }
 
-                    Mail::to($agent->email)->send(new SendCodemail($userinfo));
+                    // Stocker l'email en session pour envoi OTP côté JS
+                    Session::put('otp_pending_email', $agent->email);
 
                     activity()->performedOn($agent)
                                 ->causedBy($agent)
@@ -315,6 +307,66 @@ class UtilisateurController extends SessionController
     {
         Auth::logout();
         return view('auth/codelogin');
+    }
+
+    /**
+     * Envoie (ou renvoie) le code OTP par email.
+     * Appelé en AJAX depuis la page code_login.
+     */
+    public function sendLoginOtp(Request $request)
+    {
+        $email = Session::get('otp_pending_email');
+
+        if (!$email) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Session expirée. Veuillez vous reconnecter.',
+            ], 403);
+        }
+
+        // Anti-spam : 1 envoi max toutes les 60 secondes
+        $lastSent = Session::get('otp_last_sent');
+        if ($lastSent && now()->diffInSeconds($lastSent) < 60) {
+            $remaining = 60 - now()->diffInSeconds($lastSent);
+            return response()->json([
+                'status'    => false,
+                'message'   => "Veuillez patienter {$remaining}s avant de renvoyer.",
+                'remaining' => $remaining,
+            ], 429);
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Utilisateur introuvable.',
+            ], 404);
+        }
+
+        // Régénérer le code à chaque envoi (renvoi inclus)
+        $code = rand(100000, 999999);
+        $user->update(['code_login' => $code, 'last_login' => Carbon::now()]);
+
+        Session::put('otp_last_sent', now());
+
+        try {
+            Mail::to($email)->send(new SendCodemail([
+                'code_login' => $code,
+                'email'      => $email,
+            ]));
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Code envoyé à ' . $email,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('sendLoginOtp mail error: ' . $e->getMessage());
+            return response()->json([
+                'status'  => false,
+                'message' => 'Échec de l\'envoi du code. Veuillez réessayer.',
+            ], 500);
+        }
     }
 
 
@@ -413,14 +465,14 @@ class UtilisateurController extends SessionController
                     [
                         'nom' => ['required', 'string', 'min:2'],
                         'prenom' => ['required', 'string', 'min:2'],
-                        'email' => ['required','string','email','max:255',Rule::unique(User::class)],
+                        'email' => ['required','string','email','max:255', Rule::unique(User::class), Rule::unique('directions', 'email')],
                         'code_pays' => ['required'],
                         'telephone' => ['required'],
                         'type_compte' => ['required', 'string'],
                     ],
                     [
                         '*.required' => 'Ce champ est obligatoire.',
-                        'email.unique' => 'L\'adresse mail est déjà utilisé',
+                        'email.unique' => 'Cette adresse email est déjà associée à un compte existant.',
                         'nom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
                         'prenom.min' => 'Le :attribute doit avoir au moins 2 caractères.',
                     ]
@@ -437,11 +489,12 @@ class UtilisateurController extends SessionController
                         'type_compte' => ['required', 'string'],
                         'designation' => ['required', 'string'],
                         'adresse' => ['required', 'string'],
-                        'email_entreprise' => ['required','string','email','max:255'],
+                        'email_entreprise' => ['required','string','email','max:255', Rule::unique('directions', 'email')],
                     ],
                     [
                         '*.required' => 'Ce champ est obligatoire.',
-                        'email.unique' => 'L\'adresse mail est déjà utilisé',
+                        'email.unique' => 'Cette adresse email personnelle est déjà utilisée.',
+                        'email_entreprise.unique' => 'Cette adresse email d\'entreprise est déjà associée à un compte existant.',
                         '*.min' => 'Le :attribute doit avoir au moins :min caractères.',
                     ]
                 );
@@ -463,6 +516,58 @@ class UtilisateurController extends SessionController
             $grade = 'Administrateur';
             $type_compte = $request->type_compte;
             $mot_de_passe = Str::random(12);
+
+            // Déterminer le plan pour vérifier si paiement requis
+            $planCodeTemp = $request->plan_code ?? 'essai';
+            $planTemp     = Plan::where('code', $planCodeTemp)->first() ?? Plan::essai();
+            $isPlanGratuitTemp = $planTemp && floatval($planTemp->prix_annuel) == 0;
+
+            // Vérification du paiement si plan payant et prestataire activé
+            $paymentConfig        = PlatformConfig::getConfig();
+            $kkiapayTransactionId = null;
+            $fedapayTransactionId = null;
+
+            if (!$isPlanGratuitTemp && $paymentConfig->isOperational()) {
+                $transactionId = $request->input('transaction_id');
+
+                if (empty($transactionId)) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Un paiement est requis pour ce plan. Veuillez effectuer le paiement.',
+                    ], 422);
+                }
+
+                if ($paymentConfig->isKkiapayActive()) {
+                    $svc = new KkiapayService(
+                        $paymentConfig->kkiapay_private_key,
+                        $paymentConfig->getActiveSandbox()
+                    );
+                    $verification = $svc->verifyTransaction($transactionId);
+                    if (!$verification['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status'  => false,
+                            'message' => 'Paiement KKiaPay invalide ou non confirmé. Veuillez réessayer.',
+                        ], 422);
+                    }
+                    $kkiapayTransactionId = $transactionId;
+                } else {
+                    $svc = new FedapayService(
+                        $paymentConfig->fedapay_secret_key,
+                        $paymentConfig->getActiveSandbox()
+                    );
+                    $verification = $svc->verifyTransaction($transactionId);
+                    if (!$verification['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status'  => false,
+                            'message' => 'Paiement FedaPay invalide ou non confirmé. Veuillez réessayer.',
+                        ], 422);
+                    }
+                    $fedapayTransactionId = $transactionId;
+                }
+            }
             
             // Gestion des données de l'entreprise
             if ($type_compte === 'Entreprise') {
@@ -494,17 +599,19 @@ class UtilisateurController extends SessionController
 
             // Création de la direction avec le plan sélectionné
             $direction_id = Direction::insertGetId([
-                'designation' => $designation,
-                'siege_social' => $adresse,
-                'telephone' => $telepone_entreprise,
-                'email' => $email_entreprise,
-                'idplan_ref' => $planId,
-                'abonnement_debut' => Carbon::now(),
-                'abonnement_fin' => $abonnementFin,
-                'statut_abonnement' => 'essai', // En attente de validation admin
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]);
+                'designation'           => $designation,
+                'siege_social'          => $adresse,
+                'telephone'             => $telepone_entreprise,
+                'email'                 => $email_entreprise,
+                'idplan_ref'            => $planId,
+                'abonnement_debut'      => Carbon::now(),
+                'abonnement_fin'        => $abonnementFin,
+                'statut_abonnement'      => 'essai', // En attente de validation admin
+                'kkiapay_transaction_id' => $kkiapayTransactionId,
+                'fedapay_transaction_id' => $fedapayTransactionId,
+                'created_at'            => Carbon::now(),
+                'updated_at'            => Carbon::now()
+            ], 'iddirection');
             
             // Création de l'annexe (bloquée par défaut, en attente de validation admin)
             $annexe_id = Annexe::insertGetId([
@@ -517,7 +624,7 @@ class UtilisateurController extends SessionController
                 'blocage_annexe' => Carbon::now(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
-            ]);
+            ], 'idannexes');
 
             // Création de l'utilisateur (bloqué par défaut, en attente de validation admin)
             $newuser = User::create([
@@ -634,16 +741,36 @@ class UtilisateurController extends SessionController
             
         } catch (QueryException $e) {
             DB::rollBack();
+            Log::error('QueryException saveAdminCompte: ' . $e->getMessage());
+
+            // Violation de contrainte unique (PostgreSQL: 23505 / MySQL: 1062)
+            $sqlState = $e->errorInfo[0] ?? '';
+            if ($sqlState === '23505' || $e->getCode() == 1062) {
+                $msg = $e->getMessage();
+                if (str_contains($msg, 'directions_email_unique') || str_contains($msg, '"directions"')) {
+                    $detail = 'Cette adresse email d\'entreprise est déjà associée à un compte existant.';
+                } elseif (str_contains($msg, 'users_email_unique') || str_contains($msg, '"users"')) {
+                    $detail = 'Cette adresse email personnelle est déjà utilisée.';
+                } else {
+                    $detail = 'Une valeur saisie est déjà utilisée par un autre compte.';
+                }
+                return response()->json([
+                    'status' => false,
+                    'message' => $detail,
+                ], 422);
+            }
+
             return response()->json([
                 'status' => false,
-                'message' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.'
+                'message' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.',
             ], 500);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Exception saveAdminCompte: ' . $e->getMessage());
             return response()->json([
                 'status' => false,
-                'message' => 'Une erreur inattendue est survenue. Veuillez réessayer.'
+                'message' => 'Une erreur inattendue est survenue. Veuillez réessayer.',
             ], 500);
         }
     }
@@ -735,7 +862,7 @@ class UtilisateurController extends SessionController
                 'siege_social'                => $adresse,
                 'telephone'                 => $telepone_entreprise,
                 'email'                 => $email_entreprise,
-            ]);
+            ], 'iddirection');
 
     
     
@@ -746,7 +873,7 @@ class UtilisateurController extends SessionController
                 'telephone'                 => $telepone_entreprise,
                 'email'                 => $email_entreprise,
                 'userdata'              =>  $designation
-            ]);
+            ], 'idannexes');
     
     
             $newuser = User::create([
