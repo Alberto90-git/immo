@@ -68,6 +68,39 @@
       color: #1e40af;
       text-decoration: none;
     }
+    .payment-box {
+      background-color: #f0fdf4;
+      border-left: 4px solid #27ae60;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .payment-box h3 {
+      margin: 0 0 10px 0;
+      color: #27ae60;
+    }
+    .payment-box table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .payment-box td {
+      padding: 4px 8px;
+    }
+    .payment-box td:first-child {
+      font-weight: bold;
+      color: #555;
+      width: 140px;
+    }
+    .badge-paid {
+      display: inline-block;
+      background-color: #27ae60;
+      color: #fff;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -88,6 +121,34 @@
         </p>
         <p><strong>Montant :</strong> {{ number_format($invoiceData['plan']['prix_annuel'], 0, ',', '.') }} XOF</p>
       </div>
+
+      @if(!empty($invoiceData['payment']))
+      <div class="payment-box">
+        <h3>&#10003; Paiement confirmé via {{ $invoiceData['payment']['provider'] }}</h3>
+        <table>
+          <tr>
+            <td>Prestataire :</td>
+            <td>{{ $invoiceData['payment']['provider'] }} <span class="badge-paid">PAYÉ</span></td>
+          </tr>
+          <tr>
+            <td>Réf. transaction :</td>
+            <td><code>{{ $invoiceData['payment']['transaction_id'] }}</code></td>
+          </tr>
+          <tr>
+            <td>Montant :</td>
+            <td><strong>{{ number_format($invoiceData['plan']['prix_annuel'], 0, ',', '.') }} XOF</strong></td>
+          </tr>
+          <tr>
+            <td>Mode :</td>
+            <td>{{ $invoiceData['payment']['sandbox'] ? 'Sandbox (test)' : 'Production' }}</td>
+          </tr>
+          <tr>
+            <td>Date :</td>
+            <td>{{ \Carbon\Carbon::now()->format('d/m/Y à H:i') }}</td>
+          </tr>
+        </table>
+      </div>
+      @endif
 
       <p>La facture PDF est jointe à cet email pour vos archives.</p>
 

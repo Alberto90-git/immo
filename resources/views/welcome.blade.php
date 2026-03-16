@@ -1335,23 +1335,111 @@
                 </p>
             </div>
 
-            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                <!-- Plan Essai -->
-                <div class="p-6 bg-white border-2 border-green-500 pricing-card rounded-2xl lg:p-8" style="position:relative;">
-                    <span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:600;">Gratuit</span>
+            @php
+                $colClass = count($plansActifs) <= 2 ? 'md:grid-cols-2' :
+                            (count($plansActifs) === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-4');
+            @endphp
+            <div class="grid gap-8 {{ $colClass }}">
+                @foreach ($plansActifs as $plan)
+                @php
+                    $isFree     = floatval($plan->prix_annuel) == 0;
+                    $isFeatured = $plan->code === 'standard';
+                    $isFirst    = $loop->first;
+                    $isLast     = $loop->last;
+
+                    // Couleurs selon position / type
+                    if ($isFree) {
+                        $borderClass  = 'border-2 border-green-500';
+                        $priceColor   = 'text-green-600';
+                        $badgeCls     = 'text-green-600 bg-green-100';
+                        $badgeLabel   = '14 jours';
+                        $btnClass     = 'bg-green-500 text-white hover:bg-green-600';
+                        $btnLabel     = 'Essayer gratuitement';
+                    } elseif ($isFeatured) {
+                        $borderClass  = 'border-2 border-blue-600 pricing-card featured';
+                        $priceColor   = 'text-blue-600';
+                        $badgeCls     = 'text-white bg-blue-600';
+                        $badgeLabel   = 'Populaire';
+                        $btnClass     = 'bg-blue-600 text-white hover:bg-blue-700';
+                        $btnLabel     = 'Choisir ce plan';
+                    } elseif ($isLast && !$isFree) {
+                        $borderClass  = 'border border-purple-200';
+                        $priceColor   = 'text-purple-700';
+                        $badgeCls     = 'text-purple-600 bg-purple-100';
+                        $badgeLabel   = 'Pro';
+                        $btnClass     = 'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white';
+                        $btnLabel     = 'Nous contacter';
+                    } else {
+                        $borderClass  = 'border border-gray-200';
+                        $priceColor   = 'text-gray-800';
+                        $badgeCls     = 'text-blue-600 bg-blue-100';
+                        $badgeLabel   = 'Débutant';
+                        $btnClass     = 'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white';
+                        $btnLabel     = 'Commencer';
+                    }
+
+                    // Libellé maisons
+                    if ($plan->max_maisons === null || $plan->max_maisons === 0) {
+                        $maisonLabel = '<strong class="mx-1">Maisons illimitées</strong>';
+                    } else {
+                        $maisonLabel = 'Jusqu\'à <strong class="mx-1">' . $plan->max_maisons . ' maisons</strong>';
+                    }
+
+                    // Libellé annexes
+                    if ($plan->max_annexes === null) {
+                        $annexeLabel = 'Annexes illimitées';
+                        $annexeOk    = true;
+                    } elseif ($plan->max_annexes > 0) {
+                        $annexeLabel = 'Jusqu\'à <strong class="mx-1">' . $plan->max_annexes . ' annexe(s)</strong>';
+                        $annexeOk    = true;
+                    } else {
+                        $annexeLabel = 'Création d\'annexes';
+                        $annexeOk    = false;
+                    }
+                @endphp
+
+                <div class="p-6 bg-white {{ $borderClass }} pricing-card rounded-2xl lg:p-8"
+                     style="position:relative;">
+
+                    {{-- Badge gratuit --}}
+                    @if($isFree)
+                        <span style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:600;">Gratuit</span>
+                    @endif
+
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Essai</h3>
-                        <span class="px-3 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">14 jours</span>
+                        <h3 class="text-xl font-bold text-gray-800">{{ $plan->nom }}</h3>
+                        <span class="px-3 py-1 text-xs font-semibold {{ $badgeCls }} rounded-full">{{ $badgeLabel }}</span>
                     </div>
-                    <p class="mb-6 text-gray-500">Découvrez la plateforme</p>
+
+                    @if($plan->description)
+                        <p class="mb-6 text-gray-500">{{ $plan->description }}</p>
+                    @endif
+
+                    {{-- Prix --}}
                     <div class="mb-6">
-                        <span class="text-4xl font-bold text-green-600">Gratuit</span>
+                        @if($isFree)
+                            <span class="text-4xl font-bold {{ $priceColor }}">Gratuit</span>
+                        @else
+                            <span class="text-4xl font-bold {{ $priceColor }}">{{ number_format($plan->prix_annuel, 0, ',', ' ') }}</span>
+                            <span class="text-gray-500"> XOF/an</span>
+                        @endif
                     </div>
+
+                    {{-- Fonctionnalités --}}
                     <ul class="mb-8 space-y-3">
+                        {{-- Maisons --}}
                         <li class="flex items-center text-gray-600">
                             <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Jusqu'à <strong class="mx-1">2 maisons</strong>
+                            {!! $maisonLabel !!}
                         </li>
+
+                        {{-- Annexes --}}
+                        <li class="flex items-center {{ $annexeOk ? 'text-gray-600' : 'text-gray-400' }}">
+                            <i class="mr-3 {{ $annexeOk ? 'text-green-500' : '' }} fas fa-{{ $annexeOk ? 'check' : 'times' }}"></i>
+                            {!! $annexeLabel !!}
+                        </li>
+
+                        {{-- Fonctionnalités fixes --}}
                         <li class="flex items-center text-gray-600">
                             <i class="mr-3 text-green-500 fas fa-check"></i>
                             Tableau de bord complet
@@ -1364,153 +1452,74 @@
                             <i class="mr-3 text-green-500 fas fa-check"></i>
                             Facturation automatique
                         </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            <strong class="mx-1">14 jours gratuits</strong>
-                        </li>
-                        <li class="flex items-center text-gray-400">
-                            <i class="mr-3 fas fa-times"></i>
-                            Création d'annexes
-                        </li>
-                    </ul>
-                    <a href="#compte" class="block w-full py-3 text-center text-white transition-colors bg-green-500 rounded-full hover:bg-green-600">
-                        Essayer gratuitement
-                    </a>
-                </div>
 
-                <!-- Plan Starter -->
-                <div class="p-6 bg-white border border-gray-200 pricing-card rounded-2xl lg:p-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Starter</h3>
-                        <span class="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">Débutant</span>
-                    </div>
-                    <p class="mb-6 text-gray-500">Idéal pour démarrer</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold text-gray-800">54 000</span>
-                        <span class="text-gray-500">XOF/an</span>
-                    </div>
-                    <ul class="mb-8 space-y-3">
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Jusqu'à <strong class="mx-1">5 maisons</strong>
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Tableau de bord complet
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Gestion des locataires
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Facturation automatique
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Export PDF
-                        </li>
-                        <li class="flex items-center text-gray-400">
-                            <i class="mr-3 fas fa-times"></i>
-                            Création d'annexes
-                        </li>
-                    </ul>
-                    <a href="#compte" class="block w-full py-3 text-center text-blue-600 transition-colors border-2 border-blue-600 rounded-full hover:bg-blue-600 hover:text-white">
-                        Commencer
-                    </a>
-                </div>
+                        {{-- Envoi email --}}
+                        @if($plan->max_envois_email === null)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-envelope mr-1 text-blue-400"></i>
+                                <strong class="mx-1">Emails illimités</strong> / mois
+                            </li>
+                        @elseif($plan->max_envois_email > 0)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-envelope mr-1 text-blue-400"></i>
+                                <strong class="mx-1">{{ $plan->max_envois_email }}</strong> email(s) / mois
+                            </li>
+                        @else
+                            <li class="flex items-center text-gray-400">
+                                <i class="mr-3 fas fa-times"></i>
+                                <i class="fas fa-envelope mr-1"></i> Envoi par email
+                            </li>
+                        @endif
 
-                <!-- Plan Standard (Featured) -->
-                <div class="p-6 bg-white border-2 border-blue-600 pricing-card featured rounded-2xl lg:p-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Standard</h3>
-                        <span class="px-3 py-1 text-xs font-semibold text-white bg-blue-600 rounded-full">Populaire</span>
-                    </div>
-                    <p class="mb-6 text-gray-500">Pour les propriétaires actifs</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold text-blue-600">120 000</span>
-                        <span class="text-gray-500">XOF/an</span>
-                    </div>
-                    <ul class="mb-8 space-y-3">
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Jusqu'à <strong class="mx-1">20 maisons</strong>
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Tableau de bord avancé
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Gestion des locataires
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Facturation automatique
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Statistiques détaillées
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Export PDF/Excel
-                        </li>
-                        <li class="flex items-center text-gray-400">
-                            <i class="mr-3 fas fa-times"></i>
-                            Création d'annexes
-                        </li>
-                    </ul>
-                    <a href="#compte" class="block w-full py-3 text-center text-white transition-colors bg-blue-600 rounded-full hover:bg-blue-700">
-                        Choisir ce plan
-                    </a>
-                </div>
+                        {{-- Envoi WhatsApp --}}
+                        @if($plan->max_envois_whatsapp === null)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fab fa-whatsapp mr-1 text-green-500"></i>
+                                <strong class="mx-1">WhatsApp illimités</strong> / mois
+                            </li>
+                        @elseif($plan->max_envois_whatsapp > 0)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fab fa-whatsapp mr-1 text-green-500"></i>
+                                <strong class="mx-1">{{ $plan->max_envois_whatsapp }}</strong> WhatsApp / mois
+                            </li>
+                        @else
+                            <li class="flex items-center text-gray-400">
+                                <i class="mr-3 fas fa-times"></i>
+                                <i class="fab fa-whatsapp mr-1"></i> Envoi WhatsApp
+                            </li>
+                        @endif
 
-                <!-- Plan Premium -->
-                <div class="p-6 bg-white border border-gray-200 pricing-card rounded-2xl lg:p-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Premium</h3>
-                        <span class="px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-100 rounded-full">Pro</span>
-                    </div>
-                    <p class="mb-6 text-gray-500">Pour les agences immobilières</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold text-gray-800">180 000</span>
-                        <span class="text-gray-500">XOF/an</span>
-                    </div>
-                    <ul class="mb-8 space-y-3">
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            <strong class="mx-1">Maisons illimitées</strong>
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Jusqu'à <strong class="mx-1">2 annexes</strong>
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Toutes les fonctionnalités
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Multi-utilisateurs
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Statistiques avancées
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Support prioritaire
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="mr-3 text-green-500 fas fa-check"></i>
-                            Formation incluse
-                        </li>
+                        {{-- Publicités --}}
+                        @if($plan->max_publicites === null)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-bullhorn mr-1 text-yellow-500"></i>
+                                <strong class="mx-1">Publicités illimitées</strong>
+                            </li>
+                        @elseif($plan->max_publicites > 0)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-bullhorn mr-1 text-yellow-500"></i>
+                                <strong class="mx-1">{{ $plan->max_publicites }}</strong> publicité(s) max
+                            </li>
+                        @else
+                            <li class="flex items-center text-gray-400">
+                                <i class="mr-3 fas fa-times"></i>
+                                <i class="fas fa-bullhorn mr-1"></i> Publicités
+                            </li>
+                        @endif
                     </ul>
-                    <a href="#compte" class="block w-full py-3 text-center text-blue-600 transition-colors border-2 border-blue-600 rounded-full hover:bg-blue-600 hover:text-white">
-                        Nous contacter
+
+                    <a href="#compte"
+                       class="block w-full py-3 text-center transition-colors rounded-full {{ $btnClass }}">
+                        {{ $btnLabel }}
                     </a>
                 </div>
+                @endforeach
             </div>
 
             <!-- Note informative -->
@@ -2021,10 +2030,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if(($paymentProvider ?? 'none') === 'kkiapay' && ($paymentEnabled ?? false))
+    @if(($paymentProvider ?? 'none') === 'kkiapay')
     <!-- KKiaPay SDK -->
     <script src="https://cdn.kkiapay.me/k.js"></script>
-    @elseif(($paymentProvider ?? 'none') === 'fedapay' && ($paymentEnabled ?? false))
+    @elseif(($paymentProvider ?? 'none') === 'fedapay')
     <!-- FedaPay SDK -->
     <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
     @endif
@@ -2036,25 +2045,18 @@
         const PAYMENT_PUBLIC_KEY = @json($paymentPublicKey ?? '');
         const PAYMENT_SANDBOX    = @json($paymentSandbox ?? true);
 
-        // ===== Données des plans d'abonnement =====
+        // ===== Données des plans d'abonnement (depuis la base de données) =====
+        const _plansData = @json($plansJs);
         const plans = {
-            particulier: [
-                { id: 'essai', nom: 'Essai Gratuit', prix: 0, periode: '14 jours', proprietes: 2, annexes: 0, features: ['Jusqu\'à 2 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', '14 jours gratuits'], featured: true },
-                { id: 'starter', nom: 'Starter', prix: 54000, periode: 'an', proprietes: 5, annexes: 0, features: ['Jusqu\'à 5 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', 'Export PDF'] },
-                { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'] },
-                { id: 'premium', nom: 'Premium', prix: 180000, periode: 'an', proprietes: 'Illimitées', annexes: 2, features: ['Maisons illimitées', 'Jusqu\'à 2 annexes', 'Toutes les fonctionnalités', 'Multi-utilisateurs', 'Formation incluse'] }
-            ],
-            entreprise: [
-                { id: 'essai', nom: 'Essai Gratuit', prix: 0, periode: '14 jours', proprietes: 2, annexes: 0, features: ['Jusqu\'à 2 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', '14 jours gratuits'], featured: true },
-                { id: 'starter', nom: 'Starter', prix: 54000, periode: 'an', proprietes: 5, annexes: 0, features: ['Jusqu\'à 5 maisons', 'Tableau de bord complet', 'Gestion des locataires', 'Facturation automatique', 'Export PDF'] },
-                { id: 'standard', nom: 'Standard', prix: 120000, periode: 'an', proprietes: 20, annexes: 0, features: ['Jusqu\'à 20 maisons', 'Tableau de bord avancé', 'Statistiques détaillées', 'Export PDF/Excel', 'Support prioritaire'] },
-                { id: 'premium', nom: 'Premium', prix: 180000, periode: 'an', proprietes: 'Illimitées', annexes: 2, features: ['Maisons illimitées', 'Jusqu\'à 2 annexes', 'Toutes les fonctionnalités', 'Multi-utilisateurs', 'Formation incluse'] }
-            ]
+            particulier: _plansData,
+            entreprise:  _plansData,
         };
         
         let currentStep = 1;
         let selectedPlan = null;
         let accountType = '';
+        let paymentAuthToken = null; // Token émis par preValidate(), requis avant tout paiement
+        let createAccountLock = false; // Empêche les appels doubles à createAccount (listeners accumulés)
         
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -2469,12 +2471,39 @@
         }
         
         // ===== Soumission du formulaire =====
+        // ===== Construction du formData partagé =====
+        function buildFormData(transactionId = null) {
+            const data = {
+                type_compte: accountType === 'particulier' ? 'Particulier' : 'Entreprise',
+                nom:         document.getElementById('nom').value,
+                prenom:      document.getElementById('prenom').value,
+                email:       document.getElementById('email').value,
+                code_pays:   document.getElementById('code_pays').value,
+                telephone:   document.getElementById('telephone').value,
+                plan_code:   selectedPlan.id,
+                _token:      document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            };
+            if (transactionId) {
+                data.transaction_id = transactionId;
+            }
+            // Inclure le token d'autorisation si disponible (plans payants)
+            if (paymentAuthToken) {
+                data.payment_auth_token = paymentAuthToken;
+            }
+            if (accountType === 'entreprise') {
+                data.designation         = document.getElementById('designation').value;
+                data.adresse             = document.getElementById('adresse').value;
+                data.telepone_entreprise = document.getElementById('code_pays').value + document.getElementById('telephone').value;
+                data.email_entreprise    = document.getElementById('email_entreprise').value;
+            }
+            return data;
+        }
+
         async function submitForm() {
             if (!selectedPlan) {
                 Swal.fire('Erreur', 'Veuillez sélectionner un plan d\'abonnement.', 'error');
                 return;
             }
-
             if (!document.getElementById('conditions').checked) {
                 document.getElementById('conditions').classList.add('is-invalid');
                 Swal.fire('Erreur', 'Vous devez accepter les conditions générales.', 'error');
@@ -2483,27 +2512,147 @@
 
             const submitBtn = document.getElementById('btn-submit');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Traitement...';
+            paymentAuthToken   = null;
+            createAccountLock  = false;
 
+            // ── ÉTAPE 1 : Validation serveur — bloque TOUT si échoue ────────────
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Vérification...';
+
+            let validationPassed = false; // démarre à false, ne peut passer à true que par réponse serveur explicite
+            let serverJson       = null;
+
+            try {
+                const fd   = buildFormData();
+                const resp = await fetch("{{ route('pre_validate_inscription') }}", {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept':       'application/json',
+                        'X-CSRF-TOKEN': fd._token,
+                    },
+                    body: JSON.stringify(fd),
+                });
+
+                try { serverJson = await resp.json(); } catch (_) { serverJson = null; }
+
+            } catch (networkErr) {
+                Swal.fire('Erreur réseau', 'Impossible de joindre le serveur. Vérifiez votre connexion.', 'error');
+                resetSubmitBtn(submitBtn);
+                return; // STOP
+            }
+
+            // Seul cas où on autorise la suite : réponse JSON avec status === true
+            if (serverJson !== null && serverJson.status === true) {
+                validationPassed = true;
+                paymentAuthToken = serverJson.auth_token || null;
+            }
+
+            // Si validation échouée → afficher erreurs et STOPPER
+            if (!validationPassed) {
+                let firstErrorStep = null;
+                if (serverJson && serverJson.errors) {
+                    Object.keys(serverJson.errors).forEach(field => {
+                        const input = document.getElementById(field);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const fb = input.nextElementSibling;
+                            if (fb && fb.classList.contains('invalid-feedback')) {
+                                const msgs = serverJson.errors[field];
+                                fb.textContent = Array.isArray(msgs) ? msgs[0] : msgs;
+                            }
+                            if (!firstErrorStep) {
+                                const stepEl = input.closest('.step-form');
+                                if (stepEl) firstErrorStep = parseInt(stepEl.id.replace('step-form-', ''));
+                            }
+                        }
+                    });
+                }
+                const errMsg = (serverJson && serverJson.message) || 'Veuillez vérifier les informations saisies.';
+                Swal.fire({ title: 'Erreur', text: errMsg, icon: 'error', confirmButtonText: 'Corriger' }).then(() => {
+                    if (firstErrorStep && firstErrorStep !== currentStep) {
+                        document.getElementById(`step-form-${currentStep}`).classList.remove('active');
+                        document.getElementById(`step-${currentStep}`).classList.remove('active');
+                        currentStep = firstErrorStep;
+                        document.getElementById(`step-form-${currentStep}`).classList.add('active');
+                        document.getElementById(`step-${currentStep}`).classList.add('active');
+                        document.getElementById('progress-bar').style.width = `${(currentStep - 1) * 50}%`;
+                    }
+                });
+                resetSubmitBtn(submitBtn);
+                return; // STOP — aucun paiement, aucun compte
+            }
+            // ────────────────────────────────────────────────────────────────────
+
+            // ── ÉTAPE 2 : Paiement ou création directe (uniquement si validationPassed) ──
             const isPlanGratuit = selectedPlan.prix === 0;
 
-            // Si plan payant et prestataire activé → passer par le widget de paiement
             if (!isPlanGratuit && PAYMENT_ENABLED) {
                 initiatePayment(submitBtn);
             } else {
-                // Plan gratuit ou aucun prestataire actif → création directe
                 await createAccount(null, submitBtn);
             }
         }
 
         // ===== Ouverture du widget de paiement (KKiaPay ou FedaPay) =====
         function initiatePayment(submitBtn) {
+            // Garde : le token doit avoir été émis par preValidate()
+            if (!paymentAuthToken) {
+                Swal.fire('Erreur', 'Session de validation expirée ou manquante. Veuillez recommencer.', 'error');
+                resetSubmitBtn(submitBtn);
+                return;
+            }
+
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Ouverture du paiement...';
 
             if (PAYMENT_PROVIDER === 'kkiapay') {
+                if (typeof openKkiapayWidget !== 'function') {
+                    Swal.fire({
+                        title: 'Service indisponible',
+                        text: 'Le widget de paiement KKiaPay n\'a pas pu être chargé. Vérifiez votre connexion internet et réessayez.',
+                        icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#1e40af',
+                    });
+                    resetSubmitBtn(submitBtn);
+                    return;
+                }
+
+                // Flag : paiement finalisé (succès ou échec confirmé)
+                let kkPaymentDone = false;
+                let kkWidgetSeen  = false;
+                let kkPollInterval = null;
+
+                function kkCleanup() {
+                    if (kkPollInterval) { clearInterval(kkPollInterval); kkPollInterval = null; }
+                }
+
+                function kkWidgetVisible() {
+                    // Cherche le widget KKiaPay dans le DOM (iframe ou conteneur)
+                    const el = document.querySelector('iframe[src*="kkiapay"]') ||
+                               document.querySelector('[id*="kkiapay"]') ||
+                               document.querySelector('[class*="kkiapay"]');
+                    if (!el) return false;
+                    // Vérifier qu'il est visible (pas caché)
+                    const style = window.getComputedStyle(el);
+                    return style.display !== 'none' && style.visibility !== 'hidden';
+                }
+
+                // Polling toutes les 300ms : détecte disparition du widget
+                kkPollInterval = setInterval(function() {
+                    const visible = kkWidgetVisible();
+                    if (visible) {
+                        kkWidgetSeen = true;
+                    } else if (kkWidgetSeen && !kkPaymentDone) {
+                        // Widget était ouvert, maintenant disparu sans paiement complété
+                        kkCleanup();
+                        resetSubmitBtn(submitBtn);
+                    }
+                }, 300);
+
+                // Sécurité : arrêt du polling après 15 min
+                setTimeout(kkCleanup, 900000);
+
                 openKkiapayWidget({
                     amount:  selectedPlan.prix,
-                    api_key: PAYMENT_PUBLIC_KEY,
+                    key:     PAYMENT_PUBLIC_KEY,
                     sandbox: PAYMENT_SANDBOX,
                     email:   document.getElementById('email').value,
                     name:    document.getElementById('prenom').value + ' ' + document.getElementById('nom').value,
@@ -2512,11 +2661,17 @@
                 });
 
                 addSuccessListener(async function(response) {
+                    if (createAccountLock) return; // listener dupliqué — ignorer
+                    createAccountLock = true;
+                    kkPaymentDone = true;
+                    kkCleanup();
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
                     await createAccount(response.transactionId, submitBtn);
                 });
 
                 addFailedListener(function() {
+                    kkPaymentDone = true;
+                    kkCleanup();
                     Swal.fire({
                         title: 'Paiement échoué',
                         text: 'Le paiement KKiaPay n\'a pas abouti. Veuillez réessayer.',
@@ -2525,7 +2680,12 @@
                     resetSubmitBtn(submitBtn);
                 });
 
-                addCloseListener(function() { resetSubmitBtn(submitBtn); });
+                addCloseListener(function() {
+                    kkCleanup();
+                    if (!kkPaymentDone) {
+                        resetSubmitBtn(submitBtn);
+                    }
+                });
 
             } else if (PAYMENT_PROVIDER === 'fedapay') {
                 FedaPay.init({
@@ -2546,6 +2706,8 @@
                         }
                         var trans = resp.transaction;
                         if (trans && trans.status === 'approved') {
+                            if (createAccountLock) return;
+                            createAccountLock = true;
                             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
                             await createAccount(String(trans.id), submitBtn);
                         } else {
@@ -2562,33 +2724,14 @@
         }
 
         function resetSubmitBtn(submitBtn) {
+            createAccountLock = false;
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Créer mon compte';
         }
 
         // ===== Création du compte (après paiement ou directement) =====
         async function createAccount(transactionId, submitBtn) {
-            const formData = {
-                type_compte: accountType === 'particulier' ? 'Particulier' : 'Entreprise',
-                nom:         document.getElementById('nom').value,
-                prenom:      document.getElementById('prenom').value,
-                email:       document.getElementById('email').value,
-                code_pays:   document.getElementById('code_pays').value,
-                telephone:   document.getElementById('telephone').value,
-                plan_code:   selectedPlan.id,
-                _token:      document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            };
-
-            if (transactionId) {
-                formData.transaction_id = transactionId;
-            }
-
-            if (accountType === 'entreprise') {
-                formData.designation           = document.getElementById('designation').value;
-                formData.adresse               = document.getElementById('adresse').value;
-                formData.telepone_entreprise   = document.getElementById('code_pays').value + document.getElementById('telephone').value;
-                formData.email_entreprise      = document.getElementById('email_entreprise').value;
-            }
+            const formData = buildFormData(transactionId);
 
             try {
                 const response = await fetch("{{ route('creation_compte') }}", {
@@ -2615,6 +2758,20 @@
                     });
                 } else {
                     if (submitBtn) resetSubmitBtn(submitBtn);
+
+                    // Cas spécial : paiement reçu mais création de compte échouée
+                    if (data.payment_pending) {
+                        Swal.fire({
+                            title:             'Paiement reçu — Compte non créé',
+                            html:              '<p>' + data.message + '</p>' +
+                                               '<p class="mt-2 text-muted" style="font-size:13px;">Conservez cette référence et contactez notre support pour régulariser votre compte.</p>',
+                            icon:              'warning',
+                            confirmButtonText: 'Compris',
+                            confirmButtonColor: '#d97706',
+                            allowOutsideClick: false,
+                        });
+                        return; // Ne pas tenter de corriger le formulaire
+                    }
 
                     let firstErrorStep = null;
                     const errorLines   = [];

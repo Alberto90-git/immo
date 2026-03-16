@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Publicite;
+use App\Direction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -77,6 +78,28 @@ class PubliciteController extends Controller
                         'error' => $validator->errors()
                     ]);
                 }
+
+                // ── Contrôle limite plan ────────────────────────────────────────
+                $direction = Direction::find(Auth::user()->iddirection_ref);
+                $plan      = $direction ? $direction->plan : null;
+                if ($plan && !is_null($plan->max_publicites)) {
+                    if ($plan->max_publicites === 0) {
+                        return response()->json([
+                            'status'  => false,
+                            'message' => "Votre plan « {$plan->nom} » ne permet pas de créer des publicités.",
+                        ]);
+                    }
+                    $nbActuelles = Publicite::whereNull('delete_at')
+                        ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                        ->count();
+                    if ($nbActuelles >= $plan->max_publicites) {
+                        return response()->json([
+                            'status'  => false,
+                            'message' => "Limite atteinte : votre plan « {$plan->nom} » autorise au maximum {$plan->max_publicites} publicité(s). Passez à un plan supérieur pour en ajouter davantage.",
+                        ]);
+                    }
+                }
+                // ───────────────────────────────────────────────────────────────
 
                 $image_link = $this->storeImage($request, 'image');
                 $image_link2 = $this->storeImage($request, 'image2');

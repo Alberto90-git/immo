@@ -63,13 +63,16 @@
                 <table id="example" class="table table-striped table-hover align-middle" style="width:100%">
                     <thead class="table-dark">
                         <tr>
-                            <th class="text-center" style="width: 8%;">
+                            <th class="text-center" style="width: 5%;">
                                 <i class="bx bx-hash me-1"></i>N
                             </th>
-                            <th style="width: 65%;">
+                            <th style="width: 20%;">
+                                <i class="bx bx-user me-1"></i>Utilisateur
+                            </th>
+                            <th style="width: 50%;">
                                 <i class="bx bx-message-detail me-1"></i>Description de l'action
                             </th>
-                            <th class="text-center" style="width: 27%;">
+                            <th class="text-center" style="width: 25%;">
                                 <i class="bx bx-calendar me-1"></i>Date et heure
                             </th>
                         </tr>
@@ -77,8 +80,16 @@
                     <tbody>
                         @if(isset($all) && count($all) > 0)
                             @foreach($all as $items)
+                                @php $author = isset($usersMap[$items->causer_id]) ? $usersMap[$items->causer_id] : null; @endphp
                                 <tr>
                                     <td class="text-center fw-bold">{{ $loop->iteration }}</td>
+                                    <td>
+                                        @if($author)
+                                            <span class="badge bg-label-secondary">{{ $author->nom }} {{ $author->prenom }}</span>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <span class="text-dark">{{ $items->description }}</span>
                                     </td>
@@ -86,12 +97,16 @@
                                         <span class="badge bg-label-primary">
                                             <i class="bx bx-time-five me-1"></i>
                                             {{ Carbon\Carbon::parse($items->created_at)->format('d/m/Y') }}
-                                            <span class="text-muted">a</span>
+                                            <span class="text-muted">à</span>
                                             {{ Carbon\Carbon::parse($items->created_at)->format('H:i') }}
                                         </span>
                                     </td>
                                 </tr>
                             @endforeach
+                        @else
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">Aucune activité trouvée</td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>

@@ -827,24 +827,27 @@ if (!function_exists("get_annexe_details_for_invoice")) {
             $logoPath = $annexe->logo_path;
             $signaturePath = $annexe->signature_path;
 
-            // Fallback logo: chercher dans le Parametre de la direction
-            if (!$logoPath && $annexe->iddirection_ref) {
+            // Charger les paramètres de la direction (logo fallback + cash_electronique image)
+            $parametre = null;
+            if ($annexe->iddirection_ref) {
                 $parametre = \App\Parametre::where('iddirection_ref', $annexe->iddirection_ref)->first();
-                if ($parametre) {
-                    $rawLogoUrl = $parametre->getRawOriginal('logo_url');
-                    if ($rawLogoUrl) {
-                        $possiblePaths = [
-                            storage_path('app/public/' . $rawLogoUrl),
-                            public_path('storage/' . $rawLogoUrl),
-                            public_path($rawLogoUrl),
-                            $rawLogoUrl
-                        ];
+            }
 
-                        foreach ($possiblePaths as $path) {
-                            if (file_exists($path)) {
-                                $logoPath = $path;
-                                break;
-                            }
+            // Fallback logo: chercher dans le Parametre de la direction
+            if (!$logoPath && $parametre) {
+                $rawLogoUrl = $parametre->getRawOriginal('logo_url');
+                if ($rawLogoUrl) {
+                    $possiblePaths = [
+                        storage_path('app/public/' . $rawLogoUrl),
+                        public_path('storage/' . $rawLogoUrl),
+                        public_path($rawLogoUrl),
+                        $rawLogoUrl
+                    ];
+
+                    foreach ($possiblePaths as $path) {
+                        if (file_exists($path)) {
+                            $logoPath = $path;
+                            break;
                         }
                     }
                 }
@@ -863,6 +866,31 @@ if (!function_exists("get_annexe_details_for_invoice")) {
                 $signatureBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($signaturePath));
             }
 
+            // Cash électronique : image depuis parametres.cash_electronique_url
+            $cashImagePath = null;
+            $cashImageBase64 = null;
+            if ($parametre) {
+                $rawCashUrl = $parametre->getRawOriginal('cash_electronique_url');
+                if ($rawCashUrl) {
+                    $possibleCashPaths = [
+                        storage_path('app/public/' . $rawCashUrl),
+                        public_path('storage/' . $rawCashUrl),
+                        public_path($rawCashUrl),
+                        $rawCashUrl
+                    ];
+                    foreach ($possibleCashPaths as $path) {
+                        if (file_exists($path)) {
+                            $cashImagePath = $path;
+                            break;
+                        }
+                    }
+                }
+            }
+            if ($cashImagePath) {
+                $mime = mime_content_type($cashImagePath) ?: 'image/jpeg';
+                $cashImageBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($cashImagePath));
+            }
+
             return [
                 'designation' => $annexe->designation,
                 'telephone' => $annexe->telephone,
@@ -871,6 +899,8 @@ if (!function_exists("get_annexe_details_for_invoice")) {
                 'logo_path' => $logoPath,
                 'logo_base64' => $logoBase64,
                 'cash_electronique' => $annexe->cash_electronique,
+                'cash_electronique_image_path' => $cashImagePath,
+                'cash_electronique_image_base64' => $cashImageBase64,
                 'signature_path' => $signaturePath,
                 'signature_base64' => $signatureBase64,
             ];

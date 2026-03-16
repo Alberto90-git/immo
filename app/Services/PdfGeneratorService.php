@@ -248,17 +248,17 @@ class PdfGeneratorService
             $y = $fpdf->GetY() + 8;
         }
 
-        if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
+        if ($annexeData && !empty($annexeData['cash_electronique'])) {
+            $cashY = min($y, 140);
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
-            $fpdf->SetXY(10, $y);
+            $fpdf->SetXY(10, $cashY);
             $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
-            $y += 4;
             $fpdf->SetFont('Arial', '', 7);
             $fpdf->SetTextColor(80, 80, 80);
-            $fpdf->SetXY(10, $y);
+            $fpdf->SetX(10);
             $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
-            $y = $fpdf->GetY() + 5;
+            $y = $fpdf->GetY() + 3;
         }
 
         if ($y < 160) {
@@ -287,15 +287,25 @@ class PdfGeneratorService
         $fpdf->SetX(($pageWidth - 30) / 2 + 20);
         $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
 
+        // Image signature dans colonne droite (signature_path ou cash_electronique_image_path en fallback)
+        $sigImgPath = null;
         if ($annexeData && !empty($annexeData['signature_path']) && file_exists($annexeData['signature_path'])) {
-            $sigImgX = ($pageWidth - 30) / 4 * 3 - 12;
-            $fpdf->Image($annexeData['signature_path'], $sigImgX, $signatureY + 2, 25, 12);
+            $sigImgPath = $annexeData['signature_path'];
+        } elseif ($annexeData && !empty($annexeData['cash_electronique_image_path']) && file_exists($annexeData['cash_electronique_image_path'])) {
+            $sigImgPath = $annexeData['cash_electronique_image_path'];
+        }
+        if ($sigImgPath) {
+            $imgW = 20;
+            $sigImgX = ($pageWidth - 30) / 2 + 20 + (($pageWidth - 30) / 2 - $imgW) / 2;
+            try { $fpdf->Image($sigImgPath, $sigImgX, $signatureY + 6, $imgW, 0); } catch (\Exception $e) {}
         }
 
-        $signatureY += 15;
+        $signatureY += 25;
         $lineLength = 40;
-        $fpdf->Line(($pageWidth - 30) / 4, $signatureY, ($pageWidth - 30) / 4 + $lineLength, $signatureY);
-        $fpdf->Line(($pageWidth - 30) / 4 * 3 - $lineLength / 2, $signatureY, ($pageWidth - 30) / 4 * 3 + $lineLength / 2, $signatureY);
+        $leftColW  = ($pageWidth - 30) / 2;
+        $rightColX = ($pageWidth - 30) / 2 + 20;
+        $fpdf->Line(10 + ($leftColW - $lineLength) / 2, $signatureY, 10 + ($leftColW + $lineLength) / 2, $signatureY);
+        $fpdf->Line($rightColX + ($leftColW - $lineLength) / 2, $signatureY, $rightColX + ($leftColW + $lineLength) / 2, $signatureY);
         $signatureY += 3;
         $fpdf->SetFont('Arial', 'I', 6);
         $fpdf->SetXY(10, $signatureY);
@@ -502,17 +512,17 @@ class PdfGeneratorService
             $y = $fpdf->GetY() + 8;
         }
 
-        if ($annexeData && !empty($annexeData['cash_electronique']) && $y < 155) {
+        if ($annexeData && !empty($annexeData['cash_electronique'])) {
+            $cashY = min($y, 140);
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
-            $fpdf->SetXY(10, $y);
+            $fpdf->SetXY(10, $cashY);
             $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
-            $y += 4;
             $fpdf->SetFont('Arial', '', 7);
             $fpdf->SetTextColor(80, 80, 80);
-            $fpdf->SetXY(10, $y);
+            $fpdf->SetX(10);
             $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode($annexeData['cash_electronique']), 0, 'L');
-            $y = $fpdf->GetY() + 5;
+            $y = $fpdf->GetY() + 3;
         }
 
         $signatureY = $pageHeight - 45;
@@ -525,9 +535,17 @@ class PdfGeneratorService
         $fpdf->SetX(($pageWidth - 30) / 2 + 20);
         $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
 
+        // Image signature dans colonne droite (signature_path ou cash_electronique_image_path en fallback)
+        $sigImgPath = null;
         if ($annexeData && !empty($annexeData['signature_path']) && file_exists($annexeData['signature_path'])) {
-            $sigImgX = ($pageWidth - 30) / 4 * 3 - 12;
-            $fpdf->Image($annexeData['signature_path'], $sigImgX, $signatureY + 2, 25, 12);
+            $sigImgPath = $annexeData['signature_path'];
+        } elseif ($annexeData && !empty($annexeData['cash_electronique_image_path']) && file_exists($annexeData['cash_electronique_image_path'])) {
+            $sigImgPath = $annexeData['cash_electronique_image_path'];
+        }
+        if ($sigImgPath) {
+            $imgW = 20;
+            $sigImgX = ($pageWidth - 30) / 2 + 20 + (($pageWidth - 30) / 2 - $imgW) / 2;
+            try { $fpdf->Image($sigImgPath, $sigImgX, $signatureY + 6, $imgW, 0); } catch (\Exception $e) {}
         }
 
         $content  = $fpdf->Output('S', '');

@@ -61,13 +61,59 @@ class WhatsAppController extends Controller
 
     public function connect(Request $request)
     {
+        // Vérifier si le service Flask est déjà en cours d'exécution
+        $serviceRunning = false;
+        try {
+            Http::timeout(3)->get($this->serviceUrl() . '/status');
+            $serviceRunning = true;
+        } catch (\Exception $e) {
+            $serviceRunning = false;
+        }
+
+        // Si le service n'est pas lancé, démarrer start.bat en arrière-plan
+        if (!$serviceRunning) {
+            $bat = base_path('scripts' . DIRECTORY_SEPARATOR . 'whatsapp' . DIRECTORY_SEPARATOR . 'start.bat');
+
+            if (!file_exists($bat)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Fichier start.bat introuvable : ' . $bat,
+                ]);
+            }
+
+            try {
+                // Lancement détaché : la fenêtre s'ouvre en arrière-plan sans bloquer PHP
+                $batEscaped = str_replace('/', '\\', $bat);
+                $workdir    = str_replace('/', '\\', dirname($bat));
+                $cmd = 'cmd /c start /B "" "' . $batEscaped . '"';
+                $descriptors = [['pipe','r'], ['pipe','w'], ['pipe','w']];
+                $proc = proc_open($cmd, $descriptors, $pipes, $workdir);
+                if (is_resource($proc)) {
+                    foreach ($pipes as $pipe) { fclose($pipe); }
+                    proc_close($proc);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Impossible de lancer le service WhatsApp : ' . $e->getMessage(),
+                ]);
+            }
+
+            // Retourner un statut "starting" : le frontend va poller /status puis relancer /connect
+            return response()->json([
+                'status'   => 'starting',
+                'message'  => 'Service WhatsApp en cours de démarrage, veuillez patienter…',
+            ]);
+        }
+
+        // Service déjà actif → demande de connexion directe
         try {
             $resp = Http::timeout(15)->post($this->serviceUrl() . '/connect');
             return response()->json($resp->json());
         } catch (\Exception $e) {
             return response()->json([
                 'status'  => false,
-                'message' => 'Impossible de démarrer le service WhatsApp. Vérifiez que scripts/whatsapp/start.bat est en cours d\'exécution.',
+                'message' => 'Le service WhatsApp ne répond pas.',
             ]);
         }
     }

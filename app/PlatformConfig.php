@@ -100,7 +100,7 @@ class PlatformConfig extends Model
     public function isOperational(): bool
     {
         if ($this->isKkiapayActive()) {
-            return !empty($this->kkiapay_public_key) && !empty($this->kkiapay_private_key);
+            return !empty($this->kkiapay_public_key) && !empty($this->kkiapay_private_key) && !empty($this->kkiapay_secret_key);
         }
         if ($this->isFedapayActive()) {
             return !empty($this->fedapay_public_key) && !empty($this->fedapay_secret_key);

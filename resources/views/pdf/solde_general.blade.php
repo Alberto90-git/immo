@@ -191,6 +191,7 @@
     <p class="total">{{ number_format($element2['garde'], 0, ',', '.') }} XOF</p>
 </div>
 
+
 <div class="footer">
     <p>Document de synthese globale des benefices de l'agence.</p>
     <p>Genere le {{ Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>

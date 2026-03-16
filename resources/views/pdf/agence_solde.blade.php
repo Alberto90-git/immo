@@ -196,6 +196,48 @@
     <p class="total">{{ number_format($element2['garde'], 0, ',', '.') }} XOF</p>
 </div>
 
+
+@php
+    $sigSrcAgence = null;
+    if (isset($annexeData)) {
+        if (!empty($annexeData['signature_base64'])) {
+            $sigSrcAgence = $annexeData['signature_base64'];
+        } elseif (!empty($annexeData['cash_electronique_image_base64'])) {
+            $sigSrcAgence = $annexeData['cash_electronique_image_base64'];
+        }
+    }
+@endphp
+<table style="margin-top: 40px; border: none; width:100%; border-collapse:collapse;">
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            <u><strong style="font-size:11px;">Signature du proprietaire</strong></u>
+        </td>
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            <u><strong style="font-size:11px;">Cachet et signature de l'agence</strong></u>
+        </td>
+    </tr>
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; height: 65px; padding: 4px 20px;">&nbsp;</td>
+        <td style="width: 50%; text-align: center; border: none; height: 65px; padding: 4px 20px;">@if($sigSrcAgence)<img src="{{ $sigSrcAgence }}" style="max-height:55px; max-width:110px;">@endif</td>
+    </tr>
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; padding: 2px 20px;">
+            <hr style="width:80%; margin:0 auto; border:none; border-top:1px solid #333;">
+        </td>
+        <td style="width: 50%; text-align: center; border: none; padding: 2px 20px;">
+            <hr style="width:80%; margin:0 auto; border:none; border-top:1px solid #333;">
+        </td>
+    </tr>
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            <span style="font-size:10px;">{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</span>
+        </td>
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            @if(isset($annexeData))<span style="font-size:10px;">{{ $annexeData['designation'] ?? '' }}</span>@endif
+        </td>
+    </tr>
+</table>
+
 <div class="footer">
     <p>Document de synthese des benefices de l'agence.</p>
     <p>Genere le {{ Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>

@@ -13,7 +13,11 @@
       "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php -l app/Http/Controllers/EnvoiDocumentController.php && php -l app/Services/PdfGeneratorService.php && php -l app/Services/WhatsAppService.php && php -l app/Mail/DocumentMail.php && php -l app/EnvoiDocument.php 2>&1)",
       "Bash(cd \"C:/Users/altchegnon/Documents/immo\" && php artisan storage:link 2>&1)",
       "Bash(php:*)",
-      "Bash(composer show:*)"
+      "Bash(composer show:*)",
+      "WebSearch",
+      "Bash(ls C:/Users/altchegnon/Documents/immo/app/*.php | head -30)",
+      "Bash(cd:*)",
+      "Bash(php artisan:*)"
     ]
   }
 }

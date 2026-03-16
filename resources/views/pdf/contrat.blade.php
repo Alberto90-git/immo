@@ -408,6 +408,15 @@
 
     @endif
 
+    <!-- Modes de paiement mobile -->
+    @if(!empty($agence['cash_electronique']) || !empty($agence['cash_electronique_image_base64']))
+    <div class="article" style="margin-top: 15px; page-break-inside: avoid;">
+@if(!empty($agence['cash_electronique']))
+        <p style="white-space: pre-line; color:#444;">{{ $agence['cash_electronique'] }}</p>
+        @endif
+    </div>
+    @endif
+
     <!-- Fait à ... -->
     <div class="fait-a">
         <p>
@@ -417,26 +426,48 @@
     </div>
 
     <!-- Signatures -->
-    <div class="signatures">
-        <div class="signatures-row">
-            <div class="signature-block">
-                <div class="signature-label">Pour le Bailleur</div>
-                <div class="signature-name">{{ $agence['designation'] ?? '' }}</div>
-                @if(!empty($agence['signature_base64']))
-                <div style="margin-top: 10px;">
-                    <img src="{{ $agence['signature_base64'] }}" alt="Signature" style="max-width: 120px; max-height: 60px;">
-                </div>
-                @else
-                <div class="signature-line"></div>
-                @endif
-            </div>
-            <div class="signature-block">
-                <div class="signature-label">Pour le Locataire</div>
-                <div class="signature-name">{{ $data->nom ?? '' }} {{ $data->prenom ?? '' }}</div>
-                <div class="signature-line"></div>
-            </div>
-        </div>
-    </div>
+    <table style="width:100%; margin-top:40px; border-collapse:collapse; page-break-inside:avoid;">
+        {{-- Ligne 1 : labels --}}
+        <tr>
+            <td style="width:50%; text-align:center; padding:4px 20px; border:none;">
+                <u><strong style="color:#012970; font-size:12px;">Pour le Bailleur</strong></u>
+            </td>
+            <td style="width:50%; text-align:center; padding:4px 20px; border:none;">
+                <u><strong style="color:#012970; font-size:12px;">Pour le Locataire</strong></u>
+            </td>
+        </tr>
+        {{-- Ligne 2 : image signature --}}
+        @php
+            $sigSrc = null;
+            if (!empty($agence['signature_base64'])) {
+                $sigSrc = $agence['signature_base64'];
+            } elseif (!empty($agence['cash_electronique_image_base64'])) {
+                $sigSrc = $agence['cash_electronique_image_base64'];
+            }
+        @endphp
+        <tr>
+            <td style="width:50%; text-align:center; padding:4px 20px; height:65px; border:none;">@if($sigSrc)<img src="{{ $sigSrc }}" style="max-height:55px; max-width:110px;">@endif</td>
+            <td style="width:50%; text-align:center; padding:4px 20px; height:65px; border:none;">&nbsp;</td>
+        </tr>
+        {{-- Ligne 3 : trait de signature --}}
+        <tr>
+            <td style="width:50%; text-align:center; padding:2px 20px; border:none;">
+                <hr style="width:70%; margin:0 auto; border:none; border-top:1px solid #333;">
+            </td>
+            <td style="width:50%; text-align:center; padding:2px 20px; border:none;">
+                <hr style="width:70%; margin:0 auto; border:none; border-top:1px solid #333;">
+            </td>
+        </tr>
+        {{-- Ligne 4 : noms --}}
+        <tr>
+            <td style="width:50%; text-align:center; padding:4px 20px; border:none;">
+                <span style="font-size:11px;">{{ $agence['designation'] ?? '' }}</span>
+            </td>
+            <td style="width:50%; text-align:center; padding:4px 20px; border:none;">
+                <span style="font-size:11px;">{{ $data->nom ?? '' }} {{ $data->prenom ?? '' }}</span>
+            </td>
+        </tr>
+    </table>
 
     <!-- Pied de page -->
     <div class="page-footer">

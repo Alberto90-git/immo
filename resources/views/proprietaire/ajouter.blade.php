@@ -42,6 +42,11 @@
                       <span class="invalid-feedback adresse_err"></span>
                   </div>
 
+                  <div class="col-md-6">
+                      <label for="email_proprio" class="form-label">Email <span class="text-muted fw-normal">(optionnel)</span></label>
+                      <input type="email" class="form-control" id="email_proprio" name="email" placeholder="exemple@mail.com">
+                  </div>
+
                   <div class="modal-footer mt-3">
                       <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
                       <button type="submit" class="btn btn-primary" id="valider">

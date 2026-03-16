@@ -240,7 +240,9 @@ class PlanController extends Controller
 
                 if ($paymentConfig->isKkiapayActive()) {
                     $svc = new KkiapayService(
+                        $paymentConfig->kkiapay_public_key,
                         $paymentConfig->kkiapay_private_key,
+                        $paymentConfig->kkiapay_secret_key,
                         $paymentConfig->getActiveSandbox()
                     );
                     $verification = $svc->verifyTransaction($transactionId);

@@ -34,7 +34,7 @@ class StatistiqueController extends Controller
                                 'proprietaires.id', 'proprietaires.nom', 'proprietaires.prenom',
                                 'proprietaires.telephone', 'proprietaires.adresse', 'proprietaires.idannexe_ref',
                                 'maisons.id as maison_id', 'maisons.nom_maison', 'maisons.quartier',
-                                'maisons.type_maison', 'maisons.nombre_chambre',
+                                'maisons.nombre_chambre',
                                 'annexes.designation as annexe_designation'
                             )
                             ->get();
@@ -50,7 +50,7 @@ class StatistiqueController extends Controller
     		$element['proprioMaison'] = $this->getAllProprioWithHouse();
 
     		//LES PROPRIETAIRES
-            $element['proprio'] = Proprietaire::whereNull('delete_at')
+            $element['proprio'] = Proprietaire::whereNull('proprietaires.delete_at')
                                                 ->where('proprietaires.iddirection_ref',Auth::user()->iddirection_ref)
                                                 ->where(function($querry){
                                                     if (Gate::none(['Is_admin'])) {
@@ -59,8 +59,8 @@ class StatistiqueController extends Controller
                                                 })
                                                 ->join('annexes', 'annexes.idannexes', '=', 'proprietaires.idannexe_ref')
                                                 ->get();
-                
-            $element['house'] = Maison::whereNull('delete_at')
+
+            $element['house'] = Maison::whereNull('maisons.delete_at')
                                         ->where('maisons.iddirection_ref',Auth::user()->iddirection_ref)
                                         ->where(function($querry){
                                             if (Gate::none(['Is_admin'])) {
@@ -72,8 +72,8 @@ class StatistiqueController extends Controller
 
             return view('statistique.proprietaireChambre',['data' => $element]);
 
-    	} catch (QueryException $e) {
-    		return;
+    	} catch (\Exception $e) {
+    		return view('statistique.proprietaireChambre',['data' => ['proprioMaison' => collect(), 'proprio' => collect(), 'house' => collect()]]);
     	}
     }
 

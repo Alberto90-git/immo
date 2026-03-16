@@ -18,16 +18,22 @@ class Plan extends Model
         'description',
         'max_maisons',
         'max_annexes',
+        'max_envois_email',
+        'max_envois_whatsapp',
+        'max_publicites',
         'prix_annuel',
         'is_active',
         'delete_at'
     ];
 
     protected $casts = [
-        'max_maisons' => 'integer',
-        'max_annexes' => 'integer',
-        'prix_annuel' => 'decimal:2',
-        'is_active' => 'boolean',
+        'max_maisons'        => 'integer',
+        'max_annexes'        => 'integer',
+        'max_envois_email'   => 'integer',
+        'max_envois_whatsapp'=> 'integer',
+        'max_publicites'     => 'integer',
+        'prix_annuel'        => 'decimal:2',
+        'is_active'          => 'boolean',
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Parametre;
+use App\Plan;
 use App\Annexe;
 use App\Direction;
 use App\PourcentageGestion;
@@ -42,7 +43,68 @@ class ParametreController extends SessionController
         $paymentPublicKey = $paymentEnabled ? $paymentConfig->getActivePublicKey() : null;
         $paymentSandbox   = $paymentConfig->getActiveSandbox();
 
-        return view('/welcome', compact('publicites', 'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox'));
+        $plansActifs = Plan::whereNull('delete_at')
+            ->where('is_active', true)
+            ->orderBy('prix_annuel')
+            ->get();
+
+        // Structure allégée pour le JS (formulaire d'inscription étape 3)
+        $plansJs = $plansActifs->map(function ($plan) {
+            $features = [];
+
+            // Maisons
+            if ($plan->max_maisons === null || $plan->max_maisons === 0) {
+                $features[] = 'Maisons illimitées';
+            } else {
+                $features[] = 'Jusqu\'à ' . $plan->max_maisons . ' maison(s)';
+            }
+
+            // Annexes
+            if ($plan->max_annexes === null) {
+                $features[] = 'Annexes illimitées';
+            } elseif ($plan->max_annexes > 0) {
+                $features[] = 'Jusqu\'à ' . $plan->max_annexes . ' annexe(s)';
+            }
+
+            // Fonctionnalités fixes
+            $features[] = 'Tableau de bord complet';
+            $features[] = 'Gestion des locataires';
+            $features[] = 'Facturation automatique';
+
+            // Envois email
+            if ($plan->max_envois_email === null) {
+                $features[] = 'Emails illimités / mois';
+            } elseif ($plan->max_envois_email > 0) {
+                $features[] = $plan->max_envois_email . ' email(s) / mois';
+            }
+
+            // Envois WhatsApp
+            if ($plan->max_envois_whatsapp === null) {
+                $features[] = 'WhatsApp illimités / mois';
+            } elseif ($plan->max_envois_whatsapp > 0) {
+                $features[] = $plan->max_envois_whatsapp . ' WhatsApp / mois';
+            }
+
+            return [
+                'id'                  => $plan->code,
+                'nom'                 => $plan->nom,
+                'prix'                => (float) $plan->prix_annuel,
+                'periode'             => $plan->prix_annuel == 0 ? '14 jours' : 'an',
+                'max_maisons'         => $plan->max_maisons,
+                'max_annexes'         => $plan->max_annexes,
+                'max_envois_email'    => $plan->max_envois_email,
+                'max_envois_whatsapp' => $plan->max_envois_whatsapp,
+                'description'         => $plan->description,
+                'featured'            => $plan->code === 'standard',
+                'features'            => $features,
+            ];
+        })->values()->all();
+
+        return view('/welcome', compact(
+            'publicites',
+            'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox',
+            'plansActifs', 'plansJs'
+        ));
     }
 
     public function index()

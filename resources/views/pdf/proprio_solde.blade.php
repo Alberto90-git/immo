@@ -213,17 +213,48 @@
     <p class="total">{{ number_format($element2['garde'], 0, ',', '.') }} XOF</p>
 </div>
 
-<table style="margin-top: 40px; border: none;">
+
+@php
+    $sigSrcProprio = null;
+    if (isset($annexeData)) {
+        if (!empty($annexeData['signature_base64'])) {
+            $sigSrcProprio = $annexeData['signature_base64'];
+        } elseif (!empty($annexeData['cash_electronique_image_base64'])) {
+            $sigSrcProprio = $annexeData['cash_electronique_image_base64'];
+        }
+    }
+@endphp
+<table style="margin-top: 40px; border: none; width:100%; border-collapse:collapse;">
+    {{-- Ligne 1 : labels --}}
     <tr style="background: none;">
-        <td style="width: 50%; text-align: center; border: none; padding-top: 50px;">
-            <div style="border-top: 1px solid #333; width: 80%; margin: 0 auto; padding-top: 5px;">
-                Signature du proprietaire
-            </div>
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            <u><strong style="font-size:11px;">Signature du proprietaire</strong></u>
         </td>
-        <td style="width: 50%; text-align: center; border: none; padding-top: 50px;">
-            <div style="border-top: 1px solid #333; width: 80%; margin: 0 auto; padding-top: 5px;">
-                Cachet et signature de l'agence
-            </div>
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            <u><strong style="font-size:11px;">Cachet et signature de l'agence</strong></u>
+        </td>
+    </tr>
+    {{-- Ligne 2 : image / espace --}}
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; height: 65px; padding: 4px 20px;">&nbsp;</td>
+        <td style="width: 50%; text-align: center; border: none; height: 65px; padding: 4px 20px;">@if($sigSrcProprio)<img src="{{ $sigSrcProprio }}" style="max-height:55px; max-width:110px;">@endif</td>
+    </tr>
+    {{-- Ligne 3 : traits --}}
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; padding: 2px 20px;">
+            <hr style="width:80%; margin:0 auto; border:none; border-top:1px solid #333;">
+        </td>
+        <td style="width: 50%; text-align: center; border: none; padding: 2px 20px;">
+            <hr style="width:80%; margin:0 auto; border:none; border-top:1px solid #333;">
+        </td>
+    </tr>
+    {{-- Ligne 4 : noms --}}
+    <tr style="background: none;">
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            <span style="font-size:10px;">{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</span>
+        </td>
+        <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
+            @if(isset($annexeData))<span style="font-size:10px;">{{ $annexeData['designation'] ?? '' }}</span>@endif
         </td>
     </tr>
 </table>

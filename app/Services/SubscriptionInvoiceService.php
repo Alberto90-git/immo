@@ -162,7 +162,55 @@ class SubscriptionInvoiceService
         $fpdf->SetTextColor($successR, $successG, $successB);
         $fpdf->Cell($colValue, 8, number_format($prix, 0, ',', '.') . ' XOF', 0, 1, 'C');
 
-        $y += 20;
+        $y += 15;
+
+        // --- PAIEMENT (si prestataire utilisé) ---
+        if (!empty($data['payment'])) {
+            $payment = $data['payment'];
+
+            $fpdf->SetFont('Arial', 'B', 11);
+            $fpdf->SetTextColor($primaryR, $primaryG, $primaryB);
+            $fpdf->SetXY(15, $y);
+            $fpdf->Cell(0, 7, 'INFORMATIONS DE PAIEMENT', 0, 1);
+            $y += 10;
+
+            // Fond coloré pour le bloc paiement
+            $fpdf->SetFillColor(240, 244, 255);
+            $fpdf->SetDrawColor($primaryR, $primaryG, $primaryB);
+            $fpdf->SetLineWidth(0.3);
+            $fpdf->Rect(15, $y - 2, $pageWidth - 30, 32, 'DF');
+
+            $payRows = [
+                ['Prestataire', $payment['provider']],
+                [utf8_decode('Réf. transaction'), $payment['transaction_id']],
+                ['Mode', $payment['sandbox'] ? utf8_decode('Sandbox (test)') : 'Production'],
+                ['Statut', utf8_decode('Paiement confirmé')],
+            ];
+
+            foreach ($payRows as $row) {
+                $fpdf->SetXY(20, $y);
+                $fpdf->SetFont('Arial', 'B', 9);
+                $fpdf->SetTextColor(80, 80, 80);
+                $fpdf->Cell(50, 6, $row[0] . ':', 0, 0);
+                $fpdf->SetFont('Arial', '', 9);
+                $fpdf->SetTextColor(0, 0, 0);
+                $fpdf->Cell(0, 6, $row[1], 0, 1);
+                $y += 6;
+            }
+
+            // Badge "Payé"
+            $badgeX = $pageWidth - 55;
+            $badgeY = $y - 26;
+            $fpdf->SetFillColor($successR, $successG, $successB);
+            $fpdf->SetTextColor(255, 255, 255);
+            $fpdf->SetFont('Arial', 'B', 10);
+            $fpdf->SetXY($badgeX, $badgeY);
+            $fpdf->Cell(30, 8, utf8_decode('✓ PAYÉ'), 0, 0, 'C', true);
+
+            $y += 10;
+        }
+
+        $y += 5;
 
         // --- PIED DE PAGE ---
         $fpdf->SetFont('Arial', 'I', 8);

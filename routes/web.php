@@ -21,6 +21,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\EnvoiDocumentController;
 use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\PlatformConfigController;
+use App\Http\Controllers\SuperAdminPlanController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +65,7 @@ Route::get('connexion', function () {
 
 Auth::routes();
 
+Route::post('pre-validate-inscription', [UtilisateurController::class, 'preValidateInscription'])->name('pre_validate_inscription');
 Route::post('creation-compte', [UtilisateurController::class, 'saveAdminCompte'])->name('creation_compte');
 
 Route::post('login-check', [UtilisateurController::class, 'HandleLogin'])->name('login_check');
@@ -75,8 +77,15 @@ Route::get('platform/kkiapay-public', [PlatformConfigController::class, 'publicC
 Route::middleware('auth')->group(function () {
 
     // Routes Super Admin — Configuration plateforme KKiaPay
+    Route::get('super-admin/config-paiement', [PlatformConfigController::class, 'configPage'])->name('super_admin.config_paiement');
     Route::get('platform/kkiapay-config', [PlatformConfigController::class, 'getAdminConfig'])->name('platform.kkiapay.config');
     Route::post('platform/kkiapay-config', [PlatformConfigController::class, 'update'])->name('platform.kkiapay.update');
+
+    // Routes Super Admin — Configuration des plans d'abonnement
+    Route::get('super-admin/config-plans', [SuperAdminPlanController::class, 'index'])->name('super_admin.config_plans');
+    Route::post('super-admin/plans/update', [SuperAdminPlanController::class, 'update'])->name('super_admin.plans.update');
+    Route::post('super-admin/plans/store',  [SuperAdminPlanController::class, 'store'])->name('super_admin.plans.store');
+    Route::post('super-admin/plans/destroy',[SuperAdminPlanController::class, 'destroy'])->name('super_admin.plans.destroy');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
    //aax
@@ -89,9 +98,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/verify/{token}', [VerifyController::class, 'VerifyEmail'])->name('verify');
-
-Route::get('/verify/{token}', 'App\Http\Controllers\VerifyController@VerifyEmail')->name('verify');
+Route::get('/verify/{token}', [\App\Http\Controllers\VerifyController::class, 'VerifyEmail'])->name('verify');
 
  //SEND THE VIEW FOR SENDING THE MAIL
       Route::get('forgot-password', [UtilisateurController::class, 'forgotPassword'])->name('getEmail');
@@ -415,7 +422,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
 
     Route::get('liste-compte', [EntrepriseController::class, 'display_compte_entreprise'])->name('getViewCompte');
-    
+    Route::post('entreprise/change-plan', [EntrepriseController::class, 'changePlanAdmin'])->name('entreprise.change-plan');
+    Route::post('entreprise/renouveler', [EntrepriseController::class, 'renouvelerAbonnement'])->name('entreprise.renouveler');
 
   });
   Route::get('blocage/{id}', [EntrepriseController::class, 'manage_compte'])->name('blocage');

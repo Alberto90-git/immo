@@ -7,9 +7,9 @@
 @endsection
 
 {{-- SDK de paiement (chargé conditionnellement) --}}
-@if(($paymentProvider ?? 'none') === 'kkiapay' && ($paymentEnabled ?? false))
+@if(($paymentProvider ?? 'none') === 'kkiapay')
 <script src="https://cdn.kkiapay.me/k.js"></script>
-@elseif(($paymentProvider ?? 'none') === 'fedapay' && ($paymentEnabled ?? false))
+@elseif(($paymentProvider ?? 'none') === 'fedapay')
 <script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
 @endif
 
@@ -114,6 +114,16 @@
                             <ul class="list-unstyled mb-3 flex-grow-1">
                                 <li class="mb-1"><i class="bx bx-check text-success me-1"></i> {{ $plan->max_maisons == 0 ? 'Maisons illimitées' : $plan->max_maisons . ' maison(s)' }}</li>
                                 <li class="mb-1"><i class="bx bx-check text-success me-1"></i> {{ $plan->max_annexes == 0 ? 'Pas d\'annexes' : $plan->max_annexes . ' annexe(s)' }}</li>
+                                <li class="mb-1">
+                                    <i class="bx bx-image-alt {{ is_null($plan->max_publicites) || $plan->max_publicites > 0 ? 'text-success' : 'text-danger' }} me-1"></i>
+                                    @if(is_null($plan->max_publicites))
+                                        Publicités illimitées
+                                    @elseif($plan->max_publicites == 0)
+                                        Aucune publicité
+                                    @else
+                                        {{ $plan->max_publicites }} publicité(s) max
+                                    @endif
+                                </li>
                                 @if($isEssai)
                                     <li class="mb-1"><i class="bx bx-check text-success me-1"></i> 14 jours gratuits</li>
                                 @endif
@@ -203,9 +213,18 @@
     // ===== Paiement puis changement de plan =====
     function initiateUpgradePayment(planId, planNom, planPrix, planPrixRaw) {
         if (PAYMENT_PROVIDER === 'kkiapay') {
+            if (typeof openKkiapayWidget !== 'function') {
+                Swal.fire({
+                    title: 'Service indisponible',
+                    text: 'Le widget de paiement KKiaPay n\'a pas pu être chargé. Vérifiez votre connexion internet et réessayez.',
+                    icon: 'error', confirmButtonText: 'OK',
+                });
+                resetButtons();
+                return;
+            }
             openKkiapayWidget({
                 amount:  planPrixRaw,
-                api_key: PAYMENT_PUBLIC_KEY,
+                key:     PAYMENT_PUBLIC_KEY,
                 sandbox: PAYMENT_SANDBOX,
                 data:    JSON.stringify({ plan_id: planId }),
             });

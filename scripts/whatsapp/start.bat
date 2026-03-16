@@ -1,29 +1,27 @@
 @echo off
-echo Lokativ - Demarrage du service WhatsApp natif
-echo ================================================
 cd /d "%~dp0"
 
-REM Verifier si Python est installe
-python --version >nul 2>&1
-if errorlevel 1 (
-    echo [ERREUR] Python n'est pas installe ou pas dans le PATH.
-    echo Telechargez Python depuis https://www.python.org/downloads/
-    pause
-    exit /b 1
-)
-
-REM Installer les dependances si necessaire
-if not exist "venv\" (
-    echo Installation de l'environnement virtuel...
-    python -m venv venv
-    call venv\Scripts\activate.bat
-    echo Installation des dependances...
-    pip install -r requirements.txt
+REM Chercher Python : d'abord dans le venv, puis dans le PATH global
+set PYTHON_EXE=
+if exist "venv\Scripts\python.exe" (
+    set PYTHON_EXE="%~dp0venv\Scripts\python.exe"
 ) else (
-    call venv\Scripts\activate.bat
+    where python >nul 2>&1
+    if not errorlevel 1 (
+        set PYTHON_EXE=python
+    ) else (
+        echo [ERREUR] Python introuvable. Installez-le depuis https://www.python.org/downloads/ > "%~dp0start_error.log"
+        exit /b 1
+    )
 )
 
-echo Lancement du service sur http://127.0.0.1:5050 ...
-python service.py
+REM Creer le venv et installer les dependances si necessaire
+if not exist "venv\" (
+    echo Installation de l'environnement virtuel... > "%~dp0start.log"
+    python -m venv venv >> "%~dp0start.log" 2>&1
+    venv\Scripts\pip install -r requirements.txt >> "%~dp0start.log" 2>&1
+    set PYTHON_EXE="%~dp0venv\Scripts\python.exe"
+)
 
-pause
+echo Lancement du service sur http://127.0.0.1:5050 ... >> "%~dp0start.log"
+%PYTHON_EXE% "%~dp0service.py" >> "%~dp0start.log" 2>&1

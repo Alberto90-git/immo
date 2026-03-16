@@ -97,6 +97,13 @@
               <span class="invalid-feedback profession_err" role="alert"></span>
             </div>
 
+            <div class="col-md-6">
+              <label class="form-label">Email <span class="text-muted fw-normal">(optionnel)</span></label>
+              <input type="email" name="email" id="email_locataire"
+                class="form-control @error('email') is-invalid @enderror" placeholder="exemple@mail.com">
+              <span class="invalid-feedback email_err" role="alert"></span>
+            </div>
+
             <div class="col-6">
               <label for="inputNanme4" class="form-label">Type chambre<span style="color: red;">*</span></label>
               <input type="text" name="type_chambre" class="form-control @error('type_chambre') is-invalid @enderror"
@@ -367,6 +374,12 @@
                 class="form-control @error('telephone') is-invalid @enderror" required onkeydown="limit(this);"
                 onkeyup="limit(this);">
               <span class="invalid-feedback telephone_err" role="alert"></span>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Email <span class="text-muted fw-normal">(optionnel)</span></label>
+              <input type="email" name="email" value="{{ $items->email }}"
+                class="form-control" placeholder="exemple@mail.com">
             </div>
 
             <div class="col-6">

@@ -9,6 +9,7 @@ use App\Maison;
 use App\Proprietaire;
 use App\User;
 use App\Chambre;
+use App\Facture;
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -80,6 +81,74 @@ class HomeController extends Controller
                                                 })
                                                 ->count();
 
+            $element['chambresOccupees'] = Chambre::whereNull('delete_at')
+                                                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                                ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                    $query->where('idannexe_ref', $idannexe_ref);
+                                                })
+                                                ->where('etat', 1)
+                                                ->count();
+
+            // Revenus du mois courant
+            $element['totalRevenusMois'] = Facture::whereNull('delete_at')
+                                                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                                                ->when($idannexe_ref, function($query) use ($idannexe_ref) {
+                                                    $query->where('idannexe_ref', $idannexe_ref);
+                                                })
+                                                ->whereMonth('date_paiement', Carbon::now()->month)
+                                                ->whereYear('date_paiement', Carbon::now()->year)
+                                                ->sum('montant');
+
+            // Statistiques sur 12 mois glissants
+            $paiementsParMois  = [];
+            $locatairesParMois = [];
+            $moisLabels        = [];
+            Carbon::setLocale('fr');
+
+            for ($i = 11; $i >= 0; $i--) {
+                $mois = Carbon::now()->subMonths($i);
+                $moisLabels[] = ucfirst($mois->translatedFormat('M Y'));
+
+                $paiementsParMois[] = (int) Facture::whereNull('delete_at')
+                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                    ->when($idannexe_ref, function($q) use ($idannexe_ref) {
+                        $q->where('idannexe_ref', $idannexe_ref);
+                    })
+                    ->whereMonth('date_paiement', $mois->month)
+                    ->whereYear('date_paiement', $mois->year)
+                    ->sum('montant');
+
+                $locatairesParMois[] = (int) Locataire::whereNull('delete_at')
+                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                    ->when($idannexe_ref, function($q) use ($idannexe_ref) {
+                        $q->where('idannexe_ref', $idannexe_ref);
+                    })
+                    ->whereMonth('date_entree', $mois->month)
+                    ->whereYear('date_entree', $mois->year)
+                    ->count();
+            }
+
+            $element['moisLabels']        = $moisLabels;
+            $element['paiementsParMois']  = $paiementsParMois;
+            $element['locatairesParMois'] = $locatairesParMois;
+
+            // Derniers paiements
+            $element['recentsPaiements'] = Facture::whereNull('factures.delete_at')
+                ->where('factures.iddirection_ref', Auth::user()->iddirection_ref)
+                ->when($idannexe_ref, function($q) use ($idannexe_ref) {
+                    $q->where('factures.idannexe_ref', $idannexe_ref);
+                })
+                ->join('locataires', 'factures.locataire_id', '=', 'locataires.id')
+                ->join('maisons', 'factures.maison_id', '=', 'maisons.id')
+                ->select(
+                    'factures.montant', 'factures.date_paiement',
+                    'factures.mois', 'factures.mode_paiement',
+                    'locataires.nom', 'locataires.prenom', 'maisons.nom_maison'
+                )
+                ->orderByDesc('factures.created_at')
+                ->limit(8)
+                ->get();
+
             //TOUS LES LOCATAIRES
             $element['locataire'] = Locataire::whereNull('locataires.delete_at')
                                             ->where('locataires.status', true)
@@ -133,22 +202,29 @@ class HomeController extends Controller
             ]);
 
         } catch (QueryException $e) {
-            //throw $th;
-        }
+            \Illuminate\Support\Facades\Log::error('HomeController::index QueryException: ' . $e->getMessage());
 
+            return view('home', [
+                'data'                  => [],
+                'activePaymentProvider' => 'none',
+                'activePaymentSandbox'  => true,
+                'paymentCfgData'        => [],
+                '_db_error'             => $e->getMessage(),
+            ]);
+        }
     }
 
     //LISTE DES LOCATAIRES
     public function getLocataire(Request $request)
     {
-       
-        $vide='';
-        $vide2='';
-        $vide3 = '';
-        $nombre_proprio ='';
+        $vide  = '';
+        $vide2 = '';
+        $annexe_id = $request->annexe_id;
 
         $element['locataire'] = Locataire::whereNull('locataires.delete_at')
-                                        ->where('locataires.idannexe_ref',$request->annexe_id)
+                                        ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                                            $q->where('locataires.idannexe_ref', $annexe_id);
+                                        })
                                         ->where('locataires.status',true)
                                         ->where('locataires.iddirection_ref',Auth::user()->iddirection_ref)
                                         ->where(function($querry){
@@ -167,7 +243,9 @@ class HomeController extends Controller
 
 
         $element['proprioMaison'] = Proprietaire::whereNull('proprietaires.delete_at')
-                                                ->where('proprietaires.idannexe_ref',$request->annexe_id)
+                                                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                                                    $q->where('proprietaires.idannexe_ref', $annexe_id);
+                                                })
                                                 ->where('proprietaires.iddirection_ref',Auth::user()->iddirection_ref)
                                                 ->where(function($querry){
                                                     if (Gate::none(['Is_admin'])) {
@@ -185,7 +263,9 @@ class HomeController extends Controller
 
 
         $element['nombreProprio'] = Proprietaire::whereNull('delete_at')
-                                                ->where('idannexe_ref',$request->annexe_id)
+                                                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                                                    $q->where('idannexe_ref', $annexe_id);
+                                                })
                                                 ->where('iddirection_ref',Auth::user()->iddirection_ref)
                                                 ->where(function($querry){
                                                     if (Gate::none(['Is_admin'])) {
@@ -195,7 +275,9 @@ class HomeController extends Controller
                                                 ->count();
 
         $element['nombreMaison'] = Maison::whereNull('delete_at')
-                                        ->where('idannexe_ref',$request->annexe_id)
+                                        ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                                            $q->where('idannexe_ref', $annexe_id);
+                                        })
                                         ->where('iddirection_ref',Auth::user()->iddirection_ref)
                                         ->where(function($querry){
                                             if (Gate::none(['Is_admin'])) {
@@ -204,10 +286,12 @@ class HomeController extends Controller
                                         })
                                         ->count();
 
-        
+
         $element['nombreLocataire'] = Locataire::whereNull('delete_at')
                                                 ->where('status',true)
-                                                ->where('idannexe_ref',$request->annexe_id)
+                                                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                                                    $q->where('idannexe_ref', $annexe_id);
+                                                })
                                                 ->where('iddirection_ref',Auth::user()->iddirection_ref)
                                                 ->where(function($querry){
                                                     if (Gate::none(['Is_admin'])) {
@@ -218,7 +302,9 @@ class HomeController extends Controller
 
 
         $element['nombreChambre'] = Chambre::whereNull('delete_at')
-                                            ->where('idannexe_ref',$request->annexe_id)
+                                            ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                                                $q->where('idannexe_ref', $annexe_id);
+                                            })
                                             ->where('iddirection_ref',Auth::user()->iddirection_ref)
                                             ->where(function($querry){
                                                 if (Gate::none(['Is_admin'])) {
@@ -229,68 +315,91 @@ class HomeController extends Controller
 
 
 
-        
-            if(count($element['locataire']) === 0 || count($element['proprioMaison']) === 0 || $element['nombreProprio'] ===0 ||  $element['nombreMaison'] === 0 || $element['nombreLocataire'] === 0 || $element['nombreChambre'] ===0)
-            {
-                $vide.='<tr> <td colspan="6">Aucune donné trouvée</td><tr>';
-                $vide2.='<tr> <td colspan="6">Aucune donné trouvée</td><tr>';
-                return response()->json([
-                    'getlist'=> $vide,
-                    'getlist2'=> $vide2,
-                    'nombre_proprio' => $element['nombreProprio'],
-                    'nombre_maison' => $element['nombreMaison'],
-                    'nombre_locataire' => $element['nombreLocataire'],
-                    'nombre_chambre' => $element['nombreChambre'],
-                    'list' => json_encode(['Cotonou' => 10, 'Parakou' => 5,"Lokossa" => 40,"Dogbo" => 20,"Azove" => 30,"Come" => 15,"Porto-novo" => 40,"Abomey" => 45,"Abomey1" => 45,"Abomey2" => 45,"Abomey3" => 45,"Abomey4" => 45,"Abomey5" => 45,"Abomey6" => 45,"Abomey7" => 45,"Abomey8" => 45,"Abomey9" => 45,"Abomey10" => 45,"Abomey11" => 45,"Abomey12" => 45,"Abomey13" => 45,"Abomey14" => 45,"Abomey15" => 45])
+        // Génération HTML tables
+        foreach ($element['locataire'] as $value) {
+            $vide .= '<tr>'
+                . '<td>' . $value->nom_maison . '</td>'
+                . '<td>' . $value->numero_chambre . '</td>'
+                . '<td>' . $value->nom . ' ' . $value->prenom . '</td>'
+                . '<td>' . Carbon::parse($value->date_entree)->format('d/m/Y') . '</td>'
+                . '</tr>';
+        }
 
-                ]);
+        foreach ($element['proprioMaison'] as $value2) {
+            $vide2 .= '<tr>'
+                . '<td>' . $value2->nom . ' ' . $value2->prenom . '</td>'
+                . '<td>' . $value2->telephone . '</td>'
+                . '<td>' . $value2->adresse . '</td>'
+                . '<td>' . $value2->nom_maison . '</td>'
+                . '<td>' . $value2->quartier . '</td>'
+                . '</tr>';
+        }
 
-            }
-            else
-            {
-                foreach ($element['locataire'] as $value) {
-                    $vide.='<tr>';
-                    $vide.='<td>'.$value->nom_maison.'</td>';
-                    $vide.='<td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
-                    $vide.='<td>'.$value->telephone.'</td>';
-                    $vide.='<td>'.$value->profession.'</td>';
-                    $vide.='<td>'.Carbon::parse($value->date_entree)->format('d/m/Y').'</td>';
-                    $vide.='</tr>';
-                }
+        if (!$vide)  $vide  = '<tr><td colspan="4" class="text-center text-muted">Aucune donnée</td></tr>';
+        if (!$vide2) $vide2 = '<tr><td colspan="5" class="text-center text-muted">Aucune donnée</td></tr>';
 
+        // Statistiques graphiques pour cette annexe
+        Carbon::setLocale('fr');
+        $paiementsParMois  = [];
+        $locatairesParMois = [];
+        $moisLabels        = [];
 
-                foreach ($element['proprioMaison'] as $value2) {
-                    $vide2.='<tr>';
-                    $vide2.='<td>'.$value2->nom.' '.$value2->prenom.'</td>';
-                    $vide2.='<td>'.$value2->telephone.'</td><td>'.$value2->adresse.'</td>';
-                    $vide2.='<td>'.$value2->nom_maison.'</td>';
-                    $vide2.='<td>'.$value2->quartier.'</td>';
-                    $vide2.='</tr>';
-                }
+        for ($i = 11; $i >= 0; $i--) {
+            $mois = Carbon::now()->subMonths($i);
+            $moisLabels[] = ucfirst($mois->translatedFormat('M Y'));
 
-                $ville = ['Cotonou' => 10,'Parakou' => 5];
+            $paiementsParMois[] = (int) Facture::whereNull('delete_at')
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                    $q->where('idannexe_ref', $annexe_id);
+                })
+                ->whereMonth('date_paiement', $mois->month)
+                ->whereYear('date_paiement', $mois->year)
+                ->sum('montant');
 
+            $locatairesParMois[] = (int) Locataire::whereNull('delete_at')
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                    $q->where('idannexe_ref', $annexe_id);
+                })
+                ->whereMonth('date_entree', $mois->month)
+                ->whereYear('date_entree', $mois->year)
+                ->count();
+        }
 
-                foreach ($ville as $value2) {
-                    $vide3.='value:'.$value2[1];
-                    $vide3.='name:'.$value2[0];
-                }
+        $chambresOccupees = Chambre::whereNull('delete_at')
+            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                $q->where('idannexe_ref', $annexe_id);
+            })
+            ->where('etat', 1)
+            ->count();
 
+        $totalRevenusMois = (int) Facture::whereNull('delete_at')
+            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
+                $q->where('idannexe_ref', $annexe_id);
+            })
+            ->whereMonth('date_paiement', Carbon::now()->month)
+            ->whereYear('date_paiement', Carbon::now()->year)
+            ->sum('montant');
 
-               
-                  
-                
-
-                return response()->json([
-                    'getlist'=> $vide,
-                    'getlist2'=> $vide2,
-                    'nombre_proprio' => $element['nombreProprio'],
-                    'nombre_maison' => $element['nombreMaison'],
-                    'nombre_locataire' => $element['nombreLocataire'],
-                    'nombre_chambre' => $element['nombreChambre'],
-                    'list' => json_encode(['Cotonou' => 10, 'Parakou' => 5,"Lokossa" => 40,"Dogbo" => 20,"Azove" => 30,"Come" => 15,"Porto-novo" => 40,"Abomey" => 45,"Abomey1" => 45,"Abomey2" => 45,"Abomey3" => 45,"Abomey4" => 45,"Abomey5" => 45,"Abomey6" => 45,"Abomey7" => 45,"Abomey8" => 45,"Abomey9" => 45,"Abomey10" => 45,"Abomey11" => 45,"Abomey12" => 45,"Abomey13" => 45,"Abomey14" => 45,"Abomey15" => 45])
-                ]); 
-            }
+        return response()->json([
+            'getlist'          => $vide,
+            'getlist2'         => $vide2,
+            'nombre_proprio'   => $element['nombreProprio'],
+            'nombre_maison'    => $element['nombreMaison'],
+            'nombre_locataire' => $element['nombreLocataire'],
+            'nombre_chambre'   => $element['nombreChambre'],
+            'stats' => [
+                'mois_labels'         => $moisLabels,
+                'paiements_par_mois'  => $paiementsParMois,
+                'locataires_par_mois' => $locatairesParMois,
+                'chambres_occupees'   => $chambresOccupees,
+                'nombre_chambre'      => $element['nombreChambre'],
+                'total_revenus_mois'  => $totalRevenusMois,
+            ],
+        ]);
     }
 
 
@@ -400,30 +509,49 @@ class HomeController extends Controller
 
     public function historique(Request $request)
     {
-      $user = User::whereNull('status')->select('id', 'nom', 'prenom')->get();
+        $authUser = Auth::user();
 
-      if ($request->choix == 'by_user') {
-        $all = Activity::where('causer_id', $request->user_name)
-                        ->orderByDesc('created_at')
-                        ->take(200)
-                        ->get();
+        // Construire la liste des users visibles selon le rôle
+        $userQuery = User::whereNull('status')
+                         ->where('iddirection_ref', $authUser->iddirection_ref)
+                         ->select('id', 'nom', 'prenom', 'idannexe_ref');
 
-        return view('historique',['all' => $all, 'users' => $user]);
-      } else if ($request->choix == 'by_date') {
+        // Non-admin : restreint à sa propre agence
+        if (Gate::none(['Is_admin'])) {
+            $userQuery->where('idannexe_ref', $authUser->idannexe_ref);
+        }
 
-        $all = Activity::whereBetween('created_at',[$request->date_debut.' 01:00:00', $request->date_fin.' 23:59:59'])
-                        ->orderByDesc('created_at')
-                        ->take(500)
-                        ->get();
+        $users        = $userQuery->get();
+        $allowedIds   = $users->pluck('id')->toArray();
 
-        return view('historique',['all' => $all, 'users' => $user]);
+        // Map id → nom pour affichage dans la vue
+        $usersMap = $users->keyBy('id');
 
-      } else {
-        $all = Activity::take(5)->orderByDesc('created_at')->get();
+        if ($request->choix == 'by_user') {
+            // Vérifier que l'user demandé est bien dans les autorisés
+            if (!in_array($request->user_name, $allowedIds)) {
+                $all = collect();
+            } else {
+                $all = Activity::where('causer_id', $request->user_name)
+                                ->orderByDesc('created_at')
+                                ->take(200)
+                                ->get();
+            }
+        } elseif ($request->choix == 'by_date') {
+            $all = Activity::whereIn('causer_id', $allowedIds)
+                            ->whereBetween('created_at', [$request->date_debut.' 00:00:00', $request->date_fin.' 23:59:59'])
+                            ->orderByDesc('created_at')
+                            ->take(500)
+                            ->get();
+        } else {
+            $today = now()->format('Y-m-d');
+            $all = Activity::whereIn('causer_id', $allowedIds)
+                            ->whereBetween('created_at', [$today.' 00:00:00', $today.' 23:59:59'])
+                            ->orderByDesc('created_at')
+                            ->get();
+        }
 
-        return view('historique',['all' => $all, 'users' => $user]);
-      }
-
+        return view('historique', ['all' => $all, 'users' => $users, 'usersMap' => $usersMap]);
     }
 
 

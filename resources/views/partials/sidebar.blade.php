@@ -113,13 +113,32 @@
         </li>
       @endcan
 
-      <!-- Gestion entreprise -->
-      <li class="menu-item {{ request()->routeIs('getViewCompte') ? 'active' : '' }}">
-        <a href="{{ route('getViewCompte') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-building"></i>
-          <div data-i18n="Gestion entreprise">Gestion entreprise</div>
-        </a>
-      </li>
+      <!-- Super Admin -->
+      @can('config-paiement')
+        <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') || request()->routeIs('getViewCompte') || request()->routeIs('super_admin.config_plans') ? 'active open' : '' }}">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-shield-quarter"></i>
+            <div data-i18n="Super Admin">Super Admin</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') ? 'active' : '' }}">
+              <a href="{{ route('super_admin.config_paiement') }}" class="menu-link">
+                <div data-i18n="Prestataire de paiement">Prestataire de paiement</div>
+              </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('super_admin.config_plans') ? 'active' : '' }}">
+              <a href="{{ route('super_admin.config_plans') }}" class="menu-link">
+                <div data-i18n="Plans abonnement">Plans d'abonnement</div>
+              </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('getViewCompte') ? 'active' : '' }}">
+              <a href="{{ route('getViewCompte') }}" class="menu-link">
+                <div data-i18n="Gestion entreprise">Gestion entreprise</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+      @endcan
 
       @can('gestion-proprietaire')
         <li class="menu-item {{ request()->is('gerer-proprietaire*') || request()->routeIs('proprietaires.index') ? 'active' : '' }}">

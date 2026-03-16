@@ -1874,7 +1874,7 @@
 
         connect: function() {
             var btnCon = document.getElementById('btnConnectWA');
-            if (btnCon) { btnCon.disabled = true; btnCon.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>'; }
+            if (btnCon) { btnCon.disabled = true; btnCon.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Connexion…'; }
 
             fetch('{{ route("whatsapp.connect") }}', {
                 method: 'POST',
@@ -1882,19 +1882,63 @@
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.status) {
+                if (data.status === 'starting') {
+                    // Service en cours de démarrage : patienter puis relancer connect
+                    if (btnCon) { btnCon.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Démarrage…'; }
+                    var sub = document.getElementById('wa-status-sub');
+                    if (sub) sub.textContent = 'Démarrage du service WhatsApp, veuillez patienter…';
+                    WA._waitAndConnect(0);
+                } else if (data.status) {
                     WA.setUI('waiting_qr');
+                    if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
                     setTimeout(function() { WA.openQrModal(); }, 1000);
                 } else {
                     Swal.fire({ icon: 'error', title: 'Erreur', text: data.message });
+                    if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
                 }
             })
             .catch(function() {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de démarrer le service WhatsApp.' });
-            })
-            .finally(function() {
+                Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de joindre le serveur.' });
                 if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
             });
+        },
+
+        // Attend que le service soit disponible (max 120s) puis relance connect
+        _waitAndConnect: function(attempt) {
+            var maxAttempts = 40; // 40 × 3s = 120s
+            var btnCon = document.getElementById('btnConnectWA');
+            var sub    = document.getElementById('wa-status-sub');
+
+            if (attempt >= maxAttempts) {
+                if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
+                if (sub) sub.textContent = 'Service non démarré. Cliquez pour réessayer.';
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Démarrage lent',
+                    text: 'Le service WhatsApp prend plus de temps que prévu. Cliquez sur "Connecter" dans quelques secondes pour réessayer.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            var remaining = Math.round((maxAttempts - attempt) * 3);
+            if (btnCon) btnCon.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Démarrage (' + remaining + 's)…';
+            if (sub) sub.textContent = 'Démarrage du service WhatsApp en cours, veuillez patienter…';
+
+            setTimeout(function() {
+                fetch('{{ route("whatsapp.status") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.status && data.status !== 'disconnected') {
+                        // Service prêt → lancer la vraie connexion
+                        if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
+                        WA.connect();
+                    } else {
+                        WA._waitAndConnect(attempt + 1);
+                    }
+                })
+                .catch(function() { WA._waitAndConnect(attempt + 1); });
+            }, 3000);
         },
 
         openQrModal: function() {

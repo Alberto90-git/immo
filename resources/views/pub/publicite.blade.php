@@ -172,22 +172,40 @@
                    <span class="invalid-feedback description_err" role="alert"></span>
                  </div>
 
-                 <!-- Zone d'upload multi-images -->
+                 <!-- Zone d'upload multi-images (4 slots fixes) -->
                  <div class="col-12">
-                     <label class="form-label">Images (max 4)</label>
+                     <label class="form-label">Images <small class="text-muted">(4 max — Image 1 obligatoire)</small></label>
                      <div id="image-upload-zone" class="d-flex flex-wrap gap-2 align-items-start">
                          <div class="img-slot" id="create-slot-1">
-                             <input type="file" name="image" id="create-file-1" class="file-overlay" accept="image/jpeg,image/png,image/jpg,image/svg+xml" onchange="previewCreateImage(this, 1)">
+                             <input type="file" name="image" id="create-file-1" class="file-overlay" accept="image/jpeg,image/png,image/jpg" onchange="previewCreateImage(this, 1)">
                              <div class="slot-placeholder" id="create-ph-1">
                                  <i class="bx bx-image-add"></i>
-                                 Image 1
+                                 Image 1 *
+                             </div>
+                         </div>
+                         <div class="img-slot" id="create-slot-2">
+                             <input type="file" name="image2" id="create-file-2" class="file-overlay" accept="image/jpeg,image/png,image/jpg" onchange="previewCreateImage(this, 2)">
+                             <div class="slot-placeholder" id="create-ph-2">
+                                 <i class="bx bx-image-add"></i>
+                                 Image 2
+                             </div>
+                         </div>
+                         <div class="img-slot" id="create-slot-3">
+                             <input type="file" name="image3" id="create-file-3" class="file-overlay" accept="image/jpeg,image/png,image/jpg" onchange="previewCreateImage(this, 3)">
+                             <div class="slot-placeholder" id="create-ph-3">
+                                 <i class="bx bx-image-add"></i>
+                                 Image 3
+                             </div>
+                         </div>
+                         <div class="img-slot" id="create-slot-4">
+                             <input type="file" name="image4" id="create-file-4" class="file-overlay" accept="image/jpeg,image/png,image/jpg" onchange="previewCreateImage(this, 4)">
+                             <div class="slot-placeholder" id="create-ph-4">
+                                 <i class="bx bx-image-add"></i>
+                                 Image 4
                              </div>
                          </div>
                      </div>
-                     <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-image-btn" onclick="addImageSlot()">
-                         <i class="bx bx-plus"></i> Ajouter une image
-                     </button>
-                     <small class="text-muted d-block mt-1">Formats: jpeg, png, jpg, (Max 2Mo par image)</small>
+                     <small class="text-muted d-block mt-1">Formats: jpeg, png, jpg (Max 2Mo par image)</small>
                  </div>
 
                <div class="modal-footer">
@@ -501,67 +519,23 @@
             reader.readAsDataURL(fileInput.files[0]);
         }
 
-        function addImageSlot() {
-            var currentSlots = document.querySelectorAll('#image-upload-zone .img-slot');
-            var nextNum = currentSlots.length + 1;
-            if (nextNum > maxImages) {
-                display_message("Info", "Maximum de 4 images atteint", "info", "btn btn-info");
-                return;
-            }
-
-            var fieldName = 'image' + nextNum;
-            var inputId = 'create-file-' + nextNum;
-            var phId = 'create-ph-' + nextNum;
-
-            var slot = document.createElement('div');
-            slot.className = 'img-slot';
-            slot.id = 'create-slot-' + nextNum;
-
-            var inp = document.createElement('input');
-            inp.type = 'file';
-            inp.name = fieldName;
-            inp.id = inputId;
-            inp.className = 'file-overlay';
-            inp.setAttribute('accept', 'image/jpeg,image/png,image/jpg');
-            (function(n) {
-                inp.onchange = function() { previewCreateImage(this, n); };
-            })(nextNum);
-
-            var ph = document.createElement('div');
-            ph.className = 'slot-placeholder';
-            ph.id = phId;
-            var icon = document.createElement('i');
-            icon.className = 'bx bx-image-add';
-            ph.appendChild(icon);
-            ph.appendChild(document.createTextNode('Image ' + nextNum));
-
-            slot.appendChild(inp);
-            slot.appendChild(ph);
-            document.getElementById('image-upload-zone').appendChild(slot);
-
-            if (nextNum >= maxImages) {
-                document.getElementById('add-image-btn').style.display = 'none';
-            }
-        }
-
         // Reset le modal d'ajout à la fermeture
         var ajouterModal = document.getElementById('AjouerPub');
         if (ajouterModal) {
             ajouterModal.addEventListener('hidden.bs.modal', function() {
-                var zone = document.getElementById('image-upload-zone');
-                var slots = zone.querySelectorAll('.img-slot');
-                for (var i = slots.length - 1; i >= 1; i--) {
-                    slots[i].remove();
+                for (var n = 1; n <= 4; n++) {
+                    var f = document.getElementById('create-file-' + n);
+                    if (f) f.value = '';
+                    var ph = document.getElementById('create-ph-' + n);
+                    if (ph) ph.style.display = '';
+                    var slot = document.getElementById('create-slot-' + n);
+                    if (slot) {
+                        var pi = slot.querySelector('.preview-img');
+                        if (pi) pi.remove();
+                        var rb = slot.querySelector('.slot-remove');
+                        if (rb) rb.remove();
+                    }
                 }
-                var f1 = document.getElementById('create-file-1');
-                if (f1) f1.value = '';
-                var ph1 = document.getElementById('create-ph-1');
-                if (ph1) ph1.style.display = '';
-                var pi = document.querySelector('#create-slot-1 .preview-img');
-                if (pi) pi.remove();
-                var rb = document.querySelector('#create-slot-1 .slot-remove');
-                if (rb) rb.remove();
-                document.getElementById('add-image-btn').style.display = '';
                 document.getElementById('formulaire').reset();
             });
         }
@@ -669,10 +643,17 @@
         }
 
         function deleteServerImage(pubId, slotName, editUid, num) {
-            
-           if (!confirm('Supprimer cette image ?')) return;
-
-            $.ajax({
+            Swal.fire({
+                title: 'Supprimer cette image ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            }).then(function(result) {
+                if (!result.isConfirmed) return;
+                $.ajax({
                 url: "{{ route('pub_remove_image') }}",
                 method: "POST",
                 data: {
@@ -702,6 +683,7 @@
                 error: function() {
                     display_message("Erreur !!", "Erreur lors de la suppression", "warning", "btn btn-danger");
                 }
+            });
             });
         }
 

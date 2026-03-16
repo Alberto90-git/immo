@@ -32,33 +32,27 @@ class DocumentMail extends Mailable
 
     public function build(): self
     {
+        $pdfContent  = $this->data['pdf_content']  ?? null;
+        $pdfFilename = $this->data['pdf_filename']  ?? 'document.pdf';
+
         $mail = $this->subject($this->data['agence_nom'] . ' - ' . $this->data['type_document_label'])
                      ->view('mail.documentEnvoi');
 
-        // Override from address if configured
         if (!empty($this->data['email_envoi'])) {
             $mail->from($this->data['email_envoi'], $this->data['agence_nom']);
         }
 
-        if (!empty($this->data['pdf_content'])) {
-            $tempFile = tempnam(sys_get_temp_dir(), 'doc_') . '.pdf';
-            file_put_contents($tempFile, $this->data['pdf_content']);
+        if (!empty($pdfContent)) {
+            $mail->withSwiftMessage(function ($message) use ($pdfContent, $pdfFilename) {
+                $attachment = new \Swift_Attachment($pdfContent, $pdfFilename, 'application/pdf');
+                $message->attach($attachment);
+            });
 
-            if (file_exists($tempFile) && filesize($tempFile) > 0) {
-                $mail->attach($tempFile, [
-                    'as'   => $this->data['pdf_filename'],
-                    'mime' => 'application/pdf',
-                ]);
-
-                Log::info('DocumentMail: PDF attaché', [
-                    'taille' => filesize($tempFile),
-                    'email'  => $this->data['destinataire_email'],
-                ]);
-            } else {
-                Log::error('DocumentMail: fichier temp PDF vide', [
-                    'email' => $this->data['destinataire_email'],
-                ]);
-            }
+            Log::info('DocumentMail: PDF attaché via withSwiftMessage', [
+                'taille'  => strlen($pdfContent),
+                'fichier' => $pdfFilename,
+                'email'   => $this->data['destinataire_email'],
+            ]);
         }
 
         return $mail;

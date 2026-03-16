@@ -453,11 +453,105 @@ class UtilisateurController extends SessionController
         return view('users.create')->with(['roles' => $roles]);
     }
 
+    /**
+     * Valide les données d'inscription sans créer de compte ni déclencher de paiement.
+     * Appelé côté JS avant d'ouvrir le widget de paiement.
+     */
+    public function preValidateInscription(Request $request)
+    {
+        if ($request->type_compte === 'Particulier') {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nom'         => ['required', 'string', 'min:2'],
+                    'prenom'      => ['required', 'string', 'min:2'],
+                    'email'       => ['required','string','email','max:255', Rule::unique(User::class), Rule::unique('directions', 'email')],
+                    'code_pays'   => ['required'],
+                    'telephone'   => ['required'],
+                    'type_compte' => ['required', 'string'],
+                ],
+                [
+                    '*.required'   => 'Ce champ est obligatoire.',
+                    'email.unique' => 'Cette adresse email est déjà associée à un compte existant.',
+                    '*.min'        => 'Le :attribute doit avoir au moins :min caractères.',
+                ]
+            );
+        } else {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nom'              => ['required', 'string', 'min:2'],
+                    'prenom'           => ['required', 'string', 'min:2'],
+                    'email'            => ['required','string','email','max:255', Rule::unique(User::class)],
+                    'code_pays'        => ['required'],
+                    'telephone'        => ['required'],
+                    'type_compte'      => ['required', 'string'],
+                    'designation'      => ['required', 'string'],
+                    'adresse'          => ['required', 'string'],
+                    'email_entreprise' => ['required','string','email','max:255', Rule::unique('directions', 'email')],
+                ],
+                [
+                    '*.required'              => 'Ce champ est obligatoire.',
+                    'email.unique'            => 'Cette adresse email personnelle est déjà utilisée.',
+                    'email_entreprise.unique' => 'Cette adresse email d\'entreprise est déjà associée à un compte existant.',
+                    '*.min'                   => 'Le :attribute doit avoir au moins :min caractères.',
+                ]
+            );
+        }
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            return response()->json([
+                'status'  => false,
+                'message' => $errors->first(),
+                'errors'  => $errors,
+            ], 422);
+        }
+
+        // Émettre un token d'autorisation de paiement (valable 30 min, usage unique)
+        $authToken = Str::random(48);
+        session([
+            'payment_auth_token'   => $authToken,
+            'payment_auth_expires' => now()->addMinutes(30)->timestamp,
+        ]);
+
+        return response()->json(['status' => true, 'auth_token' => $authToken]);
+    }
+
     public function saveAdminCompte(Request $request)
     {
+        // Récupérer le transaction_id au plus tôt pour l'inclure dans les erreurs si paiement déjà fait
+        $incomingTransactionId = $request->input('transaction_id');
+
+        // ── Vérification du token d'autorisation pour les plans payants ──────────
+        $planCodeAuth  = $request->input('plan_code', 'essai');
+        $planAuth      = Plan::where('code', $planCodeAuth)->first();
+        $isPaidPlanReq = $planAuth && floatval($planAuth->prix_annuel) > 0;
+
+        if ($isPaidPlanReq) {
+            $providedToken = $request->input('payment_auth_token');
+            $sessionToken  = session('payment_auth_token');
+            $sessionExpiry = session('payment_auth_expires', 0);
+
+            if (empty($providedToken) || $providedToken !== $sessionToken || now()->timestamp > $sessionExpiry) {
+                Log::warning('saveAdminCompte: token d\'autorisation invalide ou expiré', [
+                    'plan'            => $planCodeAuth,
+                    'transaction_id'  => $incomingTransactionId,
+                ]);
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Autorisation invalide. Veuillez recommencer le formulaire depuis le début.',
+                ], 422);
+            }
+
+            // Usage unique : invalider le token immédiatement
+            session()->forget(['payment_auth_token', 'payment_auth_expires']);
+        }
+        // ─────────────────────────────────────────────────────────────────────────
+
         try {
             DB::beginTransaction();
-            
+
             // Validation différente selon le type de compte
             if ($request->type_compte === 'Particulier') {
                 $validator = Validator::make(
@@ -499,13 +593,50 @@ class UtilisateurController extends SessionController
                     ]
                 );
             }
-            
+
             if ($validator->fails()) {
                 DB::rollBack();
+
+                // Si un paiement a déjà été effectué, on le signale explicitement
+                if (!empty($incomingTransactionId)) {
+                    // Vérification d'idempotence : si la direction avec cet email a déjà
+                    // ce transaction_id, le compte a été créé lors d'une requête précédente.
+                    $emailCheck = $request->input('email_entreprise') ?: $request->input('email');
+                    $existingDir = Direction::where('email', $emailCheck)
+                        ->where(function ($q) use ($incomingTransactionId) {
+                            $q->where('kkiapay_transaction_id', $incomingTransactionId)
+                              ->orWhere('fedapay_transaction_id', $incomingTransactionId);
+                        })->first();
+
+                    if ($existingDir) {
+                        Log::info('saveAdminCompte: compte déjà créé (idempotence)', [
+                            'transaction_id' => $incomingTransactionId,
+                            'direction_id'   => $existingDir->iddirection,
+                        ]);
+                        return response()->json([
+                            'status'  => true,
+                            'message' => 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.',
+                        ]);
+                    }
+
+                    Log::error('saveAdminCompte: validation échouée après paiement', [
+                        'transaction_id' => $incomingTransactionId,
+                        'email'          => $emailCheck,
+                        'errors'         => $validator->errors()->toArray(),
+                    ]);
+                    return response()->json([
+                        'status'          => false,
+                        'payment_pending' => true,
+                        'transaction_id'  => $incomingTransactionId,
+                        'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais la création du compte a échoué : ' . $validator->errors()->first() . ' Contactez le support avec cette référence.',
+                        'error'           => $validator->errors(),
+                    ], 422);
+                }
+
                 return response()->json([
-                    'status' => false,
+                    'status'  => false,
                     'message' => 'Veuillez vérifier les informations saisies',
-                    'error' => $validator->errors()
+                    'error'   => $validator->errors()
                 ], 422);
             }
             
@@ -540,7 +671,9 @@ class UtilisateurController extends SessionController
 
                 if ($paymentConfig->isKkiapayActive()) {
                     $svc = new KkiapayService(
+                        $paymentConfig->kkiapay_public_key,
                         $paymentConfig->kkiapay_private_key,
+                        $paymentConfig->kkiapay_secret_key,
                         $paymentConfig->getActiveSandbox()
                     );
                     $verification = $svc->verifyTransaction($transactionId);
@@ -676,6 +809,19 @@ class UtilisateurController extends SessionController
             
             DB::commit();
 
+            // Générer le cachet par défaut et créer le Parametre pour cette direction
+            try {
+                $cachetService = new \App\Services\CachetGeneratorService();
+                $cachetPath    = $cachetService->generate($designation, $direction_id);
+                \App\Parametre::create([
+                    'iddirection_ref'      => $direction_id,
+                    'cash_electronique_url' => $cachetPath,
+                ]);
+            } catch (\Exception $e) {
+                // Non bloquant : la création du cachet ne doit pas empêcher l'inscription
+                \Illuminate\Support\Facades\Log::warning('Cachet generation failed: ' . $e->getMessage());
+            }
+
             // Préparer les données pour la facture d'abonnement
             $planData = $planSelectionne ? [
                 'nom' => $planSelectionne->nom,
@@ -705,6 +851,21 @@ class UtilisateurController extends SessionController
                     'abonnement_fin' => $abonnementFin->toDateString(),
                 ],
             ];
+
+            // Infos de paiement (si prestataire actif et transaction effectuée)
+            if ($kkiapayTransactionId) {
+                $invoiceData['payment'] = [
+                    'provider'       => 'KKiaPay',
+                    'transaction_id' => $kkiapayTransactionId,
+                    'sandbox'        => $paymentConfig->getActiveSandbox(),
+                ];
+            } elseif ($fedapayTransactionId) {
+                $invoiceData['payment'] = [
+                    'provider'       => 'FedaPay',
+                    'transaction_id' => $fedapayTransactionId,
+                    'sandbox'        => $paymentConfig->getActiveSandbox(),
+                ];
+            }
 
             // Envoi de la facture d'abonnement par email (synchrone)
             try {
@@ -741,7 +902,9 @@ class UtilisateurController extends SessionController
             
         } catch (QueryException $e) {
             DB::rollBack();
-            Log::error('QueryException saveAdminCompte: ' . $e->getMessage());
+            Log::error('QueryException saveAdminCompte: ' . $e->getMessage(), [
+                'transaction_id' => $incomingTransactionId,
+            ]);
 
             // Violation de contrainte unique (PostgreSQL: 23505 / MySQL: 1062)
             $sqlState = $e->errorInfo[0] ?? '';
@@ -749,27 +912,79 @@ class UtilisateurController extends SessionController
                 $msg = $e->getMessage();
                 if (str_contains($msg, 'directions_email_unique') || str_contains($msg, '"directions"')) {
                     $detail = 'Cette adresse email d\'entreprise est déjà associée à un compte existant.';
+
+                    // Vérification d'idempotence : même transaction = compte déjà créé
+                    if (!empty($incomingTransactionId)) {
+                        $emailCheck  = $request->input('email_entreprise') ?: $request->input('email');
+                        $existingDir = Direction::where('email', $emailCheck)
+                            ->where(function ($q) use ($incomingTransactionId) {
+                                $q->where('kkiapay_transaction_id', $incomingTransactionId)
+                                  ->orWhere('fedapay_transaction_id', $incomingTransactionId);
+                            })->first();
+
+                        if ($existingDir) {
+                            Log::info('saveAdminCompte: compte déjà créé – idempotence (DB exception)', [
+                                'transaction_id' => $incomingTransactionId,
+                                'direction_id'   => $existingDir->iddirection,
+                            ]);
+                            return response()->json([
+                                'status'  => true,
+                                'message' => 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.',
+                            ]);
+                        }
+                    }
                 } elseif (str_contains($msg, 'users_email_unique') || str_contains($msg, '"users"')) {
                     $detail = 'Cette adresse email personnelle est déjà utilisée.';
                 } else {
                     $detail = 'Une valeur saisie est déjà utilisée par un autre compte.';
                 }
+
+                if (!empty($incomingTransactionId)) {
+                    return response()->json([
+                        'status'          => false,
+                        'payment_pending' => true,
+                        'transaction_id'  => $incomingTransactionId,
+                        'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais la création du compte a échoué : ' . $detail . ' Contactez le support avec cette référence.',
+                    ], 422);
+                }
+
                 return response()->json([
-                    'status' => false,
+                    'status'  => false,
                     'message' => $detail,
                 ], 422);
             }
 
+            if (!empty($incomingTransactionId)) {
+                return response()->json([
+                    'status'          => false,
+                    'payment_pending' => true,
+                    'transaction_id'  => $incomingTransactionId,
+                    'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais une erreur technique a empêché la création du compte. Contactez le support avec cette référence.',
+                ], 500);
+            }
+
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.',
             ], 500);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Exception saveAdminCompte: ' . $e->getMessage());
+            Log::error('Exception saveAdminCompte: ' . $e->getMessage(), [
+                'transaction_id' => $incomingTransactionId,
+            ]);
+
+            if (!empty($incomingTransactionId)) {
+                return response()->json([
+                    'status'          => false,
+                    'payment_pending' => true,
+                    'transaction_id'  => $incomingTransactionId,
+                    'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais une erreur inattendue a empêché la création du compte. Contactez le support avec cette référence.',
+                ], 500);
+            }
+
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Une erreur inattendue est survenue. Veuillez réessayer.',
             ], 500);
         }

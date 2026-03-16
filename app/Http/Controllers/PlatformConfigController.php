@@ -37,6 +37,35 @@ class PlatformConfigController extends Controller
     }
 
     /**
+     * Page dédiée Super Admin : configuration du prestataire de paiement.
+     */
+    public function configPage()
+    {
+        if (!Auth::user()->can('config-paiement')) {
+            abort(403);
+        }
+
+        $paymentConfig         = \App\PlatformConfig::getConfig();
+        $activePaymentProvider = $paymentConfig->getActiveProvider();
+        $activePaymentSandbox  = $paymentConfig->getActiveSandbox();
+        $paymentCfgData        = [
+            'kkiapay_public_key'  => $paymentConfig->kkiapay_public_key ?? '',
+            'kkiapay_sandbox'     => (bool) $paymentConfig->kkiapay_sandbox,
+            'has_kkiapay_private' => !empty($paymentConfig->kkiapay_private_key),
+            'has_kkiapay_secret'  => !empty($paymentConfig->kkiapay_secret_key),
+            'fedapay_public_key'  => $paymentConfig->fedapay_public_key ?? '',
+            'fedapay_sandbox'     => (bool) ($paymentConfig->fedapay_sandbox ?? true),
+            'has_fedapay_secret'  => !empty($paymentConfig->fedapay_secret_key),
+        ];
+
+        return view('super-admin.config_paiement', compact(
+            'activePaymentProvider',
+            'activePaymentSandbox',
+            'paymentCfgData'
+        ));
+    }
+
+    /**
      * Retourne la config complète pour la page d'administration (Super Admin).
      */
     public function getAdminConfig()
