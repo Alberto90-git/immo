@@ -17,9 +17,9 @@
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            --secondary-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            --success-gradient: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
             --soft-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             --soft-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
             --glass-bg: rgba(255, 255, 255, 0.25);
@@ -252,8 +252,8 @@
         }
 
         .otp-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px) scale(1.05);
         }
@@ -316,7 +316,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
         }
 
         .btn-primary:active {
@@ -373,7 +373,7 @@
         }
 
         .resend-link:hover {
-            color: #764ba2;
+            color: #1e40af;
             text-decoration: underline;
         }
 
@@ -466,7 +466,7 @@
 
                         {{-- Statut envoi OTP --}}
                         <div id="otp-status" style="margin-bottom:1.5rem;">
-                            <div id="otp-sending" style="display:flex;align-items:center;justify-content:center;gap:8px;color:#667eea;font-size:0.9rem;">
+                            <div id="otp-sending" style="display:flex;align-items:center;justify-content:center;gap:8px;color:#3b82f6;font-size:0.9rem;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;">
                                     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                                 </svg>

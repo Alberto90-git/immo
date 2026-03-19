@@ -16,9 +16,9 @@
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            --secondary-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            --success-gradient: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
             --soft-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             --soft-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
             --glass-bg: rgba(255, 255, 255, 0.25);
@@ -241,8 +241,8 @@
         }
 
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
@@ -266,7 +266,7 @@
         }
 
         .input-group:focus-within .input-group-text {
-            border-color: #667eea;
+            border-color: #3b82f6;
             background: rgba(255, 255, 255, 0.2);
         }
 
@@ -302,7 +302,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
         }
 
         .btn-primary:active {

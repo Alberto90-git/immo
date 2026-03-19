@@ -159,8 +159,8 @@
               {{-- Actions --}}
               <td class="text-center">
                 <div class="dropdown">
-                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
-                          data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn btn-sm btn-outline-secondary dt-action-toggle" type="button"
+                          aria-expanded="false">
                     <i class="bx bx-cog"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -168,16 +168,21 @@
                     {{-- Bloquer / Valider --}}
                     @if($blocked)
                       <li>
-                        <a class="dropdown-item text-success" href="{{ route('blocage', ['id' => $item->iddirection]) }}">
+                        <button class="dropdown-item text-success btn-toggle-block"
+                                data-id="{{ $item->iddirection }}"
+                                data-action="debloquer"
+                                data-nom="{{ $item->designation }}">
                           <i class="bx bx-check-circle me-1"></i> Valider
-                        </a>
+                        </button>
                       </li>
                     @else
                       <li>
-                        <a class="dropdown-item text-danger" href="{{ route('blocage', ['id' => $item->iddirection]) }}"
-                           onclick="return confirm('Bloquer cette entreprise ?')">
+                        <button class="dropdown-item text-danger btn-toggle-block"
+                                data-id="{{ $item->iddirection }}"
+                                data-action="bloquer"
+                                data-nom="{{ $item->designation }}">
                           <i class="bx bx-lock me-1"></i> Bloquer
-                        </a>
+                        </button>
                       </li>
                     @endif
 
@@ -393,13 +398,178 @@
 
 @push('scripts')
 <script>
-$(document).ready(function () {
+// ── Tous les handlers sont définis HORS de $(document).ready
+// pour ne pas dépendre du chargement de DataTables.
+// L'erreur "$(...).DataTable is not a function" coupe l'exécution
+// du ready() et empêchait l'enregistrement des handlers suivants.
+// ──────────────────────────────────────────────────────────────
 
-  // ── DataTables ──────────────────────────────────────────────
+function closeDtMenus() {
+  $('.dt-menu-open').each(function () {
+    $(this).removeClass('dt-menu-open show')
+           .css({ display: '', position: '', top: '', left: '', zIndex: '' });
+  });
+  $('.dt-action-toggle').attr('aria-expanded', 'false');
+}
+
+// Clic sur le bouton engrenage
+$(document).on('click', '.dt-action-toggle', function (e) {
+  e.stopPropagation();
+  var $btn   = $(this);
+  var $menu  = $btn.parent('.dropdown').children('.dropdown-menu');
+  var isOpen = $menu.hasClass('dt-menu-open');
+
+  closeDtMenus();
+
+  if (!isOpen) {
+    $btn.attr('aria-expanded', 'true');
+    $menu.addClass('dt-menu-open show').css({ display: 'block' });
+
+    var r     = $btn[0].getBoundingClientRect();
+    var menuW = $menu.outerWidth() || 160;
+    $menu.css({
+      position : 'fixed',
+      zIndex   : 9999,
+      top      : (r.bottom + 2) + 'px',
+      left     : Math.max(4, r.right - menuW) + 'px'
+    });
+  }
+});
+
+// Fermer en cliquant ailleurs
+$(document).on('click', function (e) {
+  if (!$(e.target).closest('.dt-action-toggle, .dt-menu-open').length) {
+    closeDtMenus();
+  }
+});
+
+// Fermer sur scroll / resize
+$(window).on('scroll.dtmenu resize.dtmenu', closeDtMenus);
+
+// ── Bloquer / Débloquer avec SweetAlert2 ────────────────────
+$(document).on('click', '.btn-toggle-block', function (e) {
+  e.stopPropagation();
+  closeDtMenus();
+
+  var action = this.getAttribute('data-action');
+  var nom    = this.getAttribute('data-nom');
+  var id     = this.getAttribute('data-id');
+  var url    = "{{ route('blocage', ['id' => '__ID__']) }}".replace('__ID__', id);
+
+    if (action === 'bloquer') {
+      Swal.fire({
+        title: 'Bloquer cette entreprise ?',
+        html: 'L\'entreprise <strong>' + nom + '</strong> sera suspendue.<br><small class="text-muted">Ses utilisateurs ne pourront plus se connecter.</small>',
+        icon: 'warning',
+        iconColor: '#dc3545',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, bloquer',
+        cancelButtonText: 'Annuler',
+        reverseButtons: true,
+        focusCancel: true
+      }).then(function (result) {
+        if (result.isConfirmed) window.location.href = url;
+      });
+    } else {
+      Swal.fire({
+        title: 'Valider cette entreprise ?',
+        html: 'L\'entreprise <strong>' + nom + '</strong> sera réactivée.<br><small class="text-muted">Ses utilisateurs pourront à nouveau se connecter.</small>',
+        icon: 'question',
+        iconColor: '#198754',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, valider',
+        cancelButtonText: 'Annuler',
+        reverseButtons: true,
+        focusCancel: true
+      }).then(function (result) {
+        if (result.isConfirmed) window.location.href = url;
+      });
+    }
+  });
+
+// ── Modal Changer de plan ───────────────────────────────────
+$(document).on('click', '.btn-change-plan', function () {
+  closeDtMenus();
+  var btn = $(this);
+  $('#cpIdDirection').val(btn.data('id'));
+  $('#cpNomEntreprise').text(btn.data('nom'));
+  var planActuel = btn.data('plan');
+  if (planActuel) $('#cpIdPlan').val(planActuel);
+  new bootstrap.Modal('#modalChangePlan').show();
+});
+
+$(document).on('click', '#btnSaveChangePlan', function () {
+  var btn = $(this);
+  btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
+  $.post("{{ route('entreprise.change-plan') }}", {
+    _token: '{{ csrf_token() }}',
+    iddirection: $('#cpIdDirection').val(),
+    idplan: $('#cpIdPlan').val(),
+    duree: $('#cpDuree').val()
+  })
+  .done(function (res) {
+    bootstrap.Modal.getInstance('#modalChangePlan').hide();
+    Swal.fire({ icon: res.status ? 'success' : 'error', title: res.status ? 'Succès' : 'Erreur', text: res.message, confirmButtonText: 'OK' })
+        .then(function () { if (res.status) location.reload(); });
+  })
+  .fail(function () { Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error'); })
+  .always(function () { btn.prop('disabled', false).html('<i class="bx bx-save me-1"></i> Enregistrer'); });
+});
+
+// ── Modal Renouveler ────────────────────────────────────────
+$(document).on('click', '.btn-renouveler', function () {
+  closeDtMenus();
+  var btn = $(this);
+  $('#rnIdDirection').val(btn.data('id'));
+  $('#rnNomEntreprise').text(btn.data('nom'));
+  $('#rnFinActuelle').text(btn.data('fin') || 'Aucune');
+  new bootstrap.Modal('#modalRenouveler').show();
+});
+
+$(document).on('click', '#btnSaveRenouveler', function () {
+  var btn = $(this);
+  btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
+  $.post("{{ route('entreprise.renouveler') }}", {
+    _token: '{{ csrf_token() }}',
+    iddirection: $('#rnIdDirection').val(),
+    duree: $('#rnDuree').val()
+  })
+  .done(function (res) {
+    bootstrap.Modal.getInstance('#modalRenouveler').hide();
+    Swal.fire({ icon: res.status ? 'success' : 'error', title: res.status ? 'Succès' : 'Erreur', text: res.message, confirmButtonText: 'OK' })
+        .then(function () { if (res.status) location.reload(); });
+  })
+  .fail(function () { Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error'); })
+  .always(function () { btn.prop('disabled', false).html('<i class="bx bx-refresh me-1"></i> Renouveler'); });
+});
+
+// ── Modal Détails ───────────────────────────────────────────
+$(document).on('click', '.btn-details', function () {
+  closeDtMenus();
+  var b = $(this);
+  $('#dtNom').text(b.data('nom'));       $('#dtAdmin').text(b.data('admin'));
+  $('#dtEmailAdmin').text(b.data('email-admin')); $('#dtEmailDir').text(b.data('email-dir'));
+  $('#dtTel').text(b.data('tel'));       $('#dtSiege').text(b.data('siege'));
+  $('#dtPlan').text(b.data('plan'));     $('#dtPrix').text(b.data('prix'));
+  $('#dtDebut').text(b.data('debut'));   $('#dtFin').text(b.data('fin'));
+  $('#dtStatut').text(b.data('statut'));
+  $('#dtMaisons').text(b.data('maisons')); $('#dtAgences').text(b.data('agences'));
+  new bootstrap.Modal('#modalDetails').show();
+});
+
+// ── DataTables (en dernier — son erreur éventuelle n'affecte plus rien)
+$(document).ready(function () {
+  if (typeof $.fn.DataTable === 'undefined') return;
+
   var tableE = $('#tableEntreprises').DataTable({
     pageLength: 25,
     language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
-    columnDefs: [{ orderable: false, targets: -1 }]
+    columnDefs: [{ orderable: false, targets: -1 }],
+    drawCallback: function () { closeDtMenus(); }
   });
 
   $('#tableAnnexes').DataTable({
@@ -407,9 +577,7 @@ $(document).ready(function () {
     language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }
   });
 
-  // ── Filtres rapides ─────────────────────────────────────────
   var currentFilter = 'all';
-
   $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (settings.nTable.id !== 'tableEntreprises') return true;
     if (currentFilter === 'all') return true;
@@ -423,88 +591,6 @@ $(document).ready(function () {
     currentFilter = $(this).data('filter');
     tableE.draw();
   });
-
-  // ── Modal Changer de plan ───────────────────────────────────
-  $(document).on('click', '.btn-change-plan', function () {
-    var btn = $(this);
-    $('#cpIdDirection').val(btn.data('id'));
-    $('#cpNomEntreprise').text(btn.data('nom'));
-    var planActuel = btn.data('plan');
-    if (planActuel) $('#cpIdPlan').val(planActuel);
-    new bootstrap.Modal('#modalChangePlan').show();
-  });
-
-  $('#btnSaveChangePlan').on('click', function () {
-    var btn = $(this);
-    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
-    $.post("{{ route('entreprise.change-plan') }}", {
-      _token: '{{ csrf_token() }}',
-      iddirection: $('#cpIdDirection').val(),
-      idplan: $('#cpIdPlan').val(),
-      duree: $('#cpDuree').val()
-    })
-    .done(function (res) {
-      bootstrap.Modal.getInstance('#modalChangePlan').hide();
-      Swal.fire({
-        icon: res.status ? 'success' : 'error',
-        title: res.status ? 'Succès' : 'Erreur',
-        text: res.message,
-        confirmButtonText: 'OK'
-      }).then(function () { if (res.status) location.reload(); });
-    })
-    .fail(function () { Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error'); })
-    .always(function () { btn.prop('disabled', false).html('<i class="bx bx-save me-1"></i> Enregistrer'); });
-  });
-
-  // ── Modal Renouveler ────────────────────────────────────────
-  $(document).on('click', '.btn-renouveler', function () {
-    var btn = $(this);
-    $('#rnIdDirection').val(btn.data('id'));
-    $('#rnNomEntreprise').text(btn.data('nom'));
-    $('#rnFinActuelle').text(btn.data('fin') || 'Aucune');
-    new bootstrap.Modal('#modalRenouveler').show();
-  });
-
-  $('#btnSaveRenouveler').on('click', function () {
-    var btn = $(this);
-    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
-    $.post("{{ route('entreprise.renouveler') }}", {
-      _token: '{{ csrf_token() }}',
-      iddirection: $('#rnIdDirection').val(),
-      duree: $('#rnDuree').val()
-    })
-    .done(function (res) {
-      bootstrap.Modal.getInstance('#modalRenouveler').hide();
-      Swal.fire({
-        icon: res.status ? 'success' : 'error',
-        title: res.status ? 'Succès' : 'Erreur',
-        text: res.message,
-        confirmButtonText: 'OK'
-      }).then(function () { if (res.status) location.reload(); });
-    })
-    .fail(function () { Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error'); })
-    .always(function () { btn.prop('disabled', false).html('<i class="bx bx-refresh me-1"></i> Renouveler'); });
-  });
-
-  // ── Modal Détails ───────────────────────────────────────────
-  $(document).on('click', '.btn-details', function () {
-    var b = $(this);
-    $('#dtNom').text(b.data('nom'));
-    $('#dtAdmin').text(b.data('admin'));
-    $('#dtEmailAdmin').text(b.data('email-admin'));
-    $('#dtEmailDir').text(b.data('email-dir'));
-    $('#dtTel').text(b.data('tel'));
-    $('#dtSiege').text(b.data('siege'));
-    $('#dtPlan').text(b.data('plan'));
-    $('#dtPrix').text(b.data('prix'));
-    $('#dtDebut').text(b.data('debut'));
-    $('#dtFin').text(b.data('fin'));
-    $('#dtStatut').text(b.data('statut'));
-    $('#dtMaisons').text(b.data('maisons'));
-    $('#dtAgences').text(b.data('agences'));
-    new bootstrap.Modal('#modalDetails').show();
-  });
-
 });
 </script>
 @endpush
