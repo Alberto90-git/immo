@@ -527,31 +527,46 @@ class HomeController extends Controller
         // Map id → nom pour affichage dans la vue
         $usersMap = $users->keyBy('id');
 
-        if ($request->choix == 'by_user') {
+        $today   = now()->format('Y-m-d');
+        $choix   = $request->choix;
+        $dateDebut = $request->date_debut ?? $today;
+        $dateFin   = $request->date_fin   ?? $today;
+        $userName  = $request->user_name;
+
+        if ($choix == 'by_user') {
             // Vérifier que l'user demandé est bien dans les autorisés
-            if (!in_array($request->user_name, $allowedIds)) {
+            if (!in_array($userName, $allowedIds)) {
                 $all = collect();
             } else {
-                $all = Activity::where('causer_id', $request->user_name)
+                $all = Activity::where('causer_id', $userName)
                                 ->orderByDesc('created_at')
                                 ->take(200)
                                 ->get();
             }
-        } elseif ($request->choix == 'by_date') {
+        } elseif ($choix == 'by_date') {
             $all = Activity::whereIn('causer_id', $allowedIds)
-                            ->whereBetween('created_at', [$request->date_debut.' 00:00:00', $request->date_fin.' 23:59:59'])
+                            ->whereBetween('created_at', [$dateDebut.' 00:00:00', $dateFin.' 23:59:59'])
                             ->orderByDesc('created_at')
                             ->take(500)
                             ->get();
         } else {
-            $today = now()->format('Y-m-d');
+            // Par défaut : aujourd'hui
+            $choix = 'by_date';
             $all = Activity::whereIn('causer_id', $allowedIds)
                             ->whereBetween('created_at', [$today.' 00:00:00', $today.' 23:59:59'])
                             ->orderByDesc('created_at')
                             ->get();
         }
 
-        return view('historique', ['all' => $all, 'users' => $users, 'usersMap' => $usersMap]);
+        return view('historique', [
+            'all'       => $all,
+            'users'     => $users,
+            'usersMap'  => $usersMap,
+            'choix'     => $choix,
+            'dateDebut' => $dateDebut,
+            'dateFin'   => $dateFin,
+            'userName'  => $userName,
+        ]);
     }
 
 

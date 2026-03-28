@@ -28,9 +28,15 @@
     .swal2-container {
         z-index: 10070 !important;
     }
-    
     .swal2-popup {
         z-index: 10071 !important;
+    }
+
+    /* Navbar fixe au scroll */
+    #layout-navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1020;
     }
   </style>
 
@@ -52,7 +58,7 @@
 
           @include('partials.navbar')
 
-          <div class="content-wrapper">
+          <div class="content-wrapper" id="main-content-wrapper">
             <!-- Alerte admin sans agence sélectionnée -->
             @if(is_admin_without_annexe_selected())
               <div class="alert alert-warning alert-dismissible fade show m-3" role="alert">
@@ -251,6 +257,72 @@
     </script>
 
     @stack('scripts')
+
+  {{-- ── Barre de progression NProgress (navigation entre pages) ──────── --}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css">
+  <script src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+  <style>
+    /* Couleur de la barre NProgress */
+    #nprogress .bar { background: #696cff; height: 3px; }
+    #nprogress .peg  { box-shadow: 0 0 10px #696cff, 0 0 5px #696cff; }
+    #nprogress .spinner-icon { border-top-color: #696cff; border-left-color: #696cff; }
+  </style>
+
+  <script>
+  (function () {
+    // ── NProgress : configuration ─────────────────────────────────────
+    if (typeof NProgress !== 'undefined') {
+      NProgress.configure({ showSpinner: false, speed: 250, minimum: 0.15 });
+    }
+
+    // ── Démarrer la barre dès qu'un lien navigue vers une autre page ──
+    document.addEventListener('click', function (e) {
+      var el = e.target.closest('a[href]');
+      if (!el) return;
+      var href = el.getAttribute('href');
+      if (!href || href === '#' || href.startsWith('javascript:') ||
+          href.startsWith('mailto:') || href.startsWith('tel:') ||
+          el.getAttribute('target') === '_blank' ||
+          el.getAttribute('download') != null) return;
+      try {
+        var url = new URL(href, window.location.origin);
+        if (url.origin !== window.location.origin) return;
+        // Même page (ancre uniquement) → pas de barre
+        if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+      } catch (err) { return; }
+      if (typeof NProgress !== 'undefined') NProgress.start();
+    }, true);
+
+    // ── Arrêter la barre quand la page est chargée ────────────────────
+    window.addEventListener('load', function () {
+      if (typeof NProgress !== 'undefined') NProgress.done();
+    });
+
+    // ── Arrêter la barre si le formulaire soumet (navigation form) ───
+    document.addEventListener('submit', function () {
+      if (typeof NProgress !== 'undefined') NProgress.start();
+    }, true);
+
+    // ── Auto-reload après retour d'onglet ≥ 30s ───────────────────────
+    // Recharge la page réelle pour avoir des données fraîches quand
+    // l'utilisateur revient après une longue absence.
+    var _hiddenAt = 0;
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        _hiddenAt = Date.now();
+      } else if (_hiddenAt > 0 && (Date.now() - _hiddenAt) >= 30000) {
+        _hiddenAt = 0;
+        // Ne pas recharger si un modal ou une alerte est ouvert
+        if (!document.querySelector('.modal.show, .swal2-container.swal2-backdrop-show')) {
+          window.location.reload();
+        }
+      } else {
+        _hiddenAt = 0;
+      }
+    });
+
+  }());
+  </script>
 
   </body>
 </html>

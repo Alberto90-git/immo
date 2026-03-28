@@ -80,14 +80,13 @@ class ProprietaireController extends Controller
             );
 
             if ($validator->fails()) {
-                return back()->withErrors($validator)->withInput()
-                    ->with('error', 'Veuillez bien renseigner les informations');
+                return response()->json(['status' => false, 'message' => implode(' ', $validator->errors()->all())]);
             }
 
             // Utiliser l'annexe active centralisée
             $idannexe_ref = get_active_annexe_id();
             if (!$idannexe_ref) {
-                return back()->with('error', 'Veuillez sélectionner une agence dans le header');
+                return response()->json(['status' => false, 'message' => 'Veuillez sélectionner une agence dans le header']);
             }
 
             // Créer le propriétaire
@@ -102,19 +101,36 @@ class ProprietaireController extends Controller
             ]);
 
             if ($proprio) {
-                // Log de l'activité
                 activity()->performedOn(new Proprietaire())
                     ->causedBy(Auth::user()->id)
+                    ->withProperties(['old' => [], 'new' => [
+                        'nom'       => Str::upper($request->nom),
+                        'prenom'    => Str::ucfirst($request->prenom),
+                        'telephone' => $request->telephone,
+                        'adresse'   => Str::ucfirst($request->adresse),
+                        'email'     => $request->email ?: null,
+                    ]])
                     ->log('Ajout du propriétaire ' . Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                return redirect()->route('proprietaires.index')
-                    ->with('success', Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' a été créé avec succès');
+                return response()->json([
+                    'status'  => true,
+                    'message' => Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' a été créé avec succès',
+                    'proprio' => [
+                        'id'        => $proprio->id,
+                        'nom'       => $proprio->nom,
+                        'prenom'    => $proprio->prenom,
+                        'telephone' => $proprio->telephone,
+                        'adresse'   => $proprio->adresse,
+                        'email'     => $proprio->email,
+                        'annexe'    => $proprio->annexe->designation ?? 'N/A',
+                    ],
+                ]);
             }
 
-            return back()->with('error', 'Échec de la création du propriétaire');
+            return response()->json(['status' => false, 'message' => 'Échec de la création du propriétaire']);
 
         } catch (QueryException $e) {
-            return back()->with('error', 'Échec, veuillez réessayer');
+            return response()->json(['status' => false, 'message' => 'Échec, veuillez réessayer']);
         }
     }
 
@@ -144,15 +160,16 @@ class ProprietaireController extends Controller
             );
 
             if ($validator->fails()) {
-                return back()->withErrors($validator)->withInput()
-                    ->with('error', 'Veuillez bien renseigner les informations');
+                return response()->json(['status' => false, 'message' => implode(' ', $validator->errors()->all())]);
             }
 
             // Utiliser l'annexe active centralisée
             $idannexe_ref = get_active_annexe_id();
             if (!$idannexe_ref) {
-                return back()->with('error', 'Veuillez sélectionner une agence dans le header');
+                return response()->json(['status' => false, 'message' => 'Veuillez sélectionner une agence dans le header']);
             }
+
+            $oldProprio = Proprietaire::find($request->id);
 
             // Mettre à jour le propriétaire
             $proprio = Proprietaire::where('id', $request->id)
@@ -167,19 +184,44 @@ class ProprietaireController extends Controller
                 ]);
 
             if ($proprio) {
-                // Log de l'activité
                 activity()->performedOn(new Proprietaire())
                     ->causedBy(Auth::user()->id)
+                    ->withProperties(['old' => $oldProprio ? [
+                        'nom'       => $oldProprio->nom,
+                        'prenom'    => $oldProprio->prenom,
+                        'telephone' => $oldProprio->telephone,
+                        'adresse'   => $oldProprio->adresse,
+                        'email'     => $oldProprio->email,
+                    ] : [], 'new' => [
+                        'nom'       => Str::upper($request->nom),
+                        'prenom'    => Str::ucfirst($request->prenom),
+                        'telephone' => $request->telephone,
+                        'adresse'   => Str::ucfirst($request->adresse),
+                        'email'     => $request->email ?: null,
+                    ]])
                     ->log('Modification du propriétaire ' . Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                return redirect()->route('proprietaires.index')
-                    ->with('success', Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' a été mis à jour avec succès');
+                $updated = Proprietaire::with('annexe:idannexes,designation')->find($request->id);
+
+                return response()->json([
+                    'status'  => true,
+                    'message' => Str::upper($request->nom) . ' ' . Str::ucfirst($request->prenom) . ' a été mis à jour avec succès',
+                    'proprio' => [
+                        'id'        => $updated->id,
+                        'nom'       => $updated->nom,
+                        'prenom'    => $updated->prenom,
+                        'telephone' => $updated->telephone,
+                        'adresse'   => $updated->adresse,
+                        'email'     => $updated->email,
+                        'annexe'    => $updated->annexe->designation ?? 'N/A',
+                    ],
+                ]);
             }
 
-            return back()->with('error', 'Échec de la modification du propriétaire');
+            return response()->json(['status' => false, 'message' => 'Échec de la modification du propriétaire']);
 
         } catch (QueryException $e) {
-            return back()->with('error', 'Échec, veuillez vérifier les données');
+            return response()->json(['status' => false, 'message' => 'Échec, veuillez vérifier les données']);
         }
     }
 
@@ -201,7 +243,7 @@ class ProprietaireController extends Controller
             );
 
             if ($validator->fails()) {
-                return back()->with('error', 'Propriétaire introuvable');
+                return response()->json(['status' => false, 'message' => 'Propriétaire introuvable']);
             }
 
             $now = Carbon::now();
@@ -210,7 +252,7 @@ class ProprietaireController extends Controller
             $proprio = Proprietaire::find($request->id);
 
             if (!$proprio) {
-                return back()->with('error', 'Propriétaire introuvable');
+                return response()->json(['status' => false, 'message' => 'Propriétaire introuvable']);
             }
 
             // Soft delete du propriétaire
@@ -233,16 +275,22 @@ class ProprietaireController extends Controller
                 activity()
                     ->performedOn($proprio)
                     ->causedBy(Auth::user())
+                    ->withProperties(['old' => [
+                        'nom'       => $proprio->nom,
+                        'prenom'    => $proprio->prenom,
+                        'telephone' => $proprio->telephone,
+                        'adresse'   => $proprio->adresse,
+                        'email'     => $proprio->email,
+                    ], 'new' => []])
                     ->log('Suppression du propriétaire ' . Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-                return redirect()->route('proprietaires.index')
-                    ->with('success', Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' a été supprimé avec succès');
+                return response()->json(['status' => true, 'message' => Str::upper($proprio->nom) . ' ' . Str::ucfirst($proprio->prenom) . ' a été supprimé avec succès']);
             }
 
-            return back()->with('error', 'Aucune suppression effectuée');
+            return response()->json(['status' => false, 'message' => 'Aucune suppression effectuée']);
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Échec, veuillez vérifier les données');
+            return response()->json(['status' => false, 'message' => 'Échec, veuillez vérifier les données']);
         }
     }
 }

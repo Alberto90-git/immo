@@ -396,13 +396,9 @@
   </div>
 </div>
 
-@push('scripts')
 <script>
-// ── Tous les handlers sont définis HORS de $(document).ready
-// pour ne pas dépendre du chargement de DataTables.
-// L'erreur "$(...).DataTable is not a function" coupe l'exécution
-// du ready() et empêchait l'enregistrement des handlers suivants.
-// ──────────────────────────────────────────────────────────────
+// ── Scripts inline (pas via push/stack) pour que le SPA puisse les ré-exécuter
+// ── Événements nommés (.ent) + .off() avant .on() → pas de double-binding
 
 function closeDtMenus() {
   $('.dt-menu-open').each(function () {
@@ -413,7 +409,8 @@ function closeDtMenus() {
 }
 
 // Clic sur le bouton engrenage
-$(document).on('click', '.dt-action-toggle', function (e) {
+$(document).off('click.ent', '.dt-action-toggle')
+           .on('click.ent', '.dt-action-toggle', function (e) {
   e.stopPropagation();
   var $btn   = $(this);
   var $menu  = $btn.parent('.dropdown').children('.dropdown-menu');
@@ -437,17 +434,18 @@ $(document).on('click', '.dt-action-toggle', function (e) {
 });
 
 // Fermer en cliquant ailleurs
-$(document).on('click', function (e) {
+$(document).off('click.entmenu').on('click.entmenu', function (e) {
   if (!$(e.target).closest('.dt-action-toggle, .dt-menu-open').length) {
     closeDtMenus();
   }
 });
 
 // Fermer sur scroll / resize
-$(window).on('scroll.dtmenu resize.dtmenu', closeDtMenus);
+$(window).off('scroll.dtmenu resize.dtmenu').on('scroll.dtmenu resize.dtmenu', closeDtMenus);
 
 // ── Bloquer / Débloquer avec SweetAlert2 ────────────────────
-$(document).on('click', '.btn-toggle-block', function (e) {
+$(document).off('click.ent', '.btn-toggle-block')
+           .on('click.ent', '.btn-toggle-block', function (e) {
   e.stopPropagation();
   closeDtMenus();
 
@@ -456,43 +454,44 @@ $(document).on('click', '.btn-toggle-block', function (e) {
   var id     = this.getAttribute('data-id');
   var url    = "{{ route('blocage', ['id' => '__ID__']) }}".replace('__ID__', id);
 
-    if (action === 'bloquer') {
-      Swal.fire({
-        title: 'Bloquer cette entreprise ?',
-        html: 'L\'entreprise <strong>' + nom + '</strong> sera suspendue.<br><small class="text-muted">Ses utilisateurs ne pourront plus se connecter.</small>',
-        icon: 'warning',
-        iconColor: '#dc3545',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, bloquer',
-        cancelButtonText: 'Annuler',
-        reverseButtons: true,
-        focusCancel: true
-      }).then(function (result) {
-        if (result.isConfirmed) window.location.href = url;
-      });
-    } else {
-      Swal.fire({
-        title: 'Valider cette entreprise ?',
-        html: 'L\'entreprise <strong>' + nom + '</strong> sera réactivée.<br><small class="text-muted">Ses utilisateurs pourront à nouveau se connecter.</small>',
-        icon: 'question',
-        iconColor: '#198754',
-        showCancelButton: true,
-        confirmButtonColor: '#198754',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, valider',
-        cancelButtonText: 'Annuler',
-        reverseButtons: true,
-        focusCancel: true
-      }).then(function (result) {
-        if (result.isConfirmed) window.location.href = url;
-      });
-    }
-  });
+  if (action === 'bloquer') {
+    Swal.fire({
+      title: 'Bloquer cette entreprise ?',
+      html: 'L\'entreprise <strong>' + nom + '</strong> sera suspendue.<br><small class="text-muted">Ses utilisateurs ne pourront plus se connecter.</small>',
+      icon: 'warning',
+      iconColor: '#dc3545',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Oui, bloquer',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true,
+      focusCancel: true
+    }).then(function (result) {
+      if (result.isConfirmed) window.location.href = url;
+    });
+  } else {
+    Swal.fire({
+      title: 'Valider cette entreprise ?',
+      html: 'L\'entreprise <strong>' + nom + '</strong> sera réactivée.<br><small class="text-muted">Ses utilisateurs pourront à nouveau se connecter.</small>',
+      icon: 'question',
+      iconColor: '#198754',
+      showCancelButton: true,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Oui, valider',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true,
+      focusCancel: true
+    }).then(function (result) {
+      if (result.isConfirmed) window.location.href = url;
+    });
+  }
+});
 
 // ── Modal Changer de plan ───────────────────────────────────
-$(document).on('click', '.btn-change-plan', function () {
+$(document).off('click.ent', '.btn-change-plan')
+           .on('click.ent', '.btn-change-plan', function () {
   closeDtMenus();
   var btn = $(this);
   $('#cpIdDirection').val(btn.data('id'));
@@ -502,7 +501,8 @@ $(document).on('click', '.btn-change-plan', function () {
   new bootstrap.Modal('#modalChangePlan').show();
 });
 
-$(document).on('click', '#btnSaveChangePlan', function () {
+$(document).off('click.ent', '#btnSaveChangePlan')
+           .on('click.ent', '#btnSaveChangePlan', function () {
   var btn = $(this);
   btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
   $.post("{{ route('entreprise.change-plan') }}", {
@@ -521,7 +521,8 @@ $(document).on('click', '#btnSaveChangePlan', function () {
 });
 
 // ── Modal Renouveler ────────────────────────────────────────
-$(document).on('click', '.btn-renouveler', function () {
+$(document).off('click.ent', '.btn-renouveler')
+           .on('click.ent', '.btn-renouveler', function () {
   closeDtMenus();
   var btn = $(this);
   $('#rnIdDirection').val(btn.data('id'));
@@ -530,7 +531,8 @@ $(document).on('click', '.btn-renouveler', function () {
   new bootstrap.Modal('#modalRenouveler').show();
 });
 
-$(document).on('click', '#btnSaveRenouveler', function () {
+$(document).off('click.ent', '#btnSaveRenouveler')
+           .on('click.ent', '#btnSaveRenouveler', function () {
   var btn = $(this);
   btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
   $.post("{{ route('entreprise.renouveler') }}", {
@@ -548,7 +550,8 @@ $(document).on('click', '#btnSaveRenouveler', function () {
 });
 
 // ── Modal Détails ───────────────────────────────────────────
-$(document).on('click', '.btn-details', function () {
+$(document).off('click.ent', '.btn-details')
+           .on('click.ent', '.btn-details', function () {
   closeDtMenus();
   var b = $(this);
   $('#dtNom').text(b.data('nom'));       $('#dtAdmin').text(b.data('admin'));
@@ -593,6 +596,5 @@ $(document).ready(function () {
   });
 });
 </script>
-@endpush
 
 @endsection

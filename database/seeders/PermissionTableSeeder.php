@@ -6,538 +6,143 @@ use App\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
-
 class PermissionTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        $permissionsadmin = [
-            'gestion-role-utilisateur',
-            'gestion-role',
-            'ajouter-role',
-            'liste-role',
-            'modifier-role',
-            'gestion-utilisateur',
-            'ajouter-utilisateur',
-            'liste-utilisateur',
-            'modifier-utilisateur',
-            'desactive-utilisateur',
+        // ── Définition complète des permissions par groupe ────────────────────
+        // Format : 'nom' => ['label' => '...', 'group' => '...']
+        $allPermissions = [
+
+            // ── Gestion fonction & utilisateur ────────────────────────────────
+            'gestion-role-utilisateur' => ['label' => 'Gestion fonction & utilisateur', 'group' => 'admin'],
+            'gestion-role'             => ['label' => 'Gérer fonction',                  'group' => 'admin'],
+            'ajouter-role'             => ['label' => 'Ajouter une fonction',            'group' => 'admin'],
+            'liste-role'               => ['label' => 'Consulter les fonctions',         'group' => 'admin'],
+            'modifier-role'            => ['label' => 'Modifier une fonction',           'group' => 'admin'],
+            'gestion-utilisateur'      => ['label' => 'Gérer un utilisateur',            'group' => 'admin'],
+            'ajouter-utilisateur'      => ['label' => 'Ajouter un utilisateur',         'group' => 'admin'],
+            'liste-utilisateur'        => ['label' => 'Consulter les utilisateurs',     'group' => 'admin'],
+            'modifier-utilisateur'     => ['label' => 'Modifier un utilisateur',        'group' => 'admin'],
+            'desactive-utilisateur'    => ['label' => 'Activer/Désactiver un utilisateur', 'group' => 'admin'],
+
+            // ── Paramétrage ───────────────────────────────────────────────────
+            'parametrage'       => ['label' => 'Paramétrage',              'group' => 'params'],
+            'historique'        => ['label' => 'Historique des actions',   'group' => 'params'],
+            'modifier-parametre'=> ['label' => 'Modification paramétrage', 'group' => 'params'],
+            'Is_admin'          => ['label' => 'Administrateur',           'group' => 'params'],
+            'manager-contrat'   => ['label' => 'Gérer contrat',            'group' => 'params'],
+
+            // ── Propriétaire ──────────────────────────────────────────────────
+            'gestion-proprietaire'   => ['label' => 'Gestion propriétaire',    'group' => 'proprietaire'],
+            'ajoute-proprietaire'    => ['label' => 'Ajouter propriétaire',    'group' => 'proprietaire'],
+            'Consulter-proprietaire' => ['label' => 'Liste propriétaire',      'group' => 'proprietaire'],
+            'modify-proprietaire'    => ['label' => 'Modification propriétaire','group' => 'proprietaire'],
+            'delete-proprietaire'    => ['label' => 'Supprimer propriétaire',  'group' => 'proprietaire'],
+
+            // ── Maison ────────────────────────────────────────────────────────
+            'gestion-maison'   => ['label' => 'Gestion maison',    'group' => 'maison'],
+            'ajoute-maison'    => ['label' => 'Ajouter maison',    'group' => 'maison'],
+            'Consulter-maison' => ['label' => 'Liste maison',      'group' => 'maison'],
+            'modify-maison'    => ['label' => 'Modification maison','group' => 'maison'],
+            'delete-maison'    => ['label' => 'Supprimer maison',  'group' => 'maison'],
+
+            // ── Chambre ───────────────────────────────────────────────────────
+            'gestion-chambre'   => ['label' => 'Gestion chambre',    'group' => 'chambre'],
+            'ajoute-chambre'    => ['label' => 'Ajouter chambre',    'group' => 'chambre'],
+            'Consulter-chambre' => ['label' => 'Liste chambre',      'group' => 'chambre'],
+            'modify-chambre'    => ['label' => 'Modification chambre','group' => 'chambre'],
+            'delete-chambre'    => ['label' => 'Supprimer chambre',  'group' => 'chambre'],
+
+            // ── Prix ──────────────────────────────────────────────────────────
+            'gestion-prix'   => ['label' => 'Gestion prix',    'group' => 'prix'],
+            'ajoute-prix'    => ['label' => 'Ajouter prix',    'group' => 'prix'],
+            'Consulter-prix' => ['label' => 'Liste prix',      'group' => 'prix'],
+            'modify-prix'    => ['label' => 'Modification prix','group' => 'prix'],
+            'delete-prix'    => ['label' => 'Supprimer prix',  'group' => 'prix'],
+
+            // ── Locataire ─────────────────────────────────────────────────────
+            'gestion-locataire'    => ['label' => 'Gestion locataire',      'group' => 'locataire'],
+            'ajoute-locataire'     => ['label' => 'Ajouter locataire',      'group' => 'locataire'],
+            'Consulter-locataire'  => ['label' => 'Liste locataire',        'group' => 'locataire'],
+            'modify-locataire'     => ['label' => 'Modification locataire', 'group' => 'locataire'],
+            'delete-locataire'     => ['label' => 'Supprimer locataire',    'group' => 'locataire'],
+            'download-recu-avance' => ['label' => 'Télécharger reçu avance','group' => 'locataire'],
+
+            // ── Paiement ──────────────────────────────────────────────────────
+            'gestion-paiement'      => ['label' => 'Gestion paiement',          'group' => 'paiement'],
+            'ajoute-paiement'       => ['label' => 'Ajouter paiement',          'group' => 'paiement'],
+            'Consulter-paiement'    => ['label' => 'Liste paiement',            'group' => 'paiement'],
+            'modify-paiement'       => ['label' => 'Modification paiement',     'group' => 'paiement'],
+            'delete-paiement'       => ['label' => 'Supprimer paiement',        'group' => 'paiement'],
+            'download-recu-location'=> ['label' => 'Télécharger reçu location', 'group' => 'paiement'],
+
+            // ── Statistique ───────────────────────────────────────────────────
+            'gestion-statistique'          => ['label' => 'Gestion statistique',          'group' => 'statistique'],
+            'proprio-house-chambre-locataire'=> ['label' => 'Menu P/M/C/L',             'group' => 'statistique'],
+            'financier'                    => ['label' => 'Menu financier',              'group' => 'statistique'],
+            'ancien-recu'                  => ['label' => 'Menu reçu',                  'group' => 'statistique'],
+            'gestion-sta-dossier'          => ['label' => 'Gestion des besoins & annonces', 'group' => 'statistique'],
+
+            // ── Dossiers (besoins & annonces) ─────────────────────────────────
+            'gestion-dossier'   => ['label' => 'Gestion des besoins & annonces', 'group' => 'dossiers'],
+            'dossier-client'    => ['label' => 'Besoins des clients',            'group' => 'dossiers'],
+            'dossier-parcelle'  => ['label' => 'Annonces des biens',             'group' => 'dossiers'],
+            'ajouter-parcelle'  => ['label' => 'Ajouter annonce',               'group' => 'dossiers'],
+            'modifier-parcelle' => ['label' => 'Modifier annonce',              'group' => 'dossiers'],
+            'supprimer-parcelle'=> ['label' => 'Supprimer annonce',             'group' => 'dossiers'],
+            'cloturer-parcelle' => ['label' => 'Clôturer annonce',              'group' => 'dossiers'],
+            'consulter-parcelle'=> ['label' => 'Consulter liste annonce',       'group' => 'dossiers'],
+            'ajouter-client'    => ['label' => 'Ajouter besoin',                'group' => 'dossiers'],
+            'modifier-client'   => ['label' => 'Modifier besoin',               'group' => 'dossiers'],
+            'supprimer-client'  => ['label' => 'Supprimer besoin',              'group' => 'dossiers'],
+            'cloturer-client'   => ['label' => 'Clôturer besoin',               'group' => 'dossiers'],
+            'consulter-client'  => ['label' => 'Consulter liste besoin',        'group' => 'dossiers'],
+
+            // ── Publicité ─────────────────────────────────────────────────────
+            'gestion-publicite'     => ['label' => 'Gestion publicité',   'group' => 'pubs'],
+            'ajouter-publicite'     => ['label' => 'Ajouter publicité',   'group' => 'pubs'],
+            'modifier-publicite'    => ['label' => 'Modifier publicité',  'group' => 'pubs'],
+            'supprimer-publicite'   => ['label' => 'Supprimer publicité', 'group' => 'pubs'],
+            'ajouter-image'         => ['label' => 'Ajouter image',       'group' => 'pubs'],
+            'voir-detail-publicite' => ['label' => 'Voir détail publicité','group' => 'pubs'],
+
+            // ── Abonnement ────────────────────────────────────────────────────
+            'gestion-abonnement' => ['label' => 'Gestion abonnement', 'group' => 'abonnement'],
+            'change-abonnement'  => ['label' => 'Changer abonnement', 'group' => 'abonnement'],
+            'voir-abonnement'    => ['label' => 'Voir abonnement',    'group' => 'abonnement'],
+
+            // ── Mot de passe ──────────────────────────────────────────────────
+            'gestion-mot-passe'    => ['label' => 'Gestion mot de passe',         'group' => 'changePwd'],
+            'action-reinitialiser' => ['label' => 'Autoriser la réinitialisation','group' => 'changePwd'],
+
+            // ── Communication (envoi de documents & WhatsApp) ─────────────────
+            'envoi-document'    => ['label' => 'Envoyer des documents',           'group' => 'envoi'],
+            'historique-envoi'  => ['label' => 'Historique des envois',           'group' => 'envoi'],
 
         ];
 
-        $labeladmin = [
-            'Gestion fonction & utilisateur',
-            'Gérer fonction',
-            'Ajouter une fonction',
-            'Consulter les fonctions',
-            'Modifier  une fonction',
-            'Gérer un utilisateur',
-            'Ajouter un utilisateur',
-            'Consulter les utilisateurs',
-            'Modifier un utilisateur',
-            'Activer/Désactiver un utilisateur',
-
-        ];
-
-
-        collect($permissionsadmin)->zip(collect($labeladmin))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionsadmin as $admin) {
-
-            Permission::where('name', $admin)->update(['group' => 'admin']);
+        // ── Insertion idempotente ─────────────────────────────────────────────
+        foreach ($allPermissions as $name => $attrs) {
+            $perm = Permission::firstOrCreate(
+                ['name' => $name],
+                ['label' => $attrs['label'], 'group' => $attrs['group']]
+            );
+            // Mettre à jour le label/group si la permission existait déjà
+            $perm->update(['label' => $attrs['label'], 'group' => $attrs['group']]);
         }
 
-        $permissionstraitemnt = [
-            'parametrage',
-
-            'historique',
-
-            'modifier-parametre',
-
-            'Is_admin',
-            
-            'manager-contrat',
-        ];
-
-
-        $labelt = [
-            'Paramétrage',
-           
-            'Historique des actions',
-
-            'Modification parametrage',
-
-            'Administrateur',
-            
-            'Gerer contrat'
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-            Permission::where('name', $traiement)->update(['group' => 'params']);
-        }
-
-
-
-        // $permissionstraitemnt = [
-        //     'ajouter-publicite',
-
-        //     'modifier-publicite',
-
-        //     'list-publicite',
-
-        //     'delete-publicite',
-            
-        //     'desactive-publicite',
-        // ];
-
-
-        // $labelt = [
-        //     'Ajouter pub',
-           
-        //     'Modifier pub',
-
-        //     'Consulter pub',
-
-        //     'Suprimer pub',
-            
-        //     'Désactive pub'
-        // ];
-
-        // collect($permissionstraitemnt)->zip(collect($labelt))
-        //     ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        // foreach ($permissionstraitemnt as $traiement) {
-        //     Permission::where('name', $traiement)->update(['group' => 'pubs']);
-        // }
-
-
-
-        $permissionstraitemnt = [
-            'gestion-proprietaire',
-
-            'ajoute-proprietaire',
-
-            'Consulter-proprietaire',
-
-            'modify-proprietaire',
-
-            'delete-proprietaire',
-        ];
-
-
-        $labelt = [
-            'Gestion propriétaire',
-
-            'Ajouter propriétaire',
-
-            'Liste propriétaire',
-
-            'Modification propriétaire',
-            
-            'Supprimer propriétaire',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'proprietaire']);
-        }
-
-
-
-
-        $permissionstraitemnt = [
-            'gestion-maison',
-
-            'ajoute-maison',
-
-            'Consulter-maison',
-
-            'modify-maison',
-
-            'delete-maison',
-        ];
-
-
-        $labelt = [
-            'Gestion maison',
-
-            'Ajouter maison',
-
-            'Liste maison',
-
-            'Modification maison',
-            
-            'Supprimer maison',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'maison']);
-        }
-
-
-
-        $permissionstraitemnt = [
-            'gestion-chambre',
-
-            'ajoute-chambre',
-
-            'Consulter-chambre',
-
-            'modify-chambre',
-
-            'delete-chambre',
-        ];
-
-
-        $labelt = [
-            'Gestion chambre',
-
-            'Ajouter chambre',
-
-            'Liste chambre',
-
-            'Modification chambre',
-            
-            'Supprimer chambre',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'chambre']);
-        }
-
-
-
-
-        $permissionstraitemnt = [
-            'gestion-prix',
-
-            'ajoute-prix',
-
-            'Consulter-prix',
-
-            'modify-prix',
-
-            'delete-prix',
-        ];
-
-
-        $labelt = [
-            'Gestion prix',
-
-            'Ajouter prix',
-
-            'Liste prix',
-
-            'Modification prix',
-            
-            'Supprimer prix',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'prix']);
-        }
-
-
-
-
-        $permissionstraitemnt = [
-            'gestion-locataire',
-
-            'ajoute-locataire',
-
-            'Consulter-locataire',
-
-            'modify-locataire',
-
-            'delete-locataire',
-            
-            'download-recu-avance',
-        ];
-
-
-        $labelt = [
-            'Gestion locataire',
-
-            'Ajouter locataire',
-
-            'Liste locataire',
-
-            'Modification locataire',
-            
-            'Supprimer locataire',
-            
-            'Télecharger réçu avance',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'locataire']);
-        }
-
-
-
-
-        $permissionstraitemnt = [
-            'gestion-paiement',
-
-            'ajoute-paiement',
-
-            'Consulter-paiement',
-
-            'modify-paiement',
-
-            'delete-paiement',
-            
-            'download-recu-location',
-        ];
-
-
-        $labelt = [
-            'Gestion paiement',
-
-            'Ajouter paiement',
-
-            'Liste paiement',
-
-            'Modification paiement',
-            
-            'Supprimer paiement',
-            
-            'Télecharger réçu location',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'paiement']);
-        }
-
-
-
-        $permissionstraitemnt = [
-            'gestion-statistique',
-            'proprio-house-chambre-locataire',
-            'financier',
-            'ancien-recu',
-            'gestion-sta-dossier',
-        ];
-
-        $labelt = [
-            'Gestion statistique',
-            'Menu P/M/C/L',
-            'Menu financier',
-            'Menu réçu',
-            'Gestion des besoins & annonces',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'statistique']);
-        }
-
-
-        $permissionstraitemnt = [
-            'gestion-mot-passe',
-
-            'action-reinitialiser',
-
-        ];
-
-        $labelt = [
-            'Gestion mot de passe',
-
-            'Autoriser la réinitialisation',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'changePwd']);
-        }
-
-
-
-
-        $permissionstraitemnt = [
-            'gestion-dossier',
-
-            'dossier-client',
-            'dossier-parcelle',
-
-            'ajouter-parcelle',
-            'modifier-parcelle',
-            'supprimer-parcelle',
-            'cloturer-parcelle',
-            'consulter-parcelle',
-
-
-            'ajouter-client',
-            'modifier-client',
-            'supprimer-client',
-            'cloturer-client',
-            'consulter-client',
-
-        ];
-
-        $labelt = [
-            'Gestion des besoins & annoces',
-
-            'Besoin des clients',
-            'Annoces des biens',
-
-            'Ajouter annonce',
-            'Modifier annonce',
-            'Supprimer annonce',
-            'Cloturer annonce',
-            'Consulter liste annonce',
-
-
-            'Ajouter besoin',
-            'Modifier besoin',
-            'Supprimer besoin',
-            'Cloturer besoin',
-            'Consulter liste besoin',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'dossiers']);
-        }
-
-
-
-        
-        $permissionstraitemnt = [
-            'gestion-publicite',
-
-            'ajouter-publicite',
-            'modifier-publicite',
-            'supprimer-publicite',
-            'ajouter-image',
-            'voir-detail-publicite',
-
-        ];
-
-        $labelt = [
-            'Gestion publicité',
-
-            'Ajouter publicité',
-            'Modifier publicité',
-            'Supprimer publicité',
-            'Ajouter image',
-            'Voir détail publicité',
-
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-
-            Permission::where('name', $traiement)->update(['group' => 'pubs']);
-        }
-
-
-        $permissionstraitemnt = [
-            'gestion-abonnement',
-
-            'change-abonnement',
-
-            'voir-abonnement',
-
-        ];
-
-
-        $labelt = [
-            'Gestion abonnement',
-
-            'Changer abonnement',
-
-            'Voir abonnement',
-        ];
-
-        collect($permissionstraitemnt)->zip(collect($labelt))
-            ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        foreach ($permissionstraitemnt as $traiement) {
-            Permission::where('name', $traiement)->update(['group' => 'abonnement']);
-        }
-
-        // Envoi de documents
-        Permission::firstOrCreate(
-            ['name' => 'envoi-document'],
-            ['label' => 'Envoi de documents', 'group' => 'envoi']
-        );
-        Permission::where('name', 'envoi-document')->update(['group' => 'envoi']);
-
-        // Configuration prestataire de paiement — réservée à admin@immo.net uniquement
-        Permission::firstOrCreate(
+        // ── config-paiement : réservé au propriétaire de l'application ────────
+        // N'appartient à AUCUN rôle. Assigné uniquement en direct à 
+        $configPerm = Permission::firstOrCreate(
             ['name' => 'config-paiement'],
-            ['label' => 'Configuration prestataire de paiement', 'group' => 'plateforme']
+            ['label' => 'Configuration plateforme (Super Admin)', 'group' => 'plateforme']
         );
-        Permission::where('name', 'config-paiement')->update(['group' => 'plateforme']);
+        $configPerm->update(['label' => 'Configuration plateforme (Super Admin)', 'group' => 'plateforme']);
 
-        // Assigner directement à l'utilisateur admin@immo.net (pas au rôle)
-        $superAdmin = User::where('email', 'admin@immo.net')->first();
+        $superAdmin = User::where('email', 'alberttchegnon4@gmail.com')->first();
         if ($superAdmin) {
             $superAdmin->givePermissionTo('config-paiement');
         }
-
-
-
-
-        // $permissionsadminonly = [
-        //     'only-admin',
-        // ];
-
-        // $labeladminonly = [
-        //     'Access unique admin',
-        // ];
-
-
-        // collect($permissionsadminonly)->zip(collect($labeladminonly))
-        //     ->each(fn ($item) => Permission::create(['name' => $item[0], 'label' => $item[1]]));
-
-        // foreach ($permissionsadminonly as $only) {
-
-        //     Permission::where('name', $only)->update(['group' => 'only']);
-        // }
     }
 }

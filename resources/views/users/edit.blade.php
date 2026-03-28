@@ -26,7 +26,7 @@
                 <form action="javascript:update_user();" method="post" id="update_user">
 
                     @csrf
-                    <input type="text" value="{{ $user->id }}" name="user" hidden>
+                    <input type="text" value="{{ encrypt_id($user->id) }}" name="user" hidden>
 
                     <div class="row mb-3">
                         <label for="nom" class="col-sm-2 col-form-label">Nom<span style="color: red;">*</span></label>

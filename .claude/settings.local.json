@@ -17,7 +17,23 @@
       "WebSearch",
       "Bash(ls C:/Users/altchegnon/Documents/immo/app/*.php | head -30)",
       "Bash(cd:*)",
-      "Bash(php artisan:*)"
+      "Bash(php artisan:*)",
+      "Bash(xargs grep:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(sed -n '70,120p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/RoleController.php)",
+      "Bash(sed -n '210,240p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/RoleController.php)",
+      "Bash(sed -n '190,220p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/FactureController.php)",
+      "Bash(sed -n '265,295p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/FactureController.php)",
+      "Bash(sed -n '365,395p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/FactureController.php)",
+      "Bash(sed -n '420,465p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/FactureController.php)",
+      "Bash(sed -n '835,860p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/FactureController.php)",
+      "Bash(sed -n '1200,1225p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/FactureController.php)",
+      "Bash(sed -n '185,210p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
+      "Bash(sed -n '280,300p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
+      "Bash(sed -n '400,415p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
+      "Bash(sed -n '1370,1415p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
+      "Bash(grep -rn properties /c/Users/altchegnon/Documents/immo/database/migrations/ --include=*.php -l)"
     ]
   }
 }

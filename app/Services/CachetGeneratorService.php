@@ -15,7 +15,7 @@ class CachetGeneratorService
     }
 
     /**
-     * Génère un cachet PNG circulaire pour une agence et retourne le chemin relatif storage.
+     * Génère un cachet PNG circulaire et retourne le chemin relatif storage.
      */
     public function generate(string $designation, int $directionId): ?string
     {
@@ -23,67 +23,104 @@ class CachetGeneratorService
             return null;
         }
 
-        $size = 420;
-        $cx   = $size / 2;
-        $cy   = $size / 2;
+        $size = 500;
+        $cx   = $size / 2;   // 250
+        $cy   = $size / 2;   // 250
 
         $img = imagecreatetruecolor($size, $size);
         imageantialias($img, true);
 
-        $white  = imagecolorallocate($img, 255, 255, 255);
-        $red    = imagecolorallocate($img, 139, 0, 0);
+        $white = imagecolorallocate($img, 255, 255, 255);
+        $red   = imagecolorallocate($img, 128, 8, 8);   // bordeaux foncé comme le référentiel
 
         imagefill($img, 0, 0, $white);
 
-        // Cercle extérieur (triple trait pour épaisseur)
-        $outerR = 195;
-        for ($i = 0; $i < 4; $i++) {
-            imageellipse($img, (int)$cx, (int)$cy, ($outerR - $i) * 2, ($outerR - $i) * 2, $red);
-        }
+        // ── Anneau extérieur : 2 cercles fins ─────────────────────────────
+        $this->thinCircle($img, (int)$cx, (int)$cy, 238, $red);
+        $this->thinCircle($img, (int)$cx, (int)$cy, 231, $red);
 
-        // Cercle intérieur (double trait)
-        $innerR = 160;
-        for ($i = 0; $i < 2; $i++) {
-            imageellipse($img, (int)$cx, (int)$cy, ($innerR - $i) * 2, ($innerR - $i) * 2, $red);
-        }
+        // ── Anneau intérieur : 2 cercles fins ─────────────────────────────
+        $this->thinCircle($img, (int)$cx, (int)$cy, 183, $red);
+        $this->thinCircle($img, (int)$cx, (int)$cy, 176, $red);
 
-        // Texte du haut (désignation de l'agence) — arc supérieur
-        $topText  = mb_strtoupper(mb_substr($designation, 0, 30));
-        $textR    = 177;
-        $this->drawArcText($img, $topText, $cx, $cy, $textR, -155, -25, $red, 11, $this->fontRegular, false);
+        // ── Rayon du texte dans l'anneau (mi-chemin entre les deux anneaux)
+        $textR = 207;
 
-        // Texte du bas (sigle/points) — arc inférieur
-        $abbr       = $this->makeAbbr($designation);
-        $bottomText = "\u{2022} " . $abbr . " \u{2022}";
-        $this->drawArcText($img, $bottomText, $cx, $cy, $textR, 30, 150, $red, 10, $this->fontRegular, true);
+        // ── Arc supérieur : nom de l'entreprise (centré en haut, -90°) ────
+        $topText = mb_strtoupper(mb_substr($designation, 0, 32));
+        $n       = mb_strlen($topText);
 
-        // Texte central (2 lignes)
-        $this->centerText($img, 'CACHET',   $cx, $cy - 14, 18, $red, $this->fontBold);
-        $this->centerText($img, 'OFFICIEL', $cx, $cy + 16, 12, $red, $this->fontRegular);
+        // Espacement angulaire adaptatif : ~5.5° par caractère, max 230°
+        $degPer   = $n > 22 ? 5.0 : ($n > 14 ? 5.8 : 7.0);
+        $topSpan  = min($n * $degPer, 230.0);
+        $this->drawArcText(
+            $img, $topText,
+            $cx, $cy, $textR,
+            -90.0 - $topSpan / 2.0,
+            -90.0 + $topSpan / 2.0,
+            $red, 12, $this->fontRegular, false
+        );
 
-        // Sauvegarde
+        // ── Arc inférieur : "• DIRECTEUR GÉNÉRAL •" (centré en bas, 90°) ──
+        $bottomText = "\u{2022} DIRECTEUR G\u{00C9}N\u{00C9}RAL \u{2022}";
+        $bn         = mb_strlen($bottomText);
+        $botSpan    = min($bn * 5.0, 162.0);
+        $this->drawArcText(
+            $img, $bottomText,
+            $cx, $cy, $textR,
+            90.0 - $botSpan / 2.0,
+            90.0 + $botSpan / 2.0,
+            $red, 11, $this->fontBold, true
+        );
+
+        // ── Centre : "Le" + "Directeur" + "Général" ───────────────────────
+        $this->centerText($img, 'Le',          $cx, $cy - 26, 15, $red, $this->fontRegular);
+        $this->centerText($img, 'Directeur',   $cx, $cy +  6, 21, $red, $this->fontBold);
+        $this->centerText($img, "G\u{00E9}n\u{00E9}ral", $cx, $cy + 36, 21, $red, $this->fontBold);
+
+        // ── Sauvegarde ─────────────────────────────────────────────────────
         $dir = storage_path('app/public/cachetons');
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
         }
 
         $filename = 'cachet_' . $directionId . '.png';
-        $filepath = $dir . '/' . $filename;
-        imagepng($img, $filepath, 6);
+        imagepng($img, $dir . '/' . $filename, 6);
         imagedestroy($img);
 
         return 'cachetons/' . $filename;
     }
 
-    /**
-     * Place chaque caractère du texte le long d'un arc, en le faisant pivoter.
-     * $startAngle / $endAngle en degrés, convention trigonométrique (0 = droite, sens horaire en écran).
-     * $flip = true pour l'arc inférieur (texte lisible depuis l'extérieur).
-     */
-    private function drawArcText($img, string $text, float $cx, float $cy, float $radius,
-                                  float $startAngle, float $endAngle, $color,
-                                  float $fontSize, string $fontPath, bool $flip = false): void
+    // ─────────────────────────────────────────────────────────────────────────
+    // Dessine un cercle fin (1 pixel)
+    // ─────────────────────────────────────────────────────────────────────────
+    private function thinCircle($img, int $cx, int $cy, int $radius, $color): void
     {
+        imageellipse($img, $cx, $cy, $radius * 2, $radius * 2, $color);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Place chaque caractère debout le long d'un arc.
+    //
+    // Convention angles : trigonométrique GD (0° = droite, sens horaire).
+    //   → top arc  : startAngle=-90-span/2  endAngle=-90+span/2  flip=false
+    //   → bot arc  : startAngle=90-span/2   endAngle=90+span/2   flip=true
+    //
+    // Rotation du glyphe :
+    //   flip=false (haut)  → rot = angleDeg + 90   le dessus du char pointe vers l'extérieur
+    //   flip=true  (bas)   → rot = angleDeg - 90   le dessus du char pointe vers le centre
+    //                         (texte lisible quand on retourne le cachet)
+    // ─────────────────────────────────────────────────────────────────────────
+    private function drawArcText(
+        $img,
+        string $text,
+        float $cx, float $cy, float $radius,
+        float $startAngle, float $endAngle,
+        $color,
+        float $fontSize,
+        string $fontPath,
+        bool $flip = false
+    ): void {
         if (!file_exists($fontPath)) return;
 
         $chars = mb_str_split($text);
@@ -91,54 +128,69 @@ class CachetGeneratorService
         if ($n === 0) return;
 
         $totalAngle = $endAngle - $startAngle;
-        $step       = $n > 1 ? $totalAngle / ($n - 1) : 0;
+        $step       = $n > 1 ? $totalAngle / ($n - 1) : 0.0;
 
         foreach ($chars as $i => $char) {
             $angleDeg = $startAngle + $i * $step;
             $angleRad = deg2rad($angleDeg);
 
-            // Centre du caractère sur l'arc
+            // Position du centre du caractère sur l'arc
             $x = $cx + $radius * cos($angleRad);
             $y = $cy + $radius * sin($angleRad);
 
-            // Angle de rotation pour imagettftext (sens anti-horaire)
-            $rot = $flip ? $angleDeg - 90 : $angleDeg + 90;
+            // Rotation du glyphe pour qu'il soit "debout"
+            // imagettftext : angle CCW en degrés
+            $rot = $flip ? $angleDeg - 90.0 : $angleDeg + 90.0;
 
-            // Boîte englobante pour centrer le caractère sur sa position
-            $bbox  = @imagettfbbox($fontSize, $rot, $fontPath, $char);
+            // Boîte englobante pour centrer le char sur sa position
+            $bbox = @imagettfbbox($fontSize, $rot, $fontPath, $char);
             if (!$bbox) continue;
-            $bCx   = ($bbox[0] + $bbox[2] + $bbox[4] + $bbox[6]) / 4;
-            $bCy   = ($bbox[1] + $bbox[3] + $bbox[5] + $bbox[7]) / 4;
 
-            imagettftext($img, $fontSize, $rot, (int)round($x - $bCx), (int)round($y - $bCy), $color, $fontPath, $char);
+            // Centre de la boîte (moyenne des 4 coins)
+            $bCx = ($bbox[0] + $bbox[2] + $bbox[4] + $bbox[6]) / 4.0;
+            $bCy = ($bbox[1] + $bbox[3] + $bbox[5] + $bbox[7]) / 4.0;
+
+            imagettftext(
+                $img,
+                $fontSize,
+                $rot,
+                (int) round($x - $bCx),
+                (int) round($y - $bCy),
+                $color,
+                $fontPath,
+                $char
+            );
         }
     }
 
-    private function centerText($img, string $text, float $cx, float $cy,
-                                 float $size, $color, string $fontPath): void
-    {
+    // ─────────────────────────────────────────────────────────────────────────
+    // Centre un texte horizontal à (cx, cy)
+    // ─────────────────────────────────────────────────────────────────────────
+    private function centerText(
+        $img,
+        string $text,
+        float $cx, float $cy,
+        float $size,
+        $color,
+        string $fontPath
+    ): void {
         if (!file_exists($fontPath)) return;
 
-        $bbox  = @imagettfbbox($size, 0, $fontPath, $text);
+        $bbox = @imagettfbbox($size, 0, $fontPath, $text);
         if (!$bbox) return;
+
         $textW = abs($bbox[2] - $bbox[0]);
         $textH = abs($bbox[7] - $bbox[1]);
 
-        imagettftext($img, $size, 0,
-            (int)round($cx - $textW / 2),
-            (int)round($cy + $textH / 2),
-            $color, $fontPath, $text);
-    }
-
-    private function makeAbbr(string $text): string
-    {
-        $words = preg_split('/\s+/', trim($text));
-        $abbr  = '';
-        foreach ($words as $w) {
-            if (mb_strlen($w) > 2) {
-                $abbr .= mb_strtoupper(mb_substr($w, 0, 1));
-            }
-        }
-        return $abbr ?: mb_strtoupper(mb_substr($text, 0, 4));
+        imagettftext(
+            $img,
+            $size,
+            0,
+            (int) round($cx - $textW / 2),
+            (int) round($cy + $textH / 2),
+            $color,
+            $fontPath,
+            $text
+        );
     }
 }

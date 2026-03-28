@@ -1,96 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Template</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Votre compte Lokativ a été créé</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-      text-align: center;
-      background-color: #007bff;
-      padding: 10px;
-      border-radius: 8px 8px 0 0;
-      color: #fff;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    .content {
-      padding: 20px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 30px 10px;
       color: #333;
     }
-
-    .content p {
-      margin: 15px 0;
+    .wrapper {
+      max-width: 580px;
+      margin: 0 auto;
     }
-
-    .btn {
-      display: inline-block;
-      background-color: #007bff;
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      margin-top: 10px;
-    }
-
-    .footer {
+    .header {
+      background: linear-gradient(135deg, #1a56db 0%, #0e3a9c 100%);
+      border-radius: 12px 12px 0 0;
+      padding: 32px 24px;
       text-align: center;
-      color: #777;
-      padding: 10px;
+    }
+    .header .brand {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .header .brand span {
+      color: #93c5fd;
+    }
+    .header p {
+      color: #bfdbfe;
+      margin-top: 6px;
       font-size: 14px;
     }
-
+    .badge-success {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: #bbf7d0;
+      margin-top: 12px;
+    }
+    .body {
+      background: #ffffff;
+      padding: 36px 32px;
+    }
+    .body h2 {
+      font-size: 20px;
+      color: #1e293b;
+      margin-bottom: 16px;
+    }
+    .body p {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .credentials-box {
+      margin: 24px 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .credentials-box .box-header {
+      background: #f1f5f9;
+      padding: 12px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .credential-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      gap: 12px;
+    }
+    .credential-row:last-child {
+      border-bottom: none;
+    }
+    .credential-row .cr-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #eff6ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .credential-row .cr-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 2px;
+    }
+    .credential-row .cr-value {
+      font-size: 15px;
+      color: #1e293b;
+      font-weight: 600;
+      word-break: break-all;
+    }
+    .btn-connect {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(135deg, #1a56db 0%, #0e3a9c 100%);
+      color: #fff !important;
+      text-decoration: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 28px 0 20px;
+      letter-spacing: 0.3px;
+    }
+    .info-box {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-top: 8px;
+    }
+    .info-box .icon {
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .info-box p {
+      font-size: 13px;
+      color: #14532d;
+      margin: 0;
+      line-height: 1.6;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 28px 0;
+    }
+    .footer {
+      background: #f8faff;
+      border-radius: 0 0 12px 12px;
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .footer p {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.8;
+    }
     .footer a {
-      color: #007bff;
+      color: #1a56db;
       text-decoration: none;
     }
-
   </style>
 </head>
 <body>
-
-  <div class="container">
+  <div class="wrapper">
     <div class="header">
-      <h1>Bienvenue chez Lokativ</h1>
+      <div class="brand">Loka<span>tiv</span></div>
+      <p>Plateforme de gestion immobilière</p>
+      <div class="badge-success">✔ Compte créé avec succès</div>
     </div>
-    <div class="content">
-      <p>Hello {{ $newuser['nom'] }}  {{ $newuser['prenom'] }},</p>
-      <p>Nous avons le plaisir de vous informer que votre compte a été crée avec succès.</p>
-      <p>Voici les détails de votre compte:</p>
-      <p>Email: {{ $newuser['email'] }}</p>
-      <p>Mot de passe : {{ $newuser['password'] }}</p>
-     
-      <a href="{{ request()->getSchemeAndHttpHost().'/login/'}}" class="btn">Se connecter</a> 
-      {{--  <a href="http://127.0.0.1/ImmobilierApk/public/login" class="btn">Se connecter</a>--}}
 
-      <p>Si vous avez des questions, n'hésitez pas à répondre à cet e-mail.</p>
+    <div class="body">
+      <h2>Bienvenue sur Lokativ, {{ $newuser['prenom'] }} !</h2>
+      <p>
+        Bonjour <strong>{{ $newuser['nom'] }} {{ $newuser['prenom'] }}</strong>,
+      </p>
+      <p>
+        Votre compte a bien été créé sur la plateforme Lokativ. Vous trouverez ci-dessous vos identifiants de connexion.
+      </p>
+
+      <div class="credentials-box">
+        <div class="box-header">Vos identifiants de connexion</div>
+        <div class="credential-row">
+          <div class="cr-icon">✉️</div>
+          <div>
+            <div class="cr-label">Adresse e-mail</div>
+            <div class="cr-value">{{ $newuser['email'] }}</div>
+          </div>
+        </div>
+        <div class="credential-row">
+          <div class="cr-icon">🔑</div>
+          <div>
+            <div class="cr-label">Mot de passe temporaire</div>
+            <div class="cr-value">{{ $newuser['password'] }}</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="{{ request()->getSchemeAndHttpHost() . '/login/' }}" class="btn-connect">
+        Accéder à mon espace →
+      </a>
+
+      <div class="info-box">
+        <div class="icon">💡</div>
+        <p>
+          Pour votre sécurité, nous vous recommandons de <strong>changer votre mot de passe</strong> dès votre première connexion depuis les paramètres de votre profil.
+        </p>
+      </div>
+
+      <hr class="divider">
+      <p style="font-size:13px; color:#94a3b8;">
+        Des questions ? Contactez notre support à
+        <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
+      </p>
     </div>
+
     <div class="footer">
-      <p>&copy; 2024 Lokativ. Tous droits réservés.</p>
-      <p><a href="#">Politique de confidentialité</a> | <a href="#">Se désabonner</a></p>
+      <p>
+        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
+        <a href="#">Politique de confidentialité</a> &nbsp;|&nbsp; <a href="#">Aide</a>
+      </p>
     </div>
   </div>
-
 </body>
 </html>

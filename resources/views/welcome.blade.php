@@ -29,6 +29,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18/build/css/intlTelInput.css">
+    <style>
+        /* Intégration intl-tel-input avec Bootstrap */
+        .iti { width: 100%; }
+        .iti__flag-container { z-index: 100; }
+        .iti__selected-flag { border-radius: 0.375rem 0 0 0.375rem; }
+        #telephone.is-invalid ~ .invalid-feedback { display: block; }
+    </style>
     
     <!-- Schema.org structured data -->
     <script type="application/ld+json">
@@ -1493,6 +1501,46 @@
                             </li>
                         @endif
 
+                        {{-- Rappels de loyer --}}
+                        @if($plan->max_rappels_loyer === null)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-bell mr-1 text-yellow-500"></i>
+                                <strong class="mx-1">Rappels loyer illimités</strong> / mois
+                            </li>
+                        @elseif(isset($plan->max_rappels_loyer) && $plan->max_rappels_loyer > 0)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-bell mr-1 text-yellow-500"></i>
+                                <strong class="mx-1">{{ $plan->max_rappels_loyer }}</strong> rappel(s) loyer / mois
+                            </li>
+                        @else
+                            <li class="flex items-center text-gray-400">
+                                <i class="mr-3 fas fa-times"></i>
+                                <i class="fas fa-bell mr-1"></i> Rappels de loyer
+                            </li>
+                        @endif
+
+                        {{-- Préavis --}}
+                        @if($plan->max_preavis === null)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-door-open mr-1 text-red-400"></i>
+                                <strong class="mx-1">Préavis illimités</strong> / mois
+                            </li>
+                        @elseif(isset($plan->max_preavis) && $plan->max_preavis > 0)
+                            <li class="flex items-center text-gray-600">
+                                <i class="mr-3 text-green-500 fas fa-check"></i>
+                                <i class="fas fa-door-open mr-1 text-red-400"></i>
+                                <strong class="mx-1">{{ $plan->max_preavis }}</strong> préavis / mois
+                            </li>
+                        @else
+                            <li class="flex items-center text-gray-400">
+                                <i class="mr-3 fas fa-times"></i>
+                                <i class="fas fa-door-open mr-1"></i> Envoi de préavis
+                            </li>
+                        @endif
+
                         {{-- Publicités --}}
                         @if($plan->max_publicites === null)
                             <li class="flex items-center text-gray-600">
@@ -1623,26 +1671,10 @@
                         <input type="email" class="form-control" id="email" name="email" required>
                         <div class="invalid-feedback">Veuillez saisir une adresse email valide.</div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="code_pays" class="form-label">Pays <span class="text-danger">*</span></label>
-                                <select class="form-select" id="code_pays" name="code_pays" required>
-                                    <option value="">Sélectionnez...</option>
-                                    <option value="+229">Bénin (+229)</option>
-                                    <option value="+33">France (+33)</option>
-                                    <option value="+1">États-Unis (+1)</option>
-                                </select>
-                                <div class="invalid-feedback">Veuillez sélectionner un pays.</div>
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="telephone" name="telephone" required>
-                                <div class="invalid-feedback">Veuillez saisir un numéro de téléphone valide.</div>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" id="telephone" name="telephone">
+                        <div class="invalid-feedback" id="telephone-error">Veuillez saisir un numéro de téléphone valide.</div>
                     </div>
                     
                     <!-- Section entreprise -->
@@ -2030,6 +2062,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- intl-tel-input -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18/build/js/intlTelInput.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var telInput = document.getElementById('telephone');
+            if (!telInput) return;
+            window._iti = window.intlTelInput(telInput, {
+                initialCountry:     'bj',
+                preferredCountries: ['bj', 'ci', 'sn', 'tg', 'ng', 'gh', 'ml', 'bf', 'fr'],
+                separateDialCode:   true,
+                autoPlaceholder:    'polite',
+                utilsScript:        'https://cdn.jsdelivr.net/npm/intl-tel-input@18/build/js/utils.js',
+            });
+            // Effacer l'erreur dès que l'utilisateur commence à taper
+            telInput.addEventListener('input', function () {
+                if (window._iti.isValidNumber()) {
+                    telInput.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
     @if(($paymentProvider ?? 'none') === 'kkiapay')
     <!-- KKiaPay SDK -->
     <script src="https://cdn.kkiapay.me/k.js"></script>
@@ -2361,11 +2414,11 @@
                     break;
                     
                 case 2:
-                    const requiredFields = ['nom', 'prenom', 'email', 'code_pays', 'telephone'];
+                    const requiredFields = ['nom', 'prenom', 'email'];
                     if (accountType === 'entreprise') {
                         requiredFields.push('designation', 'adresse', 'email_entreprise');
                     }
-                    
+
                     requiredFields.forEach(field => {
                         const element = document.getElementById(field);
                         if (!element.value.trim()) {
@@ -2375,9 +2428,28 @@
                             element.classList.remove('is-invalid');
                         }
                     });
-                    
+
                     if (!validateEmail()) {
                         isValid = false;
+                    }
+
+                    // Validation du téléphone via intl-tel-input
+                    const telEl = document.getElementById('telephone');
+                    const telError = document.getElementById('telephone-error');
+                    if (!window._iti) {
+                        if (!telEl.value.trim()) {
+                            telEl.classList.add('is-invalid');
+                            telError.textContent = 'Veuillez saisir un numéro de téléphone.';
+                            isValid = false;
+                        }
+                    } else if (!window._iti.isValidNumber()) {
+                        telEl.classList.add('is-invalid');
+                        telError.textContent = telEl.value.trim()
+                            ? 'Numéro de téléphone invalide pour ce pays.'
+                            : 'Veuillez saisir un numéro de téléphone.';
+                        isValid = false;
+                    } else {
+                        telEl.classList.remove('is-invalid');
                     }
                     break;
                     
@@ -2473,27 +2545,26 @@
         // ===== Soumission du formulaire =====
         // ===== Construction du formData partagé =====
         function buildFormData(transactionId = null) {
+            const telephone = window._iti ? window._iti.getNumber() : document.getElementById('telephone').value;
             const data = {
                 type_compte: accountType === 'particulier' ? 'Particulier' : 'Entreprise',
                 nom:         document.getElementById('nom').value,
                 prenom:      document.getElementById('prenom').value,
                 email:       document.getElementById('email').value,
-                code_pays:   document.getElementById('code_pays').value,
-                telephone:   document.getElementById('telephone').value,
+                telephone:   telephone,
                 plan_code:   selectedPlan.id,
                 _token:      document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             };
             if (transactionId) {
                 data.transaction_id = transactionId;
             }
-            // Inclure le token d'autorisation si disponible (plans payants)
             if (paymentAuthToken) {
                 data.payment_auth_token = paymentAuthToken;
             }
             if (accountType === 'entreprise') {
                 data.designation         = document.getElementById('designation').value;
                 data.adresse             = document.getElementById('adresse').value;
-                data.telepone_entreprise = document.getElementById('code_pays').value + document.getElementById('telephone').value;
+                data.telepone_entreprise = telephone;
                 data.email_entreprise    = document.getElementById('email_entreprise').value;
             }
             return data;
@@ -2656,7 +2727,7 @@
                     sandbox: PAYMENT_SANDBOX,
                     email:   document.getElementById('email').value,
                     name:    document.getElementById('prenom').value + ' ' + document.getElementById('nom').value,
-                    phone:   document.getElementById('telephone').value,
+                    phone:   window._iti ? window._iti.getNumber() : document.getElementById('telephone').value,
                     data:    JSON.stringify({ plan_code: selectedPlan.id }),
                 });
 

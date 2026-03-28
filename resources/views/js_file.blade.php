@@ -42,22 +42,15 @@
   });
 
 
-    new DataTable('#example');
-
-    function display_message(m_title,m_message,m_icone,m_class) {
+    function display_message(m_title, m_message, m_icone, m_class) {
         swal({
             title: m_title,
             text: m_message,
             icon: m_icone,
-            button: {
-                text: "Fermer",
-                className: m_class
-            },
+            button: { text: "Fermer", className: m_class },
             timer: 2000,
             buttonsStyling: true,
-            customClass: {
-                popup: 'animated bounceInDown',
-            },
+            customClass: { popup: 'animated bounceInDown' },
             background: '#f0f0f0',
         });
     }

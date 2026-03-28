@@ -1,419 +1,415 @@
 @extends('layouts.template')
 
+@section('title')
+<title>Gestion maison</title>
+@endsection
+
 @section('content')
 
-    @section('title')
-    <title>Gestion maison</title>
-    @endsection
+<style>
+  .swal2-container { z-index: 10070 !important; }
+  .swal2-popup    { z-index: 10071 !important; }
+</style>
 
-
-    <style>
-      /* Forcer SweetAlert2 à apparaître au-dessus de tous les modals */
-      .swal2-container {
-          z-index: 10070 !important;
-      }
-      
-      .swal2-popup {
-          z-index: 10071 !important;
-      }
-    </style>
-
-
-
-    
-    
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion maison</h4>
 
     @include('notification.display_message')
 
     @can('ajoute-maison')
-      <div class="col-md-6">
-        <div class="demo-inline-spacing">
-          <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
-            data-bs-target="#AjouerMaison">
-            <span class="bx bx-plus"></span>
-          </button>
-        </div>
-      </div><br/>
+      <div class="col-md-6 mb-3">
+        <button type="button" class="btn rounded-pill btn-icon btn-outline-primary"
+                data-bs-toggle="modal" data-bs-target="#AjouerMaison">
+          <span class="bx bx-plus"></span>
+        </button>
+      </div>
     @endcan
 
-
+    {{-- Modal Ajouter --}}
     <div class="modal fade" id="AjouerMaison" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalCenterTitle">Ajouter une maison</h5>
-            <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-header bg-primary">
+            <h5 class="modal-title text-white">Ajouter une maison</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
           </div>
           <div class="modal-body">
-            <form class="row g-3" method="post" action="javascript:save_house();" 
-               id="formulaire">
-               @csrf
-              
-                <div class="alert-primary bg-primary text-light" id="afficher"></div>
+            <form class="row g-3" id="formAjouterMaison">
+              @csrf
 
-                    <div class="col-12">
-                        <label for="inputNanme4" class="form-label">Choisir un propiétaire<span style="color: red;">*</span></label>
-                        <select required="" class="form-select @error('nom_proprietaire') is-invalid @enderror" name="nom_proprietaire" id="nom_proprietaire" aria-label="Default select example">
-                            <option selected disabled value="">Choisir un propiétaire</option>
-                            @if(isset($allProprios))
-                                @foreach($allProprios as $terme)
-                                <option  value="{{$terme->id}}">{{$terme->nom}}  {{$terme->prenom}}</option>
-                                @endforeach
-                            @endif  
-                        </select>
-                        <span class="invalid-feedback nom_proprietaire_err" role="alert"></span>
-                    </div>
+              <div class="col-12">
+                <label class="form-label">Choisir un propriétaire <span class="text-danger">*</span></label>
+                <select required class="form-select" name="nom_proprietaire" id="nom_proprietaire">
+                  <option selected disabled value="">Choisir un propriétaire</option>
+                  @if(isset($allProprios))
+                    @foreach($allProprios as $terme)
+                      <option value="{{ $terme->id }}">{{ $terme->nom }} {{ $terme->prenom }}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>
 
+              <div class="col-12">
+                <label class="form-label">Nom de la maison <span class="text-danger">*</span></label>
+                <input type="text" name="nom_maison" class="form-control" id="nom_maison" required>
+              </div>
 
-                    <div class="col-12">
-                        <label for="inputNanme4" class="form-label">Nom de la maison<span style="color: red;">*</span></label>
-                        <input type="text" name="nom_maison" class="form-control @error('nom_maison') is-invalid @enderror" id="nom_maison" required>
-                        <span class="invalid-feedback nom_maison_err" role="alert"></span>
-                    </div>
+              <div class="col-12">
+                <label class="form-label">Quartier <span class="text-danger">*</span></label>
+                <input type="text" name="quartier" class="form-control" id="quartier" required>
+              </div>
 
-                    <div class="col-12">
-                        <label for="inputEmail4" class="form-label">Quartier<span style="color: red;">*</span></label>
-                        <input type="text" name="quartier" class="form-control @error('quartier') is-invalid @enderror" id="quartier" required>
-                        <span class="invalid-feedback quartier_err" role="alert"> </span>
-                    </div>
+              <div class="col-12">
+                <label class="form-label">Nombre de chambres <span class="text-danger">*</span></label>
+                <input type="number" min="1" name="nombre_chambre" class="form-control" id="nombre_chambre" required>
+              </div>
 
-                    <div class="col-12">
-                        <label for="inputPassword4" class="form-label">Nombre de chambre<span style="color: red;">*</span></label>
-                        <input type="text" name="nombre_chambre" onkeyup="limit(this);" onkeydown="limit(this);" class="form-control @error('nombre_chambre') is-invalid @enderror" id="nombre_chambre" required>
-                        <span class="invalid-feedback nombre_chambre_err" role="alert"></span>
-                    </div>
-                    <div class="modal-footer">
-                    <button  class="btn btn-outline-secondary" onclick="(this);" id="close" data-bs-dismiss="modal">Fermer</button>
-                    <button  class="btn btn-primary" id="valider"><span class="fa fa-save" id="a"></span><span id="s">Enregistrer</span></button>
-                    </div>
-	         </form>
-	        </div>
+              <div class="modal-footer mt-3">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="submit" class="btn btn-primary">
+                  <span class="bx bx-save me-1"></span> Enregistrer
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
-
-      <!-- Hoverable Table rows -->
-    <div class="card">
-      <h5 class="card-header text-center">Liste des maisons</h5>
-      <div class="table-responsive text-nowrap">
-        <table id="example" class="table table-hover border-primary" style="width:100%" >
-          <thead>
-            <tr>
-                <th scope="col">Agence</th>
-                <th scope="col">Propriétaire</th>
-                <th scope="col">Nom maison</th>
-                <th scope="col">Quartier</th>
-                <th scope="col">Nombre de chambre</th>
-                <th scope="col">Actions</th>
-              </tr>
-          </thead>
-          <tbody class="table-border-bottom-0">
-            @can('Consulter-maison')
-                @if(isset($allMaison))
-                 @foreach($allMaison as $item)
-                  <tr>
-                    <td>{{ get_annexee_name($item->idannexe_ref) }}</td>
-                    <th scope="row">{{ $item->nom }}  {{ $item->prenom }}</th>
-                    <td>{{ $item->nom_maison }}</td>
-                    <td>{{ $item->quartier }}</td>
-                    <td>{{ $item->nombre_chambre }}</td>
-                    <td>
-                      @can('modify-maison')
-                        <a class="btn rounded-pill btn-primary" 
-                        title="Modifier" href="#" data-bs-toggle="modal" data-bs-target="#modifier{{$loop->iteration}}">
-                            <i class="bx bx-edit-alt me-1"></i>
-                        </a>
-                       @endcan
-
-                        @can('delete-maison')
-                            <a class="btn rounded-pill btn-danger" title="Supprimer" href="#" data-bs-toggle="modal" data-bs-target="#supprimer{{$loop->iteration}}">
-                                <i class="bx bx-trash me-1"></i>
-                            </a>
-                        @endcan
-                    </td>
-                  </tr>
-                @endforeach
-                @endcan
-          </tbody>
-        </table>
       </div>
     </div>
-    <!--/ Hoverable Table rows -->
 
-    @foreach($allMaison as $items)
-      <div class="modal fade" id="supprimer{{$loop->iteration}}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-          <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalCenterTitle">Supprimer un propriétaire</h5>
-                <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    {{-- Liste des maisons --}}
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-primary text-center">
+        <h5 class="mb-0 text-white"><i class="bx bx-home me-1"></i> Liste des maisons</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="example" class="table table-striped table-hover align-middle mb-0" style="width:100%">
+            <thead class="table-light">
+              <tr>
+                <th>Propriétaire</th>
+                <th>Nom maison</th>
+                <th>Quartier</th>
+                <th>Nombre de chambres</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @can('Consulter-maison')
+                @if(isset($allMaison))
+                  @foreach($allMaison as $item)
+                    <tr id="row-maison-{{ $item->id }}">
+                      <td><strong>{{ $item->nom }} {{ $item->prenom }}</strong></td>
+                      <td>{{ $item->nom_maison }}</td>
+                      <td>{{ $item->quartier }}</td>
+                      <td>{{ $item->nombre_chambre }}</td>
+                      <td class="text-center">
+                        @can('modify-maison')
+                          <a class="btn btn-sm btn-primary me-1" title="Modifier"
+                             data-bs-toggle="modal" data-bs-target="#modifier{{ $item->id }}">
+                            <i class="bx bx-edit-alt"></i>
+                          </a>
+                        @endcan
+                        @can('delete-maison')
+                          <button type="button"
+                                  class="btn btn-sm btn-danger btn-supprimer-maison"
+                                  title="Supprimer"
+                                  data-id="{{ $item->id }}"
+                                  data-nom="{{ $item->nom_maison }}">
+                            <i class="bx bx-trash"></i>
+                          </button>
+                        @endcan
+                      </td>
+                    </tr>
+                  @endforeach
+                @endif
+              @endcan
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {{-- Modals de modification --}}
+    @if(isset($allMaison))
+      @foreach($allMaison as $items)
+        <div class="modal fade" id="modifier{{ $items->id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white">Modifier une maison</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
               </div>
-            <div class="modal-body">
-              <form class="row g-3" method="post" action="{{ route('destroy_house') }}">
-                      @csrf
-                  Voulez-vous vraiment supprimer cette ligne ? 
-                <input type="hidden" name="id" class="form-control" id="id" value="{{ $items->id}} ">
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    Non
-                  </button>
-                  <button  type="submit" class="btn btn-outline-danger">Oui</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+              <div class="modal-body">
+                <form class="row g-3 form-modifier-maison" data-id="{{ $items->id }}">
+                  @csrf
+                  <input type="hidden" name="house_id" value="{{ $items->id }}">
 
+                  <div class="col-12">
+                    <label class="form-label">Choisir un propriétaire <span class="text-danger">*</span></label>
+                    <select required class="form-select" name="nom_proprietaire2">
+                      <option selected disabled value="">Choisir un propriétaire</option>
+                      @if(isset($allProprios))
+                        @foreach($allProprios as $terme)
+                          <option value="{{ $terme->id }}" {{ $items->proprio_id == $terme->id ? 'selected' : '' }}>
+                            {{ $terme->nom }} {{ $terme->prenom }}
+                          </option>
+                        @endforeach
+                      @endif
+                    </select>
+                  </div>
 
-      <div class="modal fade" id="modifier{{$loop->iteration}}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalCenterTitle">Modification</h5>
-              <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form class="row g-3" method="post" action="{{ route('update_house') }}" id="formulaireModifiedqsdqsr">
-                        @csrf
-               
-                    <input type="hidden" name="house_id" class="form-control" id="id" value="{{ $items->id}} ">
-                    <div class="alert-primary bg-primary text-light" id="afficher2"></div>
-    
-                    <div class="col-12">
-                        <label for="inputNanme4" class="form-label">Choisir un propiétaire<span style="color: red;">*</span></label>
-                        <select required="" class="form-select @error('nom_proprietaire') is-invalid @enderror" name="nom_proprietaire2" id="nom_proprietaire" aria-label="Default select example">
-                            <option selected disabled value="">Choisir un propiétaire</option>
-                            @if(isset($allProprios))
-                            @foreach($allProprios as $terme)
-                                 <option  value="{{$terme->id}}"  {{$items->proprio_id == $terme->id ? 'selected':''}}>{{$terme->nom}}  {{$terme->prenom}}</option>
-                            @endforeach
-                            @endif 
-                        </select>
-                        <span class="invalid-feedback nom_proprietaire_err" role="alert"></span>
-                    </div>
- 
- 
-                    <div class="col-12">
-                        <label for="inputNanme4" class="form-label">Nom de la maison<span style="color: red;">*</span></label>
-                        <input type="text" name="nom_maison" class="form-control @error('nom_maison') is-invalid @enderror" id="nom_maison" value="{{ $items->nom_maison }}" required>
-                        <span class="invalid-feedback nom_maison_err" role="alert">
-                            </span>
-                    </div>
+                  <div class="col-12">
+                    <label class="form-label">Nom de la maison <span class="text-danger">*</span></label>
+                    <input type="text" name="nom_maison" class="form-control" value="{{ $items->nom_maison }}" required>
+                  </div>
 
-                    <div class="col-12">
-                        <label for="inputEmail4" class="form-label">Quartier<span style="color: red;">*</span></label>
-                        <input type="text" name="quartier" class="form-control @error('quartier') is-invalid @enderror" id="quartier" value="{{ $items->quartier }}"required>
-                        <span class="invalid-feedback quartier_err" role="alert">
-                            </span>
-                    </div>
+                  <div class="col-12">
+                    <label class="form-label">Quartier <span class="text-danger">*</span></label>
+                    <input type="text" name="quartier" class="form-control" value="{{ $items->quartier }}" required>
+                  </div>
 
-                    <div class="col-12">
-                        <label for="inputPassword4" class="form-label">Nombre de chambre<span style="color: red;">*</span></label>
-                        <input type="number" min="1" name="nombre_chambre" class="form-control @error('nombre_chambre') is-invalid @enderror" 
-                        id="nombre_chambre" value="{{ $items->nombre_chambre }}" required>
-                            <span class="invalid-feedback nombre_chambre_err" role="alert">
-                            </span>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" id="close" data-bs-dismiss="modal">Fermer</button>
-                        <button  class="btn btn-primary" id="valider"><span class="fa fa-save" id="a"></span><span id="s">Enregistrer</span></button>
-                    </div>
+                  <div class="col-12">
+                    <label class="form-label">Nombre de chambres <span class="text-danger">*</span></label>
+                    <input type="number" min="1" name="nombre_chambre" class="form-control"
+                           value="{{ $items->nombre_chambre }}" required>
+                  </div>
+
+                  <div class="modal-footer mt-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">
+                      <span class="bx bx-save me-1"></span> Enregistrer
+                    </button>
+                  </div>
                 </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
       @endforeach
-     @endif
+    @endif
 
-        
-    <script>
+</div>
 
-        function display_sweet_alert_over_modal(title, text, icon, buttonClass) {
-            // Appeler votre fonction existante
-            display_sweet_alerte2(title, text, icon, buttonClass);
-            
-            // Forcer le z-index après un court délai
-            setTimeout(function() {
-                const swalContainer = document.querySelector('.swal2-container');
-                const swalPopup = document.querySelector('.swal2-popup');
-                
-                if (swalContainer) {
-                    swalContainer.style.zIndex = '10070';
-                }
-                if (swalPopup) {
-                    swalPopup.style.zIndex = '10071';
-                }
-            }, 10);
-        }
+<script>
+$(document).off('.page');
+var CSRF_TOKEN      = '{{ csrf_token() }}';
+var URL_STORE       = '{{ route("store_house") }}';
+var URL_UPDATE      = '{{ route("update_house") }}';
+var URL_DESTROY     = '{{ route("destroy_house") }}';
+var CAN_MODIFY_MAISON = {{ auth()->user()->can('modify-maison') ? 'true' : 'false' }};
+var CAN_DELETE_MAISON = {{ auth()->user()->can('delete-maison') ? 'true' : 'false' }};
+var ALL_PROPRIOS = @json($allProprios->map(fn($p) => ['id' => $p->id, 'nom' => $p->nom.' '.$p->prenom]));
 
-        function limit(element) {
-            var max_chars = 2;
-            if (element.value.length > max_chars) {
-                element.value = element.value.substr(0, max_chars);
+// ─── Utilitaire fermeture modal ───────────────────────────────────────────────
+function closeModalClean(id) {
+    const modalEl = document.getElementById(id);
+    if (!modalEl) return;
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.hide();
+    modalEl.addEventListener('hidden.bs.modal', function handler() {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+        modalEl.removeEventListener('hidden.bs.modal', handler);
+    });
+}
+
+// ─── CRÉATION DYNAMIQUE DU MODAL MODIFIER ────────────────────────────────────
+function creerModalModifierMaison(m) {
+    const modalId = 'modifier' + m.id;
+    if (document.getElementById(modalId)) return; // déjà présent
+
+    // Construire les options du select propriétaire
+    let optionsProprio = '<option selected disabled value="">Choisir un propriétaire</option>';
+    ALL_PROPRIOS.forEach(function(p) {
+        optionsProprio += `<option value="${p.id}">${p.nom}</option>`;
+    });
+
+    const modalEl = document.createElement('div');
+    modalEl.className = 'modal fade';
+    modalEl.id = modalId;
+    modalEl.setAttribute('tabindex', '-1');
+    modalEl.setAttribute('aria-hidden', 'true');
+    modalEl.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Modifier une maison</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3 form-modifier-maison" data-id="${m.id}">
+                        <input type="hidden" name="_token" value="${CSRF_TOKEN}">
+                        <input type="hidden" name="house_id" value="${m.id}">
+                        <div class="col-12">
+                            <label class="form-label">Choisir un propriétaire <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="nom_proprietaire2">
+                                ${optionsProprio}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Nom de la maison <span class="text-danger">*</span></label>
+                            <input type="text" name="nom_maison" class="form-control" value="${m.nom_maison}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Quartier <span class="text-danger">*</span></label>
+                            <input type="text" name="quartier" class="form-control" value="${m.quartier}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Nombre de chambres <span class="text-danger">*</span></label>
+                            <input type="number" min="1" name="nombre_chambre" class="form-control" value="${m.nombre_chambre}" required>
+                        </div>
+                        <div class="modal-footer mt-3">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="bx bx-save me-1"></span> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modalEl);
+    // La soumission est gérée par délégation jQuery — pas de bind direct nécessaire
+}
+
+// ─── AJOUT ───────────────────────────────────────────────────────────────────
+$(document).on('submit.page', '#formAjouterMaison', function(e) {
+    e.preventDefault();
+    const form = this;
+    const data = new FormData(form);
+
+    fetch(URL_STORE, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+        body: data
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.status) {
+            const m = res.maison;
+
+            // Créer le modal de modification pour cette nouvelle ligne
+            creerModalModifierMaison(m);
+
+            // Boutons d'action
+            let actions = '';
+            if (CAN_MODIFY_MAISON) {
+                actions += `<a class="btn btn-sm btn-primary me-1" title="Modifier" data-bs-toggle="modal" data-bs-target="#modifier${m.id}"><i class="bx bx-edit-alt"></i></a>`;
             }
-      
+            if (CAN_DELETE_MAISON) {
+                actions += `<button type="button" class="btn btn-sm btn-danger btn-supprimer-maison" title="Supprimer" data-id="${m.id}" data-nom="${m.nom_maison}"><i class="bx bx-trash"></i></button>`;
+            }
+
+            // Ajouter la ligne au tableau
+            const tr = document.createElement('tr');
+            tr.id = 'row-maison-' + m.id;
+            tr.innerHTML = `
+                <td><strong>${m.proprietaire}</strong></td>
+                <td>${m.nom_maison}</td>
+                <td>${m.quartier}</td>
+                <td>${m.nombre_chambre}</td>
+                <td class="text-center">${actions}</td>
+            `;
+            if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
+                $('#example').DataTable().row.add(tr).draw(false);
+            } else {
+                document.querySelector('#example tbody').prepend(tr);
+            }
+
+            // Reset formulaire (modal reste ouvert)
+            form.reset();
+
+            Swal.fire({ icon: 'success', title: 'Succès', text: res.message, timer: 2500, showConfirmButton: false });
+        } else {
+            Swal.fire({ icon: 'warning', title: 'Attention', text: res.message });
         }
-      
-      
-        $('#nombre_chambre').on('change keyup', function() {
-          // Remove invalid characters
-          var sanitized = $(this).val().replace(/[^0-9]/g, '');
-          $(this).val(sanitized);
-        });
-      
-        function printErrorMsg(msg) {
-            $.each(msg, function(key, value) {
-                $('.' + key + '_err').text(value);
-            });
+    })
+    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+});
+
+// ─── MODIFICATION (délégation — fonctionne après re-rendu DataTables) ─────────
+$(document).on('submit.page', '.form-modifier-maison', function(e) {
+    e.preventDefault();
+    const id   = this.dataset.id;
+    const data = new FormData(this);
+
+    fetch(URL_UPDATE, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+        body: data
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.status) {
+            const row = document.getElementById('row-maison-' + id);
+            if (row && res.maison) {
+                const cells = row.querySelectorAll('td');
+                cells[0].innerHTML  = `<strong>${res.maison.proprietaire}</strong>`;
+                cells[1].textContent = res.maison.nom_maison;
+                cells[2].textContent = res.maison.quartier;
+                cells[3].textContent = res.maison.nombre_chambre;
+            }
+            Swal.fire({ icon: 'success', title: 'Mis à jour', text: res.message, timer: 2500, showConfirmButton: false });
+            closeModalClean('modifier' + id);
+        } else {
+            Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
         }
-      
-        function save_house() {
-      
-            var data = new FormData();
-      
-            //Form data
-            var form_data = $('#formulaire').serializeArray();
-            $.each(form_data, function (key, input) {
-                data.append(input.name, input.value);
-            });
-      
-      
-      
-            $.ajax({
-                url: "{{ route('store_house') }}",
-                method: "POST",
-                processData: false,
-                contentType: false,
-                data: data,
-                beforeSend: function(data) {
-                    $("#AjouerMaison button#close").prop("disabled", true);
-                    $("#AjouerMaison button#valider").prop("disabled", true);
-                    $("#AjouerMaison button#valider").html('<i class="text-center fa fa-spinner fa-pulse fa-1x fa-fw ml-2">En cours...</i>');
-                },
-                success: function(data) {
-      
-      
-                    $("#AjouerMaison button#close").prop("disabled", false);
-                    $("#AjouerMaison button#valider").prop("disabled", false);
-                    $("#AjouerMaison button#valider").html('Enregistrer');
-      
-      
-                    if (!$.isEmptyObject(data.error)) {
-                        printErrorMsg(data.error);
-                    }
-                    try {
-                        if (data.status) {
-                         // rempliretableau();
-      
-                           // alert(data.message);
-                           // $("#AjouerMaison div#afficher").html(data.message)
-                           display_sweet_alert_over_modal("Succès !!",data.message,"success","btn btn-primary");
-      
-      
-                            $("#AjouerMaison form#formulaire")[0].reset();
-                        } else {
-                           // $("#AjouerMaison div#afficher").html(data.message)
-                           display_sweet_alert_over_modal("Erreur !!",data.message,"warning","btn btn-danger");
-      
-                        }
-      
-                    } catch (error) {
-      
-                    }
-      
-                },
-                error: function(data) {
-      
-               }
-            });
-      
-        }
-      
-      
-         function modification() {
-      
-            var data = new FormData();
-      
-            //Form data
-            var form_data = $('#formulaireModifier').serializeArray();
-            $.each(form_data, function (key, input) {
-                data.append(input.name, input.value);
-            });
-      
-      
-      
-            $.ajax({
-                url: "{{ route('update_house') }}",
-                method: "POST",
-                processData: false,
-                contentType: false,
-                data: data,
-                beforeSend: function(data) {
-                    $("#AjouerMaison button#close").prop("disabled", true);
-                    $("#AjouerMaison button#valider").prop("disabled", true);
-                    $("#AjouerMaison button#valider").html('<i class="text-center fa fa-spinner fa-pulse fa-1x fa-fw ml-2">En cours...</i>');
-                },
-                success: function(data) {
-      
-      
-                    $("#AjouerMaison button#close").prop("disabled", false);
-                    $("#AjouerMaison button#valider").prop("disabled", false);
-                    $("#AjouerMaison button#valider").html('Enregistrer');
-      
-      
-                    if (!$.isEmptyObject(data.error)) {
-                        printErrorMsg(data.error);
-                    }
-                    try {
-                        if (data.status) {
-                         // rempliretableau();
-      
-                           // alert(data.message);
-                            $("#AjouerMaison div#afficher2").html(data.message)
-                            $("#AjouerMaison form#formulaireModifier")[0].reset();
-                        } else {
-                            $("#AjouerMaison div#afficher2").html(data.message)
-                        }
-      
-                    } catch (error) {
-      
-                    }
-      
-                },
-                error: function(data) {
-      
-               }
-            });
-      
-        }
-      
-        function printErrorMsg(msg) {
-          const items = [];
-          for (const [key, value] of Object.entries(msg)) {
-              $('.' + key + '_err').text(value).show();
-              var elmnt = $('.' + key + '_err');
-              items.push(elmnt.closest('.form-group'))
-          }
-        }
-      
-       $(':input').on('input', function() {
-            $('.' + $(this).attr("id") + '_err').hide();
-        });
-      
-      
-        $(':input').on('change', function() {
-            $('.' + $(this).attr("id") + '_err').hide();
-        });
-      
-      
-        $('select').on('change', function() {
-           $('.' + $(this).attr("id") + '_err').hide();
-        });
-        
-      </script>
+    })
+    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+});
+
+// ─── SUPPRESSION (délégation — fonctionne après re-rendu DataTables) ──────────
+$(document).on('click.page', '.btn-supprimer-maison', function() {
+    const id  = this.dataset.id;
+    const nom = this.dataset.nom;
+
+    Swal.fire({
+        title: 'Supprimer cette maison ?',
+        html: `<strong class="text-danger">${nom}</strong><br><small class="text-muted">Cette action supprimera également toutes les chambres et locataires associés.</small>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    }).then(result => {
+        if (!result.isConfirmed) return;
+
+        const data = new FormData();
+        data.append('_token', CSRF_TOKEN);
+        data.append('id', id);
+
+        fetch(URL_DESTROY, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+            body: data
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status) {
+                Swal.fire({ icon: 'success', title: 'Supprimé', text: res.message, timer: 2500, showConfirmButton: false });
+                if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
+                    $('#example').DataTable().row('#row-maison-' + id).remove().draw(false);
+                } else {
+                    const row = document.getElementById('row-maison-' + id);
+                    if (row) row.remove();
+                }
+            } else {
+                Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+            }
+        })
+        .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+    });
+});
+
+// ─── DATATABLES ───────────────────────────────────────────────────────────────
+if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
+    $('#example').DataTable().destroy();
+}
+$('#example').DataTable();
+</script>
+
 @endsection

@@ -166,6 +166,45 @@
 
                         <hr class="my-3">
 
+                        {{-- Notifications locataires --}}
+                        <p class="fw-bold text-muted text-uppercase small mb-2">
+                            <i class="bx bx-bell me-1"></i>Notifications locataires / mois
+                        </p>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bx bx-money me-1 text-warning"></i>
+                                    Rappels de loyer / mois
+                                    <span class="text-muted small">(vide = illimité, 0 = interdit)</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-label-warning">
+                                        <i class="bx bx-money"></i>
+                                    </span>
+                                    <input type="number" class="form-control" name="max_rappels_loyer"
+                                           value="{{ $plan->max_rappels_loyer }}" min="0"
+                                           placeholder="Illimité">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bx bx-exit me-1 text-danger"></i>
+                                    Préavis / mois
+                                    <span class="text-muted small">(vide = illimité, 0 = interdit)</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-label-danger">
+                                        <i class="bx bx-exit"></i>
+                                    </span>
+                                    <input type="number" class="form-control" name="max_preavis"
+                                           value="{{ $plan->max_preavis }}" min="0"
+                                           placeholder="Illimité">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
                         {{-- Publicités --}}
                         <p class="fw-bold text-muted text-uppercase small mb-2">
                             <i class="bx bx-image me-1"></i>Publicités
@@ -216,6 +255,8 @@
                         Annexes : <strong>{{ $plan->max_annexes ?? '∞' }}</strong> &nbsp;|&nbsp;
                         Email/mois : <strong>{{ $plan->max_envois_email ?? '∞' }}</strong> &nbsp;|&nbsp;
                         WA/mois : <strong>{{ $plan->max_envois_whatsapp ?? '∞' }}</strong> &nbsp;|&nbsp;
+                        Rappels loyer/mois : <strong>{{ $plan->max_rappels_loyer ?? '∞' }}</strong> &nbsp;|&nbsp;
+                        Préavis/mois : <strong>{{ $plan->max_preavis ?? '∞' }}</strong> &nbsp;|&nbsp;
                         Publicités : <strong>{{ $plan->max_publicites ?? '∞' }}</strong> &nbsp;|&nbsp;
                         Prix : <strong>{{ number_format($plan->prix_annuel, 0, ',', ' ') }} XOF/an</strong>
                     </small>
@@ -287,6 +328,17 @@
                             <input type="number" class="form-control" name="max_envois_whatsapp" min="0" placeholder="Illimité">
                         </div>
 
+                        <div class="col-12"><hr class="my-1"><p class="fw-bold text-muted text-uppercase small mb-0">Notifications locataires / mois</p></div>
+
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bx bx-money me-1"></i>Rappels loyer / mois <span class="text-muted small">(vide = illimité, 0 = interdit)</span></label>
+                            <input type="number" class="form-control" name="max_rappels_loyer" min="0" placeholder="Illimité">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="bx bx-exit me-1"></i>Préavis / mois <span class="text-muted small">(vide = illimité, 0 = interdit)</span></label>
+                            <input type="number" class="form-control" name="max_preavis" min="0" placeholder="Illimité">
+                        </div>
+
                         <div class="col-12"><hr class="my-1"><p class="fw-bold text-muted text-uppercase small mb-0">Publicités</p></div>
 
                         <div class="col-md-6">
@@ -329,6 +381,8 @@ function savePlan(idplan) {
         max_annexes:          nullableInt(fdata.get('max_annexes')),
         max_envois_email:     nullableInt(fdata.get('max_envois_email')),
         max_envois_whatsapp:  nullableInt(fdata.get('max_envois_whatsapp')),
+        max_rappels_loyer:    nullableInt(fdata.get('max_rappels_loyer')),
+        max_preavis:          nullableInt(fdata.get('max_preavis')),
         max_publicites:       nullableInt(fdata.get('max_publicites')),
         is_active:            form.querySelector('[name="is_active"]').checked ? 1 : 0,
     };
@@ -389,6 +443,8 @@ function createPlan() {
         max_annexes:          nullableInt(fdata.get('max_annexes')),
         max_envois_email:     nullableInt(fdata.get('max_envois_email')),
         max_envois_whatsapp:  nullableInt(fdata.get('max_envois_whatsapp')),
+        max_rappels_loyer:    nullableInt(fdata.get('max_rappels_loyer')),
+        max_preavis:          nullableInt(fdata.get('max_preavis')),
         max_publicites:       nullableInt(fdata.get('max_publicites')),
         is_active:            parseInt(fdata.get('is_active')),
     };

@@ -9,6 +9,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class RoleController extends Controller
 {
@@ -68,15 +69,17 @@ class RoleController extends Controller
         $permissionStatistique = Permission::where("group", "statistique")->get();
         //$permissionMotPasse = Permission::where("group", "changePwd")->get();
         $permissionDossier = Permission::where("group", "dossiers")->get();
-        $permissionPub = Permission::where("group", "pubs")->get();
-        $abonnement = Permission::where("group", "abonnement")->get();
+        $permissionPub   = Permission::where("group", "pubs")->get();
+        $abonnement      = Permission::where("group", "abonnement")->get();
+        $permissionEnvoi = Permission::where("group", "envoi")->get();
 
-        
-
-
-        return view('roles.create', compact('permission', 'permissionParametrage',
-         'permissionProprio','permissionMaison','permissionChambre','permissionPrix','permissionLocataire','permissionPaiement','permissionStatistique'
-         ,'permissionDossier','permissionPub','abonnement'));
+        return view('roles.create', compact(
+            'permission', 'permissionParametrage',
+            'permissionProprio', 'permissionMaison', 'permissionChambre',
+            'permissionPrix', 'permissionLocataire', 'permissionPaiement',
+            'permissionStatistique', 'permissionDossier', 'permissionPub',
+            'abonnement', 'permissionEnvoi'
+        ));
     }
 
     /**
@@ -89,20 +92,40 @@ class RoleController extends Controller
     {
         $this->authorize('gestion-role');
 
-        $this->validate($request, [
-            'name' => 'required|unique:roles,name',
+        $validator = Validator::make($request->all(), [
+            'name'       => 'required|unique:roles,name',
             'permission' => 'required',
-        ]);   
+        ], [
+            'name.required'       => 'Le nom de la fonction est obligatoire.',
+            'name.unique'         => 'Ce nom de fonction existe déjà.',
+            'permission.required' => 'Veuillez sélectionner au moins une permission.',
+        ]);
 
-        $role = Role::create(['name' => $request->input('name'),'iddirectionRef_role' => Auth::user()->iddirection_ref]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'error'  => $validator->errors(),
+            ]);
+        }
+
+        $role = Role::create([
+            'name'                => $request->input('name'),
+            'iddirectionRef_role' => Auth::user()->iddirection_ref,
+        ]);
         $role->syncPermissions($request->input('permission'));
 
         activity()->performedOn(new Role())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Ajout du fonction '.$request->input('name').' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+            ->causedBy(Auth::user()->id)
+            ->withProperties(['old' => [], 'new' => [
+                'name'        => $request->input('name'),
+                'permissions' => $request->input('permission', []),
+            ]])
+            ->log('Ajout du fonction ' . $request->input('name') . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-        return redirect()->route('roles.create')
-            ->with('success', 'La fonction '. $request->input('name').' est ajoutée avec succès');
+        return response()->json([
+            'status'  => true,
+            'message' => 'La fonction « ' . $request->input('name') . ' » a été ajoutée avec succès.',
+        ]);
     }
     /**
      * Display the specified resource.
@@ -114,7 +137,9 @@ class RoleController extends Controller
     {
         $this->authorize('gestion-role');
 
-        $role = Role::find($id);
+        $id = decrypt_id($id);
+        abort_if(!$id, 404);
+        $role = Role::findOrFail($id);
         $rolePermissions = Permission::join("role_has_permissions", "role_has_permissions.permission_id", "=", "permissions.id")
             ->where("role_has_permissions.role_id", $id)
             ->get();
@@ -132,7 +157,9 @@ class RoleController extends Controller
     {
         $this->authorize('gestion-role');
 
-        $role = Role::find($id);
+        $id = decrypt_id($id);
+        abort_if(!$id, 404);
+        $role = Role::findOrFail($id);
 
         $permission = Permission::where("group", "admin")->get();
         $permissionParametrage = Permission::where("group", "params")->get();
@@ -145,19 +172,21 @@ class RoleController extends Controller
         $permissionStatistique = Permission::where("group", "statistique")->get();
         //$permissionMotPasse = Permission::where("group", "changePwd")->get();
         $permissionDossier = Permission::where("group", "dossiers")->get();
-        $permissionPub = Permission::where("group", "pubs")->get();
-        $abonnement = Permission::where("group", "abonnement")->get();
-
-
+        $permissionPub   = Permission::where("group", "pubs")->get();
+        $abonnement      = Permission::where("group", "abonnement")->get();
+        $permissionEnvoi = Permission::where("group", "envoi")->get();
 
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
             ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
             ->all();
 
-
-         return view('roles.edit', compact('role','rolePermissions','permission', 'permissionParametrage',
-         'permissionProprio','permissionMaison','permissionChambre','permissionPrix','permissionLocataire',
-         'permissionPaiement','permissionStatistique','permissionDossier','permissionPub','abonnement'));
+        return view('roles.edit', compact(
+            'role', 'rolePermissions', 'permission', 'permissionParametrage',
+            'permissionProprio', 'permissionMaison', 'permissionChambre',
+            'permissionPrix', 'permissionLocataire', 'permissionPaiement',
+            'permissionStatistique', 'permissionDossier', 'permissionPub',
+            'abonnement', 'permissionEnvoi'
+        ));
     }
 
     /**
@@ -171,23 +200,48 @@ class RoleController extends Controller
     {
         $this->authorize('gestion-role');
 
-        $this->validate($request, [
-            'name' => 'required',
+        // Déchiffrer l'ID (priorité au champ caché du formulaire, sinon paramètre de route)
+        $realId = decrypt_id($request->input('role_id') ?? $id);
+        abort_if(!$realId, 404);
+
+        $validator = Validator::make($request->all(), [
+            'name'       => 'required|unique:roles,name,' . $realId,
             'permission' => 'required',
+        ], [
+            'name.required'       => 'Le nom de la fonction est obligatoire.',
+            'name.unique'         => 'Ce nom de fonction existe déjà.',
+            'permission.required' => 'Veuillez sélectionner au moins une permission.',
         ]);
 
-        $role = Role::find($id);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'error'  => $validator->errors(),
+            ]);
+        }
+
+        $role = Role::findOrFail($realId);
+        $oldRoleName = $role->name;
+        $oldPermissions = $role->permissions->pluck('name')->toArray();
         $role->name = $request->input('name');
         $role->save();
-
         $role->syncPermissions($request->input('permission'));
 
         activity()->performedOn(new Role())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Modification du fonction '.$request->input('name').' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+            ->causedBy(Auth::user()->id)
+            ->withProperties(['old' => [
+                'name'        => $oldRoleName,
+                'permissions' => $oldPermissions,
+            ], 'new' => [
+                'name'        => $request->input('name'),
+                'permissions' => $request->input('permission', []),
+            ]])
+            ->log('Modification du fonction ' . $request->input('name') . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-        return redirect()->route('roles.index')
-            ->with('success', 'La fonction '. $request->input('name').' est modifiée avec succès');
+        return response()->json([
+            'status'  => true,
+            'message' => 'La fonction « ' . $request->input('name') . ' » a été modifiée avec succès.',
+        ]);
     }
     /**
      * Remove the specified resource from storage.
@@ -199,6 +253,8 @@ class RoleController extends Controller
     {
         $this->authorize('gestion-role');
 
+        $id = decrypt_id($id);
+        abort_if(!$id, 404);
         DB::table("roles")->where('id', $id)->delete();
         return redirect()->route('roles.index')
             ->with('success', 'Fonction est supprimée avec succès');

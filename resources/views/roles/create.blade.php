@@ -46,30 +46,27 @@
         @endif
 
 
+        <form id="formRole" action="javascript:save_role();">
+            @csrf
+
+        <div class="col-md-6 p-3">
+            <div class="form-group ms-3">
+                <label for="roleName" class="form-label">Nom fonction <span style="color: red;">*</span></label>
+                <input type="text" name="name" id="roleName" class="form-control" placeholder="Nom fonction" autocomplete="off">
+                <span class="text-danger small name_err"></span>
+            </div>
+        </div>
+
         <div class="table-responsive">
-            
+
             <table class="table table-hover">
             <thead>
               <tr>
                 <th class="text-nowrap">Menu</th>
                 <th class="text-nowrap text-center">Liste des permissions</th>
-             </tr> 
+             </tr>
             </thead>
             <tbody>
-                {!! Form::open(array('route' => 'roles.store','method'=>'POST')) !!}
-
-                <div class="col-md-6">
-                    <div class="form-group ms-3">
-                        <label for="roleName" class="form-label">Nom fonction <span style="color: red;">*</span></label>
-                        {!! Form::text('name', null, [
-                            'placeholder' => 'Nom fonction',
-                            'class' => 'form-control',
-                            'id' => 'roleName',
-                            'aria-describedby' => 'roleNameHelp',
-                            'autocomplete' => 'off'
-                        ]) !!}
-                    </div>
-                </div>
                 
 
 
@@ -331,6 +328,29 @@
 
 
                 <tr>
+                    <td class="text-nowrap">Communication</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label text-dark">
+                                <input type="checkbox" id="selectAllEnvoi" class="form-check-input select-all">
+                                Tout sélectionner
+                            </label>
+                        </div>
+
+                        <div class="d-flex flex-wrap">
+                            @foreach($permissionEnvoi as $pEnvoi)
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        {{ Form::checkbox('permission[]', $pEnvoi->id, false, ['class' => 'form-check-input permission-envoi']) }}
+                                        {{ $pEnvoi->label }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
                     <td class="text-nowrap">Permission fonction & utilisateur</td>
                     <td>
                         <div class="form-check form-check-inline">
@@ -359,11 +379,13 @@
         <div class="card-body">
             @can('ajouter-role')
                 <div class="mt-4">
-                    <button type="submit" class="btn btn-primary me-2">Enregister</button>
+                    <button type="submit" id="btnSaveRole" class="btn btn-primary me-2">
+                        <span id="btnRoleText">Enregistrer</span>
+                    </button>
                 </div>
             @endcan
         </div>
-        {!! Form::close() !!}
+        </form>
         <!-- /Notifications -->
       </div>
 
@@ -374,28 +396,82 @@
 
 <script>
 
+    /* ── "Tout sélectionner" ── */
     function setupSelectAll(selectAllId, checkboxClass) {
-        const selectAllCheckbox = document.getElementById(selectAllId);
-        const checkboxes = document.querySelectorAll(`.${checkboxClass}`);
-
-        selectAllCheckbox.addEventListener('change', function() {
-            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+        var selectAllCheckbox = document.getElementById(selectAllId);
+        if (!selectAllCheckbox) return;
+        var checkboxes = document.querySelectorAll('.' + checkboxClass);
+        selectAllCheckbox.addEventListener('change', function () {
+            checkboxes.forEach(function (cb) { cb.checked = selectAllCheckbox.checked; });
         });
     }
 
-    setupSelectAll('selectAllParametrage', 'permission-parametrage');
+    setupSelectAll('selectAllParametrage',  'permission-parametrage');
     setupSelectAll('selectAllProprietaire', 'permission-proprietaire');
-    setupSelectAll('selectAllMaison', 'permission-maison');
-    setupSelectAll('selectAllChambre', 'permission-chambre');
-    setupSelectAll('selectAllPrix', 'permission-prix');
-    setupSelectAll('selectAllLocataire', 'permission-locataire');
-    setupSelectAll('selectAllPaiement', 'permission-paiement');
-    setupSelectAll('selectAllSta', 'permission-sta');
-    setupSelectAll('selectAllDossier', 'permission-dossier');
+    setupSelectAll('selectAllMaison',       'permission-maison');
+    setupSelectAll('selectAllChambre',      'permission-chambre');
+    setupSelectAll('selectAllPrix',         'permission-prix');
+    setupSelectAll('selectAllLocataire',    'permission-locataire');
+    setupSelectAll('selectAllPaiement',     'permission-paiement');
+    setupSelectAll('selectAllSta',          'permission-sta');
+    setupSelectAll('selectAllDossier',      'permission-dossier');
+    setupSelectAll('selectAllAbonnement',   'permission-abonnement');
+    setupSelectAll('selectAllPub',          'permission-pub');
+    setupSelectAll('selectAllEnvoi',        'permission-envoi');
+    setupSelectAll('selectAllUser',         'permission-user');
 
-    setupSelectAll('selectAllAbonnement', 'permission-abonnement');
-    setupSelectAll('selectAllPub', 'permission-pub');
-    setupSelectAll('selectAllUser', 'permission-user');
+    /* ── Soumission AJAX ── */
+    function save_role() {
+        // Effacer les erreurs précédentes
+        $('.name_err').text('');
+        $('#roleName').removeClass('is-invalid');
+        $('.permission_err').text('');
+
+        var formData = $('#formRole').serialize();
+
+        $.ajax({
+            url: '{{ route('roles.store') }}',
+            method: 'POST',
+            data: formData,
+            beforeSend: function () {
+                $('#btnSaveRole').prop('disabled', true);
+                $('#btnRoleText').html('<span class="spinner-border spinner-border-sm me-1"></span>En cours...');
+            },
+            success: function (data) {
+                if (data.error && !$.isEmptyObject(data.error)) {
+                    if (data.error.name) {
+                        $('#roleName').addClass('is-invalid');
+                        $('.name_err').text(Array.isArray(data.error.name) ? data.error.name[0] : data.error.name);
+                    }
+                    if (data.error.permission) {
+                        var msg = Array.isArray(data.error.permission) ? data.error.permission[0] : data.error.permission;
+                        display_message('Attention', msg, 'warning', 'btn btn-warning');
+                    }
+                    return;
+                }
+                display_message('Succès !', data.message, 'success', 'btn btn-primary');
+                $('#formRole')[0].reset();
+                // Décocher toutes les cases
+                $('#formRole input[type="checkbox"]').prop('checked', false);
+            },
+            error: function (xhr) {
+                var msg = 'Une erreur s\'est produite.';
+                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                display_message('Erreur', msg, 'error', 'btn btn-danger');
+            },
+            complete: function () {
+                $('#btnSaveRole').prop('disabled', false);
+                $('#btnRoleText').text('Enregistrer');
+            }
+        });
+    }
+
+    /* Effacer l'erreur nom dès que l'utilisateur retape */
+    $('#roleName').on('input', function () {
+        $(this).removeClass('is-invalid');
+        $('.name_err').text('');
+    });
+
 </script>
 
 @endsection

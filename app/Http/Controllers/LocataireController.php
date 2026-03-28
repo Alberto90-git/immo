@@ -46,7 +46,7 @@ class LocataireController extends Controller
                                       ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
                                       ->whereNull('maisons.delete_at')
                                       ->whereNull('chambres.delete_at')
-                                      ->select('locataires.iddirection_ref','locataires.idannexe_ref','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','locataires.nom','locataires.prenom','locataires.profession','locataires.telephone','locataires.mode_paiement','locataires.nombre_caution','locataires.nombre_avance','locataires.date_entree','locataires.id','locataires.chambre_id','locataires.nombre_avance_consomme','locataires.caution_courant','locataires.caution_eau')
+                                      ->select('locataires.iddirection_ref','locataires.idannexe_ref','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','locataires.nom','locataires.prenom','locataires.profession','locataires.telephone','locataires.email','locataires.mode_paiement','locataires.nombre_caution','locataires.nombre_avance','locataires.date_entree','locataires.id','locataires.chambre_id','locataires.nombre_avance_consomme','locataires.caution_courant','locataires.caution_eau')
                                       ->get();
 
 
@@ -87,8 +87,7 @@ class LocataireController extends Controller
 
     public function getTypeChambre(Request $request)
     {
-
-            $vide = Chambre::where('id',$request->numero_chambre_got)
+            $chambre = Chambre::where('id',$request->numero_chambre_got)
                             ->where('chambres.iddirection_ref',Auth::user()->iddirection_ref)
                             ->where(function($querry){
                                 if (Gate::none(['Is_admin'])) {
@@ -97,18 +96,16 @@ class LocataireController extends Controller
                             })
                             ->whereNull('delete_at')
                             ->where('etat',false)
-                            ->get()
-                            ->pluck('type_chambre')[0];
-    
+                            ->first();
+
             return response()->json([
-                                    'type_chambres_get' => $vide,
+                                    'type_chambres_get' => $chambre?->type_chambre,
                                     ]);
     }
 
     public function getPrix(Request $request)
     {
-
-            $vide = Prix::where('chambre_id',$request->prixGot)
+            $prix = Prix::where('chambre_id',$request->prixGot)
                             ->where('iddirection_ref',Auth::user()->iddirection_ref)
                             ->where(function($querry){
                                 if (Gate::none(['Is_admin'])) {
@@ -117,21 +114,18 @@ class LocataireController extends Controller
                             })
                            ->whereNull('delete_at')
                            ->where('status',true)
-                            ->get()
-                            ->pluck('prix')[0];
-          
+                           ->first();
+
             return response()->json([
-                                      'prixApayer' => $vide,
+                                      'prixApayer' => $prix?->prix,
                                     ]);
-            
     }
 
     private function get_house_loocation($id)
     {
          return Maison::where('id',$id)
                         ->whereNull('delete_at')
-                        ->get()
-                        ->pluck('quartier')[0];
+                        ->value('quartier');
     }
 
     public function store(Request $request)
@@ -224,9 +218,22 @@ class LocataireController extends Controller
 
                 if ($locataires) {
 
-                   activity()->performedOn(new Locataire())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Ajout du locataire '.Str::upper($request->nom_locataire).' '.Str::ucfirst($request->prenom_locataire).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                   try {
+                       activity()->performedOn(new Locataire())
+                               ->causedBy(Auth::user()->id)
+                               ->withProperties(['old' => [], 'new' => [
+                                   'nom'            => Str::upper($request->nom_locataire),
+                                   'prenom'         => Str::ucfirst($request->prenom_locataire),
+                                   'telephone'      => $request->telephone,
+                                   'profession'     => $request->profession,
+                                   'mode_paiement'  => $request->mode_paiement,
+                                   'prix_mois'      => $request->prix_mois,
+                                   'date_entree'    => $request->date_entre,
+                                   'nombre_caution' => $request->nombre_caution,
+                                   'nombre_avance'  => $request->nombre_avance,
+                               ]])
+                               ->log('Ajout du locataire '.Str::upper($request->nom_locataire).' '.Str::ucfirst($request->prenom_locataire).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                   } catch (\Exception $e) {}
 
                    Chambre::where('id',$request->numero_chambre)
                             ->whereNull('delete_at')
@@ -235,15 +242,35 @@ class LocataireController extends Controller
                                 'etat' => 1
                             ]);
                  
+                    $chambre = Chambre::find($request->numero_chambre);
+                    $maison  = Maison::find($request->nom_maison);
+
                     return response()->json([
                         'status' => true,
                         'message' => "Le locataire ".Str::upper($request->nom_locataire).' '.Str::upper($request->prenom_locataire).' est bien ajouté',
+                        'locataire' => [
+                            'id'              => $locataires->id,
+                            'nom_maison'      => $maison ? $maison->nom_maison : '',
+                            'numero_chambre'  => $chambre ? $chambre->numero_chambre : '',
+                            'type_chambre'    => $chambre ? $chambre->type_chambre : '',
+                            'nom'             => $locataires->nom,
+                            'prenom'          => $locataires->prenom,
+                            'telephone'       => $locataires->telephone,
+                            'profession'      => $locataires->profession,
+                            'email'           => $locataires->email,
+                            'date_entree'     => $locataires->date_entree,
+                            'nombre_caution'  => $locataires->nombre_caution,
+                            'nombre_avance'   => $locataires->nombre_avance,
+                            'caution_eau'     => $locataires->caution_eau,
+                            'caution_courant' => $locataires->caution_courant,
+                            'mode_paiement'   => $locataires->mode_paiement,
+                        ],
                     ]);
                 }
 
             }
 
-        } catch (QueryException $e) {
+        } catch (\Exception $e) {
 
             return response()->json([
                 'status' => false,
@@ -273,10 +300,12 @@ class LocataireController extends Controller
                 // Utiliser l'annexe active centralisée
                 $idannexe_ref = get_active_annexe_id();
                 if (!$idannexe_ref) {
-                    return back()->with('error', "Veuillez sélectionner une agence dans le header");
+                    return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
                 }
 
-             $locataire = Locataire::where('id',$request->locataire_id)
+                $oldLocataire = Locataire::find($request->locataire_id);
+
+             Locataire::where('id',$request->locataire_id)
                               ->update([
                                     'nom'                   => Str::upper($request->nom_locataire),
                                     'prenom'                => Str::ucfirst($request->prenom_locataire),
@@ -286,33 +315,53 @@ class LocataireController extends Controller
                                     'nombre_caution' => $request->nombre_caution,
                                     'nombre_avance' => $request->nombre_avance,
                                     'date_entree' => $request->date_entre,
-                                    //'nombre_avance_consomme' => 0,
-                                     'caution_courant' => $caution_courant,
+                                    'caution_courant' => $caution_courant,
                                     'caution_eau' => $caution_eau,
                                     'idannexe_ref' => $idannexe_ref,
                                     'mode_paiement' => $request->mode_paiement,
                               ]);
 
-            if ($locataire) {
+              try {
+                  activity()->performedOn(new Locataire())
+                               ->causedBy(Auth::user()->id)
+                               ->withProperties(['old' => $oldLocataire ? [
+                                   'nom'            => $oldLocataire->nom,
+                                   'prenom'         => $oldLocataire->prenom,
+                                   'telephone'      => $oldLocataire->telephone,
+                                   'profession'     => $oldLocataire->profession,
+                                   'mode_paiement'  => $oldLocataire->mode_paiement,
+                                   'nombre_caution' => $oldLocataire->nombre_caution,
+                                   'nombre_avance'  => $oldLocataire->nombre_avance,
+                               ] : [], 'new' => [
+                                   'nom'            => Str::upper($request->nom_locataire),
+                                   'prenom'         => Str::ucfirst($request->prenom_locataire),
+                                   'telephone'      => $request->telephone,
+                                   'profession'     => $request->profession,
+                                   'mode_paiement'  => $request->mode_paiement,
+                                   'nombre_caution' => $request->nombre_caution,
+                                   'nombre_avance'  => $request->nombre_avance,
+                               ]])
+                               ->log('Mise à jour du locataire '.Str::upper($request->nom_locataire).' '.Str::ucfirst($request->prenom_locataire).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+              } catch (\Exception $e) {}
 
-              activity()->performedOn(new Locataire())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Mise à jour du locataire '.Str::upper($request->nom_locataire).' '.Str::ucfirst($request->prenom_locataire).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+              return response()->json(['status' => true, 'message' => 'Le locataire est modifié avec succès']);
 
-              return back()->with('message','Le locataire est modifié avec succès');
-            }
-
-        } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
     public function destroy(Request $request)
     {
         try {
-            $deletedValue = Locataire::where('id',$request->locataire_id)->first();
-            
-            $deleted = Locataire::where('id',$request->locataire_id)
+            $locataireId = $request->id ?: $request->locataire_id;
+            $deletedValue = Locataire::where('id', $locataireId)->first();
+
+            if (!$deletedValue) {
+                return response()->json(['status' => false, 'message' => 'Locataire introuvable']);
+            }
+
+            $deleted = Locataire::where('id', $locataireId)
                                   ->update([
                                      'delete_at' => Carbon::now(),
                                      'status' => 0
@@ -320,20 +369,30 @@ class LocataireController extends Controller
 
             if ($deleted) {
 
-              activity()->performedOn(new Locataire())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Suppression du locataire '.$deletedValue->nom.' '.$deletedValue->prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+              try {
+                  activity()->performedOn(new Locataire())
+                               ->causedBy(Auth::user()->id)
+                               ->withProperties(['old' => [
+                                   'nom'            => $deletedValue->nom,
+                                   'prenom'         => $deletedValue->prenom,
+                                   'telephone'      => $deletedValue->telephone,
+                                   'profession'     => $deletedValue->profession,
+                                   'mode_paiement'  => $deletedValue->mode_paiement,
+                                   'prix_mois'      => $deletedValue->prix_mois,
+                               ], 'new' => []])
+                               ->log('Suppression du locataire '.$deletedValue->nom.' '.$deletedValue->prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+              } catch (\Exception $e) {}
 
-               Chambre::where('id',$request->chambre_id)
-                       ->update([
-                                 'etat' => 0 
-                       ]);
+               Chambre::where('id', $deletedValue->chambre_id)
+                       ->update(['etat' => 0]);
 
-                return back()->with('message','Suppression effectuée avec succès');
+                return response()->json(['status' => true, 'message' => 'Locataire sorti avec succès']);
             }
-            
-        } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+
+            return response()->json(['status' => false, 'message' => 'Aucune suppression effectuée']);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 

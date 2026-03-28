@@ -159,7 +159,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/parametrage', [ParametreController::class, 'index'])->name('parametrage');
     Route::post('add', [ParametreController::class, 'create'])->name('store_param');
     Route::post('add-anneexe', [ParametreController::class, 'storeAnnexe'])->name('store_annexe');
-    Route::post('destroy', [ProprietaireController::class, 'destroy'])->name('destroy_proprio');
     Route::post('update-annexe', [ParametreController::class, 'updateAnnexe'])->name('update_annexe');
     Route::post('delete-annexe', [ParametreController::class, 'destroyAnnexe'])->name('destroy_annexe');
 
@@ -452,6 +451,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [EnvoiDocumentController::class, 'index'])->name('envoi_document.index');
     Route::post('/envoyer', [EnvoiDocumentController::class, 'envoyer'])->name('envoi_document.envoyer');
     Route::get('/historique', [EnvoiDocumentController::class, 'historique'])->name('envoi_document.historique');
+    Route::post('/notification', [EnvoiDocumentController::class, 'envoyerNotification'])->name('envoi_document.notification');
   });
 
   Route::middleware('auth')->post('comm-config', [ParametreController::class, 'storeCommConfig'])->name('store_comm_config');

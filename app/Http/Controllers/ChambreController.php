@@ -191,15 +191,28 @@ class ChambreController extends Controller
 
                   if ($chambreId) {
 
-                    //$this->add_price($request->nom_maison,$request->numero_chambre,$request->annexe,$request->prix);
-
-                    activity()->performedOn(new Chambre())
-                           ->causedBy(Auth::user()->id)
-                           ->log('Ajout de la chambre N° '.$request->numero_chambre.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                    try {
+                        activity()->performedOn(new Chambre())
+                               ->causedBy(Auth::user()->id)
+                               ->withProperties(['old' => [], 'new' => [
+                                   'maison'         => $maison->nom_maison ?? '',
+                                   'numero_chambre' => $request->numero_chambre,
+                                   'type_chambre'   => $request->type_chambre,
+                                   'prix_chambre'   => str_replace(" ", "", $request->prix),
+                               ]])
+                               ->log('Ajout de la chambre N° '.$request->numero_chambre.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+                    } catch (\Exception $e) {}
 
                       return response()->json([
-                            'status' => true,
-                            'message' => 'Chambre N°'.$request->numero_chambre." est crée avec succès",
+                            'status'  => true,
+                            'message' => 'Chambre N°'.$request->numero_chambre." est créée avec succès",
+                            'chambre' => [
+                                'id'             => $chambreId,
+                                'nom_maison'     => $maison->nom_maison,
+                                'numero_chambre' => $request->numero_chambre,
+                                'type_chambre'   => $request->type_chambre,
+                                'prix_chambre'   => (int) str_replace(" ", "", $request->prix),
+                            ],
                       ]);
                   }
 
@@ -207,11 +220,10 @@ class ChambreController extends Controller
                 
             }
         }
-        catch (QueryException $e) {
-            dd($e);
+        catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => "Echec,essayez encore",
+                'message' => "Echec, veuillez réessayer",
             ]);
         }
     }
@@ -267,7 +279,7 @@ class ChambreController extends Controller
            // Utiliser l'annexe active centralisée
            $idannexe_ref = get_active_annexe_id();
            if (!$idannexe_ref) {
-               return back()->with('error', "Veuillez sélectionner une agence dans le header");
+               return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
            }
 
            $existe_deja = Chambre::where('id',$request->chambre_id)
@@ -309,22 +321,43 @@ class ChambreController extends Controller
                     
                         activity()->performedOn(new Chambre())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => $existe_deja ? [
+                               'numero_chambre' => $existe_deja->numero_chambre,
+                               'type_chambre'   => $existe_deja->type_chambre,
+                               'prix_chambre'   => $existe_deja->prix_chambre,
+                           ] : [], 'new' => [
+                               'numero_chambre' => $request->numero_chambre,
+                               'type_chambre'   => $request->type_chambre,
+                               'prix_chambre'   => str_replace(" ", "", $request->prix),
+                           ]])
                            ->log('Modification de la chambre N° '.$request->numero_chambre.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                       return back()->with('success','Chambre N°'.$request->numero_chambre." est mise à jour avec succès");
+                       $maison = Maison::find($request->nom_maison);
+
+                       return response()->json([
+                           'status'  => true,
+                           'message' => 'Chambre N°'.$request->numero_chambre." est mise à jour avec succès",
+                           'chambre' => [
+                               'id'             => $request->chambre_id,
+                               'nom_maison'     => $maison->nom_maison ?? '',
+                               'numero_chambre' => $request->numero_chambre,
+                               'type_chambre'   => $request->type_chambre,
+                               'prix_chambre'   => number_format((int) str_replace(' ', '', $request->prix), 0, ',', '.'),
+                           ],
+                       ]);
                     }
 
                 }else {
                     if($exit_chambre_numero?->numero_chambre == null){
-                        return back()->with('error','Le N°'.$request->numero_chambre." déjà attribué à aucune chambre dans cette maison");
+                        return response()->json(['status' => false, 'message' => 'Le N°'.$request->numero_chambre." déjà attribué à aucune chambre dans cette maison"]);
                     }else {
-                        return back()->with('error','Chambre N°'.$request->numero_chambre." existe déjà dans cette maison");
+                        return response()->json(['status' => false, 'message' => 'Chambre N°'.$request->numero_chambre." existe déjà dans cette maison"]);
                     }
                 }
-            
+
         }
         catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
@@ -341,7 +374,7 @@ class ChambreController extends Controller
                             ->count();
 
             if($occupe == 1){
-                return back()->with('error',"Echéc, la chambre est toujours occupé par un locataire, veuillez le faire sortie d'abord");
+                return response()->json(['status' => false, 'message' => "Echéc, la chambre est toujours occupée par un locataire, veuillez le faire sortir d'abord"]);
             }
             
             $deleted = Chambre::where('id',$request->id)
@@ -373,13 +406,18 @@ class ChambreController extends Controller
 
               activity()->performedOn(new Chambre())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [
+                               'numero_chambre' => $valueDeleted->numero_chambre,
+                               'type_chambre'   => $valueDeleted->type_chambre,
+                               'prix_chambre'   => $valueDeleted->prix_chambre,
+                           ], 'new' => []])
                            ->log('Suppression de la chambre N° '.$valueDeleted->numero_chambre.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('success','Suppression effectuée avec succès');
+                return response()->json(['status' => true, 'message' => 'Suppression effectuée avec succès']);
             }
-            
+
         } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 }

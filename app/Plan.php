@@ -20,6 +20,8 @@ class Plan extends Model
         'max_annexes',
         'max_envois_email',
         'max_envois_whatsapp',
+        'max_rappels_loyer',
+        'max_preavis',
         'max_publicites',
         'prix_annuel',
         'is_active',
@@ -27,13 +29,15 @@ class Plan extends Model
     ];
 
     protected $casts = [
-        'max_maisons'        => 'integer',
-        'max_annexes'        => 'integer',
-        'max_envois_email'   => 'integer',
-        'max_envois_whatsapp'=> 'integer',
-        'max_publicites'     => 'integer',
-        'prix_annuel'        => 'decimal:2',
-        'is_active'          => 'boolean',
+        'max_maisons'         => 'integer',
+        'max_annexes'         => 'integer',
+        'max_envois_email'    => 'integer',
+        'max_envois_whatsapp' => 'integer',
+        'max_rappels_loyer'   => 'integer',
+        'max_preavis'         => 'integer',
+        'max_publicites'      => 'integer',
+        'prix_annuel'         => 'decimal:2',
+        'is_active'           => 'boolean',
     ];
 
     /**

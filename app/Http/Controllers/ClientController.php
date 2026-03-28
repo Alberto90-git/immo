@@ -81,11 +81,28 @@ class ClientController extends Controller
 
                 activity()->performedOn(new Client())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [], 'new' => [
+                               'nom'        => Str::upper($request->nom),
+                               'prenom'     => Str::ucfirst($request->prenom),
+                               'telephone'  => $request->telephone,
+                               'zone_voulu' => Str::ucfirst($request->zone),
+                               'superficie' => $request->superficie,
+                               'budget'     => str_replace(" ", "", $request->budget),
+                           ]])
                            ->log('Ajout du client '.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
                 return response()->json([
-                    'status' => true,
+                    'status'  => true,
                     'message' => "Client bien ajouté avec succès",
+                    'client'  => [
+                        'id'         => $terrain->id,
+                        'nom'        => $terrain->nom,
+                        'prenom'     => $terrain->prenom,
+                        'telephone'  => $terrain->telephone,
+                        'zone'       => $terrain->zone_voulu,
+                        'superficie' => $terrain->superficie,
+                        'budget'     => $terrain->budget,
+                    ],
                 ]);
 
             }
@@ -116,8 +133,10 @@ class ClientController extends Controller
             // Utiliser l'annexe active centralisée
             $idannexe_ref = get_active_annexe_id();
             if (!$idannexe_ref) {
-                return back()->with('error', "Veuillez sélectionner une agence dans le header");
+                return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
             }
+
+            $oldClient = Client::find($request->id);
 
             $terrain = Client::where('id',$request->id)
                                     ->update([
@@ -134,13 +153,26 @@ class ClientController extends Controller
 
                  activity()->performedOn(new Client())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => $oldClient ? [
+                               'nom'        => $oldClient->nom,
+                               'prenom'     => $oldClient->prenom,
+                               'telephone'  => $oldClient->telephone,
+                               'zone_voulu' => $oldClient->zone_voulu,
+                               'budget'     => $oldClient->budget,
+                           ] : [], 'new' => [
+                               'nom'        => Str::upper($request->nom),
+                               'prenom'     => Str::ucfirst($request->prenom),
+                               'telephone'  => $request->telephone,
+                               'zone_voulu' => Str::ucfirst($request->zone),
+                               'budget'     => str_replace(" ", "", $request->budget),
+                           ]])
                            ->log('Modification du client '.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message', Str::upper($request->nom).' '.Str::upper($request->prenom).' mise à jour avec succès');
+                return response()->json(['status' => true, 'message' => Str::upper($request->nom).' '.Str::upper($request->prenom).' mis à jour avec succès']);
             }
         }
         catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
@@ -162,14 +194,19 @@ class ClientController extends Controller
                 
                  activity()->performedOn(new Client())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [
+                               'nom'        => $objetDeleted->nom,
+                               'prenom'     => $objetDeleted->prenom,
+                               'telephone'  => $objetDeleted->telephone,
+                               'zone_voulu' => $objetDeleted->zone_voulu,
+                               'budget'     => $objetDeleted->budget,
+                           ], 'new' => []])
                            ->log('Suppression du client '.Str::upper($objetDeleted->nom).' '.Str::ucfirst($objetDeleted->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Suppression effectuée avec succès');
-                
+                return response()->json(['status' => true, 'message' => 'Suppression effectuée avec succès']);
             }
         } catch (QueryException $e) {
-
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
@@ -191,13 +228,13 @@ class ClientController extends Controller
                 
                  activity()->performedOn(new Client())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => ['etat' => 'buy'], 'new' => ['etat' => 'clôturé']])
                            ->log('Cloturé le dossier de '.Str::upper($objetcloture->nom).' '.Str::ucfirst($objetcloture->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Dossier cloturé avec succès');
-                
+                return response()->json(['status' => true, 'message' => 'Dossier cloturé avec succès']);
             }
         } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 

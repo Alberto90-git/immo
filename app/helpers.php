@@ -14,6 +14,45 @@ use Illuminate\Support\Facades\Cache;
 
 
 
+/* ═══════════════════════════════════════════════
+ *  Chiffrement / déchiffrement d'IDs dans les URLs
+ * ═══════════════════════════════════════════════ */
+
+if (!function_exists('encrypt_id')) {
+    /**
+     * Chiffre un ID numérique pour l'insérer dans une URL.
+     * Produit une chaîne courte (~22 chars), URL-safe, sans +/=
+     */
+    function encrypt_id($id): string
+    {
+        $key = substr(hash('sha256', config('app.key')), 0, 32);
+        $iv  = substr(hash('sha256', config('app.key') . '_iv'), 0, 16);
+        $enc = openssl_encrypt((string) $id, 'AES-256-CBC', $key, 0, $iv);
+        // Rendre URL-safe : + → -, / → _, supprimer le padding =
+        return rtrim(strtr($enc, '+/', '-_'), '=');
+    }
+}
+
+if (!function_exists('decrypt_id')) {
+    /**
+     * Déchiffre un ID récupéré depuis une URL.
+     * Retourne l'ID original (string) ou null si le hash est invalide/falsifié.
+     */
+    function decrypt_id(string $hash): ?string
+    {
+        try {
+            $key    = substr(hash('sha256', config('app.key')), 0, 32);
+            $iv     = substr(hash('sha256', config('app.key') . '_iv'), 0, 16);
+            // Restaurer le base64 standard : - → +, _ → /, ajouter le padding
+            $padded = $hash . str_repeat('=', (4 - strlen($hash) % 4) % 4);
+            $dec    = openssl_decrypt(strtr($padded, '-_', '+/'), 'AES-256-CBC', $key, 0, $iv);
+            return ($dec !== false && is_numeric($dec)) ? $dec : null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
+
 if (!function_exists('get_annexee_name')) {
     /**
      * Récupérer le nom d'une annexe par son ID

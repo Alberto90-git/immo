@@ -50,13 +50,13 @@
                                 </td>
                                 <td class="text-center">
                                     @can('liste-role')
-                                    <a href="{{ route('roles.show', $role->id) }}" class="btn btn-icon btn-outline-info me-1" title="Voir">
+                                    <a href="{{ route('roles.show', encrypt_id($role->id)) }}" class="btn btn-icon btn-outline-info me-1" title="Voir">
                                         <i class="bx bx-show"></i>
                                     </a>
                                     @endcan
 
                                     @can('modifier-role')
-                                    <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-icon btn-outline-warning me-1" title="Modifier">
+                                    <a href="{{ route('roles.edit', encrypt_id($role->id)) }}" class="btn btn-icon btn-outline-warning me-1" title="Modifier">
                                         <i class="bx bx-edit-alt"></i>
                                     </a>
                                     @endcan
@@ -81,7 +81,7 @@
                                             Êtes-vous sûr de vouloir supprimer le fonction <strong>{{ $role->name }}</strong> ?
                                         </div>
                                         <div class="modal-footer">
-                                            <form method="POST" action="{{ route('roles.destroy', $role->id) }}">
+                                            <form method="POST" action="{{ route('roles.destroy', encrypt_id($role->id)) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

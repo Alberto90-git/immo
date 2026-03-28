@@ -25,16 +25,18 @@ class SuperAdminPlanController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'idplan'              => 'required|exists:plans,idplan',
-            'nom'                 => 'required|string|max:100',
-            'description'         => 'nullable|string|max:500',
-            'max_maisons'         => 'nullable|integer|min:0',
-            'max_annexes'         => 'nullable|integer|min:0',
-            'max_envois_email'    => 'nullable|integer|min:0',
-            'max_envois_whatsapp' => 'nullable|integer|min:0',
-            'max_publicites'      => 'nullable|integer|min:0',
-            'prix_annuel'         => 'required|numeric|min:0',
-            'is_active'           => 'required|boolean',
+            'idplan'               => 'required|exists:plans,idplan',
+            'nom'                  => 'required|string|max:100',
+            'description'          => 'nullable|string|max:500',
+            'max_maisons'          => 'nullable|integer|min:0',
+            'max_annexes'          => 'nullable|integer|min:0',
+            'max_envois_email'     => 'nullable|integer|min:0',
+            'max_envois_whatsapp'  => 'nullable|integer|min:0',
+            'max_rappels_loyer'    => 'nullable|integer|min:0',
+            'max_preavis'          => 'nullable|integer|min:0',
+            'max_publicites'       => 'nullable|integer|min:0',
+            'prix_annuel'          => 'required|numeric|min:0',
+            'is_active'            => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -47,15 +49,17 @@ class SuperAdminPlanController extends Controller
         $plan = Plan::find($request->idplan);
 
         $plan->update([
-            'nom'                 => $request->nom,
-            'description'         => $request->description,
-            'max_maisons'         => $request->max_maisons !== '' ? $request->max_maisons : null,
-            'max_annexes'         => $request->max_annexes !== '' ? $request->max_annexes : null,
-            'max_envois_email'    => $request->max_envois_email !== '' ? $request->max_envois_email : null,
-            'max_envois_whatsapp' => $request->max_envois_whatsapp !== '' ? $request->max_envois_whatsapp : null,
-            'max_publicites'      => $request->max_publicites !== '' ? $request->max_publicites : null,
-            'prix_annuel'         => $request->prix_annuel,
-            'is_active'           => (bool) $request->is_active,
+            'nom'                  => $request->nom,
+            'description'          => $request->description,
+            'max_maisons'          => $request->max_maisons !== '' ? $request->max_maisons : null,
+            'max_annexes'          => $request->max_annexes !== '' ? $request->max_annexes : null,
+            'max_envois_email'     => $request->max_envois_email !== '' ? $request->max_envois_email : null,
+            'max_envois_whatsapp'  => $request->max_envois_whatsapp !== '' ? $request->max_envois_whatsapp : null,
+            'max_rappels_loyer'    => $request->max_rappels_loyer !== '' ? $request->max_rappels_loyer : null,
+            'max_preavis'          => $request->max_preavis !== '' ? $request->max_preavis : null,
+            'max_publicites'       => $request->max_publicites !== '' ? $request->max_publicites : null,
+            'prix_annuel'          => $request->prix_annuel,
+            'is_active'            => (bool) $request->is_active,
         ]);
 
         return response()->json([
@@ -70,16 +74,18 @@ class SuperAdminPlanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nom'                 => 'required|string|max:100',
-            'code'                => 'required|string|max:50|unique:plans,code',
-            'description'         => 'nullable|string|max:500',
-            'max_maisons'         => 'nullable|integer|min:0',
-            'max_annexes'         => 'nullable|integer|min:0',
-            'max_envois_email'    => 'nullable|integer|min:0',
-            'max_envois_whatsapp' => 'nullable|integer|min:0',
-            'max_publicites'      => 'nullable|integer|min:0',
-            'prix_annuel'         => 'required|numeric|min:0',
-            'is_active'           => 'required|boolean',
+            'nom'                  => 'required|string|max:100',
+            'code'                 => 'required|string|max:50|unique:plans,code',
+            'description'          => 'nullable|string|max:500',
+            'max_maisons'          => 'nullable|integer|min:0',
+            'max_annexes'          => 'nullable|integer|min:0',
+            'max_envois_email'     => 'nullable|integer|min:0',
+            'max_envois_whatsapp'  => 'nullable|integer|min:0',
+            'max_rappels_loyer'    => 'nullable|integer|min:0',
+            'max_preavis'          => 'nullable|integer|min:0',
+            'max_publicites'       => 'nullable|integer|min:0',
+            'prix_annuel'          => 'required|numeric|min:0',
+            'is_active'            => 'required|boolean',
         ], [
             'code.unique' => 'Ce code de plan existe déjà.',
         ]);
@@ -92,16 +98,18 @@ class SuperAdminPlanController extends Controller
         }
 
         $plan = Plan::create([
-            'nom'                 => $request->nom,
-            'code'                => strtolower($request->code),
-            'description'         => $request->description,
-            'max_maisons'         => $request->max_maisons !== '' ? $request->max_maisons : null,
-            'max_annexes'         => $request->max_annexes !== '' ? $request->max_annexes : null,
-            'max_envois_email'    => $request->max_envois_email !== '' ? $request->max_envois_email : null,
-            'max_envois_whatsapp' => $request->max_envois_whatsapp !== '' ? $request->max_envois_whatsapp : null,
-            'max_publicites'      => $request->max_publicites !== '' ? $request->max_publicites : null,
-            'prix_annuel'         => $request->prix_annuel,
-            'is_active'           => (bool) $request->is_active,
+            'nom'                  => $request->nom,
+            'code'                 => strtolower($request->code),
+            'description'          => $request->description,
+            'max_maisons'          => $request->max_maisons !== '' ? $request->max_maisons : null,
+            'max_annexes'          => $request->max_annexes !== '' ? $request->max_annexes : null,
+            'max_envois_email'     => $request->max_envois_email !== '' ? $request->max_envois_email : null,
+            'max_envois_whatsapp'  => $request->max_envois_whatsapp !== '' ? $request->max_envois_whatsapp : null,
+            'max_rappels_loyer'    => $request->max_rappels_loyer !== '' ? $request->max_rappels_loyer : null,
+            'max_preavis'          => $request->max_preavis !== '' ? $request->max_preavis : null,
+            'max_publicites'       => $request->max_publicites !== '' ? $request->max_publicites : null,
+            'prix_annuel'          => $request->prix_annuel,
+            'is_active'            => (bool) $request->is_active,
         ]);
 
         return response()->json([

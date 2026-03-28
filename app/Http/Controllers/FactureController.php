@@ -205,12 +205,37 @@ class FactureController extends Controller
 
                 activity()->performedOn(new Facture())
                   ->causedBy(Auth::user()->id)
+                  ->withProperties(['old' => [], 'new' => [
+                      'locataire'    => FactureController::connaitreLocataire($locataire_id),
+                      'montant'      => str_replace(" ", "", $request->montant),
+                      'mois'         => $request->mois,
+                      'mode_paiement'=> $request->mode_paiement,
+                      'type_paiement'=> $request->type_paiement,
+                      'date_paiement'=> $request->date_paiement,
+                  ]])
                   ->log('Paiement effectué pour le locataire ' . FactureController::connaitreLocataire($locataire_id) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-
+                $maisonObj    = Maison::find($request->nom_maison);
+                $locataireObj = Locataire::find($locataire_id);
                 return response()->json([
                   'status' => true,
                   'message' => "Paiement effectué avec succès, aller télécharger le réçu",
+                  'facture' => [
+                    'id'             => $facture->id,
+                    'nom_maison'     => $maisonObj ? $maisonObj->nom_maison : '',
+                    'numero_chambre' => $facture->numero_chambre,
+                    'type_chambre'   => $facture->type_chambre,
+                    'nom'            => $locataireObj ? $locataireObj->nom : '',
+                    'prenom'         => $locataireObj ? $locataireObj->prenom : '',
+                    'montant'        => $facture->montant,
+                    'date_paiement'  => $facture->date_paiement,
+                    'mode_paiement'  => $facture->mode_paiement,
+                    'mois'           => $facture->mois,
+                    'type_paiement'  => $facture->type_paiement,
+                    'maison_id'      => $facture->maison_id,
+                    'chambre_id'     => $facture->chambre_id,
+                    'locataire_id'   => $facture->locataire_id,
+                  ],
                 ]);
               }
             } else {
@@ -264,11 +289,37 @@ class FactureController extends Controller
 
                     activity()->performedOn(new Facture())
                       ->causedBy(Auth::user()->id)
+                      ->withProperties(['old' => [], 'new' => [
+                          'locataire'    => FactureController::connaitreLocataire($locataire_id),
+                          'montant'      => str_replace(" ", "", $request->montant),
+                          'mois'         => $request->mois,
+                          'mode_paiement'=> $request->mode_paiement,
+                          'type_paiement'=> $request->type_paiement,
+                          'date_paiement'=> $request->date_paiement,
+                      ]])
                       ->log('Paiement effectué pour le locataire ' . FactureController::connaitreLocataire($locataire_id) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
+                    $maisonObj    = Maison::find($request->nom_maison);
+                    $locataireObj = Locataire::find($locataire_id);
                     return response()->json([
                       'status' => true,
                       'message' => "Paiement effectué avec succès, aller télécharger le réçu",
+                      'facture' => [
+                        'id'             => $facture->id,
+                        'nom_maison'     => $maisonObj ? $maisonObj->nom_maison : '',
+                        'numero_chambre' => $facture->numero_chambre,
+                        'type_chambre'   => $facture->type_chambre,
+                        'nom'            => $locataireObj ? $locataireObj->nom : '',
+                        'prenom'         => $locataireObj ? $locataireObj->prenom : '',
+                        'montant'        => $facture->montant,
+                        'date_paiement'  => $facture->date_paiement,
+                        'mode_paiement'  => $facture->mode_paiement,
+                        'mois'           => $facture->mois,
+                        'type_paiement'  => $facture->type_paiement,
+                        'maison_id'      => $facture->maison_id,
+                        'chambre_id'     => $facture->chambre_id,
+                        'locataire_id'   => $facture->locataire_id,
+                      ],
                     ]);
                   }
                 } else {
@@ -309,7 +360,7 @@ class FactureController extends Controller
       // Utiliser l'annexe active centralisée
       $idannexe_ref = get_active_annexe_id();
       if (!$idannexe_ref) {
-          return back()->with('error', "Veuillez sélectionner une agence dans le header");
+          return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
       }
 
       if ($request->type_paiement == 'direct') {
@@ -328,6 +379,8 @@ class FactureController extends Controller
             ]);
         }
 
+        $oldFacture = Facture::find($request->facture_id2);
+
         $facture = Facture::where('id', $request->facture_id2)
                           ->update([
                             'maison_id' => $request->maison_id2,
@@ -345,10 +398,23 @@ class FactureController extends Controller
 
           activity()->performedOn(new Facture())
             ->causedBy(Auth::user()->id)
+            ->withProperties(['old' => $oldFacture ? [
+                'montant'       => $oldFacture->montant,
+                'mois'          => $oldFacture->mois,
+                'mode_paiement' => $oldFacture->mode_paiement,
+                'type_paiement' => $oldFacture->type_paiement,
+                'date_paiement' => $oldFacture->date_paiement,
+            ] : [], 'new' => [
+                'montant'       => $request->montant,
+                'mois'          => $request->mois,
+                'mode_paiement' => $request->mode_paiement,
+                'type_paiement' => $request->type_paiement,
+                'date_paiement' => $request->date_paiement,
+            ]])
             ->log('Modification du paiement pour le locataire ' . FactureController::connaitreLocataire($request->locataire_id2) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
 
-          return back()->with('success', 'Paiement modifié avec succès');
+          return response()->json(['status' => true, 'message' => 'Paiement modifié avec succès']);
         }
       } else {
 
@@ -366,7 +432,7 @@ class FactureController extends Controller
                                             ->pluck('nombre_avance_consomme')[0];
 
         if ($nombre_avance_restant == $nombre_avance_consomme) {
-          return back()->with('error', "Modification de paiement impossible, nombre d'avance épuisé pour ce locataire");
+          return response()->json(['status' => false, 'message' => "Modification de paiement impossible, nombre d'avance épuisé pour ce locataire"]);
         } else {
           // Mettre à jour le nombre d'avance consommé
 
@@ -378,6 +444,8 @@ class FactureController extends Controller
             ]);
           //Je crée le paiement
           if ($diminue_nombre_avance) {
+
+            $oldFacture2 = Facture::find($request->facture_id2);
 
             $facture = Facture::where('id', $request->facture_id2)
               ->update([
@@ -396,17 +464,28 @@ class FactureController extends Controller
 
               activity()->performedOn(new Facture())
                 ->causedBy(Auth::user()->id)
+                ->withProperties(['old' => $oldFacture2 ? [
+                    'montant'       => $oldFacture2->montant,
+                    'mois'          => $oldFacture2->mois,
+                    'mode_paiement' => $oldFacture2->mode_paiement,
+                    'type_paiement' => $oldFacture2->type_paiement,
+                ] : [], 'new' => [
+                    'montant'       => $request->montant,
+                    'mois'          => $request->mois,
+                    'mode_paiement' => $request->mode_paiement,
+                    'type_paiement' => $request->type_paiement,
+                ]])
                 ->log('Modification de paiement effectué pour le locataire ' . FactureController::connaitreLocataire($request->locataire_id2) . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-              return back()->with('success', "Modification de paiement effectué avec succès, aller télécharger le réçu");
+              return response()->json(['status' => true, 'message' => "Modification de paiement effectué avec succès"]);
             }
           } else {
-            return back()->with('error', "Il y a un soucis");
+            return response()->json(['status' => false, 'message' => "Il y a un souci, veuillez réessayer"]);
           }
         }
       }
     } catch (QueryException $e) {
-      return back()->with('error', "Echéc, veuillez verifier les données");
+      return response()->json(['status' => false, 'message' => "Echéc, veuillez vérifier les données"]);
     }
   }
 
@@ -414,6 +493,7 @@ class FactureController extends Controller
   {
     try {
       $deletedValue = Locataire::where('id', $request->facture_id_destroy)->first();
+      $deletedFacture = Facture::find($request->facture_id_destroy);
 
       $deleted = Facture::where('id', $request->facture_id_destroy)->update(['delete_at' => Carbon::now()]);
 
@@ -421,12 +501,19 @@ class FactureController extends Controller
 
         activity()->performedOn(new Facture())
           ->causedBy(Auth::user()->id)
+          ->withProperties(['old' => $deletedFacture ? [
+              'locataire'     => $deletedValue ? $deletedValue->nom . ' ' . $deletedValue->prenom : '',
+              'montant'       => $deletedFacture->montant,
+              'mois'          => $deletedFacture->mois,
+              'mode_paiement' => $deletedFacture->mode_paiement,
+              'type_paiement' => $deletedFacture->type_paiement,
+          ] : [], 'new' => []])
           ->log('Suppression du paiement pour le locataire ' . $deletedValue->nom . ' ' . $deletedValue->prenom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-        return back()->with('success', 'Suppression effectuée avec succès');
+        return response()->json(['status' => true, 'message' => 'Suppression effectuée avec succès']);
       }
     } catch (QueryException $e) {
-      return back()->with('error', 'Echéc, veuillez verifier les données');
+      return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
     }
   }
 

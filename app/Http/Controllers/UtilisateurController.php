@@ -429,7 +429,7 @@ class UtilisateurController extends SessionController
     {
         //$id = $this->getDirectionId();
 
-        $data = User::where('email', 'NOT LIKE', 'admin@immo.net')
+        $data = User::where('email', 'NOT LIKE', 'alberttchegnon4@gmail.com')
                      ->where('is_admin',false)
                      ->where('iddirection_ref',Auth::user()->iddirection_ref)
                      //->where(Auth::user()->iddirection_ref,$id)
@@ -466,7 +466,6 @@ class UtilisateurController extends SessionController
                     'nom'         => ['required', 'string', 'min:2'],
                     'prenom'      => ['required', 'string', 'min:2'],
                     'email'       => ['required','string','email','max:255', Rule::unique(User::class), Rule::unique('directions', 'email')],
-                    'code_pays'   => ['required'],
                     'telephone'   => ['required'],
                     'type_compte' => ['required', 'string'],
                 ],
@@ -483,7 +482,6 @@ class UtilisateurController extends SessionController
                     'nom'              => ['required', 'string', 'min:2'],
                     'prenom'           => ['required', 'string', 'min:2'],
                     'email'            => ['required','string','email','max:255', Rule::unique(User::class)],
-                    'code_pays'        => ['required'],
                     'telephone'        => ['required'],
                     'type_compte'      => ['required', 'string'],
                     'designation'      => ['required', 'string'],
@@ -560,7 +558,6 @@ class UtilisateurController extends SessionController
                         'nom' => ['required', 'string', 'min:2'],
                         'prenom' => ['required', 'string', 'min:2'],
                         'email' => ['required','string','email','max:255', Rule::unique(User::class), Rule::unique('directions', 'email')],
-                        'code_pays' => ['required'],
                         'telephone' => ['required'],
                         'type_compte' => ['required', 'string'],
                     ],
@@ -578,7 +575,6 @@ class UtilisateurController extends SessionController
                         'nom' => ['required', 'string', 'min:2'],
                         'prenom' => ['required', 'string', 'min:2'],
                         'email' => ['required','string','email','max:255',Rule::unique(User::class)],
-                        'code_pays' => ['required'],
                         'telephone' => ['required'],
                         'type_compte' => ['required', 'string'],
                         'designation' => ['required', 'string'],
@@ -706,13 +702,13 @@ class UtilisateurController extends SessionController
             if ($type_compte === 'Entreprise') {
                 $designation = $request->designation;
                 $adresse = $request->adresse;
-                $telepone_entreprise = $request->code_pays . $request->telephone;
+                $telepone_entreprise = $request->telephone;
                 $email_entreprise = $request->email_entreprise;
             } else {
                 // Pour les particuliers
                 $designation = $nom . ' ' . $prenom;
                 $adresse = 'Non spécifié';
-                $telepone_entreprise = $request->code_pays . $request->telephone;
+                $telepone_entreprise = $request->telephone;
                 $email_entreprise = $email;
             }
             
@@ -778,21 +774,21 @@ class UtilisateurController extends SessionController
                 'updated_at' => Carbon::now()
             ]);
             
-            // Création ou récupération du rôle Administrateur
-            $role = Role::where('name', 'Administrateur')->first();
+            // Création ou récupération du rôle Administrateur propre à cette direction
+            $role = Role::where('name', 'Administrateur')
+                        ->where('iddirectionRef_role', $direction_id)
+                        ->first();
             if (!$role) {
                 $role = Role::create([
-                    'name' => 'Administrateur',
-                    'guard_name' => 'web',
-                    'iddirectionRef_role' => $direction_id
+                    'name'                => 'Administrateur',
+                    'guard_name'          => 'web',
+                    'iddirectionRef_role' => $direction_id,
                 ]);
-                
-                // Attribution de toutes les permissions au rôle Administrateur
-                $permissions = Permission::pluck('id')->all();
+                // Toutes les permissions sauf config-paiement (réservé au propriétaire de l'appli)
+                $permissions = Permission::where('name', '!=', 'config-paiement')->pluck('id')->all();
                 $role->syncPermissions($permissions);
             }
-            
-            // Attribution du rôle à l'utilisateur
+
             $newuser->assignRole($role->id);
             
             // Préparation des données pour l'email
@@ -809,17 +805,25 @@ class UtilisateurController extends SessionController
             
             DB::commit();
 
-            // Générer le cachet par défaut et créer le Parametre pour cette direction
+            // Générer le cachet et le logo par défaut pour cette direction
             try {
                 $cachetService = new \App\Services\CachetGeneratorService();
                 $cachetPath    = $cachetService->generate($designation, $direction_id);
-                \App\Parametre::create([
-                    'iddirection_ref'      => $direction_id,
+
+                $logoService = new \App\Services\LogoGeneratorService();
+                $logoPath    = $logoService->generate($designation, $direction_id);
+
+                \DB::table('parametres')->insert([
+                    'iddirection_ref'       => $direction_id,
                     'cash_electronique_url' => $cachetPath,
+                    'logo_url'              => $logoPath ?? '',
+                    'format_choisi'         => 'default',
+                    'created_at'            => now(),
+                    'updated_at'            => now(),
                 ]);
             } catch (\Exception $e) {
-                // Non bloquant : la création du cachet ne doit pas empêcher l'inscription
-                \Illuminate\Support\Facades\Log::warning('Cachet generation failed: ' . $e->getMessage());
+                // Non bloquant : la génération ne doit pas empêcher l'inscription
+                \Illuminate\Support\Facades\Log::warning('Cachet/logo generation failed: ' . $e->getMessage());
             }
 
             // Préparer les données pour la facture d'abonnement
@@ -1000,12 +1004,11 @@ class UtilisateurController extends SessionController
                     'nom' => ['required', 'string', 'min:2'],
                     'prenom' => ['required', 'string', 'min:2'],
                     'email' => ['required','string','email','max:255',Rule::unique(User::class),],
-                    //'telephone' => ['required'],
-                    'code_pays' => ['required'],
+                    'telephone' => ['required'],
                     'type_compte' => ['required', 'string'],
                     'mot_de_passe' => ['required', 'string', 'min:8'],
                     'Confirmer_mot_de_passe' => ['required','same:mot_de_passe','string', 'min:8'],
-    
+
                     ],
                     [
                         '*.required' => 'Ce champ est obligatoire.',
@@ -1020,14 +1023,12 @@ class UtilisateurController extends SessionController
                     'nom' => ['required', 'string', 'min:2'],
                     'prenom' => ['required', 'string', 'min:2'],
                     'email' => ['required','string','email','max:255',Rule::unique(User::class),],
-                    //'telephone' => ['required'],
-                    'code_pays' => ['required'],
+                    'telephone' => ['required'],
                     'type_compte' => ['required', 'string'],
                     'mot_de_passe' => ['required', 'string', 'min:8'],
                     'Confirmer_mot_de_passe' => ['required','same:mot_de_passe','string', 'min:8'],
                     'designation' => ['required', 'string'],
                     'adresse' => ['required', 'string'],
-                    'telepone_entreprise' => ['required'],
                     'email_entreprise' => ['required','string','email','max:255'],
                     ],
                     [
@@ -1056,19 +1057,18 @@ class UtilisateurController extends SessionController
                 $mot_de_passe = $request->mot_de_passe;
                 $designation = $request->nom.' '.$request->prenom;
                 $adresse =$request->nom;
-                $telepone_entreprise = $request->code_pays.''.$request->telephone;
+                $telepone_entreprise = $request->telephone;
                 $email_entreprise = $request->email;
             }else {
                 $nom = Str::upper($request->nom);
                 $prenom =  Str::ucfirst($request->prenom);
                 $email = $request->email;
                 $grade  = 'Administrateur';
-               // $telephone = $request->telephone;
                 $type_compte = $request->type_compte;
                 $mot_de_passe = $request->mot_de_passe;
                 $designation = $request->designation;
                 $adresse =$request->adresse;
-                $telepone_entreprise = $request->code_pays.''.$request->telephone;
+                $telepone_entreprise = $request->telephone;
                 $email_entreprise = $request->email_entreprise;
             }
     
@@ -1106,13 +1106,17 @@ class UtilisateurController extends SessionController
             ]);
 
 
-            $role = Role::where('name','Administrateur')->first();
-            if (empty($role)) {
-               $role = Role::create(['name' => 'Administrateur']);
+            $role = Role::where('name', 'Administrateur')
+                        ->where('iddirectionRef_role', $direction_id)
+                        ->first();
+            if (!$role) {
+                $role = Role::create([
+                    'name'                => 'Administrateur',
+                    'iddirectionRef_role' => $direction_id,
+                ]);
             }
-
-
-            $permissions = Permission::pluck('id','id')->all();
+            // Toutes les permissions sauf config-paiement
+            $permissions = Permission::where('name', '!=', 'config-paiement')->pluck('id', 'id')->all();
             $role->syncPermissions($permissions);
             $newuser->assignRole([$role->id]);
     
@@ -1275,7 +1279,9 @@ class UtilisateurController extends SessionController
     {
         //$this->authorize('modifier-utilisateur');
 
-        $user = User::find($id);
+        $id   = decrypt_id($id);
+        abort_if(!$id, 404);
+        $user = User::findOrFail($id);
         // $roles = Role::pluck('name','name')->all();
         $roles = Role::where('name', 'NOT LIKE', 'Super Admin')
                      ->where('iddirectionRef_role',Auth::user()->iddirection_ref)
@@ -1297,7 +1303,10 @@ class UtilisateurController extends SessionController
     public function update(Request $request)
     {
        // $this->authorize('modifier-utilisateur');
-        $id           = $request->user;
+        $id = decrypt_id($request->user);
+        if (!$id) {
+            return response()->json(['status' => false, 'message' => 'Identifiant invalide.']);
+        }
         $checkoldnum = User::where('id', $id)->first();
         $checkuser = Validator::make($request->all(), [
             'user' => 'required',
@@ -1379,12 +1388,14 @@ class UtilisateurController extends SessionController
    
     public function destroy($id)
     {
+        $id   = decrypt_id($id);
+        abort_if(!$id, 404);
         $user = User::findOrFail($id);
     
-        // Inversion du statut : si NULL → désactivation, sinon → activation
-        $isCurrentlyActive = is_null($user->status);
-    
-        $user->status = $isCurrentlyActive ? Carbon::now() : null;
+        // Inversion du statut : NULL = actif, datetime = désactivé
+        $isCurrentlyActive = empty($user->status);
+
+        $user->status = $isCurrentlyActive ? Carbon::now()->toDateTimeString() : null;
         $user->save();
     
         // Action log
@@ -1399,12 +1410,16 @@ class UtilisateurController extends SessionController
             Auth::logout();
         }
     
-        // Message utilisateur
         $message = $isCurrentlyActive
-            ? "L’utilisateur {$user->nom} {$user->prenom} a été désactivé avec succès."
-            : "L’utilisateur {$user->nom} {$user->prenom} a été réactivé avec succès.";
-    
-        return redirect()->route('getUserView')->with('success', $message);
+            ? "Le compte de {$user->nom} {$user->prenom} a été désactivé."
+            : "Le compte de {$user->nom} {$user->prenom} a été réactivé.";
+
+        return response()->json([
+            'status'     => true,
+            'message'    => $message,
+            'new_status' => $isCurrentlyActive ? 'inactive' : 'active',
+            'logout'     => $isCurrentlyActive && Auth::id() == $user->id,
+        ]);
     }
     
 

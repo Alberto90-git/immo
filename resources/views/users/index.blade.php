@@ -1,6 +1,5 @@
 @extends('layouts.template')
 
-
 @section('content')
 
     @section('title')
@@ -8,154 +7,152 @@
     @endsection
 
     @include('notification.display_message')
-   
-    
+
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil/Gestion utilisateur/</span>Ajouter utilisateur </h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil / Gestion utilisateur /</span> Liste</h4>
 
     @can('ajouter-utilisateur')
-      <div class="ms-3 demo-inline-spacing">
+      <div class="ms-3 demo-inline-spacing mb-3">
         <a href="{{ route('addUser') }}" class="btn rounded-pill btn-primary">
             <span class="bx bx-plus"></span>&nbsp; Ajouter utilisateur
         </a>
-      </div> <br>  
+      </div>
     @endcan
 
-
-      <!-- Hoverable Table rows -->
     <div class="card">
       <h5 class="card-header text-center">Liste des utilisateurs</h5>
       <div class="table-responsive text-nowrap">
-        <table id="example" class="table table-hover border-primary" style="width:100%" >
+        <table id="example" class="table table-hover border-primary" style="width:100%">
           <thead>
             <tr>
                 <th>Agence</th>
-                <th>Nom & prénom</th>
-                 <th>status</th>
-                 <th width="280px">Actions</th>
+                <th>Nom &amp; prénom</th>
+                <th>Statut</th>
+                <th width="280px">Actions</th>
             </tr>
           </thead>
           <tbody class="table-border-bottom-0">
             @can('liste-utilisateur')
-                  @if(isset($data))
-                    @foreach($data as $user)  
-                      <tr>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ get_annexee_name($user->idannexe_ref) }}</strong></td>
-                        <th scope="row">{{ $user->nom }}  {{ $user->prenom }}</th>
-                        <td>
-                            @if ($user->status == '')
-                            <label class="badge rounded-pill bg-success">Actif</label>
-                            @else
-                            <label class="badge rounded-pill bg-danger">Désactivé</label>
-                            @endif
-                        </td>  
+              @if(isset($data))
+                @foreach($data as $user)
+                  <tr>
+                    <td><strong>{{ get_annexee_name($user->idannexe_ref) }}</strong></td>
+                    <td>{{ $user->nom }} {{ $user->prenom }}</td>
+                    <td>
+                        @if ($user->status == '')
+                        <label class="badge rounded-pill bg-success badge-status">Actif</label>
+                        @else
+                        <label class="badge rounded-pill bg-danger badge-status">Désactivé</label>
+                        @endif
+                    </td>
+                    <td>
+                        @can('modifier-utilisateur')
+                          <a class="btn rounded-pill btn-primary" href="{{ route('editView', encrypt_id($user->id)) }}" title="Modifier">
+                            <i class="bx bx-edit-alt me-1"></i>
+                          </a>
+                        @endcan
 
-                        <td>
-                            @can('modifier-utilisateur')
-                              <a class="btn rounded-pill btn-primary"  href="{{ route('editView',$user->id) }}"><i class="bx bx-edit-alt me-1"></i></a>
-                            @endcan
+                        @can('desactive-utilisateur')
+                          <button type="button"
+                            class="btn shadow btn-toggle-status {{ $user->status == '' ? 'btn-danger' : 'btn-success' }}"
+                            data-id="{{ encrypt_id($user->id) }}"
+                            data-status="{{ $user->status == '' ? 'active' : 'inactive' }}"
+                            data-nom="{{ $user->nom }} {{ $user->prenom }}"
+                            title="{{ $user->status == '' ? 'Désactiver' : 'Activer' }}">
+                            {{ $user->status == '' ? 'Désactiver' : 'Activer' }}
+                          </button>
+                        @endcan
 
-                            {!! Form::open(['method' => 'DELETE','route' => ['supprime', $user->id],'style'=>'display:inline']) !!}
-                            @can('desactive-utilisateur')
+                        @can('liste-utilisateur')
+                          <button type="button" class="btn rounded-pill btn-info text-white"
+                            data-bs-toggle="modal" data-bs-target="#modalUser{{ $loop->iteration }}" title="Détails">
+                            <i class="bx bx-user-circle me-1"></i>
+                          </button>
+                        @endcan
+                    </td>
+                  </tr>
+
+                  <!-- Modal détails utilisateur -->
+                  <div class="modal fade" id="modalUser{{ $loop->iteration }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+
+                        <div class="modal-header text-white" style="background: linear-gradient(135deg, #696cff, #012970);">
+                          <h5 class="modal-title">
+                            <i class="bx bx-user-circle me-2"></i> Détails de l'utilisateur
+                          </h5>
+                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body p-4">
+
+                          {{-- Avatar + nom --}}
+                          <div class="d-flex align-items-center mb-4">
+                            <div class="avatar avatar-lg me-3">
+                              <span class="avatar-initial rounded-circle text-white fw-bold fs-4"
+                                style="width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#696cff,#012970);">
+                                {{ strtoupper(substr($user->nom, 0, 1)) }}{{ strtoupper(substr($user->prenom, 0, 1)) }}
+                              </span>
+                            </div>
+                            <div>
+                              <h5 class="mb-0 fw-bold">{{ $user->nom }} {{ $user->prenom }}</h5>
+                              <small class="text-muted">{{ get_annexee_name($user->idannexe_ref) }}</small>
+                            </div>
+                            <div class="ms-auto">
                               @if ($user->status == '')
-                                {!! Form::submit('Désactivé', ['class' => 'btn btn-danger shadow']) !!}
+                              <span class="badge rounded-pill bg-success">Actif</span>
                               @else
-                                {!! Form::submit('Activé', ['class' => 'btn btn-success shadow']) !!}
+                              <span class="badge rounded-pill bg-danger">Désactivé</span>
                               @endif
-                            @endcan
-                            {!! Form::close() !!}
-
-                            @can('liste-utilisateur')
-                              <button type="button" class="btn rounded-pill btn-primary" data-bs-toggle="modal" data-bs-target="#disablebackdrop{{ $loop->iteration }}">
-                                <i class="bx bx-zoom-in me-1"></i>
-                              </button>
-                            @endcan
-                        </td>
-
-
-                        {{-- <td>
-                          @can('modify-proprietaire')
-                          <a class="btn rounded-pill btn-primary" 
-                          title="Modifier" href="#" data-bs-toggle="modal" data-bs-target="#modifier{{$loop->iteration}}">
-                              <i class="bx bx-edit-alt me-1"></i>
-                            </a>
-                          @endcan
-                      
-                          @can('delete-proprietaire')
-                          <a class="btn rounded-pill btn-danger"
-                          title="Supprimer" href="#" data-bs-toggle="modal" data-bs-target="#supprimer{{$loop->iteration}}">
-                                <i class="bx bx-trash me-1"></i>
-                            </a>
-                          @endcan
-                      </td> --}}
-                      
-                      </tr>
-
-
-                      <div class="modal fade" id="disablebackdrop{{ $loop->iteration }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel1">Détails utilisateur</h5>
-                              <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                              ></button>
-                            </div>
-                            <div class="modal-body">
-                                <ul class="list-group list-group-flush">
-                                    <h4 class="list-group-item"><label class="badge rounded-pill bg-primary">Email</label> {{ $user->email }}</h4>
-                                    <h4 class="list-group-item"><label class="badge rounded-pill bg-primary">Grade</label> {{ $user->grade }}</h4>
-                                    <h4 class="list-group-item"> <label class="badge rounded-pill bg-primary">Fonctions: </label>
-                                        @if(!empty($user->getRoleNames()))
-                                            @foreach($user->getRoleNames() as $v)
-                                                <label >{{ $v }}</label>
-                                            @endforeach
-                                        @endif
-                                    </h4>
-                                </ul>
-                              
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Ferme
-                              </button>
                             </div>
                           </div>
+
+                          <hr class="my-3">
+
+                          {{-- Infos --}}
+                          <ul class="list-unstyled mb-0">
+                            <li class="d-flex align-items-start py-2 border-bottom">
+                              <span class="me-3 mt-1 text-primary"><i class="bx bx-envelope fs-5"></i></span>
+                              <div>
+                                <small class="text-muted d-block">Email</small>
+                                <span class="fw-semibold">{{ $user->email }}</span>
+                              </div>
+                            </li>
+                            <li class="d-flex align-items-start py-2 border-bottom">
+                              <span class="me-3 mt-1 text-primary"><i class="bx bx-briefcase fs-5"></i></span>
+                              <div>
+                                <small class="text-muted d-block">Grade</small>
+                                <span class="fw-semibold">{{ $user->grade ?: '—' }}</span>
+                              </div>
+                            </li>
+                            <li class="d-flex align-items-start py-2">
+                              <span class="me-3 mt-1 text-primary"><i class="bx bx-shield fs-5"></i></span>
+                              <div>
+                                <small class="text-muted d-block">Fonctions</small>
+                                @if($user->getRoleNames()->isNotEmpty())
+                                  @foreach($user->getRoleNames() as $v)
+                                    <span class="badge bg-label-primary me-1">{{ $v }}</span>
+                                  @endforeach
+                                @else
+                                  <span class="text-muted fst-italic">Aucune fonction</span>
+                                @endif
+                              </div>
+                            </li>
+                          </ul>
+
                         </div>
+
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="bx bx-x me-1"></i> Fermer
+                          </button>
+                        </div>
+
                       </div>
                     </div>
                   </div>
+                  <!-- Fin modal -->
 
-                  <div class="modal fade" id="disablebackdrop{{ $loop->iteration }}" tabindex="-1" data-bs-backdrop="false">
-                      <div class="modal-dialog">
-                          <div class="modal-content">
-                              <div class="modal-header text-white" style="background-color: #012970;">
-                                  <h5 class="modal-title center">Détails utilisateur</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body">
-                                  <ul class="list-group list-group-flush">
-                                      <h4 class="list-group-item"><label class="badge rounded-pill bg-primary">Email</label> {{ $user->email }}</h4>
-                                      <h4 class="list-group-item"><label class="badge rounded-pill bg-primary">Grade</label> {{ $user->grade }}</h4>
-                                      <h4 class="list-group-item"> <label class="badge rounded-pill bg-primary">Fonctions: </label>
-                                          @if(!empty($user->getRoleNames()))
-                                              @foreach($user->getRoleNames() as $v)
-                                                  <label >{{ $v }}</label>
-                                              @endforeach
-                                          @endif
-                                      </h4>
-                                  </ul>
-                                  <!-- End Clean list group -->
-                              </div>
-                              <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
                 @endforeach
               @endif
             @endcan
@@ -163,5 +160,70 @@
         </table>
       </div>
     </div>
+
+</div>
+
+<script>
+$(document).on('click', '.btn-toggle-status', function () {
+    var $btn   = $(this);
+    var id     = $btn.data('id');
+    var status = $btn.data('status');
+    var nom    = $btn.data('nom');
+    var action = status === 'active' ? 'désactiver' : 'réactiver';
+
+    Swal.fire({
+        title: 'Confirmation',
+        html: 'Voulez-vous <strong>' + action + '</strong> le compte de <strong>' + nom + '</strong> ?',
+        icon: status === 'active' ? 'warning' : 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non',
+        confirmButtonColor: status === 'active' ? '#d33' : '#28a745',
+    }).then(function (result) {
+        if (!result.isConfirmed) return;
+
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+        $.ajax({
+            url: '{{ url('gerer-user/destroy') }}/' + id,
+            method: 'POST',
+            data: { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+            success: function (data) {
+                if (!data.status) {
+                    display_message('Erreur', data.message, 'error', 'btn btn-danger');
+                    $btn.prop('disabled', false).text(status === 'active' ? 'Désactiver' : 'Activer');
+                    return;
+                }
+
+                if (data.logout) {
+                    window.location.href = '{{ route('connexion') }}';
+                    return;
+                }
+
+                var isNowActive  = data.new_status === 'active';
+                var newLabel     = isNowActive ? 'Désactiver' : 'Activer';
+                var newBtnClass  = isNowActive ? 'btn-danger'  : 'btn-success';
+                var prevBtnClass = isNowActive ? 'btn-success' : 'btn-danger';
+
+                $btn.data('status', data.new_status)
+                    .attr('title', newLabel)
+                    .removeClass(prevBtnClass).addClass(newBtnClass)
+                    .prop('disabled', false).text(newLabel);
+
+                var $badge = $btn.closest('tr').find('.badge-status');
+                $badge.removeClass('bg-success bg-danger')
+                      .addClass(isNowActive ? 'bg-success' : 'bg-danger')
+                      .text(isNowActive ? 'Actif' : 'Désactivé');
+
+                display_message('Succès', data.message, 'success', 'btn btn-primary');
+            },
+            error: function () {
+                display_message('Erreur', 'Une erreur s\'est produite.', 'error', 'btn btn-danger');
+                $btn.prop('disabled', false).text(status === 'active' ? 'Désactiver' : 'Activer');
+            }
+        });
+    });
+});
+</script>
 
 @endsection

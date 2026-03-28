@@ -1,105 +1,79 @@
 @extends('layouts.template')
 
-@section('content')
-
 @section('title')
 <title>Gestion chambre</title>
 @endsection
 
+@section('content')
+
 <style>
-    /* Forcer SweetAlert2 à apparaître au-dessus de tous les modals */
-    .swal2-container {
-        z-index: 10070 !important;
-    }
-    
-    .swal2-popup {
-        z-index: 10071 !important;
-    }
+    .swal2-container { z-index: 10070 !important; }
+    .swal2-popup    { z-index: 10071 !important; }
 </style>
 
 @include('notification.display_message')
-
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion chambre</h4>
 
     @can('ajoute-chambre')
-        <div class="col-md-6">
-            <div class="demo-inline-spacing">
-                <button type="button" class="btn rounded-pill btn-icon btn-outline-primary" data-bs-toggle="modal"
-                    data-bs-target="#AjouerChambre">
-                    <span class="bx bx-plus"></span>
-                </button>
-            </div>
-        </div><br/>
+        <div class="col-md-6 mb-3">
+            <button type="button" class="btn rounded-pill btn-icon btn-outline-primary"
+                    data-bs-toggle="modal" data-bs-target="#AjouerChambre">
+                <span class="bx bx-plus"></span>
+            </button>
+        </div>
     @endcan
 
-    <!-- Modal Ajout -->
+    {{-- Modal Ajout --}}
     <div class="modal fade" id="AjouerChambre" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCenterTitle">Ajouter une chambre</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Ajouter une chambre</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" method="post" action="javascript:save_chambre();" id="formulaire">
+                    <form class="row g-3" id="formAjouterChambre">
                         @csrf
-
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">Choisir une maison<span style="color: red;">*</span></label>
-                            <select required class="form-select @error('nom_maison') is-invalid @enderror" name="nom_maison" id="nom_maison" aria-label="Default select example">
+                            <label class="form-label">Choisir une maison <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="nom_maison" id="nom_maison">
                                 <option selected disabled value="">Choisir une maison</option>
                                 @if(isset($allMaison))
-                                @foreach($allMaison as $terme)
-                                <option value="{{$terme->id}}" {{ old($terme->id) == $terme->id ? 'selected' : '' }}>{{$terme->nom_maison}}</option>
-                                @endforeach
+                                    @foreach($allMaison as $terme)
+                                        <option value="{{ $terme->id }}">{{ $terme->nom_maison }}</option>
+                                    @endforeach
                                 @endif
                             </select>
-                            <span class="invalid-feedback nom_maison_err" role="alert"></span>
                         </div>
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">N° de la chambre<span style="color: red;">*</span></label>
-                            <input type="text" name="numero_chambre" class="form-control @error('numero_chambre') is-invalid @enderror" onkeypress="return /[0-9]/i.test(event.key)" id="numero_chambre" required>
-                            <span class="invalid-feedback numero_chambre_err" role="alert"></span>
+                            <label class="form-label">N° de la chambre <span class="text-danger">*</span></label>
+                            <input type="text" name="numero_chambre" class="form-control"
+                                   onkeypress="return /[0-9]/i.test(event.key)" id="numero_chambre" required>
                         </div>
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">Type de chambre<span style="color: red;">*</span></label>
-                            <select required class="form-select @error('type_chambre') is-invalid @enderror" name="type_chambre" id="type_chambre" aria-label="Default select example">
+                            <label class="form-label">Type de chambre <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="type_chambre" id="type_chambre">
                                 <option selected disabled value="">Type de chambre</option>
-                                <option value="Entrée couche ordinaire">Entrée couche ordinaire</option>
-                                <option value="Entrée couche semi-sanitaire">Entrée couche semi-sanitaire</option>
-                                <option value="Entrée couche sanitaire">Entrée couche sanitaire</option>
-                                <option value="Chambre salon ordinaire">Chambre salon ordinaire</option>
-                                <option value="Chambre salon semi-sanitaire">Chambre salon semi-sanitaire</option>
-                                <option value="Chambre salon sanitaire">Chambre salon sanitaire</option>
-                                <option value="2Chambre salon ordinaire">2Chambre salon ordinaire</option>
-                                <option value="2Chambre salon semi-sanitaire">2Chambre salon semi-sanitaire</option>
-                                <option value="2Chambre salon sanitaire">2Chambre salon sanitaire</option>
-                                <option value="3Chambre salon ordinaire">3Chambre salon ordinaire</option>
-                                <option value="3Chambre salon semi-sanitaire">3Chambre salon semi-sanitaire</option>
-                                <option value="3Chambre salon sanitaire">3Chambre salon sanitaire</option>
-                                <option value="Appartement">Appartement</option>
-                                <option value="Boutique">Boutique</option>
+                                @foreach(['Entrée couche ordinaire','Entrée couche semi-sanitaire','Entrée couche sanitaire','Chambre salon ordinaire','Chambre salon semi-sanitaire','Chambre salon sanitaire','2Chambre salon ordinaire','2Chambre salon semi-sanitaire','2Chambre salon sanitaire','3Chambre salon ordinaire','3Chambre salon semi-sanitaire','3Chambre salon sanitaire','Appartement','Boutique'] as $type)
+                                    <option value="{{ $type }}">{{ $type }}</option>
+                                @endforeach
                             </select>
-                            <span class="invalid-feedback type_chambre_err" role="alert"></span>
                         </div>
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">Prix / mois<span style="color: red;">*</span></label>
-                            <input type="text" name="prix" class="form-control @error('prix') is-invalid @enderror" onkeypress="return /[0-9]/i.test(event.key)" id="prix" required>
-                            <span class="invalid-feedback prix_err" role="alert"></span>
+                            <label class="form-label">Prix / mois <span class="text-danger">*</span></label>
+                            <input type="text" name="prix" class="form-control"
+                                   onkeypress="return /[0-9]/i.test(event.key)" id="prix" required>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="close">
-                                Fermer
-                            </button>
-                            <button class="btn btn-primary" id="valider">
-                                <span class="fa fa-save"></span>
-                                <span>Enregistrer</span>
+                        <div class="modal-footer mt-3">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="bx bx-save me-1"></span> Enregistrer
                             </button>
                         </div>
                     </form>
@@ -108,154 +82,126 @@
         </div>
     </div>
 
-    <!-- Tableau des chambres -->
-    <div class="card">
-        <h5 class="card-header text-center">Liste des chambres</h5>
-        <div class="table-responsive text-nowrap">
-            <table id="example" class="table table-hover border-primary" style="width:100%">
-                <thead>
-                    <tr>
-                        <th scope="col">Agence</th>
-                        <th scope="col">Nom maison</th>
-                        <th scope="col">N° chambre</th>
-                        <th scope="col">Type de chambre</th>
-                        <th scope="col">Prix</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="table-border-bottom-0">
-                    @can('Consulter-chambre')
-                    @if(isset($allChambres))
-                    @foreach($allChambres as $item)
-                    <tr>
-                        <td>{{ get_annexee_name($item->idannexe_ref) }}</td>
-                        <th scope="row">{{ $item->nom_maison }}</th>
-                        <td>{{ $item->numero_chambre }}</td>
-                        <td>{{ $item->type_chambre }}</td>
-                        <td>{{ number_format($item->prix_chambre ,"0",",",".") }} XOF</td>
-                        <td>
-                            @if($item->etat == true)
-                            <span class="badge rounded-pill bg-danger">Occupé</span>
-                            @else
-                            <span class="badge rounded-pill bg-success">Libre</span>
-                            @endif
-                        </td>
-                        <td>
-                            @can('modify-chambre')
-                            <a class="btn rounded-pill btn-primary" title="Modifier" href="#" data-bs-toggle="modal" data-bs-target="#modifier{{$loop->iteration}}">
-                                <i class="bx bx-edit-alt me-1"></i>
-                            </a>
-                            @endcan
-
-                            @can('delete-chambre')
-                            <a class="btn rounded-pill btn-danger" title="Supprimer" href="#" data-bs-toggle="modal" data-bs-target="#supprimer{{$loop->iteration}}">
-                                <i class="bx bx-trash me-1"></i>
-                            </a>
-                            @endcan
-                        </td>
-                    </tr>
-                    @endforeach
-                    @endif
-                    @endcan
-                </tbody>
-            </table>
+    {{-- Tableau --}}
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-center">
+            <h5 class="mb-0 text-white"><i class="bx bx-door-open me-1"></i> Liste des chambres</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="example" class="table table-striped table-hover align-middle mb-0" style="width:100%">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nom maison</th>
+                            <th>N° chambre</th>
+                            <th>Type de chambre</th>
+                            <th>Prix</th>
+                            <th>Statut</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @can('Consulter-chambre')
+                        @if(isset($allChambres))
+                        @foreach($allChambres as $item)
+                        <tr id="row-chambre-{{ $item->id }}">
+                            <td>{{ $item->nom_maison }}</td>
+                            <td>{{ $item->numero_chambre }}</td>
+                            <td>{{ $item->type_chambre }}</td>
+                            <td>{{ number_format($item->prix_chambre, 0, ',', '.') }} XOF</td>
+                            <td>
+                                @if($item->etat == true)
+                                    <span class="badge rounded-pill bg-danger">Occupé</span>
+                                @else
+                                    <span class="badge rounded-pill bg-success">Libre</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @can('modify-chambre')
+                                    <a class="btn btn-sm btn-primary me-1" title="Modifier"
+                                       data-bs-toggle="modal" data-bs-target="#modifier{{ $item->id }}">
+                                        <i class="bx bx-edit-alt"></i>
+                                    </a>
+                                @endcan
+                                @can('delete-chambre')
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger btn-supprimer-chambre"
+                                            title="Supprimer"
+                                            data-id="{{ $item->id }}"
+                                            data-num="{{ $item->numero_chambre }}"
+                                            data-etat="{{ $item->etat }}">
+                                        <i class="bx bx-trash"></i>
+                                    </button>
+                                @endcan
+                            </td>
+                        </tr>
+                        @endforeach
+                        @endif
+                        @endcan
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Modals de suppression et modification -->
+    {{-- Modals de modification --}}
     @if(isset($allChambres))
     @foreach($allChambres as $items)
-    <!-- Modal Suppression -->
-    <div class="modal fade" id="supprimer{{$loop->iteration}}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
+    <div class="modal fade" id="modifier{{ $items->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCenterTitle">Supprimer une chambre</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Modifier une chambre</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" method="post" action="{{ route('destroy_chambre') }}">
+                    <form class="row g-3 form-modifier-chambre" data-id="{{ $items->id }}">
                         @csrf
-                        Voulez-vous vraiment supprimer cette ligne ?
-                        <input type="hidden" name="id" class="form-control" id="id" value="{{ $items->id}}">
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Non
-                            </button>
-                            <button type="submit" class="btn btn-outline-danger">Oui</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Modification -->
-    <div class="modal fade" id="modifier{{$loop->iteration}}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCenterTitle">Modification</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form class="row g-3" method="post" action="{{ route('update_chambre') }}">
-                        @csrf
-                        <input type="hidden" name="chambre_id" class="form-control" id="id" value="{{ $items->id}}">
+                        <input type="hidden" name="chambre_id" value="{{ $items->id }}">
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">Choisir une maison<span style="color: red;">*</span></label>
-                            <select required class="form-select @error('nom_maison') is-invalid @enderror" name="nom_maison" id="nom_maison" aria-label="Default select example">
+                            <label class="form-label">Choisir une maison <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="nom_maison">
                                 <option selected disabled value="">Choisir une maison</option>
                                 @if(isset($allMaison))
-                                @foreach($allMaison as $terme)
-                                <option value="{{$terme->id}}" {{$items->maison_id == $terme->id ? 'selected':''}}>{{$terme->nom_maison}}</option>
-                                @endforeach
+                                    @foreach($allMaison as $terme)
+                                        <option value="{{ $terme->id }}" {{ $items->maison_id == $terme->id ? 'selected' : '' }}>
+                                            {{ $terme->nom_maison }}
+                                        </option>
+                                    @endforeach
                                 @endif
                             </select>
-                            <span class="invalid-feedback nom_maison_err" role="alert"></span>
                         </div>
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">N° de la chambre<span style="color: red;">*</span></label>
-                            <input type="text" name="numero_chambre" value="{{ $items->numero_chambre }}" class="form-control @error('numero_chambre') is-invalid @enderror" onkeypress="return /[0-9]/i.test(event.key)" id="numero_chambre" required>
-                            <span class="invalid-feedback numero_chambre_err" role="alert"></span>
+                            <label class="form-label">N° de la chambre <span class="text-danger">*</span></label>
+                            <input type="text" name="numero_chambre" value="{{ $items->numero_chambre }}"
+                                   class="form-control" onkeypress="return /[0-9]/i.test(event.key)" required>
                         </div>
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">Type de chambre<span style="color: red;">*</span></label>
-                            <select required class="form-select @error('type_chambre') is-invalid @enderror" name="type_chambre" id="type_chambre" aria-label="Default select example">
+                            <label class="form-label">Type de chambre <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="type_chambre">
                                 <option selected disabled>Type de chambre</option>
-                                <option value="Entrée couche ordinaire" {{$items->type_chambre == 'Entrée couche ordinaire' ? 'selected':''}}>Entrée couche ordinaire</option>
-                                <option value="Entrée couche semi-sanitaire" {{$items->type_chambre == 'Entrée couche semi-sanitaire' ? 'selected':''}}>Entrée couche semi-sanitaire</option>
-                                <option value="Entrée couche sanitaire" {{$items->type_chambre == 'Entrée couche sanitaire' ? 'selected':''}}>Entrée couche sanitaire</option>
-                                <option value="Chambre salon ordinaire" {{$items->type_chambre == 'Chambre salon ordinaire' ? 'selected':''}}>Chambre salon ordinaire</option>
-                                <option value="Chambre salon semi-sanitaire" {{$items->type_chambre == 'Chambre salon semi-sanitaire' ? 'selected':''}}>Chambre salon semi-sanitaire</option>
-                                <option value="Chambre salon sanitaire" {{$items->type_chambre == 'Chambre salon sanitaire' ? 'selected':''}}>Chambre salon sanitaire</option>
-                                <option value="2Chambre salon ordinaire" {{$items->type_chambre == '2Chambre salon ordinaire' ? 'selected':''}}>2Chambre salon ordinaire</option>
-                                <option value="2Chambre salon semi-sanitaire" {{$items->type_chambre == '2Chambre salon semi-sanitaire' ? 'selected':''}}>2Chambre salon semi-sanitaire</option>
-                                <option value="2Chambre salon sanitaire" {{$items->type_chambre == '2Chambre salon sanitaire' ? 'selected':''}}>2Chambre salon sanitaire</option>
-                                <option value="3Chambre salon ordinaire" {{$items->type_chambre == '3Chambre salon ordinaire' ? 'selected':''}}>3Chambre salon ordinaire</option>
-                                <option value="3Chambre salon semi-sanitaire" {{$items->type_chambre == '3Chambre salon semi-sanitaire' ? 'selected':''}}>3Chambre salon semi-sanitaire</option>
-                                <option value="3Chambre salon sanitaire" {{$items->type_chambre == '3Chambre salon sanitaire' ? 'selected':''}}>3Chambre salon sanitaire</option>
-                                <option value="Appartement" {{$items->type_chambre == 'Appartement' ? 'selected':''}}>Appartement</option>
-                                <option value="Boutique" {{$items->type_chambre == 'Boutique' ? 'selected':''}}>Boutique</option>
+                                @foreach(['Entrée couche ordinaire','Entrée couche semi-sanitaire','Entrée couche sanitaire','Chambre salon ordinaire','Chambre salon semi-sanitaire','Chambre salon sanitaire','2Chambre salon ordinaire','2Chambre salon semi-sanitaire','2Chambre salon sanitaire','3Chambre salon ordinaire','3Chambre salon semi-sanitaire','3Chambre salon sanitaire','Appartement','Boutique'] as $type)
+                                    <option value="{{ $type }}" {{ $items->type_chambre == $type ? 'selected' : '' }}>
+                                        {{ $type }}
+                                    </option>
+                                @endforeach
                             </select>
-                            <span class="invalid-feedback type_chambre_err" role="alert"></span>
                         </div>
 
                         <div class="col-12">
-                            <label for="inputNanme4" class="form-label">Prix / mois<span style="color: red;">*</span></label>
-                            <input type="text" name="prix" value="{{ $items->prix_chambre }}" class="form-control @error('prix') is-invalid @enderror" onkeypress="return /[0-9]/i.test(event.key)" id="prix" required>
-                            <span class="invalid-feedback prix_err" role="alert"></span>
+                            <label class="form-label">Prix / mois <span class="text-danger">*</span></label>
+                            <input type="text" name="prix" value="{{ $items->prix_chambre }}"
+                                   class="form-control" onkeypress="return /[0-9]/i.test(event.key)" required>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Fermer
+                        <div class="modal-footer mt-3">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="bx bx-save me-1"></span> Enregistrer
                             </button>
-                            <button type="submit" class="btn btn-primary">Enregistrer</button>
                         </div>
                     </form>
                 </div>
@@ -264,110 +210,243 @@
     </div>
     @endforeach
     @endif
+
 </div>
 
-<!-- Script JavaScript -->
 <script>
+$(document).off('.page');
+var CSRF_TOKEN         = '{{ csrf_token() }}';
+var URL_STORE_CH       = '{{ route("store_chambre") }}';
+var URL_UPDATE_CH      = '{{ route("update_chambre") }}';
+var URL_DESTROY_CH     = '{{ route("destroy_chambre") }}';
+var CAN_MODIFY_CHAMBRE = {{ auth()->user()->can('modify-chambre') ? 'true' : 'false' }};
+var CAN_DELETE_CHAMBRE = {{ auth()->user()->can('delete-chambre') ? 'true' : 'false' }};
+var ALL_MAISONS = @json($allMaison->map(fn($m) => ['id' => $m->id, 'nom' => $m->nom_maison]));
+var TYPES_CHAMBRE = ['Entrée couche ordinaire','Entrée couche semi-sanitaire','Entrée couche sanitaire','Chambre salon ordinaire','Chambre salon semi-sanitaire','Chambre salon sanitaire','2Chambre salon ordinaire','2Chambre salon semi-sanitaire','2Chambre salon sanitaire','3Chambre salon ordinaire','3Chambre salon semi-sanitaire','3Chambre salon sanitaire','Appartement','Boutique'];
 
-function display_sweet_alert_over_modal(title, text, icon, buttonClass) {
-    // Appeler votre fonction existante
-    display_sweet_alerte2(title, text, icon, buttonClass);
-    
-    // Forcer le z-index après un court délai
-    setTimeout(function() {
-        const swalContainer = document.querySelector('.swal2-container');
-        const swalPopup = document.querySelector('.swal2-popup');
-        
-        if (swalContainer) {
-            swalContainer.style.zIndex = '10070';
-        }
-        if (swalPopup) {
-            swalPopup.style.zIndex = '10071';
-        }
-    }, 10);
-}
-
-function printErrorMsg(msg) {
-    $.each(msg, function(key, value) {
-        $('.' + key + '_err').text(value).show();
+// ─── Utilitaire fermeture modal ───────────────────────────────────────────────
+function closeModalClean(id) {
+    const modalEl = document.getElementById(id);
+    if (!modalEl) return;
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.hide();
+    modalEl.addEventListener('hidden.bs.modal', function handler() {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+        modalEl.removeEventListener('hidden.bs.modal', handler);
     });
 }
 
-// Fonction pour soumettre le formulaire AJAX
-function save_chambre() {
-    var data = new FormData();
+// ─── CRÉATION DYNAMIQUE DU MODAL MODIFIER ────────────────────────────────────
+function creerModalModifierChambre(c) {
+    const modalId = 'modifier' + c.id;
+    if (document.getElementById(modalId)) return; // déjà présent
 
-    // Form data
-    var form_data = $('#formulaire').serializeArray();
-    $.each(form_data, function(key, input) {
-        data.append(input.name, input.value);
+    // Construire les options du select maison
+    let optionsMaison = '<option selected disabled value="">Choisir une maison</option>';
+    ALL_MAISONS.forEach(function(m) {
+        const selected = m.id == c.maison_id ? 'selected' : '';
+        optionsMaison += `<option value="${m.id}" ${selected}>${m.nom}</option>`;
     });
 
-    $.ajax({
-        url: "{{ route('store_chambre') }}",
-        method: "POST",
-        processData: false,
-        contentType: false,
-        data: data,
-        beforeSend: function() {
-            $("#AjouerChambre button#close").prop("disabled", true);
-            $("#AjouerChambre button#valider").prop("disabled", true);
-            $("#AjouerChambre button#valider").html('<i class="text-center fa fa-spinner fa-pulse fa-1x fa-fw ml-2">En cours...</i>');
-        },
-        success: function(data) {
-            $("#AjouerChambre button#close").prop("disabled", false);
-            $("#AjouerChambre button#valider").prop("disabled", false);
-            $("#AjouerChambre button#valider").html('<span class="fa fa-save"></span> Enregistrer');
+    // Construire les options du select type chambre
+    let optionsType = '<option selected disabled value="">Type de chambre</option>';
+    TYPES_CHAMBRE.forEach(function(t) {
+        const selected = t === c.type_chambre ? 'selected' : '';
+        optionsType += `<option value="${t}" ${selected}>${t}</option>`;
+    });
 
-            if (!$.isEmptyObject(data.error)) {
-                printErrorMsg(data.error);
-                return;
+    const modalEl = document.createElement('div');
+    modalEl.className = 'modal fade';
+    modalEl.id = modalId;
+    modalEl.setAttribute('tabindex', '-1');
+    modalEl.setAttribute('aria-hidden', 'true');
+    modalEl.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">Modifier une chambre</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3 form-modifier-chambre" data-id="${c.id}">
+                        <input type="hidden" name="_token" value="${CSRF_TOKEN}">
+                        <input type="hidden" name="chambre_id" value="${c.id}">
+                        <div class="col-12">
+                            <label class="form-label">Choisir une maison <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="nom_maison">
+                                ${optionsMaison}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">N° de la chambre <span class="text-danger">*</span></label>
+                            <input type="text" name="numero_chambre" value="${c.numero_chambre}"
+                                   class="form-control" onkeypress="return /[0-9]/i.test(event.key)" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Type de chambre <span class="text-danger">*</span></label>
+                            <select required class="form-select" name="type_chambre">
+                                ${optionsType}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Prix / mois <span class="text-danger">*</span></label>
+                            <input type="text" name="prix" value="${c.prix_chambre}"
+                                   class="form-control" onkeypress="return /[0-9]/i.test(event.key)" required>
+                        </div>
+                        <div class="modal-footer mt-3">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="bx bx-save me-1"></span> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modalEl);
+    // La soumission est gérée par délégation jQuery — pas de bind direct nécessaire
+}
+
+// ─── AJOUT ───────────────────────────────────────────────────────────────────
+$(document).on('submit.page', '#formAjouterChambre', function(e) {
+    e.preventDefault();
+    const form = this;
+    const data = new FormData(form);
+
+    fetch(URL_STORE_CH, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+        body: data
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.status) {
+            const c = res.chambre;
+
+            // Créer le modal de modification pour cette nouvelle ligne
+            creerModalModifierChambre(c);
+
+            // Boutons d'action
+            let actions = '';
+            if (CAN_MODIFY_CHAMBRE) {
+                actions += `<a class="btn btn-sm btn-primary me-1" title="Modifier" data-bs-toggle="modal" data-bs-target="#modifier${c.id}"><i class="bx bx-edit-alt"></i></a>`;
+            }
+            if (CAN_DELETE_CHAMBRE) {
+                actions += `<button type="button" class="btn btn-sm btn-danger btn-supprimer-chambre" title="Supprimer" data-id="${c.id}" data-num="${c.numero_chambre}" data-etat="0"><i class="bx bx-trash"></i></button>`;
             }
 
-            try {
-                if (data.status) {
-                    display_sweet_alert_over_modal("Succès !!", data.message, "success", "btn btn-primary");
-                    
-                    $("#AjouerChambre form#formulaire")[0].reset();
-                } else {
-                    display_sweet_alert_over_modal("Erreur !!", data.message, "warning", "btn btn-danger");
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        error: function(xhr) {
-            $("#AjouerChambre button#close").prop("disabled", false);
-            $("#AjouerChambre button#valider").prop("disabled", false);
-            $("#AjouerChambre button#valider").html('<span class="fa fa-save"></span> Enregistrer');
-            
-            if (xhr.status === 422) {
-                var errors = xhr.responseJSON.errors || {};
-                var messages = xhr.responseJSON.message || "Erreur de validation";
-                printErrorMsg(errors);
-                display_sweet_alert_over_modal("Erreur !!", messages, "warning", "btn btn-danger");
-            } else if (xhr.status === 500) {
-                display_sweet_alert_over_modal("Erreur !!", messages, "warning", "btn btn-danger");
+            // Ajouter la ligne au tableau
+            const tr = document.createElement('tr');
+            tr.id = 'row-chambre-' + c.id;
+            tr.innerHTML = `
+                <td>${c.nom_maison}</td>
+                <td>${c.numero_chambre}</td>
+                <td>${c.type_chambre}</td>
+                <td>${parseInt(c.prix_chambre).toLocaleString('fr-FR')} XOF</td>
+                <td><span class="badge rounded-pill bg-success">Libre</span></td>
+                <td class="text-center">${actions}</td>
+            `;
+            if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
+                $('#example').DataTable().row.add(tr).draw(false);
             } else {
-                display_sweet_alert_over_modal("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                document.querySelector('#example tbody').prepend(tr);
             }
+
+            // Reset formulaire (modal reste ouvert)
+            form.reset();
+
+            Swal.fire({ icon: 'success', title: 'Succès', text: res.message, timer: 2500, showConfirmButton: false });
+        } else {
+            Swal.fire({ icon: 'warning', title: 'Attention', text: res.message });
         }
+    })
+    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+});
+
+// ─── MODIFICATION (délégation — fonctionne après re-rendu DataTables) ─────────
+$(document).on('submit.page', '.form-modifier-chambre', function(e) {
+    e.preventDefault();
+    const id   = this.dataset.id;
+    const data = new FormData(this);
+
+    fetch(URL_UPDATE_CH, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+        body: data
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.status) {
+            const row = document.getElementById('row-chambre-' + id);
+            if (row && res.chambre) {
+                const cells = row.querySelectorAll('td');
+                cells[0].textContent = res.chambre.nom_maison;
+                cells[1].textContent = res.chambre.numero_chambre;
+                cells[2].textContent = res.chambre.type_chambre;
+                cells[3].textContent = res.chambre.prix_chambre + ' XOF';
+            }
+            Swal.fire({ icon: 'success', title: 'Mis à jour', text: res.message, timer: 2500, showConfirmButton: false });
+            closeModalClean('modifier' + id);
+        } else {
+            Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+        }
+    })
+    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+});
+
+// ─── SUPPRESSION (délégation — fonctionne après re-rendu DataTables) ──────────
+$(document).on('click.page', '.btn-supprimer-chambre', function() {
+    const id  = this.dataset.id;
+    const num = this.dataset.num;
+
+    Swal.fire({
+        title: 'Supprimer cette chambre ?',
+        html: `<strong class="text-danger">Chambre N°${num}</strong>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+    }).then(result => {
+        if (!result.isConfirmed) return;
+
+        const data = new FormData();
+        data.append('_token', CSRF_TOKEN);
+        data.append('id', id);
+
+        fetch(URL_DESTROY_CH, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+            body: data
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status) {
+                Swal.fire({ icon: 'success', title: 'Supprimé', text: res.message, timer: 2500, showConfirmButton: false });
+                if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
+                    $('#example').DataTable().row('#row-chambre-' + id).remove().draw(false);
+                } else {
+                    const row = document.getElementById('row-chambre-' + id);
+                    if (row) row.remove();
+                }
+            } else {
+                Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+            }
+        })
+        .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
     });
+});
+
+// ─── DATATABLES ───────────────────────────────────────────────────────────────
+if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
+    $('#example').DataTable().destroy();
 }
-
-// Masquer les messages d'erreur lors de la saisie
-$(':input').on('input', function() {
-    $('.' + $(this).attr("id") + '_err').hide();
-});
-
-$(':input').on('change', function() {
-    $('.' + $(this).attr("id") + '_err').hide();
-});
-
-$('select').on('change', function() {
-    $('.' + $(this).attr("id") + '_err').hide();
-});
-
+$('#example').DataTable();
 </script>
 
 @endsection

@@ -230,18 +230,25 @@
                                                 </div>
                                             </div>
 
-                                            @if(isset($param) && count($param) > 0)
-                                                @foreach($param as $item)
-                                                    @if($item->cash_electronique_url)
-                                                        <div class="mt-3">
-                                                            <p><strong>Signature actuelle:</strong></p>
-                                                            <img src="{{ $item->cash_electronique_url }}" 
-                                                                alt="Cash électronique" 
-                                                                class="img-thumbnail"
-                                                                style="max-width: 200px; max-height: 200px;">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
+                                            @php
+                                                $currentCachet = collect($param ?? [])->first(fn($i) => $i->cash_electronique_url);
+                                            @endphp
+                                            @if($currentCachet)
+                                                <div class="mt-3 text-center">
+                                                    <p class="mb-1 text-muted small fw-semibold">
+                                                        <i class="bx bx-image-alt me-1"></i>Cachet actuel
+                                                    </p>
+                                                    <img src="{{ $currentCachet->cash_electronique_url }}"
+                                                        alt="Cachet électronique"
+                                                        id="preview-cachet"
+                                                        class="img-thumbnail rounded"
+                                                        style="max-width: 180px; max-height: 180px; object-fit: contain; background: #fff;">
+                                                </div>
+                                            @else
+                                                <div class="mt-3 text-center text-muted small">
+                                                    <i class="bx bx-image bx-sm"></i>
+                                                    <p class="mb-0">Aucun cachet défini</p>
+                                                </div>
                                             @endif
                                         </td>
 
@@ -257,18 +264,25 @@
                                                 </div>
                                             </div>
 
-                                            @if(isset($param) && count($param) > 0)
-                                                @foreach($param as $item)
-                                                    @if($item->logo_url)
-                                                        <div class="mt-3">
-                                                            <p><strong>Logo actuel:</strong></p>
-                                                            <img src="{{ $item->logo_url }}" 
-                                                                alt="Logo" 
-                                                                class="img-thumbnail"
-                                                                style="max-width: 200px; max-height: 200px;">
-                                                        </div>
-                                                    @endif
-                                                @endforeach
+                                            @php
+                                                $currentLogo = collect($param ?? [])->first(fn($i) => $i->logo_url);
+                                            @endphp
+                                            @if($currentLogo)
+                                                <div class="mt-3 text-center">
+                                                    <p class="mb-1 text-muted small fw-semibold">
+                                                        <i class="bx bx-image-alt me-1"></i>Logo actuel
+                                                    </p>
+                                                    <img src="{{ $currentLogo->logo_url }}"
+                                                        alt="Logo"
+                                                        id="preview-logo"
+                                                        class="img-thumbnail rounded"
+                                                        style="max-width: 180px; max-height: 180px; object-fit: contain; background: #fff;">
+                                                </div>
+                                            @else
+                                                <div class="mt-3 text-center text-muted small">
+                                                    <i class="bx bx-image bx-sm"></i>
+                                                    <p class="mb-0">Aucun logo défini</p>
+                                                </div>
                                             @endif
                                         </td>
                                         <td>
@@ -1091,9 +1105,29 @@
     }
     
 
+    // Aperçu en temps réel du cachet sélectionné
+    document.getElementById('cash_electronique').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const preview = document.getElementById('preview-cachet');
+        if (preview) {
+            preview.src = URL.createObjectURL(file);
+        }
+    });
+
+    // Aperçu en temps réel du logo sélectionné
+    document.getElementById('logo').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const preview = document.getElementById('preview-logo');
+        if (preview) {
+            preview.src = URL.createObjectURL(file);
+        }
+    });
+
     function save_parametre() {
         const formData = new FormData(document.getElementById('formulaire'));
-        
+
         // Validation côté client
         const cashElectronique = document.getElementById('cash_electronique').files[0];
         const logo = document.getElementById('logo').files[0];

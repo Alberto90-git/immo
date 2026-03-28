@@ -66,6 +66,36 @@ class WhatsAppService
     }
 
     /**
+     * Envoie un message texte (sans PDF) via le service WhatsApp natif local.
+     *
+     * @param string $telephone  Numéro destinataire
+     * @param string $message    Contenu du message
+     * @return array ['success', 'message']
+     */
+    public function envoyerTexte(string $telephone, string $message): array
+    {
+        try {
+            $response = Http::timeout(60)->post($this->serviceUrl() . '/send-text', [
+                'telephone' => $this->formaterNumero($telephone),
+                'message'   => $message,
+            ]);
+
+            $result = $response->json();
+
+            return [
+                'success' => (bool) ($result['status'] ?? false),
+                'message' => $result['message'] ?? 'Erreur inconnue',
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Service WhatsApp indisponible : ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
      * Compatibilité ascendante – nettoyage des anciens fichiers temp.
      * Conservé pour le scheduler mais n'a plus d'effet.
      *

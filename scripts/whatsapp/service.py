@@ -359,6 +359,46 @@ def _do_send(telephone: str, caption: str, file_path: str) -> dict:
         return {"status": False, "message": f"Erreur lors de l'envoi : {exc}"}
 
 
+def _do_send_text(telephone: str, message: str) -> dict:
+    """Envoie un message texte (sans fichier joint) via WhatsApp Web."""
+    try:
+        wait = WebDriverWait(driver, SEND_TIMEOUT)
+
+        numero = telephone.lstrip("+").replace(" ", "").replace("-", "")
+        url = f"https://web.whatsapp.com/send?phone={numero}&text={urllib.parse.quote(message)}"
+
+        driver.get(url)
+        time.sleep(4)
+
+        # Vérifier que la fenêtre de conversation est ouverte
+        try:
+            wait.until(EC.presence_of_element_located((
+                By.CSS_SELECTOR,
+                '[data-testid="conversation-compose-box-input"],'
+                'footer [contenteditable="true"]',
+            )))
+        except Exception:
+            return {"status": False, "message": "Conversation introuvable. Vérifiez le numéro de téléphone."}
+
+        # Cliquer sur Envoyer
+        try:
+            send_btn = wait.until(EC.element_to_be_clickable((
+                By.CSS_SELECTOR,
+                '[data-testid="send"],'
+                'span[data-icon="send"]',
+            )))
+            send_btn.click()
+        except Exception:
+            return {"status": False, "message": "Impossible de cliquer sur Envoyer."}
+
+        time.sleep(2)
+        logger.info(f"Message texte envoyé à {telephone}")
+        return {"status": True, "message": "Message envoyé avec succès via WhatsApp"}
+
+    except Exception as exc:
+        return {"status": False, "message": f"Erreur lors de l'envoi texte : {exc}"}
+
+
 # ---------------------------------------------------------------------------
 # Flask app
 # ---------------------------------------------------------------------------
@@ -425,6 +465,29 @@ def route_send():
             os.remove(tmp_path)
         except OSError:
             pass
+
+
+@app.route("/send-text", methods=["POST"])
+def route_send_text():
+    """Envoie un message texte (sans PDF) via WhatsApp Web."""
+    global driver
+
+    if _status != "connected" or driver is None:
+        return jsonify({
+            "status": False,
+            "message": "WhatsApp non connecté. Scannez le QR code dans Paramétrage > Communication.",
+        })
+
+    data = request.get_json(silent=True) or {}
+    telephone = data.get("telephone", "").strip()
+    message   = data.get("message", "").strip()
+
+    if not telephone or not message:
+        return jsonify({"status": False, "message": "Paramètres manquants : telephone, message."})
+
+    with driver_lock:
+        result = _do_send_text(telephone, message)
+    return jsonify(result)
 
 
 @app.route("/debug")

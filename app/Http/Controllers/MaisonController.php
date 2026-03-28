@@ -116,6 +116,12 @@ class MaisonController extends Controller
 
                 activity()->performedOn(new Maison())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [], 'new' => [
+                               'proprietaire_id' => $request->nom_proprietaire,
+                               'nom_maison'      => Str::ucfirst($request->nom_maison),
+                               'quartier'        => Str::ucfirst($request->quartier),
+                               'nombre_chambre'  => $request->nombre_chambre,
+                           ]])
                            ->log('Ajout de la maison '.$request->nom_maison.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
                 // Récupérer les informations du plan pour afficher le nombre restant
@@ -126,10 +132,20 @@ class MaisonController extends Controller
                     $messageComplet .= " (Il vous reste {$planInfo['maisons_restantes']} maison(s) disponible(s) sur votre plan {$planInfo['nom']})";
                 }
 
+                // Récupérer le nom du propriétaire pour l'affichage
+                $proprio = \App\Proprietaire::find($request->nom_proprietaire);
+
                 return response()->json([
-                    'status' => true,
-                    'message' => $messageComplet,
-                    'plan_info' => $planInfo
+                    'status'   => true,
+                    'message'  => $messageComplet,
+                    'plan_info' => $planInfo,
+                    'maison'   => [
+                        'id'            => $maison->id,
+                        'proprietaire'  => $proprio ? $proprio->nom . ' ' . $proprio->prenom : '',
+                        'nom_maison'    => $maison->nom_maison,
+                        'quartier'      => $maison->quartier,
+                        'nombre_chambre'=> $maison->nombre_chambre,
+                    ],
                 ]);
             }
 
@@ -159,8 +175,10 @@ class MaisonController extends Controller
             // Utiliser l'annexe active centralisée
             $idannexe_ref = get_active_annexe_id();
             if (!$idannexe_ref) {
-                return back()->with('error', "Veuillez sélectionner une agence dans le header");
+                return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
             }
+
+            $oldMaison = Maison::find($request->house_id);
 
              $maison = Maison::where('id',$request->house_id)
                                  ->update([
@@ -169,20 +187,43 @@ class MaisonController extends Controller
                                     'quartier' => Str::ucfirst($request->quartier),
                                     'nombre_chambre' => $request->nombre_chambre,
                                     'idannexe_ref' => $idannexe_ref,
-                                ]);  
+                                ]);
 
             if ($maison) {
 
                 activity()->performedOn(new Maison())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => $oldMaison ? [
+                               'nom_maison'     => $oldMaison->nom_maison,
+                               'quartier'       => $oldMaison->quartier,
+                               'nombre_chambre' => $oldMaison->nombre_chambre,
+                           ] : [], 'new' => [
+                               'nom_maison'     => Str::ucfirst($request->nom_maison),
+                               'quartier'       => Str::ucfirst($request->quartier),
+                               'nombre_chambre' => $request->nombre_chambre,
+                           ]])
                            ->log('Modification de la maison '.$request->nom_maison.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('success','La maison '.$request->nom_maison.' est mise avec succès');
+                $proprio = Proprietaire::find($request->nom_proprietaire2);
+
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'La maison '.$request->nom_maison.' est mise à jour avec succès',
+                    'maison'  => [
+                        'id'             => $request->house_id,
+                        'proprietaire'   => $proprio ? $proprio->nom.' '.$proprio->prenom : '',
+                        'nom_maison'     => Str::ucfirst($request->nom_maison),
+                        'quartier'       => Str::ucfirst($request->quartier),
+                        'nombre_chambre' => $request->nombre_chambre,
+                    ],
+                ]);
             }
+
+            return response()->json(['status' => false, 'message' => 'Aucune modification effectuée']);
 
         } catch (QueryException $e) {
 
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
@@ -223,13 +264,18 @@ class MaisonController extends Controller
 
                 activity()->performedOn(new Maison())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [
+                               'nom_maison'     => $valueDeleted->nom_maison,
+                               'quartier'       => $valueDeleted->quartier,
+                               'nombre_chambre' => $valueDeleted->nombre_chambre,
+                           ], 'new' => []])
                            ->log('Suppression de la maison '.$valueDeleted->nom_maison.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('success','Suppression effectuée avec succès');
+                return response()->json(['status' => true, 'message' => 'Suppression effectuée avec succès']);
             }
-            
+
         } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 

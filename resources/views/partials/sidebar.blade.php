@@ -96,7 +96,7 @@
           <ul class="menu-sub">
             @can('gestion-role')
               <li class="menu-item {{ request()->is('roles*') ? 'active' : '' }}">
-                <a href="{{ route('roles.create') }}" class="menu-link">
+                <a href="{{ route('roles.index') }}" class="menu-link" data-spa-prefix="/roles">
                   <div data-i18n="Fonction">Fonction</div>
                 </a>
               </li>
@@ -104,7 +104,7 @@
 
             @can('gestion-utilisateur')
               <li class="menu-item {{ request()->is('gerer-user*') ? 'active' : '' }}">
-                <a href="{{ route('getUserView') }}" class="menu-link">
+                <a href="{{ route('getUserView') }}" class="menu-link" data-spa-prefix="/gerer-user">
                   <div data-i18n="Utilisateur">Utilisateur</div>
                 </a>
               </li>
@@ -188,8 +188,8 @@
       @can('envoi-document')
         <li class="menu-item {{ request()->is('envoi-document*') ? 'active' : '' }}">
           <a href="{{ route('envoi_document.index') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-send"></i>
-            <div data-i18n="Envoi Documents">Envoi Documents</div>
+            <i class="menu-icon tf-icons bx bx-message-dots"></i>
+            <div data-i18n="Communications">Communications</div>
           </a>
         </li>
       @endcan

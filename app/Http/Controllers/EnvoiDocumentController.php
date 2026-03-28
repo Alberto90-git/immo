@@ -7,6 +7,7 @@ use App\EnvoiDocument;
 use App\Facture;
 use App\Locataire;
 use App\Parametre;
+use App\Plan;
 use App\Proprietaire;
 use App\Services\PdfGeneratorService;
 use App\Services\WhatsAppService;
@@ -40,6 +41,8 @@ class EnvoiDocumentController extends Controller
                 'locataires.prenom',
                 'locataires.telephone',
                 'locataires.email',
+                'locataires.prix_mois',
+                'locataires.date_entree',
                 'maisons.nom_maison',
                 'chambres.numero_chambre',
                 'chambres.type_chambre'
@@ -363,5 +366,256 @@ class EnvoiDocumentController extends Controller
             ->get();
 
         return response()->json(['status' => true, 'data' => $envois]);
+    }
+
+    public function envoyerNotification(Request $request)
+    {
+        $input = $request->isJson() ? $request->json()->all() : $request->all();
+
+        $validator = Validator::make($input, [
+            'type_notification'       => 'required|in:rappel_loyer,preavis',
+            'methode_envoi'           => 'required|in:email,whatsapp',
+            'destinataires'           => 'required|array|min:1',
+            'destinataires.*.id'      => 'required|integer',
+            'destinataires.*.contact' => 'nullable|string',
+            'date_fin_bail'           => 'required_if:type_notification,preavis|nullable|date',
+            'message_personnalise'    => 'nullable|string|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => implode(' ', $validator->errors()->all()),
+            ]);
+        }
+
+        $typeNotif          = $input['type_notification'];
+        $methodeEnvoi       = $input['methode_envoi'];
+        $destinatairesInput = $input['destinataires'];
+        $msgPerso           = $input['message_personnalise'] ?? '';
+        $dateFin            = $input['date_fin_bail'] ?? null;
+
+        $parametre = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+
+        // ── Vérification des limites du plan ─────────────────────────────
+        $direction = Direction::find(Auth::user()->iddirection_ref);
+        $plan      = $direction ? Plan::find($direction->idplan_ref) : null;
+
+        if ($plan) {
+            $debutMois  = Carbon::now()->startOfMonth();
+            $nbDemandes = count($destinatairesInput);
+
+            if ($typeNotif === 'rappel_loyer' && $plan->max_rappels_loyer !== null) {
+                if ($plan->max_rappels_loyer === 0) {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Votre plan ne permet pas l\'envoi de rappels de loyer. Veuillez upgrader votre abonnement.',
+                    ]);
+                }
+                $dejaSent = EnvoiDocument::where('iddirection_ref', Auth::user()->iddirection_ref)
+                    ->where('type_document', 'rappel_loyer')
+                    ->where('statut', 'success')
+                    ->where('created_at', '>=', $debutMois)
+                    ->count();
+                if ($dejaSent + $nbDemandes > $plan->max_rappels_loyer) {
+                    $restant = max(0, $plan->max_rappels_loyer - $dejaSent);
+                    return response()->json([
+                        'status'  => false,
+                        'message' => "Limite du plan atteinte : vous pouvez envoyer encore {$restant} rappel(s) de loyer ce mois-ci (quota : {$plan->max_rappels_loyer}/mois, déjà envoyés : {$dejaSent}).",
+                    ]);
+                }
+            }
+
+            if ($typeNotif === 'preavis' && $plan->max_preavis !== null) {
+                if ($plan->max_preavis === 0) {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Votre plan ne permet pas l\'envoi de préavis. Veuillez upgrader votre abonnement.',
+                    ]);
+                }
+                $dejaSent = EnvoiDocument::where('iddirection_ref', Auth::user()->iddirection_ref)
+                    ->where('type_document', 'preavis')
+                    ->where('statut', 'success')
+                    ->where('created_at', '>=', $debutMois)
+                    ->count();
+                if ($dejaSent + $nbDemandes > $plan->max_preavis) {
+                    $restant = max(0, $plan->max_preavis - $dejaSent);
+                    return response()->json([
+                        'status'  => false,
+                        'message' => "Limite du plan atteinte : vous pouvez envoyer encore {$restant} préavis ce mois-ci (quota : {$plan->max_preavis}/mois, déjà envoyés : {$dejaSent}).",
+                    ]);
+                }
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────
+
+        // Vérifier config selon méthode
+        if ($methodeEnvoi === 'email') {
+            if (!$parametre || empty($parametre->email_envoi)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Email d\'envoi non configuré. Veuillez le définir dans Paramétrage > Communication.',
+                ]);
+            }
+        } elseif ($methodeEnvoi === 'whatsapp') {
+            try {
+                $serviceUrl = env('WHATSAPP_SERVICE_URL', 'http://127.0.0.1:5050');
+                $svcResp    = \Illuminate\Support\Facades\Http::timeout(5)->get($serviceUrl . '/status');
+                if (($svcResp->json()['status'] ?? '') !== 'connected') {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'WhatsApp non connecté. Scannez le QR code dans Paramétrage > Communication.',
+                    ]);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Service WhatsApp indisponible. Démarrez scripts/whatsapp/start.bat puis connectez WhatsApp.',
+                ]);
+            }
+        }
+
+        $agence    = get_annexe_details_for_invoice(get_active_annexe_id());
+        $agenceNom = $agence['designation'] ?? 'Agence Immobilière';
+
+        $whatsapp = $methodeEnvoi === 'whatsapp' ? new WhatsAppService() : null;
+
+        $moisCourant       = Carbon::now()->locale('fr')->isoFormat('MMMM YYYY');
+        $dateFinFormatted  = $dateFin ? Carbon::parse($dateFin)->locale('fr')->isoFormat('D MMMM YYYY') : null;
+
+        $totalEnvois = 0;
+        $reussis     = 0;
+        $details     = [];
+
+        foreach ($destinatairesInput as $destInput) {
+            $totalEnvois++;
+            $destId  = (int) $destInput['id'];
+            $contact = trim($destInput['contact'] ?? '');
+
+            $locataire = Locataire::join('maisons', 'locataires.maison_id', '=', 'maisons.id')
+                ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
+                ->where('locataires.id', $destId)
+                ->select(
+                    'locataires.id',
+                    'locataires.nom',
+                    'locataires.prenom',
+                    'locataires.prix_mois',
+                    'maisons.nom_maison',
+                    'chambres.numero_chambre',
+                    'chambres.type_chambre'
+                )
+                ->first();
+
+            if (!$locataire) {
+                $details[] = ['destinataire' => "#{$destId}", 'statut' => 'error', 'erreur' => 'Locataire introuvable.'];
+                continue;
+            }
+
+            $destinataireNom = trim($locataire->nom . ' ' . $locataire->prenom);
+            $logement        = $locataire->nom_maison . ' / ' . $locataire->type_chambre . ' N°' . $locataire->numero_chambre;
+            $montantLoyer    = number_format((float) $locataire->prix_mois, 0, ',', ' ');
+
+            if (empty($contact)) {
+                $champ = $methodeEnvoi === 'email' ? 'email' : 'téléphone';
+                $details[] = ['destinataire' => $destinataireNom, 'statut' => 'error', 'erreur' => "Le {$champ} est vide."];
+                EnvoiDocument::create([
+                    'iddirection_ref'      => Auth::user()->iddirection_ref,
+                    'destinataire_type'    => 'locataire',
+                    'destinataire_id'      => $destId,
+                    'destinataire_nom'     => $destinataireNom,
+                    'destinataire_contact' => null,
+                    'type_document'        => $typeNotif,
+                    'methode_envoi'        => $methodeEnvoi,
+                    'statut'               => 'error',
+                    'message_erreur'       => "Le {$champ} est vide.",
+                    'message_personnalise' => $msgPerso ?: null,
+                    'envoye_par'           => Auth::id(),
+                ]);
+                continue;
+            }
+
+            // Construire le message WhatsApp
+            if ($typeNotif === 'rappel_loyer') {
+                $sujet     = 'Rappel de paiement de loyer – ' . $moisCourant;
+                $messageWA = "Bonjour {$destinataireNom},\n\n"
+                    . "Nous vous rappelons que votre loyer du mois de {$moisCourant} d'un montant de {$montantLoyer} XOF est dû.\n\n"
+                    . "Merci de bien vouloir procéder au règlement dans les meilleurs délais.\n\n"
+                    . ($msgPerso ? "{$msgPerso}\n\n" : '')
+                    . "Cordialement,\n{$agenceNom}";
+            } else {
+                $sujet     = 'Préavis de fin de bail';
+                $messageWA = "Bonjour {$destinataireNom},\n\n"
+                    . "Nous vous informons que votre contrat de bail pour le logement {$logement} prend fin le {$dateFinFormatted}.\n\n"
+                    . "Conformément aux termes de votre contrat, vous êtes prié(e) de libérer les lieux et de restituer les clés avant cette date.\n\n"
+                    . ($msgPerso ? "{$msgPerso}\n\n" : '')
+                    . "Cordialement,\n{$agenceNom}";
+            }
+
+            $statut        = 'success';
+            $messageErreur = null;
+
+            if ($methodeEnvoi === 'email') {
+                try {
+                    Mail::to($contact)->send(new \App\Mail\NotificationMail([
+                        'type_notification'    => $typeNotif,
+                        'destinataire_nom'     => $destinataireNom,
+                        'destinataire_email'   => $contact,
+                        'sujet'                => $sujet,
+                        'mois_courant'         => $moisCourant,
+                        'montant_loyer'        => $montantLoyer,
+                        'logement'             => $logement,
+                        'date_fin_bail'        => $dateFinFormatted,
+                        'message_personnalise' => $msgPerso,
+                        'agence_nom'           => $agenceNom,
+                        'email_envoi'          => $parametre->email_envoi,
+                    ]));
+                } catch (\Exception $e) {
+                    $statut        = 'error';
+                    $messageErreur = $e->getMessage();
+                }
+            } else {
+                $result = $whatsapp->envoyerTexte($contact, $messageWA);
+                if (!$result['success']) {
+                    $statut        = 'error';
+                    $messageErreur = $result['message'];
+                }
+            }
+
+            EnvoiDocument::create([
+                'iddirection_ref'      => Auth::user()->iddirection_ref,
+                'destinataire_type'    => 'locataire',
+                'destinataire_id'      => $destId,
+                'destinataire_nom'     => $destinataireNom,
+                'destinataire_contact' => $contact,
+                'type_document'        => $typeNotif,
+                'methode_envoi'        => $methodeEnvoi,
+                'statut'               => $statut,
+                'message_erreur'       => $messageErreur,
+                'message_personnalise' => $msgPerso ?: null,
+                'envoye_par'           => Auth::id(),
+            ]);
+
+            if ($statut === 'success') {
+                $reussis++;
+            }
+
+            $details[] = [
+                'destinataire' => $destinataireNom,
+                'statut'       => $statut,
+                'erreur'       => $messageErreur,
+            ];
+        }
+
+        $echouees = $totalEnvois - $reussis;
+        $message  = "{$reussis} notification(s) envoyée(s) sur {$totalEnvois}.";
+        if ($echouees > 0) {
+            $message .= " {$echouees} échec(s).";
+        }
+
+        return response()->json([
+            'status'  => $reussis > 0,
+            'message' => $message,
+            'details' => $details,
+        ]);
     }
 }

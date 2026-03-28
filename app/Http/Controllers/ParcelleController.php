@@ -106,11 +106,28 @@ class ParcelleController extends Controller
 
                 activity()->performedOn(new Parcelle())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [], 'new' => [
+                               'nom'        => Str::upper($request->nom),
+                               'prenom'     => Str::ucfirst($request->prenom),
+                               'telephone'  => $request->telephone,
+                               'quartier'   => Str::ucfirst($request->quartier),
+                               'superficie' => $request->superficie,
+                               'prix'       => str_replace(" ", "", $request->prix),
+                           ]])
                            ->log('Ajout de la parcelle de '.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
                 return response()->json([
-                    'status' => true,
-                    'message' => "Parcelle bien ajoutée avec succès",
+                    'status'   => true,
+                    'message'  => "Parcelle bien ajoutée avec succès",
+                    'parcelle' => [
+                        'id'         => $terrain->id,
+                        'nom'        => $terrain->nom,
+                        'prenom'     => $terrain->prenom,
+                        'telephone'  => $terrain->telephone,
+                        'quartier'   => $terrain->quartier,
+                        'superficie' => $terrain->superficie,
+                        'prix'       => $terrain->prix,
+                    ],
                 ]);
 
             }
@@ -142,16 +159,18 @@ class ParcelleController extends Controller
             // Utiliser l'annexe active centralisée
             $idannexe_ref = get_active_annexe_id();
             if (!$idannexe_ref) {
-                return back()->with('error', "Veuillez sélectionner une agence dans le header");
+                return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
             }
+
+            $oldParcelle = Parcelle::find($request->id);
 
             $terrain = Parcelle::where('id',$request->id)
                                     ->update([
                                         'nom'       => Str::upper($request->nom),
                                         'prenom'    => Str::ucfirst($request->prenom),
                                         'telephone' => $request->telephone,
-                                        'quartier' => Str::ucfirst($request->quartier),
-                                        'prix' => $request->prix,
+                                        'quartier'  => Str::ucfirst($request->quartier),
+                                        'prix'      => str_replace(" ", "", $request->prix),
                                         'iddirection_ref' => Auth::user()->iddirection_ref,
                                         'idannexe_ref' => $idannexe_ref,
                                     ]);
@@ -159,13 +178,26 @@ class ParcelleController extends Controller
 
                  activity()->performedOn(new Parcelle())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => $oldParcelle ? [
+                               'nom'        => $oldParcelle->nom,
+                               'prenom'     => $oldParcelle->prenom,
+                               'telephone'  => $oldParcelle->telephone,
+                               'quartier'   => $oldParcelle->quartier,
+                               'prix'       => $oldParcelle->prix,
+                           ] : [], 'new' => [
+                               'nom'        => Str::upper($request->nom),
+                               'prenom'     => Str::ucfirst($request->prenom),
+                               'telephone'  => $request->telephone,
+                               'quartier'   => Str::ucfirst($request->quartier),
+                               'prix'       => str_replace(" ", "", $request->prix),
+                           ]])
                            ->log('Modification du parcelle de '.Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message', Str::upper($request->nom).' '.Str::upper($request->prenom).' mise à jour avec succès');
+                return response()->json(['status' => true, 'message' => Str::upper($request->nom).' '.Str::ucfirst($request->prenom).' mis à jour avec succès']);
             }
         }
         catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
@@ -184,17 +216,23 @@ class ParcelleController extends Controller
 
 
             if ($deleted) {
-                
+
                  activity()->performedOn(new Parcelle())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => [
+                               'nom'        => $objetDeleted->nom,
+                               'prenom'     => $objetDeleted->prenom,
+                               'telephone'  => $objetDeleted->telephone,
+                               'quartier'   => $objetDeleted->quartier,
+                               'prix'       => $objetDeleted->prix,
+                           ], 'new' => []])
                            ->log('Suppression de la parcelle de '.Str::upper($objetDeleted->nom).' '.Str::ucfirst($objetDeleted->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Suppression effectuée avec succès');
-                
+                return response()->json(['status' => true, 'message' => 'Suppression effectuée avec succès']);
+
             }
         } catch (QueryException $e) {
-
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
@@ -216,19 +254,17 @@ class ParcelleController extends Controller
             if ($cloture) {
 
                 Client::where('id',$request->client_acheteur)
-                                   ->update([
-                                            'status' => Carbon::now(),
-                                    ]);
-                
+                                   ->update(['status' => Carbon::now()]);
+
                  activity()->performedOn(new Parcelle())
                            ->causedBy(Auth::user()->id)
+                           ->withProperties(['old' => ['etat' => $objetcloture->etat ?? 'to_selle'], 'new' => ['etat' => 'vendu', 'client_acheteur' => $request->client_acheteur]])
                            ->log('Cloturé la vente de la parcelle de '.Str::upper($objetcloture->nom).' '.Str::ucfirst($objetcloture->prenom).' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                return back()->with('message','Vente cloturée avec succès');
-                
+                return response()->json(['status' => true, 'message' => 'Vente cloturée avec succès']);
             }
         } catch (QueryException $e) {
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json(['status' => false, 'message' => 'Echéc, veuillez vérifier les données']);
         }
     }
 
