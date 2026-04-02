@@ -33,7 +33,17 @@
       "Bash(sed -n '280,300p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
       "Bash(sed -n '400,415p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
       "Bash(sed -n '1370,1415p' /c/Users/altchegnon/Documents/immo/app/Http/Controllers/UtilisateurController.php)",
-      "Bash(grep -rn properties /c/Users/altchegnon/Documents/immo/database/migrations/ --include=*.php -l)"
+      "Bash(grep -rn properties /c/Users/altchegnon/Documents/immo/database/migrations/ --include=*.php -l)",
+      "Bash(python3 -m pip list)",
+      "Bash(pip3 list:*)",
+      "Bash(curl -s http://127.0.0.1:5050/status)",
+      "Bash(curl -s -X POST http://127.0.0.1:5050/connect)",
+      "Bash(/c/Users/altchegnon/Documents/immo/scripts/whatsapp/venv/Scripts/python.exe -c \"import undetected_chromedriver as uc; print\\(uc.__version__\\)\" 2>&1)",
+      "Bash(/c/Users/altchegnon/Documents/immo/scripts/whatsapp/venv/Scripts/python.exe -c \":*)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(/c/Users/altchegnon/Documents/immo/scripts/whatsapp/venv/Scripts/pip install:*)",
+      "Bash(composer require:*)",
+      "Bash(powershell -Command \"Get-Content storage/logs/laravel.log -Tail 80\")"
     ]
   }
 }

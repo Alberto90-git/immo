@@ -10,6 +10,7 @@ use App\Parametre;
 use App\Plan;
 use App\Proprietaire;
 use App\Services\PdfGeneratorService;
+use App\Services\AfricasTalkingService;
 use App\Services\WhatsAppService;
 use App\Mail\DocumentMail;
 use Carbon\Carbon;
@@ -65,9 +66,12 @@ class EnvoiDocumentController extends Controller
             ->orderBy('nom')
             ->get();
 
-        $parametre = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+        $parametre  = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+        $platformCfg = \App\PlatformConfig::getConfig();
+        $atConnecte = !empty($platformCfg->at_username) && !empty($platformCfg->at_api_key);
+        $waConnecte = $atConnecte && !empty($platformCfg->at_whatsapp_product_id);
 
-        return view('documents.envoyer', compact('locataires', 'facturesParLocataire', 'proprietaires', 'parametre'));
+        return view('documents.envoyer', compact('locataires', 'facturesParLocataire', 'proprietaires', 'parametre', 'atConnecte', 'waConnecte'));
     }
 
     public function envoyer(Request $request)
@@ -76,17 +80,19 @@ class EnvoiDocumentController extends Controller
         $input = $request->isJson() ? $request->json()->all() : $request->all();
 
         $validator = Validator::make($input, [
-            'methode_envoi'          => 'required|in:email,whatsapp',
-            'type_documents'         => 'required|array|min:1',
-            'type_documents.*'       => 'in:contrat,quittance_mensuelle,quittance_caution,releve_proprietaire,releve_agence',
-            'destinataires'          => 'required|array|min:1',
-            'destinataires.*.type'   => 'required|in:locataire,proprietaire',
-            'destinataires.*.id'     => 'required|integer',
-            'destinataires.*.contact'=> 'nullable|string',
-            'message_personnalise'   => 'nullable|string|max:1000',
-            'date_debut'             => 'nullable|date',
-            'date_fin'               => 'nullable|date',
-            'pourcentage'            => 'nullable|numeric|min:0|max:100',
+            'methode_envoi'           => 'required|in:email,whatsapp',
+            'type_documents'          => 'required|array|min:1',
+            'type_documents.*'        => 'in:contrat,quittance_mensuelle,quittance_caution,releve_proprietaire,releve_agence',
+            'destinataires'           => 'required|array|min:1',
+            'destinataires.*.type'    => 'required|in:locataire,proprietaire',
+            'destinataires.*.id'      => 'required|integer',
+            'destinataires.*.contact' => 'nullable|string',
+            'message_personnalise'    => 'nullable|string|max:1000',
+            'date_debut'              => 'nullable|date',
+            'date_fin'                => 'nullable|date',
+            'pourcentage'             => 'nullable|numeric|min:0|max:100',
+            'payment_transaction_id'  => 'nullable|string',
+            'country_code'            => 'nullable|string|max:5',
         ]);
 
         if ($validator->fails()) {
@@ -115,21 +121,47 @@ class EnvoiDocumentController extends Controller
                 ]);
             }
         } elseif ($methodeEnvoi === 'whatsapp') {
-            try {
-                $serviceUrl = env('WHATSAPP_SERVICE_URL', 'http://127.0.0.1:5050');
-                $svcResp    = \Illuminate\Support\Facades\Http::timeout(5)->get($serviceUrl . '/status');
-                if (($svcResp->json()['status'] ?? '') !== 'connected') {
-                    return response()->json([
-                        'status'  => false,
-                        'message' => 'WhatsApp non connecté. Scannez le QR code dans Paramétrage > Communication.',
-                    ]);
-                }
-            } catch (\Exception $e) {
+            if (!(new WhatsAppService())->estConnecte()) {
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Service WhatsApp indisponible. Démarrez scripts/whatsapp/start.bat puis connectez WhatsApp.',
+                    'message' => 'WhatsApp non configuré. Renseignez le Token et le Phone Number ID dans Paramétrage > Communication.',
                 ]);
             }
+        }
+
+        // Vérification paiement pour WhatsApp (pay-per-use)
+        if ($methodeEnvoi === 'whatsapp') {
+            $txnId = $input['payment_transaction_id'] ?? null;
+            if (empty($txnId)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Paiement requis avant l\'envoi WhatsApp. Veuillez procéder au paiement.',
+                ]);
+            }
+            $paymentCheck = $this->verifierPaiementMessaging($txnId);
+            if (!$paymentCheck['success']) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $paymentCheck['message'],
+                ]);
+            }
+            // Log la transaction
+            $countryCode   = strtoupper($input['country_code'] ?? 'BJ');
+            $recipientCount = count($destinatairesInput);
+            $rate = \App\MessagingRate::getForCountry($countryCode);
+            \App\MessagingTransaction::create([
+                'iddirection_ref'       => Auth::user()->iddirection_ref,
+                'channel'               => 'whatsapp',
+                'recipient_count'       => $recipientCount,
+                'unit_cost'             => $rate ? $rate->whatsapp_unit_cost : 0,
+                'total_amount'          => $rate ? $rate->whatsapp_unit_cost * $recipientCount : 0,
+                'currency'              => $rate ? $rate->currency : 'XOF',
+                'country_code'          => $countryCode,
+                'payment_provider'      => \App\PlatformConfig::getConfig()->getActiveProvider(),
+                'payment_transaction_id'=> $txnId,
+                'payment_status'        => 'paid',
+                'messages_sent'         => false,
+            ]);
         }
 
         // Récupérer infos agence
@@ -374,12 +406,14 @@ class EnvoiDocumentController extends Controller
 
         $validator = Validator::make($input, [
             'type_notification'       => 'required|in:rappel_loyer,preavis',
-            'methode_envoi'           => 'required|in:email,whatsapp',
+            'methode_envoi'           => 'required|in:email,whatsapp,sms',
             'destinataires'           => 'required|array|min:1',
             'destinataires.*.id'      => 'required|integer',
             'destinataires.*.contact' => 'nullable|string',
             'date_fin_bail'           => 'required_if:type_notification,preavis|nullable|date',
             'message_personnalise'    => 'nullable|string|max:2000',
+            'payment_transaction_id'  => 'nullable|string',
+            'country_code'            => 'nullable|string|max:5',
         ]);
 
         if ($validator->fails()) {
@@ -449,6 +483,22 @@ class EnvoiDocumentController extends Controller
         }
         // ─────────────────────────────────────────────────────────────────
 
+        // Vérifier si le plan autorise SMS/WhatsApp
+        if ($plan) {
+            if ($methodeEnvoi === 'sms' && isset($plan->sms_enabled) && !$plan->sms_enabled) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Votre plan ne permet pas l\'envoi de SMS. Veuillez upgrader votre abonnement.',
+                ]);
+            }
+            if ($methodeEnvoi === 'whatsapp' && isset($plan->whatsapp_enabled) && !$plan->whatsapp_enabled) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Votre plan ne permet pas l\'envoi via WhatsApp. Veuillez upgrader votre abonnement.',
+                ]);
+            }
+        }
+
         // Vérifier config selon méthode
         if ($methodeEnvoi === 'email') {
             if (!$parametre || empty($parametre->email_envoi)) {
@@ -458,27 +508,64 @@ class EnvoiDocumentController extends Controller
                 ]);
             }
         } elseif ($methodeEnvoi === 'whatsapp') {
-            try {
-                $serviceUrl = env('WHATSAPP_SERVICE_URL', 'http://127.0.0.1:5050');
-                $svcResp    = \Illuminate\Support\Facades\Http::timeout(5)->get($serviceUrl . '/status');
-                if (($svcResp->json()['status'] ?? '') !== 'connected') {
-                    return response()->json([
-                        'status'  => false,
-                        'message' => 'WhatsApp non connecté. Scannez le QR code dans Paramétrage > Communication.',
-                    ]);
-                }
-            } catch (\Exception $e) {
+            if (!(new AfricasTalkingService())->whatsappConnecte()) {
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Service WhatsApp indisponible. Démarrez scripts/whatsapp/start.bat puis connectez WhatsApp.',
+                    'message' => 'WhatsApp non configuré. Renseignez le Username, l\'API Key et le Product ID WhatsApp Africa\'s Talking dans Paramétrage > Communication.',
                 ]);
             }
+        } elseif ($methodeEnvoi === 'sms') {
+            if (!(new AfricasTalkingService())->estConnecte()) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'SMS non configuré. Renseignez le Username et l\'API Key Africa\'s Talking dans Paramétrage > Communication.',
+                ]);
+            }
+        }
+
+        // Vérification paiement pour SMS et WhatsApp (pay-per-use)
+        if (in_array($methodeEnvoi, ['sms', 'whatsapp'])) {
+            $txnId = $input['payment_transaction_id'] ?? null;
+            if (empty($txnId)) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Paiement requis avant l\'envoi ' . strtoupper($methodeEnvoi) . '. Veuillez procéder au paiement.',
+                ]);
+            }
+            $paymentCheck = $this->verifierPaiementMessaging($txnId);
+            if (!$paymentCheck['success']) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $paymentCheck['message'],
+                ]);
+            }
+            // Log la transaction
+            $countryCode    = strtoupper($input['country_code'] ?? 'BJ');
+            $recipientCount = count($destinatairesInput);
+            $rate = \App\MessagingRate::getForCountry($countryCode);
+            $unitCost = $methodeEnvoi === 'whatsapp'
+                ? ($rate ? $rate->whatsapp_unit_cost : 0)
+                : ($rate ? $rate->sms_unit_cost : 0);
+            \App\MessagingTransaction::create([
+                'iddirection_ref'        => Auth::user()->iddirection_ref,
+                'channel'                => $methodeEnvoi,
+                'recipient_count'        => $recipientCount,
+                'unit_cost'              => $unitCost,
+                'total_amount'           => $unitCost * $recipientCount,
+                'currency'               => $rate ? $rate->currency : 'XOF',
+                'country_code'           => $countryCode,
+                'payment_provider'       => \App\PlatformConfig::getConfig()->getActiveProvider(),
+                'payment_transaction_id' => $txnId,
+                'payment_status'         => 'paid',
+                'messages_sent'          => false,
+            ]);
         }
 
         $agence    = get_annexe_details_for_invoice(get_active_annexe_id());
         $agenceNom = $agence['designation'] ?? 'Agence Immobilière';
 
         $whatsapp = $methodeEnvoi === 'whatsapp' ? new WhatsAppService() : null;
+        $atService = $methodeEnvoi === 'sms' ? new AfricasTalkingService() : null;
 
         $moisCourant       = Carbon::now()->locale('fr')->isoFormat('MMMM YYYY');
         $dateFinFormatted  = $dateFin ? Carbon::parse($dateFin)->locale('fr')->isoFormat('D MMMM YYYY') : null;
@@ -573,8 +660,15 @@ class EnvoiDocumentController extends Controller
                     $statut        = 'error';
                     $messageErreur = $e->getMessage();
                 }
-            } else {
+            } elseif ($methodeEnvoi === 'whatsapp') {
                 $result = $whatsapp->envoyerTexte($contact, $messageWA);
+                if (!$result['success']) {
+                    $statut        = 'error';
+                    $messageErreur = $result['message'];
+                }
+            } else {
+                // SMS via Africa's Talking
+                $result = $atService->envoyerSMS($contact, $messageWA);
                 if (!$result['success']) {
                     $statut        = 'error';
                     $messageErreur = $result['message'];
@@ -617,5 +711,35 @@ class EnvoiDocumentController extends Controller
             'message' => $message,
             'details' => $details,
         ]);
+    }
+
+    /**
+     * Vérifie un paiement via le prestataire actif (KKiaPay ou FedaPay).
+     */
+    private function verifierPaiementMessaging(string $txnId): array
+    {
+        $cfg      = \App\PlatformConfig::getConfig();
+        $provider = $cfg->getActiveProvider();
+
+        if ($provider === 'kkiapay') {
+            $svc    = new \App\Services\KkiapayService(
+                $cfg->kkiapay_public_key,
+                $cfg->kkiapay_private_key,
+                $cfg->kkiapay_secret_key,
+                (bool) $cfg->kkiapay_sandbox
+            );
+            $result = $svc->verifyTransaction($txnId);
+        } elseif ($provider === 'fedapay') {
+            $svc    = new \App\Services\FedapayService($cfg->fedapay_secret_key, (bool) $cfg->fedapay_sandbox);
+            $result = $svc->verifyTransaction($txnId);
+        } else {
+            return ['success' => false, 'message' => 'Aucun prestataire de paiement configuré.'];
+        }
+
+        if (!$result['success']) {
+            return ['success' => false, 'message' => 'Paiement non vérifié ou invalide.'];
+        }
+
+        return ['success' => true, 'amount' => $result['amount']];
     }
 }

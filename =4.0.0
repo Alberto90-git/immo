@@ -1,0 +1,19 @@
+Collecting webdriver-manager
+  Downloading webdriver_manager-4.0.2-py2.py3-none-any.whl.metadata (12 kB)
+Requirement already satisfied: requests in c:\users\altchegnon\documents\immo\scripts\whatsapp\venv\lib\site-packages (from webdriver-manager) (2.32.5)
+Collecting python-dotenv (from webdriver-manager)
+  Downloading python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+Collecting packaging (from webdriver-manager)
+  Downloading packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\altchegnon\documents\immo\scripts\whatsapp\venv\lib\site-packages (from requests->webdriver-manager) (3.4.4)
+Requirement already satisfied: idna<4,>=2.5 in c:\users\altchegnon\documents\immo\scripts\whatsapp\venv\lib\site-packages (from requests->webdriver-manager) (3.11)
+Requirement already satisfied: urllib3<3,>=1.21.1 in c:\users\altchegnon\documents\immo\scripts\whatsapp\venv\lib\site-packages (from requests->webdriver-manager) (2.6.3)
+Requirement already satisfied: certifi>=2017.4.17 in c:\users\altchegnon\documents\immo\scripts\whatsapp\venv\lib\site-packages (from requests->webdriver-manager) (2026.2.25)
+Downloading webdriver_manager-4.0.2-py2.py3-none-any.whl (27 kB)
+Downloading packaging-26.0-py3-none-any.whl (74 kB)
+Downloading python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+Installing collected packages: python-dotenv, packaging, webdriver-manager
+Successfully installed packaging-26.0 python-dotenv-1.2.2 webdriver-manager-4.0.2
+
+[notice] A new release of pip is available: 24.3.1 -> 26.0.1
+[notice] To update, run: C:\Users\altchegnon\Documents\immo\scripts\whatsapp\venv\Scripts\python.exe -m pip install --upgrade pip

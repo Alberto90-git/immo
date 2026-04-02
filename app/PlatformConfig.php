@@ -21,6 +21,11 @@ class PlatformConfig extends Model
         'fedapay_sandbox',
         // Prestataire actif
         'active_payment_provider',
+        // Africa's Talking (SMS + WhatsApp) — config globale plateforme
+        'at_username',
+        'at_api_key',
+        'at_sender_id',
+        'at_whatsapp_product_id',
     ];
 
     protected $casts = [

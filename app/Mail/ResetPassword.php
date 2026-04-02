@@ -37,7 +37,7 @@ class ResetPassword extends Mailable
         $user['token'] = $this->token;
 
         return $this->from("contact@lokativ.com")
-                    ->subject('Password Reset Link')
+                    ->subject('Réinitialisation de votre mot de passe')
                     ->view('mail.resetPassword', ['user' => $user]);
     }
 }

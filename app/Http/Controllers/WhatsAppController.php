@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AfricasTalkingService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class WhatsAppController extends Controller
 {
@@ -12,19 +12,13 @@ class WhatsAppController extends Controller
         $this->middleware('auth');
     }
 
-    protected function serviceUrl(): string
-    {
-        return env('WHATSAPP_SERVICE_URL', 'http://127.0.0.1:5050');
-    }
-
     public function status()
     {
-        try {
-            $resp = Http::timeout(5)->get($this->serviceUrl() . '/status');
-            return response()->json($resp->json());
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'disconnected', 'error' => 'Service indisponible']);
-        }
+        $at = new AfricasTalkingService();
+        return response()->json([
+            'status'      => $at->whatsappConnecte() ? 'connected' : 'disconnected',
+            'sms_enabled' => $at->estConnecte(),
+        ]);
     }
 
     public function qr()

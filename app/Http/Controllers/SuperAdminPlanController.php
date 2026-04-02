@@ -37,6 +37,8 @@ class SuperAdminPlanController extends Controller
             'max_publicites'       => 'nullable|integer|min:0',
             'prix_annuel'          => 'required|numeric|min:0',
             'is_active'            => 'required|boolean',
+            'sms_enabled'          => 'required|boolean',
+            'whatsapp_enabled'     => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -60,6 +62,8 @@ class SuperAdminPlanController extends Controller
             'max_publicites'       => $request->max_publicites !== '' ? $request->max_publicites : null,
             'prix_annuel'          => $request->prix_annuel,
             'is_active'            => (bool) $request->is_active,
+            'sms_enabled'          => (bool) $request->sms_enabled,
+            'whatsapp_enabled'     => (bool) $request->whatsapp_enabled,
         ]);
 
         return response()->json([
@@ -86,6 +90,8 @@ class SuperAdminPlanController extends Controller
             'max_publicites'       => 'nullable|integer|min:0',
             'prix_annuel'          => 'required|numeric|min:0',
             'is_active'            => 'required|boolean',
+            'sms_enabled'          => 'required|boolean',
+            'whatsapp_enabled'     => 'required|boolean',
         ], [
             'code.unique' => 'Ce code de plan existe déjà.',
         ]);
@@ -110,6 +116,8 @@ class SuperAdminPlanController extends Controller
             'max_publicites'       => $request->max_publicites !== '' ? $request->max_publicites : null,
             'prix_annuel'          => $request->prix_annuel,
             'is_active'            => (bool) $request->is_active,
+            'sms_enabled'          => (bool) $request->sms_enabled,
+            'whatsapp_enabled'     => (bool) $request->whatsapp_enabled,
         ]);
 
         return response()->json([

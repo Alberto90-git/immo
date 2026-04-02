@@ -115,12 +115,25 @@
 
       <!-- Super Admin -->
       @can('config-paiement')
-        <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') || request()->routeIs('getViewCompte') || request()->routeIs('super_admin.config_plans') ? 'active open' : '' }}">
+        @php $nbContactNonLus = \App\ContactMessage::countUnread(); @endphp
+        <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') || request()->routeIs('getViewCompte') || request()->routeIs('super_admin.config_plans') || request()->routeIs('super_admin.contact_messages') || request()->routeIs('super_admin.messaging_rates') ? 'active open' : '' }}">
           <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-shield-quarter"></i>
             <div data-i18n="Super Admin">Super Admin</div>
+            @if($nbContactNonLus > 0)
+              <span class="badge rounded-pill bg-danger ms-auto">{{ $nbContactNonLus }}</span>
+            @endif
           </a>
           <ul class="menu-sub">
+            <li class="menu-item {{ request()->routeIs('super_admin.contact_messages') ? 'active' : '' }}">
+              <a href="{{ route('super_admin.contact_messages') }}" class="menu-link d-flex align-items-center">
+                <i class="bx bx-envelope me-2" style="font-size:1rem;"></i>
+                <div>Messages de contact</div>
+                @if($nbContactNonLus > 0)
+                  <span class="badge rounded-pill bg-danger ms-auto">{{ $nbContactNonLus }}</span>
+                @endif
+              </a>
+            </li>
             <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') ? 'active' : '' }}">
               <a href="{{ route('super_admin.config_paiement') }}" class="menu-link">
                 <div data-i18n="Prestataire de paiement">Prestataire de paiement</div>
@@ -129,6 +142,11 @@
             <li class="menu-item {{ request()->routeIs('super_admin.config_plans') ? 'active' : '' }}">
               <a href="{{ route('super_admin.config_plans') }}" class="menu-link">
                 <div data-i18n="Plans abonnement">Plans d'abonnement</div>
+              </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('super_admin.messaging_rates') ? 'active' : '' }}">
+              <a href="{{ route('super_admin.messaging_rates') }}" class="menu-link">
+                <div data-i18n="Tarifs SMS/WA">Tarifs SMS &amp; WhatsApp</div>
               </a>
             </li>
             <li class="menu-item {{ request()->routeIs('getViewCompte') ? 'active' : '' }}">

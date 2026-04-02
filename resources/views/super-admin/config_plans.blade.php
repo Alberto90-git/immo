@@ -229,6 +229,37 @@
 
                         <hr class="my-3">
 
+                        {{-- SMS & WhatsApp pay-per-use --}}
+                        <p class="fw-bold text-muted text-uppercase small mb-2">
+                            <i class="bx bx-message-dots me-1"></i>Services SMS &amp; WhatsApp (pay-per-use)
+                        </p>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="sms_enabled"
+                                           id="sms_enabled_{{ $plan->idplan }}" value="1"
+                                           {{ ($plan->sms_enabled ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="sms_enabled_{{ $plan->idplan }}">
+                                        <i class="bx bx-message-detail me-1 text-warning"></i>SMS activé (pay-per-use)
+                                    </label>
+                                </div>
+                                <small class="text-muted">Si activé, les utilisateurs peuvent envoyer des SMS en payant à l'usage.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="whatsapp_enabled"
+                                           id="wa_enabled_{{ $plan->idplan }}" value="1"
+                                           {{ ($plan->whatsapp_enabled ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="wa_enabled_{{ $plan->idplan }}">
+                                        <i class="bx bxl-whatsapp me-1 text-success"></i>WhatsApp activé (pay-per-use)
+                                    </label>
+                                </div>
+                                <small class="text-muted">Si activé, les utilisateurs peuvent envoyer via WhatsApp en payant à l'usage.</small>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
                         {{-- Statut + bouton save --}}
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="form-check form-switch">
@@ -345,6 +376,27 @@
                             <label class="form-label"><i class="bx bx-image-alt me-1"></i>Publicités max <span class="text-muted small">(vide = illimité, 0 = interdit)</span></label>
                             <input type="number" class="form-control" name="max_publicites" min="0" placeholder="Illimité">
                         </div>
+
+                        <div class="col-12"><hr class="my-1"><p class="fw-bold text-muted text-uppercase small mb-0">Services SMS &amp; WhatsApp (pay-per-use)</p></div>
+
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="new_sms_enabled" value="1" checked>
+                                <label class="form-check-label" for="new_sms_enabled">
+                                    <i class="bx bx-message-detail me-1 text-warning"></i>SMS activé (pay-per-use)
+                                </label>
+                            </div>
+                            <small class="text-muted">Si activé, les utilisateurs peuvent envoyer des SMS en payant à l'usage.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="new_whatsapp_enabled" value="1" checked>
+                                <label class="form-check-label" for="new_whatsapp_enabled">
+                                    <i class="bx bxl-whatsapp me-1 text-success"></i>WhatsApp activé (pay-per-use)
+                                </label>
+                            </div>
+                            <small class="text-muted">Si activé, les utilisateurs peuvent envoyer via WhatsApp en payant à l'usage.</small>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -385,6 +437,8 @@ function savePlan(idplan) {
         max_preavis:          nullableInt(fdata.get('max_preavis')),
         max_publicites:       nullableInt(fdata.get('max_publicites')),
         is_active:            form.querySelector('[name="is_active"]').checked ? 1 : 0,
+        sms_enabled:          document.getElementById('sms_enabled_' + idplan)?.checked ? 1 : 0,
+        whatsapp_enabled:     document.getElementById('wa_enabled_' + idplan)?.checked  ? 1 : 0,
     };
 
     btn.disabled = true;
@@ -447,6 +501,8 @@ function createPlan() {
         max_preavis:          nullableInt(fdata.get('max_preavis')),
         max_publicites:       nullableInt(fdata.get('max_publicites')),
         is_active:            parseInt(fdata.get('is_active')),
+        sms_enabled:          document.getElementById('new_sms_enabled')?.checked      ? 1 : 0,
+        whatsapp_enabled:     document.getElementById('new_whatsapp_enabled')?.checked ? 1 : 0,
     };
 
     if (!payload.nom || !payload.code) {

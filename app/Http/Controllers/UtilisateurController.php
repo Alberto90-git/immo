@@ -779,11 +779,15 @@ class UtilisateurController extends SessionController
                         ->where('iddirectionRef_role', $direction_id)
                         ->first();
             if (!$role) {
-                $role = Role::create([
+                // Bypass la vérification unique applicative de Spatie (qui ignore iddirectionRef_role)
+                $roleId = \DB::table('roles')->insertGetId([
                     'name'                => 'Administrateur',
                     'guard_name'          => 'web',
                     'iddirectionRef_role' => $direction_id,
+                    'created_at'          => now(),
+                    'updated_at'          => now(),
                 ]);
+                $role = Role::find($roleId);
                 // Toutes les permissions sauf config-paiement (réservé au propriétaire de l'appli)
                 $permissions = Permission::where('name', '!=', 'config-paiement')->pluck('id')->all();
                 $role->syncPermissions($permissions);
@@ -1110,10 +1114,14 @@ class UtilisateurController extends SessionController
                         ->where('iddirectionRef_role', $direction_id)
                         ->first();
             if (!$role) {
-                $role = Role::create([
+                $roleId = \DB::table('roles')->insertGetId([
                     'name'                => 'Administrateur',
+                    'guard_name'          => 'web',
                     'iddirectionRef_role' => $direction_id,
+                    'created_at'          => now(),
+                    'updated_at'          => now(),
                 ]);
+                $role = Role::find($roleId);
             }
             // Toutes les permissions sauf config-paiement
             $permissions = Permission::where('name', '!=', 'config-paiement')->pluck('id', 'id')->all();

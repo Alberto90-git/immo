@@ -11,6 +11,7 @@ use App\Proprietaire;
 use App\Publicite;
 use App\ContratConfig;
 use App\PlatformConfig;
+use App\Temoignage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -100,10 +101,13 @@ class ParametreController extends SessionController
             ];
         })->values()->all();
 
+        $temoignagesDb = Temoignage::latest()->get();
+
         return view('/welcome', compact(
             'publicites',
             'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox',
-            'plansActifs', 'plansJs'
+            'plansActifs', 'plansJs',
+            'temoignagesDb'
         ));
     }
 
@@ -960,8 +964,7 @@ class ParametreController extends SessionController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'email_envoi'           => 'nullable|email|max:255',
-                'whatsapp_numero_envoi' => 'nullable|string|max:50',
+                'email_envoi' => 'nullable|email|max:255',
             ], [
                 'email_envoi.email' => 'L\'adresse email d\'envoi est invalide.',
             ]);
@@ -976,8 +979,7 @@ class ParametreController extends SessionController
             Parametre::updateOrCreate(
                 ['iddirection_ref' => Auth::user()->iddirection_ref],
                 [
-                    'email_envoi'           => $request->email_envoi,
-                    'whatsapp_numero_envoi' => $request->whatsapp_numero_envoi,
+                    'email_envoi' => $request->email_envoi,
                 ]
             );
 

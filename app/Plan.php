@@ -23,6 +23,8 @@ class Plan extends Model
         'max_rappels_loyer',
         'max_preavis',
         'max_publicites',
+        'sms_enabled',
+        'whatsapp_enabled',
         'prix_annuel',
         'is_active',
         'delete_at'
@@ -38,6 +40,8 @@ class Plan extends Model
         'max_publicites'      => 'integer',
         'prix_annuel'         => 'decimal:2',
         'is_active'           => 'boolean',
+        'sms_enabled'         => 'boolean',
+        'whatsapp_enabled'    => 'boolean',
     ];
 
     /**

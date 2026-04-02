@@ -60,7 +60,7 @@
             @can('manager-contrat')
                 <!-- Bouton Contrat de bail -->
                 <li class="nav-item me-2">
-                    <a class="nav-link" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#contratModal" title="Générer un contrat de bail">
+                    <a class="nav-link text-white" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#contratModal" title="Générer un contrat de bail">
                         <span class="d-flex align-items-center justify-content-center" style="width:38px; height:38px; background:#012970; border-radius:50%; color:white;">
                             <i class="bx bx-file" style="font-size:1.2rem;"></i>
                         </span>
@@ -176,7 +176,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header" style="background: #012970; color: white;">
-                <h5 class="modal-title" id="contratModalLabel">
+                <h5 class="modal-title text-white" id="contratModalLabel">
                     <i class="bx bx-file me-2"></i>Générer un contrat de bail
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>

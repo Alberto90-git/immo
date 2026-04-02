@@ -1,14 +1,14 @@
 @extends('layouts.template')
 
 @section('title')
-  <title>Configuration Prestataire de paiement</title>
+  <title>Configuration Plateforme — Super Admin</title>
 @endsection
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
 
     <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Super Admin /</span> Prestataire de paiement
+        <span class="text-muted fw-light">Super Admin /</span> Configuration plateforme
     </h4>
 
     <div class="row">
@@ -190,6 +190,90 @@
         </div>
     </div>
 
+    {{-- ===== CARD Africa's Talking ===== --}}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex align-items-center justify-content-between py-3"
+                     style="background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;border-radius:8px 8px 0 0;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bx bx-message-dots fs-4"></i>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-white">Africa's Talking — SMS &amp; WhatsApp</h6>
+                            <small class="opacity-75">Configuration unique partagée par toutes les entreprises de la plateforme</small>
+                        </div>
+                    </div>
+                    @php
+                        $atOk  = !empty($atCfg['at_username']) && !empty($atCfg['at_api_key']);
+                        $waOk  = $atOk && !empty($atCfg['at_whatsapp_product_id']);
+                    @endphp
+                    <span class="badge {{ $atOk ? 'bg-light text-success' : 'bg-secondary' }} fs-6 px-3 py-2">
+                        {{ $atOk ? 'SMS actif' . ($waOk ? ' · WhatsApp actif' : '') : 'Non configuré' }}
+                    </span>
+                </div>
+                <div class="card-body pt-4">
+                    <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                        <i class="bx bx-info-circle me-2 fs-5"></i>
+                        <div>
+                            Ces identifiants sont utilisés pour <strong>tous les envois SMS et WhatsApp</strong> effectués par
+                            les entreprises inscrites sur la plateforme. Obtenez-les sur
+                            <strong>account.africastalking.com</strong>.
+                        </div>
+                    </div>
+
+                    <form id="at-config-form">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="at_username" name="at_username"
+                                       value="{{ $atCfg['at_username'] ?? '' }}"
+                                       placeholder="ex: sandbox ou votre username AT" autocomplete="off">
+                                <div class="form-text">Utilisez <code>sandbox</code> pour les tests.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">API Key <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="at_api_key" name="at_api_key"
+                                           placeholder="{{ !empty($atCfg['at_api_key']) ? '••••••••• (définie — laisser vide pour conserver)' : 'Entrer la clé API' }}"
+                                           autocomplete="off">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="toggleFieldVisibility('at_api_key')">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>Confidentielle.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Sender ID / Numéro expéditeur <small class="text-muted fw-normal">(optionnel)</small>
+                                </label>
+                                <input type="text" class="form-control" id="at_sender_id" name="at_sender_id"
+                                       value="{{ $atCfg['at_sender_id'] ?? '' }}"
+                                       placeholder="ex: LOKATIV ou +22960000000">
+                                <div class="form-text">Laisser vide pour le numéro par défaut AT.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Product ID WhatsApp <small class="text-muted fw-normal">(optionnel — requis pour WhatsApp)</small>
+                                </label>
+                                <input type="text" class="form-control" id="at_whatsapp_product_id" name="at_whatsapp_product_id"
+                                       value="{{ $atCfg['at_whatsapp_product_id'] ?? '' }}"
+                                       placeholder="ex: 12345" autocomplete="off">
+                                <div class="form-text">Identifiant du produit WhatsApp dans votre dashboard AT.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success px-4" id="btn-save-at">
+                                <i class="bx bx-save me-1"></i> Enregistrer la configuration AT
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @push('scripts')
@@ -322,6 +406,45 @@ $('#payment-config-form').on('submit', function(e) {
         complete: function() {
             btn.disabled = false;
             btn.innerHTML = '<i class="bx bx-save me-1"></i> Enregistrer la configuration';
+        }
+    });
+});
+
+// ---- Africa's Talking config ----
+$('#at-config-form').on('submit', function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('btn-save-at');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> Enregistrement...';
+
+    var payload = {
+        at_username:            $('#at_username').val(),
+        at_api_key:             $('#at_api_key').val(),
+        at_sender_id:           $('#at_sender_id').val(),
+        at_whatsapp_product_id: $('#at_whatsapp_product_id').val(),
+    };
+
+    $.ajax({
+        url:         '{{ route('platform.at.update') }}',
+        type:        'POST',
+        contentType: 'application/json',
+        data:        JSON.stringify(payload),
+        headers:     { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), 'Accept': 'application/json' },
+        success: function(data) {
+            if (data.status) {
+                $('#at_api_key').val('').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                Swal.fire({ title: 'Succès', text: data.message, icon: 'success', timer: 2500, showConfirmButton: false });
+            } else {
+                Swal.fire('Erreur', data.message || 'Une erreur est survenue.', 'error');
+            }
+        },
+        error: function(xhr) {
+            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Une erreur est survenue.';
+            Swal.fire('Erreur', msg, 'error');
+        },
+        complete: function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-save me-1"></i> Enregistrer la configuration AT';
         }
     });
 });

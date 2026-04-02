@@ -22,6 +22,9 @@ use App\Http\Controllers\EnvoiDocumentController;
 use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\PlatformConfigController;
 use App\Http\Controllers\SuperAdminPlanController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MessagingRateController;
+use App\Http\Controllers\TemoignageController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -45,6 +48,12 @@ use Illuminate\Support\Facades\Gate;
 
 
 Route::get('/', [ParametreController::class, 'welcome_page'])->name('accueil');
+
+// Formulaire de contact — public (sans authentification)
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+// Témoignages — public
+Route::post('/temoignages', [TemoignageController::class, 'store'])->name('temoignages.store');
 
 // Pages légales (publiques)
 Route::prefix('legal')->name('legal.')->group(function () {
@@ -76,16 +85,31 @@ Route::get('platform/kkiapay-public', [PlatformConfigController::class, 'publicC
 
 Route::middleware('auth')->group(function () {
 
+    // Routes Super Admin — Messages de contact
+    Route::get('super-admin/messages-contact', [ContactController::class, 'index'])->name('super_admin.contact_messages');
+    Route::post('super-admin/messages-contact/{id}/toggle-lu', [ContactController::class, 'toggleLu'])->name('super_admin.contact_messages.toggle_lu');
+    Route::post('super-admin/messages-contact/{id}/destroy', [ContactController::class, 'destroy'])->name('super_admin.contact_messages.destroy');
+
     // Routes Super Admin — Configuration plateforme KKiaPay
     Route::get('super-admin/config-paiement', [PlatformConfigController::class, 'configPage'])->name('super_admin.config_paiement');
     Route::get('platform/kkiapay-config', [PlatformConfigController::class, 'getAdminConfig'])->name('platform.kkiapay.config');
     Route::post('platform/kkiapay-config', [PlatformConfigController::class, 'update'])->name('platform.kkiapay.update');
+    Route::post('platform/at-config', [PlatformConfigController::class, 'updateAtConfig'])->name('platform.at.update');
 
     // Routes Super Admin — Configuration des plans d'abonnement
     Route::get('super-admin/config-plans', [SuperAdminPlanController::class, 'index'])->name('super_admin.config_plans');
     Route::post('super-admin/plans/update', [SuperAdminPlanController::class, 'update'])->name('super_admin.plans.update');
     Route::post('super-admin/plans/store',  [SuperAdminPlanController::class, 'store'])->name('super_admin.plans.store');
     Route::post('super-admin/plans/destroy',[SuperAdminPlanController::class, 'destroy'])->name('super_admin.plans.destroy');
+
+    // Routes Super Admin — Tarifs SMS/WhatsApp
+    Route::get('super-admin/messaging-rates', [MessagingRateController::class, 'index'])->name('super_admin.messaging_rates');
+    Route::post('super-admin/messaging-rates', [MessagingRateController::class, 'store'])->name('super_admin.messaging_rates.store');
+    Route::put('super-admin/messaging-rates/{id}', [MessagingRateController::class, 'update'])->name('super_admin.messaging_rates.update');
+    Route::delete('super-admin/messaging-rates/{id}', [MessagingRateController::class, 'destroy'])->name('super_admin.messaging_rates.destroy');
+
+    // Quote messaging cost (tous les users authentifiés)
+    Route::get('messaging/quote', [MessagingRateController::class, 'quote'])->name('messaging.quote');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
    //aax

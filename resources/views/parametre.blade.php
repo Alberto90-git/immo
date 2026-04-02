@@ -978,35 +978,13 @@
                                                 <small class="text-muted">Les documents envoyés par email utiliseront cette adresse comme expéditeur.</small>
                                             </div>
 
-                                            <hr class="my-4">
-
-                                            <h6 class="mb-3 text-success"><i class="bx bxl-whatsapp me-1"></i>WhatsApp</h6>
-
-                                            {{-- Statut de connexion --}}
-                                            <div class="d-flex align-items-center gap-3 p-3 rounded mb-3"
-                                                 style="background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.2);">
-                                                <span id="wa-status-icon" class="fs-4">⏳</span>
-                                                <div class="flex-grow-1">
-                                                    <div class="fw-semibold" id="wa-status-label">Chargement…</div>
-                                                    <small class="text-muted" id="wa-status-sub">Vérification du service WhatsApp…</small>
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-success" id="btnConnectWA" style="display:none">
-                                                    <i class="bx bx-qr-scan me-1"></i>Connecter
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger" id="btnDisconnectWA" style="display:none">
-                                                    <i class="bx bx-power-off me-1"></i>Déconnecter
-                                                </button>
+                                            <div class="alert alert-secondary py-2 px-3 mb-0" style="font-size:.85rem;">
+                                                <i class="bx bx-info-circle me-1"></i>
+                                                La configuration <strong>Africa's Talking (WhatsApp &amp; SMS)</strong> est gérée par le Super Admin.
+                                                Contactez l'administrateur de la plateforme si vous avez besoin d'activer ces canaux.
                                             </div>
 
-                                            <div class="mb-4">
-                                                <label class="form-label fw-semibold" for="whatsappNumero">Numéro WhatsApp de l'agence</label>
-                                                <input type="text" class="form-control" id="whatsappNumero" name="whatsapp_numero_envoi"
-                                                       value="{{ $param->first()?->whatsapp_numero_envoi ?? '' }}"
-                                                       placeholder="+22960000000">
-                                                <small class="text-muted">Format international recommandé (+229…)</small>
-                                            </div>
-
-                                            <div class="d-flex gap-2">
+                                            <div class="d-flex gap-2 mt-3">
                                                 <button type="button" class="btn btn-primary" id="btnSaveCommConfig">
                                                     <i class="bx bx-save me-1"></i>Enregistrer la configuration
                                                 </button>
@@ -1843,7 +1821,7 @@
     });
 })();
 
-// ---- Widget connexion WhatsApp ----
+// ---- Widget connexion WhatsApp (désactivé - AT API ne nécessite pas de QR) ----
 (function() {
     var WA = {
         pollTimer: null,

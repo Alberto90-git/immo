@@ -9,6 +9,11 @@
     .swal2-container { z-index: 10070 !important; }
     .swal2-popup    { z-index: 10071 !important; }
     .search-input   { max-width: 300px; }
+    /* KKiaPay : forcer l'affichage au-dessus des modals Bootstrap */
+    iframe[src*="kkiapay"],
+    [id*="kkiapay"],
+    [class*="kkiapay"],
+    div[style*="z-index: 999"] { z-index: 99999 !important; }
 
     /* ── Nav-tabs destinataires ─────────── */
     #tabDest {
@@ -513,6 +518,7 @@
                         <option value="">Toutes méthodes</option>
                         <option value="email">Email</option>
                         <option value="whatsapp">WhatsApp</option>
+                        <option value="sms">SMS</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
@@ -581,10 +587,11 @@
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="methode_envoi"
-                                   id="methodeWhatsApp" value="whatsapp" disabled>
+                                   id="methodeWhatsApp" value="whatsapp"
+                                   {{ $waConnecte ? '' : 'disabled' }}>
                             <label class="form-check-label" for="methodeWhatsApp">
                                 <i class="bx bxl-whatsapp me-1 text-success"></i>WhatsApp
-                                <span id="wa-envoi-badge" class="badge bg-secondary ms-1" style="font-size:.7rem;">Vérification…</span>
+                                <span id="wa-envoi-badge" class="badge ms-1 {{ $waConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $waConnecte ? 'Configuré' : 'Non configuré' }}</span>
                             </label>
                         </div>
                     </div>
@@ -595,7 +602,48 @@
                     </div>
                     <div id="infoExpediteurWA" class="mt-2 d-none" style="font-size:.85rem;">
                         <i class="bx bxl-whatsapp text-success me-1"></i>
-                        Expéditeur : <strong>{{ $parametre?->whatsapp_numero_envoi ?: 'Non configuré (voir Paramétrage)' }}</strong>
+                        Expéditeur AT : <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: 'Non configuré (voir Paramétrage)') }}</strong>
+                    </div>
+
+                    {{-- Paiement requis pour WhatsApp (envoi documents) --}}
+                    <div id="paymentRequiredDoc" class="mt-3 d-none">
+                        <div class="card border-warning">
+                            <div class="card-body py-3">
+                                <h6 class="fw-bold text-warning mb-3">
+                                    <i class="bx bx-credit-card me-1"></i>Paiement requis (pay-per-use)
+                                </h6>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label small fw-semibold">Pays des destinataires</label>
+                                        <select class="form-select form-select-sm" id="paymentCountryDoc">
+                                            <option value="BJ">Bénin</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-semibold">Destinataires</label>
+                                        <input type="text" class="form-control form-control-sm" id="paymentRecipientCountDoc" readonly value="0">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-outline-warning btn-sm w-100" id="btnCalculateCostDoc">
+                                            <i class="bx bx-calculator me-1"></i>Calculer le coût
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="costResultDoc" class="d-none mt-3">
+                                    <div class="alert alert-warning py-2 mb-2">
+                                        <strong id="costDisplayDoc"></strong>
+                                    </div>
+                                    <button type="button" class="btn btn-warning btn-sm" id="btnPayNowDoc">
+                                        <i class="bx bx-wallet me-1"></i>Payer maintenant
+                                    </button>
+                                    <span id="paymentSuccessDoc" class="d-none ms-2 text-success fw-bold">
+                                        <i class="bx bx-check-circle me-1"></i>Paiement effectué
+                                    </span>
+                                </div>
+                                <input type="hidden" id="paymentTransactionIdDoc" value="">
+                                <input type="hidden" id="paymentCountryCodeDoc" value="BJ">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -703,10 +751,20 @@
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="notif_methode_envoi"
-                                   id="notifMethodeWhatsApp" value="whatsapp" disabled>
+                                   id="notifMethodeWhatsApp" value="whatsapp"
+                                   {{ $waConnecte ? '' : 'disabled' }}>
                             <label class="form-check-label" for="notifMethodeWhatsApp">
                                 <i class="bx bxl-whatsapp me-1 text-success"></i>WhatsApp
-                                <span id="wa-notif-badge" class="badge bg-secondary ms-1" style="font-size:.7rem;">Vérification…</span>
+                                <span id="wa-notif-badge" class="badge ms-1 {{ $waConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $waConnecte ? 'Configuré' : 'Non configuré' }}</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="notif_methode_envoi"
+                                   id="notifMethodeSMS" value="sms"
+                                   {{ $atConnecte ? '' : 'disabled' }}>
+                            <label class="form-check-label" for="notifMethodeSMS">
+                                <i class="bx bx-message-detail me-1 text-warning"></i>SMS
+                                <span id="sms-notif-badge" class="badge ms-1 {{ $atConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $atConnecte ? 'Configuré' : 'Non configuré' }}</span>
                             </label>
                         </div>
                     </div>
@@ -716,7 +774,52 @@
                     </div>
                     <div id="notifInfoWA" class="mt-2 d-none" style="font-size:.85rem;">
                         <i class="bx bxl-whatsapp text-success me-1"></i>
-                        Expéditeur : <strong>{{ $parametre?->whatsapp_numero_envoi ?: 'Non configuré (voir Paramétrage)' }}</strong>
+                        Expéditeur AT : <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: 'Non configuré (voir Paramétrage)') }}</strong>
+                    </div>
+                    <div id="notifInfoSMS" class="mt-2 d-none" style="font-size:.85rem;">
+                        <i class="bx bx-message-detail text-warning me-1"></i>
+                        Sender ID : <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: 'Non configuré (voir Paramétrage)') }}</strong>
+                    </div>
+
+                    {{-- Paiement requis pour SMS/WhatsApp (notifications) --}}
+                    <div id="paymentRequiredNotif" class="mt-3 d-none">
+                        <div class="card border-warning">
+                            <div class="card-body py-3">
+                                <h6 class="fw-bold text-warning mb-3">
+                                    <i class="bx bx-credit-card me-1"></i>Paiement requis (pay-per-use)
+                                </h6>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label small fw-semibold">Pays des destinataires</label>
+                                        <select class="form-select form-select-sm" id="paymentCountryNotif">
+                                            <option value="BJ">Bénin</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-semibold">Destinataires</label>
+                                        <input type="text" class="form-control form-control-sm" id="paymentRecipientCountNotif" readonly value="0">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-outline-warning btn-sm w-100" id="btnCalculateCostNotif">
+                                            <i class="bx bx-calculator me-1"></i>Calculer le coût
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="costResultNotif" class="d-none mt-3">
+                                    <div class="alert alert-warning py-2 mb-2">
+                                        <strong id="costDisplayNotif"></strong>
+                                    </div>
+                                    <button type="button" class="btn btn-warning btn-sm" id="btnPayNowNotif">
+                                        <i class="bx bx-wallet me-1"></i>Payer maintenant
+                                    </button>
+                                    <span id="paymentSuccessNotif" class="d-none ms-2 text-success fw-bold">
+                                        <i class="bx bx-check-circle me-1"></i>Paiement effectué
+                                    </span>
+                                </div>
+                                <input type="hidden" id="paymentTransactionIdNotif" value="">
+                                <input type="hidden" id="paymentCountryCodeNotif" value="BJ">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -764,6 +867,12 @@
 </div>
 
 @push('scripts')
+@php $paymentCfgEnvoi = \App\PlatformConfig::getConfig(); @endphp
+@if($paymentCfgEnvoi->isKkiapayActive())
+<script src="https://cdn.kkiapay.me/k.js"></script>
+@elseif($paymentCfgEnvoi->isFedapayActive())
+<script src="https://cdn.fedapay.com/checkout.js?v=1.1.7"></script>
+@endif
 <script>
     const CSRF             = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
     const ROUTE_ENVOYER    = '{{ route("envoi_document.envoyer") }}';
@@ -886,6 +995,7 @@
             waRadio.checked = true;
         }
         syncInfoExpediteur();
+        updatePaymentRequiredDoc();
 
         new bootstrap.Modal(document.getElementById('modalEnvoiDocument')).show();
     }
@@ -970,6 +1080,7 @@
     document.querySelectorAll('input[name="methode_envoi"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
             syncInfoExpediteur();
+            updatePaymentRequiredDoc();
         });
     });
 
@@ -978,6 +1089,133 @@
         document.getElementById('infoExpediteurEmail').classList.toggle('d-none', methode !== 'email');
         document.getElementById('infoExpediteurWA').classList.toggle('d-none', methode !== 'whatsapp');
     }
+
+    // ── Paiement : Envoi Documents ───────────────────────────────
+    var docPaymentDone = false;
+    var docPaymentTxnId = '';
+
+    function updatePaymentRequiredDoc() {
+        var method = document.querySelector('input[name="methode_envoi"]:checked')?.value;
+        var needsPayment = (method === 'whatsapp');
+        document.getElementById('paymentRequiredDoc').classList.toggle('d-none', !needsPayment);
+        if (needsPayment) {
+            document.getElementById('paymentRecipientCountDoc').value = selectedDestinataires.length;
+        }
+        // Reset paiement
+        docPaymentDone  = false;
+        docPaymentTxnId = '';
+        document.getElementById('paymentTransactionIdDoc').value = '';
+        document.getElementById('paymentSuccessDoc').classList.add('d-none');
+        document.getElementById('btnPayNowDoc').classList.remove('d-none');
+        document.getElementById('costResultDoc').classList.add('d-none');
+    }
+
+    document.getElementById('btnCalculateCostDoc').addEventListener('click', function() {
+        var channel = document.querySelector('input[name="methode_envoi"]:checked')?.value;
+        var count   = parseInt(document.getElementById('paymentRecipientCountDoc').value) || selectedDestinataires.length;
+        var country = document.getElementById('paymentCountryDoc').value;
+
+        if (count === 0) {
+            Swal.fire('Attention', 'Veuillez d\'abord sélectionner des destinataires.', 'warning');
+            return;
+        }
+
+        $.get('/messaging/quote', { channel: channel, count: count, country_code: country }, function(data) {
+            if (data.status) {
+                document.getElementById('paymentCountryCodeDoc').value = country;
+                document.getElementById('costDisplayDoc').textContent =
+                    'Total à payer : ' + data.total.toLocaleString('fr-FR') + ' ' + data.currency +
+                    ' (' + count + ' messages WhatsApp × ' + data.unit_cost + ' ' + data.currency + ')';
+                document.getElementById('costResultDoc').classList.remove('d-none');
+            } else {
+                Swal.fire('Erreur', data.message, 'error');
+            }
+        });
+    });
+
+    document.getElementById('btnPayNowDoc').addEventListener('click', function() {
+        var btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Ouverture...';
+
+        $.get('/platform/kkiapay-public', function(cfg) {
+            if (!cfg.payment_enabled) {
+                Swal.fire('Erreur', 'Aucun prestataire de paiement configuré.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+                return;
+            }
+            var amount = 0;
+            var txt = document.getElementById('costDisplayDoc').textContent;
+            var m = txt.match(/Total à payer : ([\d\s,]+)/);
+            if (m) amount = parseInt(m[1].replace(/[\s,]/g, '')) || 0;
+
+            function onDocPaySuccess(txnId) {
+                docPaymentDone  = true;
+                docPaymentTxnId = txnId;
+                document.getElementById('paymentTransactionIdDoc').value = txnId;
+                document.getElementById('paymentSuccessDoc').classList.remove('d-none');
+                btn.classList.add('d-none');
+            }
+            function onDocPayFail() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+            }
+
+            if (cfg.payment_provider === 'kkiapay') {
+                if (typeof openKkiapayWidget !== 'function') {
+                    Swal.fire('Erreur', 'Widget KKiaPay non chargé. Vérifiez votre connexion.', 'error');
+                    onDocPayFail(); return;
+                }
+                var kkDone = false, kkSeen = false, kkPoll = null;
+                function kkVisible() {
+                    var el = document.querySelector('iframe[src*="kkiapay"]') ||
+                             document.querySelector('[id*="kkiapay"]') ||
+                             document.querySelector('[class*="kkiapay"]');
+                    if (!el) return false;
+                    var s = window.getComputedStyle(el);
+                    return s.display !== 'none' && s.visibility !== 'hidden';
+                }
+                kkPoll = setInterval(function() {
+                    var v = kkVisible();
+                    if (v) { kkSeen = true; }
+                    else if (kkSeen && !kkDone) { clearInterval(kkPoll); onDocPayFail(); }
+                }, 300);
+                setTimeout(function() { clearInterval(kkPoll); }, 900000);
+
+                openKkiapayWidget({ amount: amount, key: cfg.payment_public_key, sandbox: cfg.payment_sandbox });
+
+                addSuccessListener(function(response) {
+                    if (kkDone) return;
+                    kkDone = true; clearInterval(kkPoll);
+                    onDocPaySuccess(response.transactionId);
+                });
+                addFailedListener(function() {
+                    if (kkDone) return;
+                    kkDone = true; clearInterval(kkPoll);
+                    Swal.fire('Paiement échoué', 'Le paiement KKiaPay n\'a pas abouti.', 'error');
+                    onDocPayFail();
+                });
+            } else if (cfg.payment_provider === 'fedapay') {
+                FedaPay.init({
+                    public_key:  cfg.payment_public_key,
+                    transaction: { amount: amount, description: 'Envoi WhatsApp' },
+                    onComplete: function(resp) {
+                        if (resp.reason === FedaPay.DIALOG_DISMISSED) { onDocPayFail(); return; }
+                        if (resp.transaction && resp.transaction.status === 'approved') {
+                            onDocPaySuccess(resp.transaction.id.toString());
+                        } else {
+                            Swal.fire('Paiement échoué', 'Le paiement FedaPay n\'a pas abouti.', 'error');
+                            onDocPayFail();
+                        }
+                    }
+                }).open();
+            }
+        }).fail(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+        });
+    });
 
     // ── Changement des checkboxes documents ──────────────────────
     document.querySelectorAll('.check-doc').forEach(function(cb) {
@@ -1068,14 +1306,22 @@
         const pourcentage = document.getElementById('pourcentage').value || null;
         const msgPerso    = document.getElementById('messagePerso').value.trim() || null;
 
+        // Vérifier paiement si WhatsApp
+        if (methode === 'whatsapp' && !docPaymentDone) {
+            Swal.fire('Paiement requis', 'Veuillez procéder au paiement avant d\'envoyer via WhatsApp.', 'warning');
+            return;
+        }
+
         const payload = {
-            methode_envoi:        methode,
-            type_documents:       typeDocuments,
-            destinataires:        destinataires,
-            message_personnalise: msgPerso,
-            date_debut:           dateDebut,
-            date_fin:             dateFin,
-            pourcentage:          pourcentage ? parseFloat(pourcentage) : null,
+            methode_envoi:           methode,
+            type_documents:          typeDocuments,
+            destinataires:           destinataires,
+            message_personnalise:    msgPerso,
+            date_debut:              dateDebut,
+            date_fin:                dateFin,
+            pourcentage:             pourcentage ? parseFloat(pourcentage) : null,
+            payment_transaction_id:  methode === 'whatsapp' ? docPaymentTxnId : null,
+            country_code:            methode === 'whatsapp' ? document.getElementById('paymentCountryCodeDoc').value : null,
         };
 
         const btn = this;
@@ -1215,7 +1461,9 @@
             const docLabel  = labels[e.type_document] || e.type_document;
             const methBadge = e.methode_envoi === 'email'
                 ? '<span class="badge bg-primary"><i class="bx bx-envelope me-1"></i>Email</span>'
-                : '<span class="badge bg-success"><i class="bx bxl-whatsapp me-1"></i>WhatsApp</span>';
+                : e.methode_envoi === 'sms'
+                    ? '<span class="badge bg-warning text-dark"><i class="bx bx-message-detail me-1"></i>SMS</span>'
+                    : '<span class="badge bg-success"><i class="bx bxl-whatsapp me-1"></i>WhatsApp</span>';
             const statBadge = e.statut === 'success'
                 ? '<span class="badge bg-label-success">Succès</span>'
                 : `<span class="badge bg-label-danger" title="${escHtml(e.message_erreur || '')}">Échec</span>`;
@@ -1314,34 +1562,8 @@
     document.getElementById('btnRefreshHistorique').addEventListener('click', chargerHistorique);
     chargerHistorique();
 
-    // ── Statut WhatsApp ──────────────────────────────────────────
-    (function checkWaStatus() {
-        fetch('{{ route("whatsapp.status") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                var radio      = document.getElementById('methodeWhatsApp');
-                var badge      = document.getElementById('wa-envoi-badge');
-                var radioNotif = document.getElementById('notifMethodeWhatsApp');
-                var badgeNotif = document.getElementById('wa-notif-badge');
-                if (data.status === 'connected') {
-                    if (radio)      radio.disabled = false;
-                    if (radioNotif) radioNotif.disabled = false;
-                    if (badge)      { badge.textContent = 'Connecté'; badge.className = 'badge bg-success ms-1'; badge.style.fontSize = '.7rem'; }
-                    if (badgeNotif) { badgeNotif.textContent = 'Connecté'; badgeNotif.className = 'badge bg-success ms-1'; badgeNotif.style.fontSize = '.7rem'; }
-                } else {
-                    if (radio)      radio.disabled = true;
-                    if (radioNotif) radioNotif.disabled = true;
-                    if (badge)      { badge.textContent = 'Non connecté'; badge.className = 'badge bg-danger ms-1'; badge.style.fontSize = '.7rem'; }
-                    if (badgeNotif) { badgeNotif.textContent = 'Non connecté'; badgeNotif.className = 'badge bg-danger ms-1'; badgeNotif.style.fontSize = '.7rem'; }
-                }
-            })
-            .catch(function() {
-                var badge      = document.getElementById('wa-envoi-badge');
-                var badgeNotif = document.getElementById('wa-notif-badge');
-                if (badge)      { badge.textContent = 'Service absent'; badge.className = 'badge bg-secondary ms-1'; badge.style.fontSize = '.7rem'; }
-                if (badgeNotif) { badgeNotif.textContent = 'Service absent'; badgeNotif.className = 'badge bg-secondary ms-1'; badgeNotif.style.fontSize = '.7rem'; }
-            });
-    })();
+    // Statut AT : l'état initial (disabled/enabled) est rendu par PHP.
+    // Ce bloc JS ne fait rien — gardé pour compatibilité future.
 
     // ═══════════════════════════════════════════════════════════
     // NOTIFICATIONS LOCATAIRES
@@ -1473,9 +1695,12 @@
         // Méthode d'envoi
         const emailR = document.getElementById('notifMethodeEmail');
         const waR    = document.getElementById('notifMethodeWhatsApp');
+        const smsR   = document.getElementById('notifMethodeSMS');
         if (!emailR.disabled) emailR.checked = true;
         else if (!waR.disabled) waR.checked = true;
+        else if (smsR && !smsR.disabled) smsR.checked = true;
         syncNotifExpediteur();
+        updatePaymentRequiredNotif();
 
         construireListeDestinatairesNotif();
 
@@ -1484,14 +1709,148 @@
 
     // ── Sync expéditeur ───────────────────────────────────────────
     document.querySelectorAll('input[name="notif_methode_envoi"]').forEach(function(r) {
-        r.addEventListener('change', syncNotifExpediteur);
+        r.addEventListener('change', function() {
+            syncNotifExpediteur();
+            updatePaymentRequiredNotif();
+        });
     });
 
     function syncNotifExpediteur() {
         const m = document.querySelector('input[name="notif_methode_envoi"]:checked')?.value || 'email';
         document.getElementById('notifInfoEmail').classList.toggle('d-none', m !== 'email');
         document.getElementById('notifInfoWA').classList.toggle('d-none', m !== 'whatsapp');
+        document.getElementById('notifInfoSMS').classList.toggle('d-none', m !== 'sms');
     }
+
+    // ── Paiement : Notifications ─────────────────────────────────
+    var notifPaymentDone  = false;
+    var notifPaymentTxnId = '';
+
+    function updatePaymentRequiredNotif() {
+        var method = document.querySelector('input[name="notif_methode_envoi"]:checked')?.value;
+        var needsPayment = (method === 'sms' || method === 'whatsapp');
+        document.getElementById('paymentRequiredNotif').classList.toggle('d-none', !needsPayment);
+        if (needsPayment) {
+            document.getElementById('paymentRecipientCountNotif').value = selectedNotifDests.length;
+        }
+        // Reset
+        notifPaymentDone  = false;
+        notifPaymentTxnId = '';
+        document.getElementById('paymentTransactionIdNotif').value = '';
+        document.getElementById('paymentSuccessNotif').classList.add('d-none');
+        document.getElementById('btnPayNowNotif').classList.remove('d-none');
+        document.getElementById('costResultNotif').classList.add('d-none');
+    }
+
+    document.getElementById('btnCalculateCostNotif').addEventListener('click', function() {
+        var channel = document.querySelector('input[name="notif_methode_envoi"]:checked')?.value;
+        var count   = parseInt(document.getElementById('paymentRecipientCountNotif').value) || selectedNotifDests.length;
+        var country = document.getElementById('paymentCountryNotif').value;
+
+        if (count === 0) {
+            Swal.fire('Attention', 'Veuillez d\'abord sélectionner des destinataires.', 'warning');
+            return;
+        }
+
+        $.get('/messaging/quote', { channel: channel, count: count, country_code: country }, function(data) {
+            if (data.status) {
+                document.getElementById('paymentCountryCodeNotif').value = country;
+                document.getElementById('costDisplayNotif').textContent =
+                    'Total à payer : ' + data.total.toLocaleString('fr-FR') + ' ' + data.currency +
+                    ' (' + count + ' ' + (channel === 'sms' ? 'SMS' : 'messages WhatsApp') +
+                    ' × ' + data.unit_cost + ' ' + data.currency + ')';
+                document.getElementById('costResultNotif').classList.remove('d-none');
+            } else {
+                Swal.fire('Erreur', data.message, 'error');
+            }
+        });
+    });
+
+    document.getElementById('btnPayNowNotif').addEventListener('click', function() {
+        var btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Ouverture...';
+
+        $.get('/platform/kkiapay-public', function(cfg) {
+            if (!cfg.payment_enabled) {
+                Swal.fire('Erreur', 'Aucun prestataire de paiement configuré.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+                return;
+            }
+            var amount = 0;
+            var txt = document.getElementById('costDisplayNotif').textContent;
+            var m = txt.match(/Total à payer : ([\d\s,]+)/);
+            if (m) amount = parseInt(m[1].replace(/[\s,]/g, '')) || 0;
+
+            var channel = document.querySelector('input[name="notif_methode_envoi"]:checked')?.value || 'sms';
+
+            function onNotifPaySuccess(txnId) {
+                notifPaymentDone  = true;
+                notifPaymentTxnId = txnId;
+                document.getElementById('paymentTransactionIdNotif').value = txnId;
+                document.getElementById('paymentSuccessNotif').classList.remove('d-none');
+                btn.classList.add('d-none');
+            }
+            function onNotifPayFail() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+            }
+
+            if (cfg.payment_provider === 'kkiapay') {
+                if (typeof openKkiapayWidget !== 'function') {
+                    Swal.fire('Erreur', 'Widget KKiaPay non chargé. Vérifiez votre connexion.', 'error');
+                    onNotifPayFail(); return;
+                }
+                var kkDone = false, kkSeen = false, kkPoll = null;
+                function kkVisible() {
+                    var el = document.querySelector('iframe[src*="kkiapay"]') ||
+                             document.querySelector('[id*="kkiapay"]') ||
+                             document.querySelector('[class*="kkiapay"]');
+                    if (!el) return false;
+                    var s = window.getComputedStyle(el);
+                    return s.display !== 'none' && s.visibility !== 'hidden';
+                }
+                kkPoll = setInterval(function() {
+                    var v = kkVisible();
+                    if (v) { kkSeen = true; }
+                    else if (kkSeen && !kkDone) { clearInterval(kkPoll); onNotifPayFail(); }
+                }, 300);
+                setTimeout(function() { clearInterval(kkPoll); }, 900000);
+
+                openKkiapayWidget({ amount: amount, key: cfg.payment_public_key, sandbox: cfg.payment_sandbox });
+
+                addSuccessListener(function(response) {
+                    if (kkDone) return;
+                    kkDone = true; clearInterval(kkPoll);
+                    onNotifPaySuccess(response.transactionId);
+                });
+                addFailedListener(function() {
+                    if (kkDone) return;
+                    kkDone = true; clearInterval(kkPoll);
+                    Swal.fire('Paiement échoué', 'Le paiement KKiaPay n\'a pas abouti.', 'error');
+                    onNotifPayFail();
+                });
+            } else if (cfg.payment_provider === 'fedapay') {
+                FedaPay.init({
+                    public_key:  cfg.payment_public_key,
+                    transaction: { amount: amount, description: 'Envoi ' + channel.toUpperCase() },
+                    onComplete: function(resp) {
+                        if (resp.reason === FedaPay.DIALOG_DISMISSED) { onNotifPayFail(); return; }
+                        if (resp.transaction && resp.transaction.status === 'approved') {
+                            onNotifPaySuccess(resp.transaction.id.toString());
+                        } else {
+                            Swal.fire('Paiement échoué', 'Le paiement FedaPay n\'a pas abouti.', 'error');
+                            onNotifPayFail();
+                        }
+                    }
+                }).open();
+            }
+        }).fail(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+        });
+    });
 
     // ── Liste des destinataires dans le modal ─────────────────────
     function construireListeDestinatairesNotif() {
@@ -1582,12 +1941,23 @@
 
         if (erreurContact) return;
 
+        // Vérifier paiement si SMS ou WhatsApp
+        if ((methode === 'sms' || methode === 'whatsapp') && !notifPaymentDone) {
+            Swal.fire('Paiement requis',
+                'Veuillez procéder au paiement avant d\'envoyer via ' + methode.toUpperCase() + '.',
+                'warning');
+            return;
+        }
+
         const payload = {
-            type_notification:    currentNotifType,
-            methode_envoi:        methode,
-            destinataires:        destinataires,
-            message_personnalise: document.getElementById('notifMessagePerso').value.trim() || null,
-            date_fin_bail:        currentNotifType === 'preavis' ? document.getElementById('dateFinBail').value : null,
+            type_notification:       currentNotifType,
+            methode_envoi:           methode,
+            destinataires:           destinataires,
+            message_personnalise:    document.getElementById('notifMessagePerso').value.trim() || null,
+            date_fin_bail:           currentNotifType === 'preavis' ? document.getElementById('dateFinBail').value : null,
+            payment_transaction_id:  (methode === 'sms' || methode === 'whatsapp') ? notifPaymentTxnId : null,
+            country_code:            (methode === 'sms' || methode === 'whatsapp')
+                                        ? document.getElementById('paymentCountryCodeNotif').value : null,
         };
 
         const btn = this;
@@ -1648,6 +2018,37 @@
     // ── Recherche en temps réel (sections notifications) ─────────
     filtreTable('searchRappel',  'tableRappel');
     filtreTable('searchPreavis', 'tablePreavis');
+
+    // ── Charger les pays disponibles pour les dropdowns de paiement ──
+    (function loadMessagingCountries() {
+        // On pré-charge quelques pays communs d'Afrique de l'Ouest + récupère les options via AJAX
+        var commonCountries = [
+            { code: 'BJ', name: 'Bénin' },
+            { code: 'TG', name: 'Togo' },
+            { code: 'CI', name: "Côte d'Ivoire" },
+            { code: 'SN', name: 'Sénégal' },
+            { code: 'ML', name: 'Mali' },
+            { code: 'BF', name: 'Burkina Faso' },
+            { code: 'NE', name: 'Niger' },
+            { code: 'GN', name: 'Guinée' },
+            { code: 'NG', name: 'Nigeria' },
+            { code: 'GH', name: 'Ghana' },
+            { code: 'CM', name: 'Cameroun' },
+        ];
+        var selectors = ['#paymentCountryDoc', '#paymentCountryNotif'];
+        selectors.forEach(function(sel) {
+            var el = document.querySelector(sel);
+            if (!el) return;
+            el.innerHTML = '';
+            commonCountries.forEach(function(c) {
+                var opt = document.createElement('option');
+                opt.value       = c.code;
+                opt.textContent = c.name;
+                if (c.code === 'BJ') opt.selected = true;
+                el.appendChild(opt);
+            });
+        });
+    })();
 </script>
 @endpush
 

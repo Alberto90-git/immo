@@ -1,33 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
+<html lang="fr" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
     <title>Lokativ | Connexion</title>
-
-    <meta name="description" content="Page de connexion à Immo, application de gestion des agences immobiliers, des maisons, chambres, locataires" />
+    <meta name="description" content="Page de connexion à Lokativ, application de gestion des agences immobilières" />
 
     @include('css_file')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- Helpers -->
     <script src="assetsV2/vendor/js/helpers.js"></script>
     <script src="assetsV2/js/config.js"></script>
-    
+
     <style>
       :root {
-        --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        --secondary-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-        --soft-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        --soft-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
-        --glass-bg: rgba(255, 255, 255, 0.25);
-        --glass-border: rgba(255, 255, 255, 0.18);
+        --primary-gradient: linear-gradient(135deg, #0c1445 0%, #0f2878 40%, #1d4ed8 100%);
+        --secondary-gradient: linear-gradient(135deg, #0a0f35 0%, #1a3a9f 100%);
+        --soft-shadow: 0 25px 60px rgba(0,0,0,0.45);
+        --soft-shadow-hover: 0 35px 70px rgba(0,0,0,0.55);
+        --glass-bg: rgba(255,255,255,0.07);
+        --glass-border: rgba(255,255,255,0.15);
       }
+
+      *, *::before, *::after { box-sizing: border-box; }
 
       body {
         background: var(--primary-gradient);
@@ -36,116 +33,90 @@
         overflow-x: hidden;
       }
 
-      /* Animated background elements */
       .bg-animation {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 0;
-        pointer-events: none;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        overflow: hidden; z-index: 0; pointer-events: none;
       }
 
-      .floating-shapes {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
+      .floating-shapes { position: absolute; width: 100%; height: 100%; }
 
       .shape {
         position: absolute;
         background: var(--secondary-gradient);
         border-radius: 50%;
         animation: float 6s ease-in-out infinite;
-        opacity: 0.1;
+        opacity: 0.12;
       }
 
-      .shape:nth-child(1) {
-        width: 300px;
-        height: 300px;
-        top: 10%;
-        left: 10%;
-        animation-delay: 0s;
-      }
-
-      .shape:nth-child(2) {
-        width: 200px;
-        height: 200px;
-        top: 60%;
-        right: 20%;
-        animation-delay: 2s;
-      }
-
-      .shape:nth-child(3) {
-        width: 150px;
-        height: 150px;
-        bottom: 10%;
-        left: 50%;
-        animation-delay: 4s;
-      }
+      .shape:nth-child(1) { width: 320px; height: 320px; top: 5%; left: 5%; animation-delay: 0s; }
+      .shape:nth-child(2) { width: 220px; height: 220px; top: 55%; right: 8%; animation-delay: 2s; }
+      .shape:nth-child(3) { width: 160px; height: 160px; bottom: 8%; left: 45%; animation-delay: 4s; }
 
       @keyframes float {
         0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
+        50% { transform: translateY(-22px) rotate(180deg); }
       }
 
-      .container-xxl {
-        position: relative;
-        z-index: 1;
-      }
+      .container-xxl { position: relative; z-index: 1; }
 
       .authentication-wrapper {
         min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
+        display: flex; align-items: center; justify-content: center;
+        padding: 1.5rem;
       }
 
       .authentication-inner {
         width: 100%;
-        max-width: 480px;
-        animation: slideUp 0.8s ease-out;
+        max-width: 460px;
+        animation: slideUp 0.7s ease-out;
       }
 
       @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(50px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(40px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
 
       .card {
         background: var(--glass-bg);
-        backdrop-filter: blur(20px);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         border: 1px solid var(--glass-border);
         border-radius: 24px;
         box-shadow: var(--soft-shadow);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: box-shadow 0.3s;
         overflow: hidden;
       }
 
-      .card:hover {
-        box-shadow: var(--soft-shadow-hover);
-        transform: translateY(-5px);
+      .card:hover { box-shadow: var(--soft-shadow-hover); }
+
+      .card-body { padding: 2.75rem; }
+
+      /* ── Brand block ── */
+      .auth-brand {
+        display: flex; align-items: center; justify-content: center;
+        gap: 10px; margin-bottom: 1.75rem;
       }
 
-      .card-body {
-        padding: 3rem;
+      .auth-brand-icon {
+        width: 42px; height: 42px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 11px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px;
       }
 
+      .auth-brand-name {
+        font-size: 1.45rem; font-weight: 800;
+        color: #fff; letter-spacing: -0.02em;
+      }
+
+      /* ── Headings ── */
       h4 {
-        color: #2d3748;
-        font-weight: 700;
-        font-size: 1.75rem;
-        margin-bottom: 1.5rem;
-        text-align: center;
+        color: #fff;
+        font-weight: 700; font-size: 1.6rem;
+        margin-bottom: 0.5rem; text-align: center;
       }
 
       .welcome-emoji {
@@ -155,185 +126,168 @@
       }
 
       @keyframes wave {
-        0% { transform: rotate(0deg); }
-        10% { transform: rotate(14deg); }
-        20% { transform: rotate(-8deg); }
-        30% { transform: rotate(14deg); }
-        40% { transform: rotate(-4deg); }
-        50% { transform: rotate(10deg); }
-        60% { transform: rotate(0deg); }
+        0%   { transform: rotate(0deg); }
+        10%  { transform: rotate(14deg); }
+        20%  { transform: rotate(-8deg); }
+        30%  { transform: rotate(14deg); }
+        40%  { transform: rotate(-4deg); }
+        50%  { transform: rotate(10deg); }
+        60%  { transform: rotate(0deg); }
         100% { transform: rotate(0deg); }
       }
 
-      .form-label {
-        color: #4a5568;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .form-control {
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-        color: #2d3748;
-      }
-
-      .form-control:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-
-      .form-control::placeholder {
-        color: #a0aec0;
-      }
-
-
-      .btn-primary {
-        background: var(--primary-gradient);
-        border: none;
-        border-radius: 12px;
-        padding: 0.875rem 2rem;
-        font-weight: 600;
-        font-size: 1rem;
-        text-transform: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .btn-primary::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: all 0.5s;
-      }
-
-      .btn-primary:hover::before {
-        left: 100%;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-      }
-
-      .btn-primary:active {
-        transform: translateY(0);
-      }
-
-      .form-check-input {
-        border-radius: 6px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.1);
-      }
-
-      .form-check-input:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-      }
-
-      .form-check-label {
-        color: #4a5568;
-        font-weight: 500;
-      }
-
-      .text-center a {
-        color:rgb(18, 19, 23);
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-      }
-
-      .text-center a:hover {
-        color:rgb(184, 177, 192);
-        text-decoration: underline;
-      }
-
-      .mb-4 {
-        color:rgb(230, 234, 240);
-        font-size: 1.1rem;
-        text-align: center;
-        margin-bottom: 2rem !important;
-      }
-
-      /* Logo styling */
-      .logo-container {
+      .auth-subtitle {
+        color: rgba(255,255,255,0.6);
+        font-size: 0.95rem;
         text-align: center;
         margin-bottom: 2rem;
       }
 
-      .logo-container img {
-        max-height: 60px;
-        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+      /* ── Form ── */
+      .form-label {
+        color: rgba(255,255,255,0.8);
+        font-weight: 600; font-size: 0.875rem;
+        margin-bottom: 0.4rem; display: block;
       }
 
-      /* Alert styling */
-      .alert {
+      .form-control {
+        border: 1.5px solid rgba(255,255,255,0.15);
         border-radius: 12px;
-        border: none;
+        padding: 0.75rem 1rem;
+        font-size: 0.97rem;
+        background: rgba(255,255,255,0.08);
         backdrop-filter: blur(10px);
-        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        color: #fff;
+        width: 100%;
       }
 
-      .alert-success {
-        background: rgba(72, 187, 120, 0.1);
-        color: #2f855a;
+      .form-control:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+        background: rgba(255,255,255,0.12);
+        outline: none;
       }
 
-      .alert-danger {
-        background: rgba(245, 101, 101, 0.1);
-        color: #c53030;
+      .form-control::placeholder { color: rgba(255,255,255,0.32); }
+
+      /* ── Password group ── */
+      #password-group {
+        display: flex; align-items: stretch;
+        border: 1.5px solid rgba(255,255,255,0.15);
+        border-radius: 12px; overflow: hidden;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(10px);
+        transition: border-color 0.3s, box-shadow 0.3s;
       }
 
-      /* Responsive design */
-      @media (max-width: 768px) {
-        .card-body {
-          padding: 2rem 1.5rem;
-        }
-        
-        .shape {
-          opacity: 0.05;
-        }
+      #password-group input {
+        flex: 1; border: none; background: transparent;
+        padding: 0.75rem 1rem; font-size: 0.97rem;
+        color: #fff; outline: none; min-width: 0;
       }
 
-      /* Loading animation */
-      .btn-loading {
-        position: relative;
-        pointer-events: none;
+      #password-group input::placeholder { color: rgba(255,255,255,0.32); }
+
+      #togglePassword {
+        background: transparent; border: none;
+        border-left: 1px solid rgba(255,255,255,0.12);
+        padding: 0 1rem; cursor: pointer;
+        color: rgba(255,255,255,0.45); font-size: 1rem;
+        transition: color 0.2s; flex-shrink: 0;
       }
 
+      /* ── Forgot password link ── */
+      .forgot-link {
+        font-size: 0.8rem; color: rgba(255,255,255,0.55);
+        text-decoration: none; transition: color 0.2s;
+      }
+      .forgot-link:hover { color: #93c5fd; text-decoration: underline; }
+
+      /* ── Remember me ── */
+      .form-check-input {
+        border-radius: 6px;
+        border: 1.5px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.08);
+      }
+      .form-check-input:checked { background-color: #3b82f6; border-color: #3b82f6; }
+      .form-check-label { color: rgba(255,255,255,0.7); font-weight: 500; font-size: 0.9rem; }
+
+      /* ── Button ── */
+      .btn-primary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border: none; border-radius: 12px;
+        padding: 0.875rem 2rem;
+        font-weight: 600; font-size: 1rem;
+        color: #fff; width: 100%;
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        position: relative; overflow: hidden;
+        cursor: pointer;
+      }
+
+      .btn-primary::before {
+        content: ''; position: absolute;
+        top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+        transition: left 0.5s;
+      }
+
+      .btn-primary:hover::before { left: 100%; }
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(29,78,216,0.45); }
+      .btn-primary:active { transform: translateY(0); }
+
+      /* ── Register link ── */
+      .auth-footer { text-align: center; margin-top: 1.5rem; }
+      .auth-footer span { color: rgba(255,255,255,0.55); font-size: 0.9rem; }
+      .auth-footer a { color: #93c5fd; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+      .auth-footer a:hover { color: #fff; text-decoration: underline; }
+
+      /* ── Alerts ── */
+      .alert {
+        border-radius: 12px; border: none;
+        backdrop-filter: blur(10px); margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+      }
+
+      .alert-success { background: rgba(74,222,128,0.12); color: #86efac; border: 1px solid rgba(74,222,128,0.2); }
+      .alert-danger  { background: rgba(248,113,113,0.12); color: #fca5a5; border: 1px solid rgba(248,113,113,0.2); }
+
+      .invalid-feedback { color: #fca5a5; font-size: 0.8rem; margin-top: 0.35rem; }
+
+      /* ── Divider ── */
+      .auth-divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 1.5rem 0;
+      }
+
+      /* ── Loading ── */
+      .btn-loading { pointer-events: none; }
       .btn-loading::after {
         content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        margin: auto;
+        position: absolute; width: 16px; height: 16px;
+        margin: auto; inset: 0;
         border: 2px solid transparent;
-        border-top-color: #ffffff;
+        border-top-color: #fff;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: spin 0.8s linear infinite;
       }
 
       @keyframes spin {
-        0% { transform: rotate(0deg); }
+        0%   { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 480px) {
+        .card-body { padding: 2rem 1.25rem; }
+        h4 { font-size: 1.35rem; }
+        .authentication-inner { max-width: 100%; }
       }
     </style>
   </head>
 
   <body>
-    <!-- Animated background -->
     <div class="bg-animation">
       <div class="floating-shapes">
         <div class="shape"></div>
@@ -342,140 +296,93 @@
       </div>
     </div>
 
-    <!-- Content -->
     <div class="container-xxl">
-      <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-wrapper">
         <div class="authentication-inner">
-          <!-- Register -->
           <div class="card">
             <div class="card-body">
-              <!-- Logo 
-              <div class="logo-container">
-                @include('logo')
-              </div>
-              /Logo -->
-              
-              <h4 class="mb-1">Bienvenue sur <strong>Lokativ</strong> ! <span class="welcome-emoji">👋</span></h4>
 
-              <p class="mb-4">Veuillez vous connecter à votre espace de travail</p>
+              <!-- Brand -->
+              <div class="auth-brand">
+                <div class="auth-brand-icon">🏠</div>
+                <span class="auth-brand-name">Lokativ</span>
+              </div>
+
+              <h4>Bienvenue ! <span class="welcome-emoji">👋</span></h4>
+              <p class="auth-subtitle">Connectez-vous à votre espace de travail</p>
+
+              @if(session('message'))
+              <div class="alert alert-success">{{ session('message') }}</div>
+              @endif
 
               <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login_check') }}">
-                  @csrf
+                @csrf
+
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
-                  <input
-                    type="email" 
-                    class="form-control @error('email') is-invalid @enderror"
-                    id="email"  
-                    name="email" 
-                    placeholder="Votre email" 
-                    autofocus  
-                    required 
-                  />
+                  <input type="email"
+                         class="form-control @error('email') is-invalid @enderror"
+                         id="email" name="email"
+                         placeholder="votre@email.com"
+                         autofocus required />
                   @error('email')
-                  <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
+                  <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                   @enderror
                 </div>
-                
+
                 <div class="mb-3">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
                     <label class="form-label" for="password" style="margin-bottom:0;">Mot de passe</label>
-                    <a href="{{ route('getEmail') }}" style="font-size:0.8rem;">Mot de passe oublié ?</a>
+                    <a href="{{ route('getEmail') }}" class="forgot-link">Mot de passe oublié ?</a>
                   </div>
-                  <div id="password-group"
-                       style="display:flex;align-items:stretch;
-                              border:2px solid rgba(255,255,255,0.3);
-                              border-radius:12px;overflow:hidden;
-                              background:rgba(255,255,255,0.1);
-                              backdrop-filter:blur(10px);
-                              transition:border-color 0.3s,box-shadow 0.3s;">
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      placeholder="••••••••••••"
-                      required
-                      style="flex:1;border:none;background:transparent;
-                             padding:0.75rem 1rem;font-size:1rem;
-                             color:#2d3748;outline:none;min-width:0;"
-                    />
-                    <button type="button" id="togglePassword"
-                            aria-label="Afficher/masquer le mot de passe"
-                            style="background:transparent;
-                                   border:none;
-                                   border-left:1px solid rgba(255,255,255,0.25);
-                                   padding:0 1rem;
-                                   cursor:pointer;
-                                   color:#a0aec0;
-                                   font-size:1.1rem;
-                                   transition:color 0.2s;
-                                   flex-shrink:0;">
+                  <div id="password-group">
+                    <input type="password" id="password" name="password"
+                           placeholder="••••••••••••" required />
+                    <button type="button" id="togglePassword" aria-label="Afficher/masquer">
                       <i class="fas fa-eye-slash" id="toggleIcon"></i>
                     </button>
                   </div>
                 </div>
-                
+
                 <div class="mb-3">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="remember-me" />
                     <label class="form-check-label" for="remember-me">Se rappeler de moi</label>
                   </div>
                 </div>
-                
-                <div class="mb-3">
-                  <button class="btn btn-primary d-grid w-100" type="submit" name="connexion" id="submit">
+
+                <div class="mb-2">
+                  <button class="btn btn-primary" type="submit" name="connexion" id="submit">
                     Se connecter
                   </button>
                 </div>
               </form>
 
-              <p class="text-center">
-                <span class="text-white">Nouveau sur la plateforme ?</span>
-                <a href="{{ route('accueil') }}">
-                  <span>Créer un compte</span>
-                </a>
-              </p>
+              <div class="auth-footer">
+                <span>Nouveau sur la plateforme ?</span>
+                <a href="{{ route('accueil') }}"> Créer un compte</a>
+              </div>
+
             </div>
           </div>
-          <!-- /Register -->
         </div>
       </div>
     </div>
 
-    <!-- / Content -->
-    <!-- Core JS -->
     @include('js_file')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    
+
     <script>
-      // Messages de session (error / success)
-      @if(session('message'))
+      @if(session('error') && !str_contains(session('error'), 'bloquée'))
       document.addEventListener('DOMContentLoaded', function () {
         Swal.fire({
-          icon: 'success',
-          title: 'Succès',
-          text: @json(session('message')),
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#3b82f6',
-          customClass: { popup: 'shadow-lg' }
-        });
-      });
-      @elseif(session('error') && !str_contains(session('error'), 'bloquée'))
-      document.addEventListener('DOMContentLoaded', function () {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
+          icon: 'error', title: 'Erreur',
           text: @json(session('error')),
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#e53e3e',
-          customClass: { popup: 'shadow-lg' }
+          confirmButtonText: 'OK', confirmButtonColor: '#e53e3e',
         });
       });
       @endif
 
-      // Alerte entreprise bloquée
       @if(session('error') && str_contains(session('error'), 'bloquée'))
       document.addEventListener('DOMContentLoaded', function () {
         Swal.fire({
@@ -495,13 +402,9 @@
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zm-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
               </svg>
               Contacter via WhatsApp
-            </a>
-          `,
-          confirmButtonText: 'Fermer',
-          confirmButtonColor: '#6c757d',
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          customClass: { popup: 'shadow-lg' }
+            </a>`,
+          confirmButtonText: 'Fermer', confirmButtonColor: '#6c757d',
+          allowOutsideClick: false, allowEscapeKey: false,
         });
       });
       @endif
@@ -511,46 +414,37 @@
         const input = document.getElementById('password');
         const icon  = document.getElementById('toggleIcon');
         const show  = input.type === 'password';
-
-        input.type = show ? 'text' : 'password';
+        input.type  = show ? 'text' : 'password';
         icon.classList.toggle('fa-eye-slash', !show);
-        icon.classList.toggle('fa-eye',        show);
-        this.style.color = show ? '#3b82f6' : '#a0aec0';
+        icon.classList.toggle('fa-eye', show);
+        this.style.color = show ? '#60a5fa' : 'rgba(255,255,255,0.45)';
       });
 
-      // Focus/blur styling sur le groupe password
+      // Focus/blur on password group
       const pwInput = document.getElementById('password');
       const pwGroup = document.getElementById('password-group');
       pwInput.addEventListener('focus', function () {
-        pwGroup.style.borderColor = '#3b82f6';
-        pwGroup.style.boxShadow   = '0 0 0 3px rgba(59,130,246,0.15)';
+        pwGroup.style.borderColor = '#60a5fa';
+        pwGroup.style.boxShadow   = '0 0 0 3px rgba(96,165,250,0.2)';
       });
       pwInput.addEventListener('blur', function () {
-        pwGroup.style.borderColor = 'rgba(255,255,255,0.3)';
+        pwGroup.style.borderColor = 'rgba(255,255,255,0.15)';
         pwGroup.style.boxShadow   = 'none';
       });
 
-      // Hover sur le bouton toggle
+      // Hover sur toggle button
       const toggleBtn = document.getElementById('togglePassword');
-      toggleBtn.addEventListener('mouseenter', function () { this.style.color = '#3b82f6'; });
+      toggleBtn.addEventListener('mouseenter', function () { this.style.color = '#60a5fa'; });
       toggleBtn.addEventListener('mouseleave', function () {
-        if (document.getElementById('password').type === 'password') this.style.color = '#a0aec0';
+        if (document.getElementById('password').type === 'password') this.style.color = 'rgba(255,255,255,0.45)';
       });
 
-      // Form submission with loading state
-      document.getElementById('formAuthentication').addEventListener('submit', function() {
-        const submitBtn = document.getElementById('submit');
-        submitBtn.classList.add('btn-loading');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Connexion en cours...';
-      });
-
-      // Focus animations sur les autres champs (email uniquement)
-      document.getElementById('email').addEventListener('focus', function () {
-        this.style.transform = 'translateY(-2px)';
-      });
-      document.getElementById('email').addEventListener('blur', function () {
-        this.style.transform = 'translateY(0)';
+      // Submit loading state
+      document.getElementById('formAuthentication').addEventListener('submit', function () {
+        const btn = document.getElementById('submit');
+        btn.classList.add('btn-loading');
+        btn.disabled = true;
+        btn.textContent = 'Connexion en cours...';
       });
     </script>
   </body>

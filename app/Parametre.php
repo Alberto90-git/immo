@@ -15,6 +15,8 @@ class Parametre extends Model
         'logo_url',
         'email_envoi',
         'whatsapp_numero_envoi',
+        'whatsapp_api_token',
+        'whatsapp_phone_number_id',
     ];
 
 

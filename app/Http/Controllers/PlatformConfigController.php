@@ -37,7 +37,7 @@ class PlatformConfigController extends Controller
     }
 
     /**
-     * Page dédiée Super Admin : configuration du prestataire de paiement.
+     * Page dédiée Super Admin : configuration du prestataire de paiement + AT.
      */
     public function configPage()
     {
@@ -45,7 +45,7 @@ class PlatformConfigController extends Controller
             abort(403);
         }
 
-        $paymentConfig         = \App\PlatformConfig::getConfig();
+        $paymentConfig         = PlatformConfig::getConfig();
         $activePaymentProvider = $paymentConfig->getActiveProvider();
         $activePaymentSandbox  = $paymentConfig->getActiveSandbox();
         $paymentCfgData        = [
@@ -57,12 +57,59 @@ class PlatformConfigController extends Controller
             'fedapay_sandbox'     => (bool) ($paymentConfig->fedapay_sandbox ?? true),
             'has_fedapay_secret'  => !empty($paymentConfig->fedapay_secret_key),
         ];
+        $atCfg = [
+            'at_username'            => $paymentConfig->at_username            ?? '',
+            'at_api_key'             => $paymentConfig->at_api_key             ?? '',
+            'at_sender_id'           => $paymentConfig->at_sender_id           ?? '',
+            'at_whatsapp_product_id' => $paymentConfig->at_whatsapp_product_id ?? '',
+        ];
 
         return view('super-admin.config_paiement', compact(
             'activePaymentProvider',
             'activePaymentSandbox',
-            'paymentCfgData'
+            'paymentCfgData',
+            'atCfg'
         ));
+    }
+
+    /**
+     * Sauvegarde la configuration Africa's Talking (Super Admin uniquement).
+     */
+    public function updateAtConfig(Request $request)
+    {
+        if (!Auth::user()->can('config-paiement')) {
+            return response()->json(['status' => false, 'message' => 'Accès refusé.'], 403);
+        }
+
+        $request->validate([
+            'at_username'            => 'nullable|string|max:100',
+            'at_api_key'             => 'nullable|string|max:500',
+            'at_sender_id'           => 'nullable|string|max:50',
+            'at_whatsapp_product_id' => 'nullable|string|max:100',
+        ]);
+
+        $updateData = ['updated_at' => now()];
+
+        if ($request->filled('at_username')) {
+            $updateData['at_username'] = trim($request->input('at_username'));
+        }
+        if ($request->filled('at_api_key')) {
+            $updateData['at_api_key'] = trim($request->input('at_api_key'));
+        }
+        // sender_id et product_id peuvent être vidés (null)
+        $updateData['at_sender_id']           = $request->filled('at_sender_id') ? trim($request->input('at_sender_id')) : null;
+        $updateData['at_whatsapp_product_id']  = $request->filled('at_whatsapp_product_id') ? trim($request->input('at_whatsapp_product_id')) : null;
+
+        $exists = DB::table('platform_configs')->count() > 0;
+        if ($exists) {
+            DB::table('platform_configs')->update($updateData);
+        } else {
+            DB::table('platform_configs')->insert(array_merge($updateData, ['created_at' => now()]));
+        }
+
+        Log::info('Config Africa\'s Talking mise à jour', ['user' => Auth::user()->email]);
+
+        return response()->json(['status' => true, 'message' => 'Configuration Africa\'s Talking enregistrée avec succès.']);
     }
 
     /**

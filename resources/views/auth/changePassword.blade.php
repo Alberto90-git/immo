@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
+<html lang="fr" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
     data-assets-path="../assets/" data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Immo | Changer mot de passe</title>
-
-    <meta name="description" content="Changer votre mot de passe pour sécuriser votre compte Immo" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Lokativ | Changer mot de passe</title>
+    <meta name="description" content="Changer votre mot de passe pour sécuriser votre compte Lokativ" />
     @include('css_file')
 
     <script src="assetsV2/vendor/js/helpers.js"></script>
@@ -16,14 +14,15 @@
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            --secondary-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            --success-gradient: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
-            --soft-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            --soft-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
+            --primary-gradient: linear-gradient(135deg, #0c1445 0%, #0f2878 40%, #1d4ed8 100%);
+            --secondary-gradient: linear-gradient(135deg, #0a0f35 0%, #1a3a9f 100%);
+            --soft-shadow: 0 25px 60px rgba(0,0,0,0.45);
+            --soft-shadow-hover: 0 35px 70px rgba(0,0,0,0.55);
+            --glass-bg: rgba(255,255,255,0.07);
+            --glass-border: rgba(255,255,255,0.15);
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             background: var(--primary-gradient);
@@ -32,487 +31,285 @@
             overflow-x: hidden;
         }
 
-        /* Animated background elements */
         .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow: hidden; z-index: 0; pointer-events: none;
         }
 
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
+        .floating-shapes { position: absolute; width: 100%; height: 100%; }
 
         .shape {
-            position: absolute;
-            background: var(--secondary-gradient);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-            opacity: 0.1;
+            position: absolute; border-radius: 50%;
+            animation: float 6s ease-in-out infinite; opacity: 0.12;
         }
 
-        .shape:nth-child(1) {
-            width: 250px;
-            height: 250px;
-            top: 15%;
-            left: 15%;
-            animation-delay: 0s;
-        }
-
-        .shape:nth-child(2) {
-            width: 180px;
-            height: 180px;
-            top: 50%;
-            right: 25%;
-            animation-delay: 3s;
-        }
-
-        .shape:nth-child(3) {
-            width: 120px;
-            height: 120px;
-            bottom: 20%;
-            left: 60%;
-            animation-delay: 1.5s;
-        }
-
-        .security-icon {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: var(--success-gradient);
-            border-radius: 50%;
-            top: 30%;
-            right: 10%;
-            animation: pulse 3s ease-in-out infinite;
-            opacity: 0.1;
-        }
-
-        .security-icon::before {
-            content: '🔑';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-        }
+        .shape:nth-child(1) { width: 260px; height: 260px; background: var(--secondary-gradient); top: 12%; left: 8%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 180px; height: 180px; background: var(--secondary-gradient); top: 50%; right: 6%; animation-delay: 3s; }
+        .shape:nth-child(3) { width: 130px; height: 130px; background: var(--secondary-gradient); bottom: 15%; left: 52%; animation-delay: 1.5s; }
 
         @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-            }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50%       { transform: translateY(-20px) rotate(180deg); }
         }
 
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.1;
-            }
-
-            50% {
-                transform: scale(1.2);
-                opacity: 0.2;
-            }
-        }
-
-        .container-xxl {
-            position: relative;
-            z-index: 1;
-        }
+        .container-xxl { position: relative; z-index: 1; }
 
         .authentication-wrapper {
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
         }
 
         .authentication-inner {
-            width: 100%;
-            max-width: 450px;
-            animation: slideUp 0.8s ease-out;
+            width: 100%; max-width: 460px;
+            animation: slideUp 0.7s ease-out;
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
             box-shadow: var(--soft-shadow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            overflow: hidden; position: relative;
+            transition: box-shadow 0.3s;
         }
 
-        .card:hover {
-            box-shadow: var(--soft-shadow-hover);
-            transform: translateY(-5px);
+        .card:hover { box-shadow: var(--soft-shadow-hover); }
+        .card-body { padding: 2.75rem; }
+
+        /* ── Brand ── */
+        .auth-brand {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; margin-bottom: 1.75rem;
         }
 
-        .card-body {
-            padding: 3rem;
+        .auth-brand-icon {
+            width: 42px; height: 42px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
 
+        .auth-brand-name { font-size: 1.45rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+
+        /* ── Headings ── */
         h4 {
-            color: #2d3748;
-            font-weight: 700;
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-            position: relative;
-            text-align: center;
+            color: #fff; font-weight: 700; font-size: 1.55rem;
+            margin-bottom: 0.5rem; text-align: center;
         }
 
-        h4::after {
-            content: '🔐';
-            position: absolute;
-            right: -40px;
-            top: 0;
-            font-size: 1.5rem;
-            animation: wiggle 2s ease-in-out infinite;
-        }
+        .auth-subtitle { color: rgba(255,255,255,0.6); font-size: 0.92rem; text-align: center; margin-bottom: 2rem; }
 
-        @keyframes wiggle {
-
-            0%,
-            100% {
-                transform: rotate(0deg);
-            }
-
-            25% {
-                transform: rotate(5deg);
-            }
-
-            75% {
-                transform: rotate(-5deg);
-            }
-        }
-
-        .mb-2 {
-            color: rgb(229, 233, 239);
-            font-size: 1.1rem;
-            margin-bottom: 2rem !important;
-            text-align: center;
-        }
-
+        /* ── Form ── */
         .form-label {
-            color: #4a5568;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            text-align: left;
+            color: rgba(255,255,255,0.8);
+            font-weight: 600; font-size: 0.875rem;
+            margin-bottom: 0.4rem; display: block;
         }
 
-        /* Form input styling */
         .form-control {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 1.5px solid rgba(255,255,255,0.15);
             border-radius: 12px;
-            padding: 0.75rem 1rem;
-            color: #2d3748;
-            font-weight: 500;
+            padding: 0.75rem 1rem; font-size: 0.97rem;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            color: #fff; width: 100%;
         }
 
         .form-control:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+            background: rgba(255,255,255,0.12); outline: none;
         }
 
-        .input-group {
-            position: relative;
-        }
+        .form-control::placeholder { color: rgba(255,255,255,0.32); }
+
+        /* ── Input group (password toggle) ── */
+        .input-group { position: relative; display: flex; }
 
         .input-group-merge .form-control {
-            border-right: 0;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .input-group-merge:focus-within .form-control {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+            background: rgba(255,255,255,0.12);
         }
 
         .input-group-text {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-left: 0;
-            color: #4a5568;
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.15);
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+            color: rgba(255,255,255,0.5);
             transition: all 0.3s ease;
-            cursor: pointer;
+            cursor: pointer; padding: 0 0.9rem;
+            display: flex; align-items: center;
         }
 
-        .input-group:focus-within .input-group-text {
-            border-color: #3b82f6;
-            background: rgba(255, 255, 255, 0.2);
+        .input-group-merge:focus-within .input-group-text {
+            border-color: #60a5fa;
+            background: rgba(255,255,255,0.1);
         }
 
-        .btn-primary {
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 12px;
-            padding: 0.875rem 2rem;
-            font-weight: 600;
-            font-size: 1rem;
-            text-transform: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            margin-top: 1rem;
-            width: 100%;
-        }
+        .input-group-text:hover { color: #93c5fd; }
+        .input-group-text i { font-size: 1.1rem; }
 
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: all 0.5s;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Logo styling */
-        .logo-container {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .logo-container img {
-            max-height: 60px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-        }
-
-        /* Alert styling */
-        .alert {
-            border-radius: 12px;
-            border: none;
-            backdrop-filter: blur(10px);
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-success {
-            background: rgba(72, 187, 120, 0.1);
-            color: #2f855a;
-        }
-
-        .alert-danger {
-            background: rgba(245, 101, 101, 0.1);
-            color: #c53030;
-        }
-
-        .invalid-feedback {
-            color: #f56565;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-
-        /* Password strength indicator */
+        /* ── Password strength ── */
         .password-strength {
-            height: 5px;
-            border-radius: 3px;
-            margin-top: 0.5rem;
-            background: #e2e8f0;
-            overflow: hidden;
+            height: 5px; border-radius: 3px; margin-top: 0.6rem;
+            background: rgba(255,255,255,0.1); overflow: hidden;
         }
 
-        .password-strength-bar {
-            height: 100%;
-            width: 0;
-            transition: all 0.3s ease;
-            border-radius: 3px;
-        }
+        .password-strength-bar { height: 100%; width: 0; transition: all 0.3s ease; border-radius: 3px; }
 
-        /* Password requirements */
+        /* ── Password requirements ── */
         .password-requirements {
-            margin-top: 0.75rem;
-            padding: 0.875rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 0.75rem; padding: 0.875rem 1rem;
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.4s ease, margin 0.4s ease;
             overflow: hidden;
         }
 
         .password-requirements h6 {
-            color: #2d3748;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7); font-weight: 600;
+            margin-bottom: 0.5rem; font-size: 0.82rem;
         }
 
         .requirement {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #718096;
-            font-size: 0.8rem;
-            margin-bottom: 0.25rem;
-            max-height: 2rem;
-            opacity: 1;
+            display: flex; align-items: center; gap: 0.5rem;
+            color: rgba(255,255,255,0.45); font-size: 0.8rem;
+            margin-bottom: 0.25rem; max-height: 2rem; opacity: 1;
             overflow: hidden;
             transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
         }
 
-        .requirement.valid {
-            max-height: 0;
-            opacity: 0;
-            margin-bottom: 0;
-        }
-
-        .requirement i {
-            font-size: 0.7rem;
-        }
+        .requirement.valid { max-height: 0; opacity: 0; margin-bottom: 0; }
+        .requirement i { font-size: 0.75rem; }
 
         .password-requirements.all-valid {
-            max-height: 0 !important;
-            opacity: 0;
-            padding: 0;
-            margin: 0;
-            border: none;
+            max-height: 0 !important; opacity: 0;
+            padding: 0; margin: 0; border: none;
         }
 
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 2rem 1.5rem;
-            }
-
-            .shape {
-                opacity: 0.05;
-            }
-
-            h4::after {
-                display: none;
-            }
+        /* ── Button ── */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none; border-radius: 12px;
+            padding: 0.875rem 2rem;
+            font-weight: 600; font-size: 1rem; color: #fff;
+            width: 100%; cursor: pointer; margin-top: 1rem;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            position: relative; overflow: hidden;
         }
 
-        /* Loading animation */
-        .btn-loading {
-            position: relative;
-            pointer-events: none;
+        .btn-primary::before {
+            content: ''; position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+            transition: left 0.5s;
         }
 
+        .btn-primary:hover::before { left: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(29,78,216,0.45); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── Alerts ── */
+        .alert { border-radius: 12px; border: none; backdrop-filter: blur(10px); margin-bottom: 1.25rem; font-size: 0.9rem; }
+        .alert-success { background: rgba(74,222,128,0.12); color: #86efac; border: 1px solid rgba(74,222,128,0.2); }
+        .alert-danger  { background: rgba(248,113,113,0.12); color: #fca5a5; border: 1px solid rgba(248,113,113,0.2); }
+
+        .invalid-feedback { color: #fca5a5; font-size: 0.8rem; margin-top: 0.35rem; }
+
+        /* ── Loading ── */
+        .btn-loading { pointer-events: none; }
         .btn-loading::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            margin: auto;
-            border: 2px solid transparent;
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            content: ''; position: absolute; width: 16px; height: 16px;
+            margin: auto; inset: 0;
+            border: 2px solid transparent; border-top-color: #fff;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-            100% {
-                transform: rotate(360deg);
-            }
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .card-body { padding: 2rem 1.25rem; }
+            h4 { font-size: 1.3rem; }
+            .authentication-inner { max-width: 100%; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Animated background -->
     <div class="bg-animation">
         <div class="floating-shapes">
             <div class="shape"></div>
             <div class="shape"></div>
             <div class="shape"></div>
-            <div class="security-icon"></div>
         </div>
     </div>
 
-    <!-- Content -->
     <div class="container-xxl">
-        <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-wrapper">
             <div class="authentication-inner py-4">
-                <!-- Password Change Card -->
                 <div class="card">
                     <div class="card-body">
-                        <!-- Logo -->
-                        <div class="logo-container">
-                            @include('logo')
+
+                        <!-- Brand -->
+                        <div class="auth-brand">
+                            <div class="auth-brand-icon">🏠</div>
+                            <span class="auth-brand-name">Lokativ</span>
                         </div>
+
+                        <h4>Changer votre mot de passe 🔑</h4>
+                        <p class="auth-subtitle">Mettez à jour vos identifiants de connexion</p>
 
                         @include('display_message')
 
-                        <h4 class="mb-2">Changer votre mot de passe 🔑</h4>
-
                         <form id="formAuthentication" class="mb-3" action="{{ route('password_submit') }}" method="post">
                             @csrf
+
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" name="email" placeholder="Entrer votre email" autofocus />
+                                <input type="email"
+                                       class="form-control @error('email') is-invalid @enderror"
+                                       id="email" name="email"
+                                       placeholder="votre@email.com" autofocus />
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                                 @enderror
                             </div>
-                            
+
                             <div class="mb-3 form-password-toggle">
                                 <label class="form-label" for="Ancien_mot_de_passe">Ancien mot de passe</label>
                                 <div class="input-group input-group-merge">
-                                    <input type="password" id="Ancien_mot_de_passe" class="form-control @error('Ancien_mot_de_passe') is-invalid @enderror" name="Ancien_mot_de_passe"
-                                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                        aria-describedby="Ancien_mot_de_passe" required/>
+                                    <input type="password" id="Ancien_mot_de_passe"
+                                           class="form-control @error('Ancien_mot_de_passe') is-invalid @enderror"
+                                           name="Ancien_mot_de_passe"
+                                           placeholder="••••••••••••"
+                                           aria-describedby="Ancien_mot_de_passe" required />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                     @error('Ancien_mot_de_passe')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                    <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                                     @enderror
                                 </div>
                             </div>
@@ -520,65 +317,50 @@
                             <div class="mb-3 form-password-toggle">
                                 <label class="form-label" for="Nouveau_mot_de_passe">Nouveau mot de passe</label>
                                 <div class="input-group input-group-merge">
-                                    <input
-                                        type="password"
-                                        id="Nouveau_mot_de_passe"
-                                        class="form-control @error('Nouveau_mot_de_passe') is-invalid @enderror"
-                                        name="Nouveau_mot_de_passe"
-                                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                        aria-describedby="Nouveau_mot_de_passe"
-                                    />
+                                    <input type="password" id="Nouveau_mot_de_passe"
+                                           class="form-control @error('Nouveau_mot_de_passe') is-invalid @enderror"
+                                           name="Nouveau_mot_de_passe"
+                                           placeholder="••••••••••••"
+                                           aria-describedby="Nouveau_mot_de_passe" />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                     @error('Nouveau_mot_de_passe')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                    <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                                     @enderror
                                 </div>
                                 <div class="password-strength mt-2">
                                     <div class="password-strength-bar" id="password-strength-bar"></div>
                                 </div>
-                                <small class="form-text text-muted" id="password-strength-text"></small>
+                                <small style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="password-strength-text"></small>
                                 <div class="password-requirements" id="passwordRequirementsBlock">
                                     <h6>Critères de sécurité :</h6>
-                                    <div class="requirement" id="req-minLength">
-                                        <i class="bx bx-x"></i> Au moins 8 caractères
-                                    </div>
-                                    <div class="requirement" id="req-hasUpper">
-                                        <i class="bx bx-x"></i> Une lettre majuscule
-                                    </div>
-                                    <div class="requirement" id="req-hasLower">
-                                        <i class="bx bx-x"></i> Une lettre minuscule
-                                    </div>
-                                    <div class="requirement" id="req-hasNumber">
-                                        <i class="bx bx-x"></i> Un chiffre
-                                    </div>
-                                    <div class="requirement" id="req-hasSpecial">
-                                        <i class="bx bx-x"></i> Un caractère spécial
-                                    </div>
+                                    <div class="requirement" id="req-minLength"><i class="bx bx-x"></i> Au moins 8 caractères</div>
+                                    <div class="requirement" id="req-hasUpper"><i class="bx bx-x"></i> Une lettre majuscule</div>
+                                    <div class="requirement" id="req-hasLower"><i class="bx bx-x"></i> Une lettre minuscule</div>
+                                    <div class="requirement" id="req-hasNumber"><i class="bx bx-x"></i> Un chiffre</div>
+                                    <div class="requirement" id="req-hasSpecial"><i class="bx bx-x"></i> Un caractère spécial</div>
                                 </div>
                             </div>
 
-                            <button class="btn btn-primary d-grid w-100" id="form_submit1" type="submit" name="Confirmer1">Modifier</button>
+                            <button class="btn btn-primary" id="form_submit1" type="submit" name="Confirmer1">
+                                Modifier le mot de passe
+                            </button>
                         </form>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- / Content -->
     @include('js_file')
 
     <script>
         // Password visibility toggle
         document.querySelectorAll('.input-group-text').forEach(icon => {
-            icon.addEventListener('click', function() {
+            icon.addEventListener('click', function () {
                 const passwordInput = this.previousElementSibling;
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
-                
-                // Toggle icon
                 this.querySelector('i').classList.toggle('bx-hide');
                 this.querySelector('i').classList.toggle('bx-show');
             });
@@ -598,16 +380,14 @@
         };
 
         if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
+            passwordInput.addEventListener('input', function () {
                 const password = this.value;
-
-                // Mettre à jour chaque critère
                 let validCount = 0;
+
                 Object.entries(criteria).forEach(([id, test]) => {
                     const el   = document.getElementById(id);
                     const icon = el.querySelector('i');
                     const ok   = test(password);
-
                     if (ok) {
                         el.classList.add('valid');
                         icon.classList.replace('bx-x', 'bx-check');
@@ -618,26 +398,17 @@
                     }
                 });
 
-                // Masquer le bloc entier si tous les critères sont remplis
                 const block = document.getElementById('passwordRequirementsBlock');
                 block.classList.toggle('all-valid', validCount === Object.keys(criteria).length);
 
-                // Barre de force
                 if (strengthBar && strengthText) {
                     let strength = 0, text = '', color = '';
-                    if (password.length === 0) {
-                        strength = 0; text = ''; color = '';
-                    } else if (validCount <= 1) {
-                        strength = 20; text = 'Très faible'; color = '#e53e3e';
-                    } else if (validCount === 2) {
-                        strength = 40; text = 'Faible'; color = '#ed8936';
-                    } else if (validCount === 3) {
-                        strength = 60; text = 'Moyen'; color = '#ecc94b';
-                    } else if (validCount === 4) {
-                        strength = 80; text = 'Fort'; color = '#48bb78';
-                    } else {
-                        strength = 100; text = 'Très fort'; color = '#38a169';
-                    }
+                    if (password.length === 0) { strength = 0; text = ''; color = ''; }
+                    else if (validCount <= 1)   { strength = 20; text = 'Très faible'; color = '#f87171'; }
+                    else if (validCount === 2)  { strength = 40; text = 'Faible'; color = '#fb923c'; }
+                    else if (validCount === 3)  { strength = 60; text = 'Moyen'; color = '#facc15'; }
+                    else if (validCount === 4)  { strength = 80; text = 'Fort'; color = '#4ade80'; }
+                    else                       { strength = 100; text = 'Très fort'; color = '#22c55e'; }
                     strengthBar.style.width           = strength + '%';
                     strengthBar.style.backgroundColor = color;
                     strengthText.textContent          = text;
@@ -646,12 +417,12 @@
             });
         }
 
-        // Form submission with loading state
-        const form = document.getElementById('formAuthentication');
+        // Submit loading state
+        const form      = document.getElementById('formAuthentication');
         const submitBtn = document.getElementById('form_submit1');
 
         if (form && submitBtn) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function () {
                 submitBtn.classList.add('btn-loading');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Modification en cours...';

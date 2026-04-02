@@ -5,3 +5,900 @@ Lancement du service sur http://127.0.0.1:5050 ...
 2026-03-16 03:00:13,968 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5050
 2026-03-16 03:00:13,968 [INFO] [33mPress CTRL+C to quit[0m
+Lancement du service sur http://127.0.0.1:5050 ... 
+2026-03-28 23:13:24,720 [INFO] Lokativ WhatsApp Service – http://127.0.0.1:5050
+ * Serving Flask app 'service'
+ * Debug mode: off
+2026-03-28 23:13:24,818 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5050
+2026-03-28 23:13:24,820 [INFO] [33mPress CTRL+C to quit[0m
+2026-03-28 23:20:51,228 [INFO] 127.0.0.1 - - [28/Mar/2026 23:20:51] "GET /status HTTP/1.1" 200 -
+2026-03-28 23:21:06,426 [INFO] Étape 1 : démarrage de Chrome…
+2026-03-28 23:21:06,427 [INFO] 127.0.0.1 - - [28/Mar/2026 23:21:06] "POST /connect HTTP/1.1" 200 -
+2026-03-28 23:21:06,458 [INFO] Chrome version (registre) : 146
+2026-03-28 23:21:06,458 [INFO] Lancement avec version_main=146
+2026-03-28 23:21:52,941 [INFO] 127.0.0.1 - - [28/Mar/2026 23:21:52] "GET /status HTTP/1.1" 200 -
+2026-03-28 23:22:34,834 [INFO] Étape 1 : démarrage de Chrome…
+2026-03-28 23:22:34,835 [INFO] 127.0.0.1 - - [28/Mar/2026 23:22:34] "POST /connect HTTP/1.1" 200 -
+2026-03-28 23:22:34,854 [INFO] Chrome version (registre) : 146
+2026-03-28 23:22:46,958 [INFO] 127.0.0.1 - - [28/Mar/2026 23:22:46] "GET /status HTTP/1.1" 200 -
+2026-03-28 23:35:15,619 [INFO] Status \u2192 disconnected
+2026-03-28 23:35:15,620 [INFO] 127.0.0.1 - - [28/Mar/2026 23:35:15] "POST /disconnect HTTP/1.1" 200 -
+2026-03-28 23:42:53,454 [INFO] Lokativ WhatsApp Service – http://127.0.0.1:5050
+ * Serving Flask app 'service'
+ * Debug mode: off
+2026-03-28 23:42:53,479 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5050
+2026-03-28 23:42:53,479 [INFO] [33mPress CTRL+C to quit[0m
+2026-03-28 23:43:03,000 [INFO] 127.0.0.1 - - [28/Mar/2026 23:43:02] "GET /status HTTP/1.1" 200 -
+2026-03-28 23:43:18,426 [INFO] Étape 1 : démarrage de Chrome avec webdriver-manager…
+2026-03-28 23:43:18,427 [INFO] 127.0.0.1 - - [28/Mar/2026 23:43:18] "POST /connect HTTP/1.1" 200 -
+2026-03-28 23:43:18,429 [INFO] ====== WebDriver manager ======
+2026-03-28 23:43:20,506 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-28 23:43:22,548 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-28 23:43:26,729 [INFO] Driver [C:\Users\altchegnon\.wdm\drivers\chromedriver\win64\146.0.7680.165\chromedriver-win32/chromedriver.exe] found in cache
+2026-03-28 23:43:31,402 [INFO] Chrome démarré avec succès.
+2026-03-28 23:43:31,403 [INFO] Étape 2 : chargement de https://web.whatsapp.com …
+2026-03-28 23:44:13,061 [INFO] 127.0.0.1 - - [28/Mar/2026 23:44:13] "GET /status HTTP/1.1" 200 -
+2026-03-28 23:44:45,720 [INFO] Page WhatsApp Web chargée.
+2026-03-28 23:44:45,721 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:45,722 [INFO] Thread de surveillance démarré. En attente du scan QR.
+2026-03-28 23:44:45,809 [WARNING] Connection pool is full, discarding connection: localhost. Connection pool size: 1
+2026-03-28 23:44:45,810 [INFO] DEBUG: {'status': 'disconnected', 'driver_active': True, 'last_error': None, 'monitor_alive': False, 'current_url': 'https://web.whatsapp.com/'}
+2026-03-28 23:44:45,811 [INFO] 127.0.0.1 - - [28/Mar/2026 23:44:45] "GET /debug HTTP/1.1" 200 -
+2026-03-28 23:44:48,362 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:48,362 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:44:50,663 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:50,664 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:44:52,980 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:52,981 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:44:55,319 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:55,319 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:44:57,649 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:57,650 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:44:59,969 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:44:59,969 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:45:02,268 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:02,268 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:45:04,570 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:04,571 [INFO] Screenshot capturé (7 KB)
+2026-03-28 23:45:11,273 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:11,273 [INFO] Screenshot capturé (59 KB)
+2026-03-28 23:45:13,671 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:13,671 [INFO] Screenshot capturé (61 KB)
+2026-03-28 23:45:16,100 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:16,100 [INFO] Screenshot capturé (60 KB)
+2026-03-28 23:45:18,525 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:18,525 [INFO] Screenshot capturé (60 KB)
+2026-03-28 23:45:20,946 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:20,946 [INFO] Screenshot capturé (61 KB)
+2026-03-28 23:45:23,341 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:23,342 [INFO] Screenshot capturé (59 KB)
+2026-03-28 23:45:25,732 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:25,733 [INFO] Screenshot capturé (60 KB)
+2026-03-28 23:45:28,119 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:28,120 [INFO] Screenshot capturé (60 KB)
+2026-03-28 23:45:30,521 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:30,522 [INFO] Screenshot capturé (60 KB)
+2026-03-28 23:45:32,900 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:32,901 [INFO] Screenshot capturé (61 KB)
+2026-03-28 23:45:35,301 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:35,301 [INFO] Screenshot capturé (59 KB)
+2026-03-28 23:45:37,667 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:37,667 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:40,013 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:40,014 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:42,357 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:42,357 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:44,698 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:44,699 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:47,041 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:47,041 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:49,365 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:49,365 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:51,698 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:51,698 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:54,051 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:54,051 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:56,395 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:56,395 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:45:58,732 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:45:58,732 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:01,112 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:01,112 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:03,481 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:03,481 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:05,825 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:05,825 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:08,189 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:08,189 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:10,571 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:10,571 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:12,876 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:12,876 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:15,230 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:15,230 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:17,562 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:17,563 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:19,929 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:19,929 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:22,270 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:22,270 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:24,607 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:24,607 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:26,973 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:26,973 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:29,290 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:29,291 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:31,672 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:31,672 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:33,995 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:33,995 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:36,330 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:36,330 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:38,660 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:38,660 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:41,008 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:41,008 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:43,369 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:43,370 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:45,711 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:45,712 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:48,041 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:48,041 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:50,436 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:50,436 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:52,781 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:52,781 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:55,136 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:55,136 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:46:57,507 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:57,507 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:46:59,863 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:46:59,864 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:02,193 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:02,194 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:04,510 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:04,511 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:06,839 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:06,839 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:09,167 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:09,167 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:11,490 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:11,491 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:13,811 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:13,812 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:16,131 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:16,131 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:18,482 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:18,483 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:20,814 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:20,815 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:23,172 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:23,172 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:25,539 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:25,540 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:27,774 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:27,774 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:30,072 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:30,072 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:32,389 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:32,389 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:34,688 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:34,688 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:37,077 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:37,077 [INFO] Screenshot capturé (96 KB)
+2026-03-28 23:47:39,415 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:39,415 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:41,716 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:41,716 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:44,037 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:44,037 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:46,371 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:46,371 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:48,673 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:48,673 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:51,072 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:51,072 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:53,382 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:53,383 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:55,677 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:55,678 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:47:58,085 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:47:58,086 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:48:00,448 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:48:00,448 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:48:02,764 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:48:02,764 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:48:05,084 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:48:05,084 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:48:07,472 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:48:07,472 [INFO] Screenshot capturé (97 KB)
+2026-03-28 23:48:09,799 [INFO] Status \u2192 waiting_qr
+2026-03-28 23:48:09,799 [INFO] Screenshot capturé (97 KB)
+2026-03-29 00:48:21,374 [WARNING] Navigateur fermé de manière inattendue.
+2026-03-29 00:48:21,374 [INFO] Status \u2192 disconnected
+2026-03-29 22:44:23,719 [INFO] 127.0.0.1 - - [29/Mar/2026 22:44:23] "GET /status HTTP/1.1" 200 -
+2026-03-29 22:44:24,591 [INFO] Étape 1 : démarrage de Chrome avec webdriver-manager…
+2026-03-29 22:44:24,592 [INFO] 127.0.0.1 - - [29/Mar/2026 22:44:24] "POST /connect HTTP/1.1" 200 -
+2026-03-29 22:44:24,595 [INFO] ====== WebDriver manager ======
+2026-03-29 22:44:27,247 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-29 22:44:28,906 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-29 22:44:34,700 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-29 22:44:37,361 [INFO] WebDriver version 146.0.7680.165 selected
+2026-03-29 22:44:37,377 [INFO] Modern chrome version https://storage.googleapis.com/chrome-for-testing-public/146.0.7680.165/win32/chromedriver-win32.zip
+2026-03-29 22:44:37,377 [INFO] About to download new driver from https://storage.googleapis.com/chrome-for-testing-public/146.0.7680.165/win32/chromedriver-win32.zip
+2026-03-29 22:44:38,912 [INFO] Driver downloading response is 200
+2026-03-29 22:44:53,062 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-29 22:44:54,378 [INFO] Driver has been saved in cache [C:\Users\altchegnon\.wdm\drivers\chromedriver\win64\146.0.7680.165]
+2026-03-29 22:44:58,491 [INFO] Chrome démarré avec succès.
+2026-03-29 22:44:58,491 [INFO] Étape 2 : chargement de https://web.whatsapp.com …
+2026-03-29 22:45:28,536 [INFO] Page WhatsApp Web chargée.
+2026-03-29 22:45:28,536 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:28,537 [INFO] Thread de surveillance démarré. En attente du scan QR.
+2026-03-29 22:45:30,757 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:30,758 [INFO] Screenshot capturé (7 KB)
+2026-03-29 22:45:33,013 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:33,014 [INFO] Screenshot capturé (7 KB)
+2026-03-29 22:45:36,589 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:36,589 [INFO] Screenshot capturé (60 KB)
+2026-03-29 22:45:39,047 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:39,047 [INFO] Screenshot capturé (60 KB)
+2026-03-29 22:45:41,319 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:41,319 [INFO] Screenshot capturé (60 KB)
+2026-03-29 22:45:43,613 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:43,613 [INFO] Screenshot capturé (60 KB)
+2026-03-29 22:45:45,892 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:45,892 [INFO] Screenshot capturé (60 KB)
+2026-03-29 22:45:48,168 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:48,168 [INFO] Screenshot capturé (60 KB)
+2026-03-29 22:45:50,420 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:50,420 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:45:52,706 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:52,706 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:45:54,963 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:54,963 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:45:57,222 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:57,223 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:45:59,488 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:45:59,488 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:46:01,732 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:01,732 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:46:03,990 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:03,991 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:46:06,233 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:06,233 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:46:08,486 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:08,486 [INFO] Screenshot capturé (97 KB)
+2026-03-29 22:46:11,595 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:11,596 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:13,807 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:13,808 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:16,071 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:16,071 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:18,303 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:18,303 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:20,519 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:20,519 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:22,716 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:22,716 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:24,913 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:24,913 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:28,041 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:28,041 [INFO] Screenshot capturé (11 KB)
+2026-03-29 22:46:30,318 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:30,318 [INFO] Screenshot capturé (115 KB)
+2026-03-29 22:46:41,283 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:41,283 [INFO] Screenshot capturé (113 KB)
+2026-03-29 22:46:43,488 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:43,488 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:46:45,973 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:45,973 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:46:49,869 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:49,869 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:46:52,232 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:52,232 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:46:54,902 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:54,902 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:46:57,410 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:57,411 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:46:59,884 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:46:59,884 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:02,236 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:02,237 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:04,723 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:04,724 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:07,325 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:07,325 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:11,284 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:11,284 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:14,472 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:14,472 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:16,684 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:16,684 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:19,428 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:19,429 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:23,315 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:23,315 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:26,207 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:26,207 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:28,470 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:28,471 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:30,751 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:30,751 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:33,025 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:33,025 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:35,259 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:35,259 [INFO] Screenshot capturé (111 KB)
+2026-03-29 22:47:37,572 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:37,572 [INFO] Screenshot capturé (109 KB)
+2026-03-29 22:47:39,872 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:39,872 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:43,701 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:43,701 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:46,105 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:46,105 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:48,350 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:48,350 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:50,573 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:50,573 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:52,831 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:52,831 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:55,065 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:55,065 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:57,390 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:57,390 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:47:59,760 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:47:59,760 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:02,033 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:02,033 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:04,292 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:04,292 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:06,606 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:06,606 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:08,854 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:08,854 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:11,352 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:11,352 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:14,836 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:14,836 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:17,082 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:17,082 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:20,379 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:20,379 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:22,654 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:22,654 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:24,874 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:24,874 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:27,099 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:27,099 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:29,315 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:29,315 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:31,568 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:31,568 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:33,937 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:33,937 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:36,158 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:36,158 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:38,354 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:38,354 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:40,719 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:40,719 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:44,043 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:44,044 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:46,533 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:46,533 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:48,897 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:48,897 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:52,069 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:52,070 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:54,423 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:54,423 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:56,767 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:56,767 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:48:59,175 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:48:59,175 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:49:02,971 [INFO] Status \u2192 disconnected
+2026-03-29 22:49:02,972 [INFO] 127.0.0.1 - - [29/Mar/2026 22:49:02] "POST /disconnect HTTP/1.1" 200 -
+2026-03-29 22:57:34,598 [INFO] 127.0.0.1 - - [29/Mar/2026 22:57:34] "GET /status HTTP/1.1" 200 -
+2026-03-29 22:57:34,615 [INFO] Étape 1 : démarrage de Chrome avec webdriver-manager…
+2026-03-29 22:57:34,616 [INFO] 127.0.0.1 - - [29/Mar/2026 22:57:34] "POST /connect HTTP/1.1" 200 -
+2026-03-29 22:57:34,619 [INFO] ====== WebDriver manager ======
+2026-03-29 22:57:36,108 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-29 22:57:37,446 [INFO] Get LATEST chromedriver version for google-chrome
+2026-03-29 22:57:38,659 [INFO] Driver [C:\Users\altchegnon\.wdm\drivers\chromedriver\win64\146.0.7680.165\chromedriver.exe] found in cache
+2026-03-29 22:57:40,097 [INFO] Chrome démarré avec succès.
+2026-03-29 22:57:40,097 [INFO] Étape 2 : chargement de https://web.whatsapp.com …
+2026-03-29 22:57:42,479 [INFO] Page WhatsApp Web chargée.
+2026-03-29 22:57:42,480 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:42,481 [INFO] Thread de surveillance démarré. En attente du scan QR.
+2026-03-29 22:57:44,876 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:44,876 [INFO] Screenshot capturé (6 KB)
+2026-03-29 22:57:47,956 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:47,957 [INFO] Screenshot capturé (7 KB)
+2026-03-29 22:57:50,229 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:50,229 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:57:52,628 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:52,628 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:57:55,085 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:55,086 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:57:57,435 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:57,435 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:57:59,785 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:57:59,785 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:02,187 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:02,188 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:04,524 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:04,524 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:06,831 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:06,831 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:09,050 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:09,050 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:11,406 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:11,407 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:13,730 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:13,730 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:16,071 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:16,071 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:18,463 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:18,463 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:20,808 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:20,808 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:23,181 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:23,181 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:25,853 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:25,853 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:28,255 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:28,255 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:30,616 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:30,616 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:33,030 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:33,031 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:35,367 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:35,368 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:37,835 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:37,835 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:40,190 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:40,191 [INFO] Screenshot capturé (110 KB)
+2026-03-29 22:58:42,532 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:42,533 [INFO] Screenshot capturé (106 KB)
+2026-03-29 22:58:45,052 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:45,052 [INFO] Screenshot capturé (106 KB)
+2026-03-29 22:58:47,367 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:47,367 [INFO] Screenshot capturé (106 KB)
+2026-03-29 22:58:49,678 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:49,679 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:58:52,098 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:52,098 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:58:54,293 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:54,293 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:58:56,652 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:56,652 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:58:59,024 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:58:59,024 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:01,391 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:01,391 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:03,784 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:03,785 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:06,168 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:06,169 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:08,523 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:08,524 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:10,830 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:10,830 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:13,091 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:13,091 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:15,510 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:15,510 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:17,834 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:17,834 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:20,159 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:20,159 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:22,505 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:22,505 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:24,867 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:24,867 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:27,237 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:27,237 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:29,595 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:29,595 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:31,960 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:31,960 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:34,353 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:34,353 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:36,722 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:36,722 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:39,185 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:39,185 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:42,080 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:42,080 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:44,446 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:44,446 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:46,812 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:46,813 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:49,208 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:49,208 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:51,597 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:51,597 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:53,963 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:53,963 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:56,348 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:56,349 [INFO] Screenshot capturé (107 KB)
+2026-03-29 22:59:58,732 [INFO] Status \u2192 waiting_qr
+2026-03-29 22:59:58,732 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:01,109 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:01,110 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:03,504 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:03,504 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:05,941 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:05,942 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:09,377 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:09,377 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:11,731 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:11,732 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:14,103 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:14,103 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:16,502 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:16,503 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:18,884 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:18,884 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:21,264 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:21,264 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:23,622 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:23,622 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:25,973 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:25,973 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:28,349 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:28,349 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:30,727 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:30,727 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:33,327 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:33,327 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:36,788 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:36,788 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:39,137 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:39,137 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:41,501 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:41,501 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:43,898 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:43,899 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:46,288 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:46,288 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:48,663 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:48,664 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:51,033 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:51,034 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:53,404 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:53,405 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:55,773 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:55,773 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:00:58,053 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:00:58,053 [INFO] Screenshot capturé (108 KB)
+2026-03-29 23:01:00,922 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:00,922 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:04,797 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:04,797 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:07,119 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:07,119 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:09,521 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:09,521 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:11,868 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:11,868 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:14,142 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:14,142 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:16,421 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:16,421 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:18,665 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:18,665 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:20,910 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:20,911 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:23,175 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:23,175 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:25,495 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:25,495 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:27,804 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:27,805 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:31,204 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:31,204 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:33,498 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:33,498 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:35,750 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:35,750 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:38,081 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:38,081 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:40,418 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:40,418 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:42,771 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:42,771 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:45,019 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:45,019 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:47,295 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:47,295 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:49,650 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:49,650 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:51,961 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:51,961 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:54,471 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:54,471 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:57,642 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:57,642 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:01:59,901 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:01:59,902 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:02,230 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:02,230 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:04,436 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:04,436 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:06,754 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:06,754 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:09,056 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:09,056 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:11,374 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:11,374 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:13,714 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:13,714 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:16,065 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:16,065 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:18,390 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:18,391 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:21,032 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:21,032 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:24,147 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:24,147 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:26,444 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:26,444 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:28,772 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:28,772 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:31,040 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:31,040 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:33,303 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:33,303 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:35,497 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:35,497 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:37,692 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:37,692 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:39,949 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:39,949 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:42,215 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:42,215 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:44,478 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:44,478 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:47,074 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:47,074 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:49,381 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:49,382 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:51,732 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:51,732 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:53,938 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:53,938 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:56,118 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:56,118 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:02:58,326 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:02:58,326 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:00,544 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:00,544 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:02,863 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:02,863 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:05,134 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:05,134 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:07,506 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:07,507 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:09,888 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:09,889 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:12,122 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:12,123 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:14,493 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:14,493 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:16,991 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:16,991 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:19,210 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:19,210 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:21,519 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:21,520 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:23,873 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:23,873 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:26,199 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:26,199 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:28,517 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:28,518 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:30,854 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:30,854 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:33,182 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:33,183 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:35,526 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:35,526 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:37,786 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:37,786 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:40,167 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:40,167 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:43,792 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:43,792 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:46,096 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:46,096 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:48,380 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:48,381 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:50,706 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:50,707 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:52,947 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:52,948 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:55,258 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:55,259 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:03:57,715 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:03:57,716 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:00,075 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:00,076 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:02,444 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:02,444 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:04,772 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:04,773 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:07,076 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:07,076 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:10,865 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:10,865 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:13,093 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:13,093 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:15,352 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:15,353 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:17,605 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:17,605 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:19,919 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:19,920 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:22,192 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:22,192 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:24,479 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:24,479 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:26,846 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:26,846 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:29,127 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:29,127 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:31,401 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:31,401 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:33,732 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:33,732 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:37,573 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:37,573 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:39,879 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:39,879 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:42,181 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:42,181 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:44,472 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:44,473 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:46,799 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:46,799 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:49,140 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:49,140 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:51,410 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:51,410 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:53,742 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:53,742 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:56,055 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:56,055 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:04:58,341 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:04:58,341 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:00,878 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:00,878 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:04,234 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:04,234 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:06,498 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:06,499 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:08,753 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:08,754 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:11,024 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:11,024 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:13,363 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:13,363 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:15,745 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:15,745 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:18,061 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:18,061 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:20,384 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:20,384 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:22,675 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:22,675 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:24,992 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:24,992 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:27,341 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:27,341 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:31,167 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:31,167 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:33,428 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:33,429 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:35,770 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:35,770 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:38,263 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:38,264 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:40,609 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:40,610 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:42,873 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:42,874 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:45,189 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:45,190 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:47,498 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:47,498 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:49,842 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:49,842 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:52,161 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:52,161 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:54,507 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:54,507 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:05:58,297 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:05:58,297 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:00,614 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:00,615 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:02,977 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:02,977 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:05,241 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:05,241 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:07,590 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:07,590 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:09,886 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:09,886 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:12,227 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:12,227 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:14,567 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:14,567 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:16,867 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:16,867 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:19,164 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:19,165 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:21,491 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:21,491 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:25,320 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:25,320 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:27,601 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:27,601 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:29,911 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:29,911 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:32,201 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:32,201 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:34,451 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:34,452 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:36,729 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:36,729 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:38,971 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:38,971 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:41,282 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:41,282 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:43,467 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:43,467 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:45,700 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:45,701 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:47,912 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:47,912 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:50,334 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:50,334 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:52,818 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:52,819 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:55,031 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:55,031 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:57,310 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:57,311 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:06:59,539 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:06:59,539 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:01,793 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:01,794 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:04,032 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:04,032 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:06,296 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:06,296 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:08,549 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:08,549 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:10,769 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:10,769 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:12,971 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:12,971 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:15,151 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:15,151 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:17,941 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:17,942 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:20,149 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:20,150 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:22,519 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:22,519 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:24,890 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:24,890 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:27,223 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:27,223 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:29,611 [INFO] Status \u2192 waiting_qr
+2026-03-29 23:07:29,611 [INFO] Screenshot capturé (107 KB)
+2026-03-29 23:07:32,296 [INFO] Status \u2192 disconnected
+2026-03-29 23:07:32,297 [INFO] 127.0.0.1 - - [29/Mar/2026 23:07:32] "POST /disconnect HTTP/1.1" 200 -

@@ -30,10 +30,13 @@ import urllib.parse
 from flask import Flask, jsonify, request, Response, abort
 
 try:
-    import undetected_chromedriver as uc
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service as ChromeService
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.webdriver.support.ui import WebDriverWait
+    from webdriver_manager.chrome import ChromeDriverManager
 except ImportError as e:
     raise RuntimeError(
         f"Dépendances manquantes : {e}\n"
@@ -130,27 +133,36 @@ def _get_chrome_major_version():
 def _init_driver():
     global driver, _qr_base64, _monitor_thread, _last_error
 
-    # --- Étape 1 : démarrer Chrome ---
-    logger.info("Étape 1 : démarrage de Chrome…")
+    # --- Étape 1 : démarrer Chrome via webdriver-manager ---
+    logger.info("Étape 1 : démarrage de Chrome avec webdriver-manager…")
     try:
         os.makedirs(PROFILE_DIR, exist_ok=True)
 
-        options = uc.ChromeOptions()
+        options = ChromeOptions()
         options.add_argument(f"--user-data-dir={PROFILE_DIR}")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1280,900")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-extensions")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
+        options.add_argument(
+            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/146.0.0.0 Safari/537.36"
+        )
 
-        chrome_version = _get_chrome_major_version()
+        # webdriver-manager télécharge automatiquement le bon ChromeDriver
+        service = ChromeService(ChromeDriverManager().install())
 
         with driver_lock:
-            if chrome_version:
-                logger.info(f"Lancement avec version_main={chrome_version}")
-                driver = uc.Chrome(options=options, version_main=chrome_version)
-            else:
-                logger.info("Lancement sans version_main (auto-détection undetected_chromedriver)")
-                driver = uc.Chrome(options=options)
+            driver = webdriver.Chrome(service=service, options=options)
+            # Masquer navigator.webdriver pour éviter la détection
+            driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                "source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+            })
 
         logger.info("Chrome démarré avec succès.")
 
@@ -159,15 +171,14 @@ def _init_driver():
         logger.error(_last_error)
         driver = None
         set_status("disconnected")
-        return  # Chrome lui-même a échoué → on arrête là
+        return
 
-    # --- Étape 2 : charger WhatsApp Web (séparée du démarrage Chrome) ---
+    # --- Étape 2 : charger WhatsApp Web ---
     logger.info("Étape 2 : chargement de https://web.whatsapp.com …")
     try:
         driver.get("https://web.whatsapp.com")
         logger.info("Page WhatsApp Web chargée.")
     except Exception as exc:
-        # Chrome est ouvert mais la navigation a échoué → on continue quand même
         _last_error = f"Navigation échouée (Chrome reste actif) : {exc}"
         logger.warning(_last_error)
 
@@ -417,11 +428,26 @@ def route_qr():
 
 @app.route("/connect", methods=["POST"])
 def route_connect():
-    global driver
+    global driver, _qr_base64, _monitor_thread
     if _status == "connected":
         return jsonify({"status": True, "message": "Déjà connecté"})
+
+    # Détecter état bloqué : driver actif mais monitor mort ou statut pas waiting_qr
     if driver is not None:
-        return jsonify({"status": True, "message": "Connexion en cours, scannez le QR code."})
+        monitor_dead = (_monitor_thread is None or not _monitor_thread.is_alive())
+        if _status != "waiting_qr" or monitor_dead:
+            logger.info("État bloqué détecté — réinitialisation du driver…")
+            try:
+                with driver_lock:
+                    driver.quit()
+            except Exception:
+                pass
+            driver      = None
+            _qr_base64  = None
+            set_status("disconnected")
+        else:
+            # Vraiment en attente de scan QR (monitor vivant)
+            return jsonify({"status": True, "message": "Connexion en cours, scannez le QR code."})
 
     threading.Thread(target=_init_driver, daemon=True).start()
     return jsonify({"status": True, "message": "Démarrage du navigateur WhatsApp Web…"})

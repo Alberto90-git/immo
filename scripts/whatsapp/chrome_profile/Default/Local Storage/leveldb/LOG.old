@@ -1,3 +1,6 @@
-2026/03/02-01:23:55.375 a7d4 Reusing MANIFEST C:\Users\altchegnon\Documents\immo\scripts\whatsapp\chrome_profile\Default\Local Storage\leveldb/MANIFEST-000001
-2026/03/02-01:23:55.388 a7d4 Recovering log #3
-2026/03/02-01:23:55.394 a7d4 Reusing old log C:\Users\altchegnon\Documents\immo\scripts\whatsapp\chrome_profile\Default\Local Storage\leveldb/000003.log 
+2026/03/29-22:44:58.109 63b4 Reusing MANIFEST C:\Users\altchegnon\Documents\immo\scripts\whatsapp\chrome_profile\Default\Local Storage\leveldb/MANIFEST-000001
+2026/03/29-22:44:58.115 63b4 Recovering log #3
+2026/03/29-22:44:58.121 63b4 Reusing old log C:\Users\altchegnon\Documents\immo\scripts\whatsapp\chrome_profile\Default\Local Storage\leveldb/000003.log 
+2026/03/29-22:48:00.234 63b4 Level-0 table #5: started
+2026/03/29-22:48:00.246 63b4 Level-0 table #5: 27205 bytes OK
+2026/03/29-22:48:00.250 63b4 Delete type=0 #3
