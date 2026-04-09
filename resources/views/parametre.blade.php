@@ -2,7 +2,7 @@
 
 @section('content')
 @section('title')
-    <title>Gestion Paramétrage</title>
+    <title>{{ __('pages.param_title') }}</title>
 @endsection
 
 <style>
@@ -131,7 +131,7 @@
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Paramétrage</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('pages.home') }} /</span> {{ __('pages.param_breadcrumb') }}</h4>
     
     @include('notification.display_message')
 
@@ -148,21 +148,21 @@
                             <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-home" aria-controls="navs-pills-justified-home"
                                 aria-selected="true">
-                                <i class="tf-icons bx bx-home"></i> Gestion signature / logo
+                                <i class="tf-icons bx bx-home"></i> {{ __('pages.param_tab_logo') }}
                             </button>
                         </li>
                         <li class="nav-item">
                             <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-profile" aria-controls="navs-pills-justified-profile"
                                 aria-selected="false">
-                                <i class="tf-icons bx bx-user"></i> Gestion des annexes
+                                <i class="tf-icons bx bx-user"></i> {{ __('pages.param_tab_annexes') }}
                             </button>
                         </li>
                         <li class="nav-item">
                             <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-pourcentage" aria-controls="navs-pills-justified-pourcentage"
                                 aria-selected="false">
-                                <i class="tf-icons bx bx-percent"></i> Pourcentage de gestion
+                                <i class="tf-icons bx bx-percent"></i> {{ __('pages.param_tab_pct') }}
                             </button>
                         </li>
                     </ul>
@@ -175,7 +175,7 @@
                                  text-transform:uppercase;letter-spacing:.1em;
                                  background:#fff;padding:3px 14px;
                                  border:1px solid #dee2e6;border-radius:20px;">
-                        <i class="bx bx-cog" style="vertical-align:-1px;margin-right:4px;"></i>Configuration avancée
+                        <i class="bx bx-cog" style="vertical-align:-1px;margin-right:4px;"></i>{{ __('pages.param_tab_sep') }}
                     </span>
                     <hr class="flex-grow-1 my-0" style="border-top:1.5px solid #dee2e6;">
                 </div>
@@ -187,14 +187,14 @@
                             <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-contrat" aria-controls="navs-pills-justified-contrat"
                                 aria-selected="false" id="tab-btn-contrat">
-                                <i class="tf-icons bx bx-file"></i> Modèle de contrat
+                                <i class="tf-icons bx bx-file"></i> {{ __('pages.param_tab_contrat') }}
                             </button>
                         </li>
                         <li class="nav-item">
                             <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-communication" aria-controls="navs-pills-justified-communication"
                                 aria-selected="false" id="tab-btn-communication">
-                                <i class="tf-icons bx bx-message-rounded-dots"></i> Communication
+                                <i class="tf-icons bx bx-message-rounded-dots"></i> {{ __('pages.param_tab_comm') }}
                             </button>
                         </li>
                     </ul>
@@ -209,8 +209,8 @@
                         <table class="table table-bordered border-primary" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th scope="col">Image du cash électronique</th>
-                                    <th scope="col">Logo de l'agence</th>
+                                    <th scope="col">{{ __('pages.param_th_cash') }}</th>
+                                    <th scope="col">{{ __('pages.param_th_logo') }}</th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
@@ -224,7 +224,7 @@
                                                     <input class="form-control" type="file" name="cash_electronique" 
                                                         id="cash_electronique" accept="image/*">
                                                     <div class="form-text">
-                                                        Formats acceptés: JPEG, PNG, JPG. Taille max: 5MB
+                                                        {{ __('pages.param_img_formats') }}
                                                     </div>
                                                     <span class="invalid-feedback cash_electronique_err" role="alert"></span>
                                                 </div>
@@ -236,10 +236,10 @@
                                             @if($currentCachet)
                                                 <div class="mt-3 text-center">
                                                     <p class="mb-1 text-muted small fw-semibold">
-                                                        <i class="bx bx-image-alt me-1"></i>Cachet actuel
+                                                        <i class="bx bx-image-alt me-1"></i>{{ __('pages.param_cachet_current') }}
                                                     </p>
                                                     <img src="{{ $currentCachet->cash_electronique_url }}"
-                                                        alt="Cachet électronique"
+                                                        alt="{{ __('pages.param_cachet_current') }}"
                                                         id="preview-cachet"
                                                         class="img-thumbnail rounded"
                                                         style="max-width: 180px; max-height: 180px; object-fit: contain; background: #fff;">
@@ -247,7 +247,7 @@
                                             @else
                                                 <div class="mt-3 text-center text-muted small">
                                                     <i class="bx bx-image bx-sm"></i>
-                                                    <p class="mb-0">Aucun cachet défini</p>
+                                                    <p class="mb-0">{{ __('pages.param_cachet_none') }}</p>
                                                 </div>
                                             @endif
                                         </td>
@@ -258,7 +258,7 @@
                                                     <input class="form-control" type="file" name="logo" 
                                                         id="logo" accept="image/*">
                                                     <div class="form-text">
-                                                        Formats acceptés: JPEG, PNG, JPG. Taille max: 5MB
+                                                        {{ __('pages.param_img_formats') }}
                                                     </div>
                                                     <span class="invalid-feedback logo_err" role="alert"></span>
                                                 </div>
@@ -270,10 +270,10 @@
                                             @if($currentLogo)
                                                 <div class="mt-3 text-center">
                                                     <p class="mb-1 text-muted small fw-semibold">
-                                                        <i class="bx bx-image-alt me-1"></i>Logo actuel
+                                                        <i class="bx bx-image-alt me-1"></i>{{ __('pages.param_logo_current') }}
                                                     </p>
                                                     <img src="{{ $currentLogo->logo_url }}"
-                                                        alt="Logo"
+                                                        alt="{{ __('pages.param_logo_current') }}"
                                                         id="preview-logo"
                                                         class="img-thumbnail rounded"
                                                         style="max-width: 180px; max-height: 180px; object-fit: contain; background: #fff;">
@@ -281,7 +281,7 @@
                                             @else
                                                 <div class="mt-3 text-center text-muted small">
                                                     <i class="bx bx-image bx-sm"></i>
-                                                    <p class="mb-0">Aucun logo défini</p>
+                                                    <p class="mb-0">{{ __('pages.param_logo_none') }}</p>
                                                 </div>
                                             @endif
                                         </td>
@@ -289,7 +289,7 @@
                                             @can('modifier-parametre')
                                                 <button class="btn btn-primary" id="valider">
                                                     <span class="fa fa-save" id="a"></span>
-                                                    <span id="s">Enregistrer</span>
+                                                    <span id="s">{{ __('pages.param_btn_save') }}</span>
                                                 </button>
                                             @endcan
                                         </td>
@@ -319,7 +319,7 @@
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalCenterTitle">Ajouter</h5>
+                                        <h5 class="modal-title" id="modalCenterTitle">{{ __('pages.param_annexe_add_title') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close">
                                         </button>
@@ -331,7 +331,7 @@
 
 
                                             <div class="col-md-6">
-                                                <label for="inputNanme4" class="form-label">Designation<span
+                                                <label for="inputNanme4" class="form-label">{{ __('pages.param_lbl_designation') }}<span
                                                         style="color: red;">*</span></label>
                                                 <input type="text" name="designation" class="form-control"
                                                     id="designation" required="">
@@ -340,7 +340,7 @@
                                             </div>
 
                                             <div class="col-md-6">
-                                                <label for="inputEmail4" class="form-label">Adresse<span
+                                                <label for="inputEmail4" class="form-label">{{ __('pages.param_lbl_address') }}<span
                                                         style="color: red;">*</span></label>
                                                 <input type="text" name="adresse" class="form-control" id="adresse"
                                                     required="">
@@ -349,7 +349,7 @@
                                             </div>
 
                                             <div class="col-md-6">
-                                                <label for="inputPassword4" class="form-label">Téléphone<span
+                                                <label for="inputPassword4" class="form-label">{{ __('pages.param_lbl_phone') }}<span
                                                         style="color: red;">*</span></label>
                                                 <input type="text" name="telephone" class="form-control"
                                                     id="telephone" required="" placeholder="+2290161000000">
@@ -359,7 +359,7 @@
 
 
                                             <div class="col-md-6">
-                                                <label for="inputAddress" class="form-label">E-mail<span
+                                                <label for="inputAddress" class="form-label">{{ __('pages.param_th_email') }}<span
                                                         style="color: red;">*</span></label>
                                                 <input type="email" name="email" class="form-control" id="email"
                                                     required="">
@@ -367,14 +367,14 @@
                                                 </span>
                                             </div>
 
-                                    
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-outline-secondary" onclick="(this);"
-                                                    id="close" data-bs-dismiss="modal">Fermer
+                                                    id="close" data-bs-dismiss="modal">{{ __('pages.param_annexe_close') }}
                                                 </button>
                                                 <button class="btn btn-primary" id="valider">
                                                     <span class="fa fa-save" id="a"></span>
-                                                    <span id="s">Enregistrer</span>
+                                                    <span id="s">{{ __('pages.param_btn_save') }}</span>
                                                 </button>
                                             </div>
                                         </form>
@@ -390,16 +390,16 @@
 
                                 <div class="recent-sales overflow-auto">
                                     <div class="card-body">
-                                        <h5 class="card-title text-center">Liste des annexes</h5>
+                                        <h5 class="card-title text-center">{{ __('pages.param_annexe_list_title') }}</h5>
 
                                         <table class="table datatable border-primary">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">Designation</th>
-                                                    <th scope="col">Adresse</th>
-                                                    <th scope="col">Téléphone</th>
-                                                    <th scope="col">E-mail</th>
-                                                    <th scope="col">Actions</th>
+                                                    <th scope="col">{{ __('pages.param_th_designation') }}</th>
+                                                    <th scope="col">{{ __('pages.param_th_address') }}</th>
+                                                    <th scope="col">{{ __('pages.param_th_phone') }}</th>
+                                                    <th scope="col">{{ __('pages.param_th_email') }}</th>
+                                                    <th scope="col">{{ __('pages.param_th_actions') }}</th>
                                                     <th scope="col"></th>
                                                 </tr>
                                             </thead>
@@ -446,7 +446,7 @@
                                             <div class="modal-dialog modal-sm" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="modalCenterTitle">Suppression</h5>
+                                                        <h5 class="modal-title" id="modalCenterTitle">{{ __('pages.param_delete_title') }}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close">
                                                         </button>
@@ -454,14 +454,14 @@
                                                     <div class="modal-body">
                                                         <form class="row g-3" method="post"
                                                             action="{{ route('destroy_annexe') }}">
-                                                            Voulez-vous vraiment supprimer cette ligne ?
+                                                            {{ __('pages.param_delete_confirm') }}
                                                             @csrf
                                                             <input type="hidden" name="id" class="form-control"
                                                                 id="id" value="{{ $items->idannexes }} ">
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary"
-                                                                    data-bs-dismiss="modal">Non</button>
-                                                                <button type="submit" class="btn btn-danger">Oui</button>
+                                                                    data-bs-dismiss="modal">{{ __('pages.param_delete_no') }}</button>
+                                                                <button type="submit" class="btn btn-danger">{{ __('pages.param_delete_yes') }}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -475,7 +475,7 @@
                                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-primary">
-                                                        <h5 class="modal-title text-white" id="modalCenterTitle">Modification de l'agence</h5>
+                                                        <h5 class="modal-title text-white" id="modalCenterTitle">{{ __('pages.param_annexe_edit_title') }}</h5>
                                                         <button type="button" class="btn-close btn-close-white"
                                                             data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
@@ -487,7 +487,7 @@
                                                             <input type="hidden" name="id" class="form-control" id="id" value="{{ $items->idannexes }}">
 
                                                             <div class="col-md-6">
-                                                                <label for="inputNanme4" class="form-label">Designation<span
+                                                                <label for="inputNanme4" class="form-label">{{ __('pages.param_lbl_designation') }}<span
                                                                         style="color: red;">*</span></label>
                                                                 <input type="text" name="designation" class="form-control"
                                                                     id="designation" value="{{ $items->designation }}" required="">
@@ -496,7 +496,7 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label for="inputEmail4" class="form-label">Adresse<span
+                                                                <label for="inputEmail4" class="form-label">{{ __('pages.param_lbl_address') }}<span
                                                                         style="color: red;">*</span></label>
                                                                 <input type="text" name="adresse" class="form-control" id="adresse"
                                                                     required=""  value="{{ $items->siege_social }}">
@@ -505,7 +505,7 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label for="inputPassword4" class="form-label">Telephone<span
+                                                                <label for="inputPassword4" class="form-label">{{ __('pages.param_lbl_phone') }}<span
                                                                         style="color: red;">*</span></label>
                                                                         <input type="text" name="telephone" class="form-control"
                                                                         id="telephone{{ $loop->iteration }}"
@@ -516,7 +516,7 @@
 
 
                                                             <div class="col-md-6">
-                                                                <label for="inputAddress" class="form-label">E-mail<span
+                                                                <label for="inputAddress" class="form-label">{{ __('pages.param_th_email') }}<span
                                                                         style="color: red;">*</span></label>
                                                                 <input type="email" name="email" class="form-control" id="email"
                                                                     required=""  value="{{ $items->email }}">
@@ -525,12 +525,12 @@
                                                             </div>
 
                                                             <hr class="my-3">
-                                                            <h6 class="text-primary">Logo et informations de paiement</h6>
+                                                            <h6 class="text-primary">{{ __('pages.param_logo_info_section') }}</h6>
 
                                                             <div class="col-md-6">
-                                                                <label class="form-label">Logo de l'agence</label>
+                                                                <label class="form-label">{{ __('pages.param_lbl_agency_logo') }}</label>
                                                                 <input class="form-control" type="file" name="logo" accept="image/*">
-                                                                <small class="text-muted">Formats: JPEG, PNG. Max: 2MB</small>
+                                                                <small class="text-muted">{{ __('pages.param_logo_formats_sm') }}</small>
                                                                 @if($items->logo)
                                                                     <div class="mt-2">
                                                                         <img src="{{ asset('storage/' . $items->logo) }}"
@@ -541,16 +541,16 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label class="form-label">Cash electronique (informations)</label>
+                                                                <label class="form-label">{{ __('pages.param_lbl_cash_info') }}</label>
                                                                 <textarea class="form-control" name="cash_electronique" rows="3"
                                                                     placeholder="Ex: MTN MoMo: 97000000&#10;Moov Money: 96000000">{{ $items->cash_electronique }}</textarea>
-                                                                <small class="text-muted">Ces informations apparaitront sur les factures</small>
+                                                                <small class="text-muted">{{ __('pages.param_cash_hint') }}</small>
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label class="form-label">Signature du responsable</label>
+                                                                <label class="form-label">{{ __('pages.param_lbl_signature') }}</label>
                                                                 <input class="form-control" type="file" name="signature" accept="image/*">
-                                                                <small class="text-muted">Formats: JPEG, PNG. Max: 2MB. Cette signature apparaitra sur les factures</small>
+                                                                <small class="text-muted">{{ __('pages.param_sig_hint') }}</small>
                                                                 @if($items->signature)
                                                                     <div class="mt-2">
                                                                         <img src="{{ asset('storage/' . $items->signature) }}"
@@ -562,8 +562,8 @@
 
 
                                                             <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                                                <button class="btn btn-primary"><i class="bx bx-save me-1"></i>Enregistrer</button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.param_annexe_close') }}</button>
+                                                                <button class="btn btn-primary"><i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save') }}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -596,16 +596,16 @@
                         <!-- SECTION 1 : Pourcentage général -->
                         <div class="card mb-4">
                             <div class="card-header" style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white;">
-                                <h5 class="mb-0 text-white"><i class="bx bx-slider-alt me-2"></i>Pourcentage général</h5>
+                                <h5 class="mb-0 text-white"><i class="bx bx-slider-alt me-2"></i>{{ __('pages.param_pct_gen_title') }}</h5>
                             </div>
                             <div class="card-body">
-                                <p class="text-muted mb-4">Ce pourcentage s'applique par défaut à tous les propriétaires qui ne font partie d'aucun groupe actif.</p>
+                                <p class="text-muted mb-4">{{ __('pages.param_pct_gen_desc') }}</p>
 
                                 <form method="POST" action="javascript:save_pourcentage_general();" id="formPourcentageGeneral">
                                     @csrf
                                     <div class="row align-items-end">
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label fw-bold">Pourcentage (%)<span style="color:red;">*</span></label>
+                                            <label class="form-label fw-bold">{{ __('pages.param_pct_lbl') }}<span style="color:red;">*</span></label>
                                             <div class="input-group">
                                                 <input type="number" name="pourcentage" id="pourcentage_general_input"
                                                     class="form-control" step="0.01" min="0" max="100"
@@ -615,7 +615,7 @@
                                             <span class="invalid-feedback pourcentage_err" role="alert"></span>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label fw-bold">Statut</label>
+                                            <label class="form-label fw-bold">{{ __('pages.param_pct_status') }}</label>
                                             <div class="form-check form-switch mt-2">
                                                 <input class="form-check-input" type="checkbox" role="switch"
                                                     id="toggle_general"
@@ -623,7 +623,7 @@
                                                     onchange="toggle_pourcentage({{ isset($pourcentageGeneral) ? $pourcentageGeneral->id : 0 }})">
                                                 <label class="form-check-label" for="toggle_general" id="label_toggle_general">
                                                     <span class="badge {{ (isset($pourcentageGeneral) && $pourcentageGeneral->is_active) ? 'bg-success' : 'bg-secondary' }}">
-                                                        {{ (isset($pourcentageGeneral) && $pourcentageGeneral->is_active) ? 'Actif' : 'Inactif' }}
+                                                        {{ (isset($pourcentageGeneral) && $pourcentageGeneral->is_active) ? __('pages.param_pct_active') : __('pages.param_pct_inactive') }}
                                                     </span>
                                                 </label>
                                             </div>
@@ -631,7 +631,7 @@
                                         <div class="col-md-4 mb-3">
                                             @can('modifier-parametre')
                                                 <button class="btn btn-primary" id="btnSavePourcentageGeneral" type="submit">
-                                                    <i class="bx bx-save me-1"></i> Enregistrer
+                                                    <i class="bx bx-save me-1"></i> {{ __('pages.param_btn_save') }}
                                                 </button>
                                             @endcan
                                         </div>
@@ -643,25 +643,25 @@
                         <!-- SECTION 2 : Groupes de pourcentage -->
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white;">
-                                <h5 class="mb-0 text-white"><i class="bx bx-group me-2"></i>Groupes de pourcentage</h5>
+                                <h5 class="mb-0 text-white"><i class="bx bx-group me-2"></i>{{ __('pages.param_grp_title') }}</h5>
                                 @can('modifier-parametre')
                                     <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#ajouterGroupe">
-                                        <i class="bx bx-plus me-1"></i> Nouveau groupe
+                                        <i class="bx bx-plus me-1"></i> {{ __('pages.param_grp_new') }}
                                     </button>
                                 @endcan
                             </div>
                             <div class="card-body">
-                                <p class="text-muted mb-4">Créez des groupes avec un pourcentage spécifique et associez-y des propriétaires. Un propriétaire ne peut appartenir qu'à un seul groupe.</p>
+                                <p class="text-muted mb-4">{{ __('pages.param_grp_desc') }}</p>
 
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-hover" id="tableGroupes">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>Nom du groupe</th>
-                                                <th>Pourcentage</th>
-                                                <th>Propriétaires</th>
-                                                <th>Statut</th>
-                                                <th>Actions</th>
+                                                <th>{{ __('pages.param_th_grp_name') }}</th>
+                                                <th>{{ __('pages.param_th_pct') }}</th>
+                                                <th>{{ __('pages.param_th_owners') }}</th>
+                                                <th>{{ __('pages.param_pct_status') }}</th>
+                                                <th>{{ __('pages.param_th_actions') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -681,7 +681,7 @@
                                                                     {{ $groupe->is_active ? 'checked' : '' }}
                                                                     onchange="toggle_pourcentage({{ $groupe->id }})">
                                                                 <span class="badge {{ $groupe->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                                                    {{ $groupe->is_active ? 'Actif' : 'Inactif' }}
+                                                                    {{ $groupe->is_active ? __('pages.param_pct_active') : __('pages.param_pct_inactive') }}
                                                                 </span>
                                                             </div>
                                                         </td>
@@ -703,7 +703,7 @@
                                             @else
                                                 <tr>
                                                     <td colspan="5" class="text-center text-muted py-4">
-                                                        <i class="bx bx-info-circle me-1"></i> Aucun groupe de pourcentage configuré
+                                                        <i class="bx bx-info-circle me-1"></i> {{ __('pages.param_grp_none') }}
                                                     </td>
                                                 </tr>
                                             @endif
@@ -718,7 +718,7 @@
                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title"><i class="bx bx-plus-circle me-2"></i>Nouveau groupe de pourcentage</h5>
+                                        <h5 class="modal-title"><i class="bx bx-plus-circle me-2"></i>{{ __('pages.param_grp_add_title') }}</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -726,12 +726,12 @@
                                             @csrf
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">Nom du groupe<span style="color:red;">*</span></label>
+                                                    <label class="form-label fw-bold">{{ __('pages.param_lbl_grp_name') }}<span style="color:red;">*</span></label>
                                                     <input type="text" name="nom" class="form-control" id="groupe_nom" placeholder="Ex: Premium, Standard..." required>
                                                     <span class="invalid-feedback nom_err" role="alert"></span>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">Pourcentage (%)<span style="color:red;">*</span></label>
+                                                    <label class="form-label fw-bold">{{ __('pages.param_pct_lbl') }}<span style="color:red;">*</span></label>
                                                     <div class="input-group">
                                                         <input type="number" name="pourcentage" class="form-control" id="groupe_pourcentage"
                                                             step="0.01" min="0" max="100" placeholder="Ex: 15" required>
@@ -741,14 +741,14 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label fw-bold">Propriétaires associés<span style="color:red;">*</span></label>
+                                                <label class="form-label fw-bold">{{ __('pages.param_lbl_owners') }}<span style="color:red;">*</span></label>
                                                 <div class="ms-wrapper" id="ms-add-wrapper">
                                                     <div class="ms-tags" id="ms-add-tags">
-                                                        <span class="ms-placeholder">Cliquez pour sélectionner...</span>
+                                                        <span class="ms-placeholder">{{ __('pages.param_ms_placeholder') }}</span>
                                                     </div>
                                                     <div class="ms-dropdown" id="ms-add-dropdown">
                                                         <div class="ms-search">
-                                                            <input type="text" placeholder="Rechercher un propriétaire..." id="ms-add-search">
+                                                            <input type="text" placeholder="{{ __('pages.param_ms_search') }}" id="ms-add-search">
                                                         </div>
                                                         <div class="ms-options" id="ms-add-options">
                                                             @if(isset($proprietaires_list))
@@ -765,9 +765,9 @@
                                                 <span class="invalid-feedback proprietaires_err" role="alert"></span>
                                             </div>
                                             <div class="text-end">
-                                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">{{ __('pages.param_btn_cancel') }}</button>
                                                 <button type="submit" class="btn btn-primary" id="btnSaveGroupe">
-                                                    <i class="bx bx-save me-1"></i> Enregistrer
+                                                    <i class="bx bx-save me-1"></i> {{ __('pages.param_btn_save') }}
                                                 </button>
                                             </div>
                                         </form>
@@ -783,7 +783,7 @@
                                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header bg-primary text-white">
-                                                <h5 class="modal-title"><i class="bx bx-edit me-2"></i>Modifier le groupe "{{ $groupe->nom }}"</h5>
+                                                <h5 class="modal-title"><i class="bx bx-edit me-2"></i>{{ __('pages.param_grp_edit_prefix') }} "{{ $groupe->nom }}"</h5>
                                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
@@ -792,11 +792,11 @@
                                                     <input type="hidden" name="id" value="{{ $groupe->id }}">
                                                     <div class="row">
                                                         <div class="col-md-6 mb-3">
-                                                            <label class="form-label fw-bold">Nom du groupe<span style="color:red;">*</span></label>
+                                                            <label class="form-label fw-bold">{{ __('pages.param_lbl_grp_name') }}<span style="color:red;">*</span></label>
                                                             <input type="text" name="nom" class="form-control" value="{{ $groupe->nom }}" required>
                                                         </div>
                                                         <div class="col-md-6 mb-3">
-                                                            <label class="form-label fw-bold">Pourcentage (%)<span style="color:red;">*</span></label>
+                                                            <label class="form-label fw-bold">{{ __('pages.param_pct_lbl') }}<span style="color:red;">*</span></label>
                                                             <div class="input-group">
                                                                 <input type="number" name="pourcentage" class="form-control"
                                                                     value="{{ $groupe->pourcentage }}" step="0.01" min="0" max="100" required>
@@ -805,14 +805,14 @@
                                                         </div>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label fw-bold">Propriétaires associés<span style="color:red;">*</span></label>
+                                                        <label class="form-label fw-bold">{{ __('pages.param_lbl_owners') }}<span style="color:red;">*</span></label>
                                                         <div class="ms-wrapper" id="ms-edit-wrapper-{{ $groupe->id }}">
                                                             <div class="ms-tags" id="ms-edit-tags-{{ $groupe->id }}">
-                                                                <span class="ms-placeholder">Cliquez pour sélectionner...</span>
+                                                                <span class="ms-placeholder">{{ __('pages.param_ms_placeholder') }}</span>
                                                             </div>
                                                             <div class="ms-dropdown" id="ms-edit-dropdown-{{ $groupe->id }}">
                                                                 <div class="ms-search">
-                                                                    <input type="text" placeholder="Rechercher un propriétaire..." id="ms-edit-search-{{ $groupe->id }}">
+                                                                    <input type="text" placeholder="{{ __('pages.param_ms_search') }}" id="ms-edit-search-{{ $groupe->id }}">
                                                                 </div>
                                                                 <div class="ms-options" id="ms-edit-options-{{ $groupe->id }}">
                                                                     @if(isset($proprietaires_list))
@@ -829,9 +829,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="text-end">
-                                                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Annuler</button>
+                                                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">{{ __('pages.param_btn_cancel') }}</button>
                                                         <button type="submit" class="btn btn-primary" id="btnUpdateGroupe{{ $groupe->id }}">
-                                                            <i class="bx bx-save me-1"></i> Mettre à jour
+                                                            <i class="bx bx-save me-1"></i> {{ __('pages.param_btn_update') }}
                                                         </button>
                                                     </div>
                                                 </form>
@@ -849,8 +849,8 @@
                     <div class="tab-pane fade" id="navs-pills-justified-contrat" role="tabpanel">
                         <div class="row p-3">
                             <div class="col-12 mb-3">
-                                <h6 class="text-primary fw-bold"><i class="bx bx-file me-1"></i>Personnalisation du modèle de contrat</h6>
-                                <p class="text-muted small">Personnalisez le titre, le sous-titre et les articles du contrat de bail généré pour vos locataires. Utilisez les variables ci-dessous pour insérer des données dynamiques.</p>
+                                <h6 class="text-primary fw-bold"><i class="bx bx-file me-1"></i>{{ __('pages.param_contrat_heading') }}</h6>
+                                <p class="text-muted small">{{ __('pages.param_contrat_desc') }}</p>
                             </div>
 
                             {{-- Variables disponibles --}}
@@ -859,7 +859,7 @@
                                     <div class="accordion-item border">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVariables">
-                                                <i class="bx bx-code-alt me-2 text-primary"></i> <strong>Variables disponibles</strong> <span class="ms-2 text-muted small">(cliquer pour afficher)</span>
+                                                <i class="bx bx-code-alt me-2 text-primary"></i> <strong>{{ __('pages.param_vars_accordion') }}</strong> <span class="ms-2 text-muted small">{{ __('pages.param_vars_click') }}</span>
                                             </button>
                                         </h2>
                                         <div id="collapseVariables" class="accordion-collapse collapse">
@@ -867,12 +867,12 @@
                                                 <div class="row g-2">
                                                     @php
                                                     $vars = [
-                                                        ['{nom_agence}','Nom de l\'agence'],['{adresse_agence}','Adresse de l\'agence'],['{telephone_agence}','Téléphone de l\'agence'],
-                                                        ['{nom_locataire}','Nom complet du locataire'],['{telephone_locataire}','Téléphone du locataire'],['{profession_locataire}','Profession du locataire'],['{adresse_locataire}','Domicile du locataire'],
-                                                        ['{nom_maison}','Nom de la maison'],['{quartier_maison}','Quartier / localisation'],['{type_chambre}','Type de chambre'],['{numero_chambre}','Numéro de chambre'],
-                                                        ['{montant_loyer}','Loyer mensuel (ex: 50 000 F CFA)'],['{nombre_caution}','Nombre de mois de caution'],['{montant_caution}','Montant total de la caution'],['{caution_courant}','Caution électricité'],['{caution_eau}','Caution eau'],
-                                                        ['{nombre_avance}','Nombre de mois d\'avance'],['{montant_avance}','Montant de l\'avance'],['{mode_paiement}','Mode de paiement'],
-                                                        ['{date_entree}','Date d\'entrée du locataire'],['{date_contrat}','Date de génération du contrat'],
+                                                        ['{nom_agence}',__('pages.param_var_agency_name')],['{adresse_agence}',__('pages.param_var_agency_address')],['{telephone_agence}',__('pages.param_var_agency_phone')],
+                                                        ['{nom_locataire}',__('pages.param_var_tenant_name')],['{telephone_locataire}',__('pages.param_var_tenant_phone')],['{profession_locataire}',__('pages.param_var_tenant_job')],['{adresse_locataire}',__('pages.param_var_tenant_address')],
+                                                        ['{nom_maison}',__('pages.param_var_house_name')],['{quartier_maison}',__('pages.param_var_house_district')],['{type_chambre}',__('pages.param_var_room_type')],['{numero_chambre}',__('pages.param_var_room_number')],
+                                                        ['{montant_loyer}',__('pages.param_var_rent')],['{nombre_caution}',__('pages.param_var_caution_months')],['{montant_caution}',__('pages.param_var_caution_amount')],['{caution_courant}',__('pages.param_var_caution_elec')],['{caution_eau}',__('pages.param_var_caution_water')],
+                                                        ['{nombre_avance}',__('pages.param_var_advance_months')],['{montant_avance}',__('pages.param_var_advance_amount')],['{mode_paiement}',__('pages.param_var_payment_mode')],
+                                                        ['{date_entree}',__('pages.param_var_entry_date')],['{date_contrat}',__('pages.param_var_contract_date')],
                                                     ];
                                                     @endphp
                                                     @foreach($vars as $v)
@@ -884,7 +884,7 @@
                                                     </div>
                                                     @endforeach
                                                 </div>
-                                                <p class="small text-muted mt-2 mb-0"><i class="bx bx-mouse-alt me-1"></i>Cliquez sur une variable pour la copier.</p>
+                                                <p class="small text-muted mt-2 mb-0"><i class="bx bx-mouse-alt me-1"></i>{{ __('pages.param_vars_copy_hint') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -900,16 +900,16 @@
                                         <div class="card-body">
                                             <div class="row g-3">
                                                 <div class="col-md-6">
-                                                    <label class="form-label fw-semibold">Titre du contrat <span class="text-danger">*</span></label>
+                                                    <label class="form-label fw-semibold">{{ __('pages.param_contrat_title_lbl') }} <span class="text-danger">*</span></label>
                                                     <input type="text" name="titre_contrat" class="form-control" required
                                                         value="{{ $contratConfig->titre_contrat ?? 'Contrat de Bail d\'Habitation' }}"
-                                                        placeholder="Ex: Contrat de Bail d'Habitation">
+                                                        placeholder="{{ __('pages.param_contrat_title_ph') }}">
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label class="form-label fw-semibold">Sous-titre / Référence légale</label>
+                                                    <label class="form-label fw-semibold">{{ __('pages.param_contrat_subtitle_lbl') }}</label>
                                                     <input type="text" name="sous_titre" class="form-control"
                                                         value="{{ $contratConfig->sous_titre ?? '' }}"
-                                                        placeholder="Ex: Conformément à la Loi N°2022-30...">
+                                                        placeholder="{{ __('pages.param_contrat_sub_ph') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -918,9 +918,9 @@
                                     {{-- Liste des articles --}}
                                     <div class="card border-0 shadow-sm mb-3">
                                         <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
-                                            <span class="fw-semibold"><i class="bx bx-list-ul me-1 text-primary"></i>Articles du contrat</span>
+                                            <span class="fw-semibold"><i class="bx bx-list-ul me-1 text-primary"></i>{{ __('pages.param_articles_title') }}</span>
                                             <button type="button" class="btn btn-sm btn-primary" onclick="contratOpenModal()">
-                                                <i class="bx bx-plus me-1"></i>Ajouter un article
+                                                <i class="bx bx-plus me-1"></i>{{ __('pages.param_article_add_btn') }}
                                             </button>
                                         </div>
                                         <div class="card-body p-0">
@@ -928,7 +928,7 @@
                                                 {{-- Rempli par JS --}}
                                             </div>
                                             <p id="articles-empty" class="text-center text-muted py-4 mb-0 d-none">
-                                                <i class="bx bx-info-circle me-1"></i>Aucun article. Cliquez sur "Ajouter un article".
+                                                <i class="bx bx-info-circle me-1"></i>{{ __('pages.param_article_empty') }}
                                             </p>
                                         </div>
                                     </div>
@@ -938,7 +938,7 @@
 
                                     <div class="d-flex gap-2 flex-wrap">
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="bx bx-save me-1"></i>Enregistrer le modèle
+                                            <i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save_template') }}
                                         </button>
                                     </div>
                                 </form>
@@ -948,7 +948,7 @@
                                 <form method="POST" action="{{ route('reset_contrat_config') }}" id="formResetContrat" class="d-inline mt-2">
                                     @csrf
                                     <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btnResetContrat">
-                                        <i class="bx bx-reset me-1"></i>Remettre par défaut
+                                        <i class="bx bx-reset me-1"></i>{{ __('pages.param_btn_reset') }}
                                     </button>
                                 </form>
                                 @endif
@@ -963,30 +963,29 @@
                             <div class="col-md-8">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-transparent border-bottom">
-                                        <h6 class="mb-0"><i class="bx bx-message-rounded-dots me-2 text-primary"></i>Configuration de la communication</h6>
-                                        <small class="text-muted">Paramétrez les méthodes d'envoi de documents aux locataires et propriétaires.</small>
+                                        <h6 class="mb-0"><i class="bx bx-message-rounded-dots me-2 text-primary"></i>{{ __('pages.param_comm_title') }}</h6>
+                                        <small class="text-muted">{{ __('pages.param_comm_subtitle') }}</small>
                                     </div>
                                     <div class="card-body">
                                         <form id="formCommConfig">
                                             @csrf
-                                            <h6 class="mb-3 text-primary"><i class="bx bx-envelope me-1"></i>Email</h6>
+                                            <h6 class="mb-3 text-primary"><i class="bx bx-envelope me-1"></i>{{ __('pages.param_comm_email_sect') }}</h6>
                                             <div class="mb-4">
-                                                <label class="form-label fw-semibold" for="emailEnvoi">Adresse email d'envoi</label>
+                                                <label class="form-label fw-semibold" for="emailEnvoi">{{ __('pages.param_comm_email_lbl') }}</label>
                                                 <input type="email" class="form-control" id="emailEnvoi" name="email_envoi"
                                                        value="{{ $param->first()?->email_envoi ?? '' }}"
-                                                       placeholder="ex: agence@mondomaine.com">
-                                                <small class="text-muted">Les documents envoyés par email utiliseront cette adresse comme expéditeur.</small>
+                                                       placeholder="{{ __('pages.param_comm_email_ph') }}">
+                                                <small class="text-muted">{{ __('pages.param_comm_email_hint') }}</small>
                                             </div>
 
                                             <div class="alert alert-secondary py-2 px-3 mb-0" style="font-size:.85rem;">
                                                 <i class="bx bx-info-circle me-1"></i>
-                                                La configuration <strong>Africa's Talking (WhatsApp &amp; SMS)</strong> est gérée par le Super Admin.
-                                                Contactez l'administrateur de la plateforme si vous avez besoin d'activer ces canaux.
+                                                {!! __('pages.param_comm_at_alert') !!}
                                             </div>
 
                                             <div class="d-flex gap-2 mt-3">
                                                 <button type="button" class="btn btn-primary" id="btnSaveCommConfig">
-                                                    <i class="bx bx-save me-1"></i>Enregistrer la configuration
+                                                    <i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save_comm') }}
                                                 </button>
                                             </div>
                                         </form>
@@ -1004,6 +1003,57 @@
 </div>{{-- /container-xxl --}}
 
 <script>
+    var PARAM_I18N = {
+        error:          '{{ __('pages.param_js_error') }}',
+        success:        '{{ __('pages.param_js_success') }}',
+        info:           '{{ __('pages.param_js_info') }}',
+        warning:        '{{ __('pages.param_js_warning') }}',
+        valError:       '{{ __('pages.param_js_val_error') }}',
+        fixErrors:      '{{ __('pages.param_js_fix_errors') }}',
+        netError:       '{{ __('pages.param_js_net_error') }}',
+        genError:       '{{ __('pages.param_js_gen_error') }}',
+        selectImg:      '{{ __('pages.param_js_select_img') }}',
+        cashTooBig:     '{{ __('pages.param_js_cash_too_big') }}',
+        logoTooBig:     '{{ __('pages.param_js_logo_too_big') }}',
+        saving:         '{{ __('pages.param_js_saving') }}',
+        saveBtn:        '{!! __('pages.param_js_save_btn') !!}',
+        save2:          '{{ __('pages.param_js_save2') }}',
+        invalidPhone:   '{{ __('pages.param_js_invalid_phone') }}',
+        beninPhone:     '{{ __('pages.param_js_benin_phone') }}',
+        savePct:        '{!! __('pages.param_js_save_pct') !!}',
+        pctFirst:       '{{ __('pages.param_js_pct_first') }}',
+        updating:       '{{ __('pages.param_js_updating') }}',
+        saveUpdate:     '{!! __('pages.param_js_save_update') !!}',
+        delGrpTitle:    '{{ __('pages.param_js_del_grp_title') }}',
+        delGrpText:     '{{ __('pages.param_js_del_grp_text') }}',
+        delYes:         '{{ __('pages.param_js_del_yes') }}',
+        cancel:         '{{ __('pages.param_btn_cancel') }}',
+        msPlaceholder:  '{{ __('pages.param_js_ms_placeholder') }}',
+        msNoResults:    '{{ __('pages.param_js_ms_no_results') }}',
+        waitPage:       '{{ __('pages.param_js_wait_page') }}',
+        articleEdit:    '{{ __('pages.param_js_article_edit') }}',
+        articleAdd:     '{{ __('pages.param_js_article_add') }}',
+        titleReq:       '{{ __('pages.param_js_title_req') }}',
+        contentReq:     '{{ __('pages.param_js_content_req') }}',
+        saveFail:       '{{ __('pages.param_js_save_fail') }}',
+        serverError:    '{{ __('pages.param_js_server_error') }}',
+        btnSaveTpl:     '{!! __('pages.param_js_btn_save_tpl') !!}',
+        articleEdited:  '{{ __('pages.param_js_article_edited') }}',
+        articleAdded:   '{{ __('pages.param_js_article_added') }}',
+        delArtTitle:    '{{ __('pages.param_js_del_art_title') }}',
+        delArtSaved:    '{{ __('pages.param_js_del_art_saved') }}',
+        delBtn:         '{!! __('pages.param_js_del_btn') !!}',
+        articleDel:     '{{ __('pages.param_js_article_del') }}',
+        resetTitle:     '{{ __('pages.param_js_reset_title') }}',
+        resetHtml:      '{!! __('pages.param_js_reset_html') !!}',
+        resetBtn:       '{!! __('pages.param_js_reset_btn') !!}',
+        noArticles:     '{{ __('pages.param_js_no_articles') }}',
+        tplSaved:       '{{ __('pages.param_js_tpl_saved') }}',
+        commSaving:     '{{ __('pages.param_js_comm_saving') }}',
+        btnSaveComm:    '{!! __('pages.param_js_btn_save_comm') !!}',
+        netErrTitle:    '{{ __('pages.param_js_net_err_title') }}',
+    };
+
     // Synchronisation des 5 nav-items entre les deux blocs visuels
     document.querySelectorAll('#param-tablist [data-bs-toggle="tab"]').forEach(function(btn) {
         btn.addEventListener('shown.bs.tab', function() {
@@ -1111,19 +1161,19 @@
         const logo = document.getElementById('logo').files[0];
         
         if (!cashElectronique && !logo) {
-            display_sweet_alert_over_modal("Erreur !!","Veuillez sélectionner au moins une image (cash électronique ou logo)","warning","btn btn-danger");
+            display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.selectImg, "warning", "btn btn-danger");
             return;
         }
-        
+
         // Vérification de la taille des fichiers (5MB max)
         const maxSize = 5 * 1024 * 1024; // 5MB en bytes
         if (cashElectronique && cashElectronique.size > maxSize) {
-            display_sweet_alert_over_modal("Erreur !!","L'image du cash électronique dépasse la taille maximale de 5MB","warning","btn btn-danger");
+            display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.cashTooBig, "warning", "btn btn-danger");
             return;
         }
-        
+
         if (logo && logo.size > maxSize) {
-            display_sweet_alert_over_modal("Erreur !!","Le logo dépasse la taille maximale de 5MB","warning","btn btn-danger");
+            display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.logoTooBig, "warning", "btn btn-danger");
             return;
         }
 
@@ -1135,32 +1185,32 @@
             data: formData,
             beforeSend: function() {
                 $("#valider").prop("disabled", true);
-                $("#valider").html('<i class="spinner-border spinner-border-sm"></i> Enregistrement...');
+                $("#valider").html('<i class="spinner-border spinner-border-sm"></i> ' + PARAM_I18N.saving);
             },
             success: function(data) {
                 $("#valider").prop("disabled", false);
-                $("#valider").html('<span class="fa fa-save"></span> Enregistrer');
+                $("#valider").html(PARAM_I18N.saveBtn);
 
                 if (data.error) {
                     printErrorMsg(data.error);
-                    display_sweet_alert_over_modal("Erreur de validation",data.message || 'Veuillez corriger les erreurs',"warning","btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.valError, data.message || PARAM_I18N.fixErrors, "warning", "btn btn-danger");
                 } else if (data.status) {
-                    display_sweet_alert_over_modal("Succès",data.message,"success","btn btn-primary");
+                    display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
                     setTimeout(function() {
                         window.location.reload();
                     }, 3000);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!",data.message || 'Une erreur est survenue',"warning","btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message || PARAM_I18N.genError, "warning", "btn btn-danger");
                 }
             },
             error: function(xhr) {
                 $("#valider").prop("disabled", false);
-                $("#valider").html('<span class="fa fa-save"></span> Enregistrer');
-                
+                $("#valider").html(PARAM_I18N.saveBtn);
+
                 if (xhr.responseJSON && xhr.responseJSON.message) {
-                    display_sweet_alert_over_modal("Erreur !!",xhr.responseJSON.message,"warning","btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, xhr.responseJSON.message, "warning", "btn btn-danger");
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!","Une erreur réseau est survenue","warning","btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.netError, "warning", "btn btn-danger");
                 }
             }
         });
@@ -1184,39 +1234,39 @@
             beforeSend: function() {
                 $("#ajouterAnnexe button#close").prop("disabled", true);
                 $("#ajouterAnnexe button#valider").prop("disabled", true);
-                $("#ajouterAnnexe button#valider").html('<i class="spinner-border spinner-border-sm"></i> Enregistrement...');
+                $("#ajouterAnnexe button#valider").html('<i class="spinner-border spinner-border-sm"></i> ' + PARAM_I18N.saving);
             },
             success: function(data) {
                 $("#ajouterAnnexe button#close").prop("disabled", false);
                 $("#ajouterAnnexe button#valider").prop("disabled", false);
-                $("#ajouterAnnexe button#valider").html('Enregistrer');
+                $("#ajouterAnnexe button#valider").html(PARAM_I18N.save2);
 
                 if (data.error) {
                     printErrorMsg(data.error);
-                    display_sweet_alert_over_modal("Erreur de validation", data.message || 'Veuillez corriger les erreurs',"warning","btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.valError, data.message || PARAM_I18N.fixErrors, "warning", "btn btn-danger");
                 } else if (data.status) {
-                    display_sweet_alert_over_modal("Succès", data.message ,"success","btn btn-primary");
+                    display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
 
                     $("#ajouterAnnexe form#formulaireAnnexe")[0].reset();
-                    
+
                     // Réinitialiser le champ téléphone
                     const iti = window.intlTelInputGlobals.getInstance(telephoneInput);
                     if (iti) iti.setNumber('');
-                    
+
                     // Fermer le modal et recharger après 3 secondes
                     // setTimeout(function() {
                     //     $('#ajouterAnnexe').modal('hide');
                     //     window.location.reload();
                     // }, 3000);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!", data.message,"warning","btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function(xhr) {
                 $("#ajouterAnnexe button#close").prop("disabled", false);
                 $("#ajouterAnnexe button#valider").prop("disabled", false);
-                $("#ajouterAnnexe button#valider").html('Enregistrer');
-                display_sweet_alert_over_modal("Erreur !!","Une erreur est survenue","warning","btn btn-danger");
+                $("#ajouterAnnexe button#valider").html(PARAM_I18N.save2);
+                display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.genError, "warning", "btn btn-danger");
             }
         });
     }
@@ -1231,7 +1281,7 @@
 
         // Vérification globale du numéro
         if (!iti.isValidNumber()) {
-            display_sweet_alert_over_modal("Erreur !!","Numéro de téléphone invalide","warning","btn btn-danger");
+            display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.invalidPhone, "warning", "btn btn-danger");
             return null;
         }
 
@@ -1242,7 +1292,7 @@
         // Règle spécifique au Bénin
         if (selectedCountry.iso2 === "bj") {
             if (cleanedPhone.length !== 14) {
-                display_sweet_alert_over_modal("Erreur !!","Le numéro béninois doit contenir exactement 10 chiffres après +229","warning","btn btn-danger");
+                display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.beninPhone, "warning", "btn btn-danger");
                 return null;
             }
         }
@@ -1274,33 +1324,33 @@
             data: formData,
             beforeSend: function() {
                 $("#btnSavePourcentageGeneral").prop("disabled", true);
-                $("#btnSavePourcentageGeneral").html('<i class="spinner-border spinner-border-sm"></i> Enregistrement...');
+                $("#btnSavePourcentageGeneral").html('<i class="spinner-border spinner-border-sm"></i> ' + PARAM_I18N.saving);
             },
             success: function(data) {
                 $("#btnSavePourcentageGeneral").prop("disabled", false);
-                $("#btnSavePourcentageGeneral").html('<i class="bx bx-save me-1"></i> Enregistrer');
+                $("#btnSavePourcentageGeneral").html(PARAM_I18N.savePct);
 
                 if (data.error) {
                     printErrorMsg(data.error);
-                    display_sweet_alert_over_modal("Erreur !!", data.message || 'Veuillez corriger les erreurs', "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message || PARAM_I18N.fixErrors, "warning", "btn btn-danger");
                 } else if (data.status) {
-                    display_sweet_alert_over_modal("Succès", data.message, "success", "btn btn-primary");
+                    display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
                     setTimeout(function() { window.location.reload(); }, 2000);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!", data.message, "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
                 $("#btnSavePourcentageGeneral").prop("disabled", false);
-                $("#btnSavePourcentageGeneral").html('<i class="bx bx-save me-1"></i> Enregistrer');
-                display_sweet_alert_over_modal("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                $("#btnSavePourcentageGeneral").html(PARAM_I18N.savePct);
+                display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.genError, "warning", "btn btn-danger");
             }
         });
     }
 
     function toggle_pourcentage(id) {
         if (id === 0) {
-            display_sweet_alert_over_modal("Info", "Veuillez d'abord enregistrer le pourcentage général", "info", "btn btn-primary");
+            display_sweet_alert_over_modal(PARAM_I18N.info, PARAM_I18N.pctFirst, "info", "btn btn-primary");
             return;
         }
         $.ajax({
@@ -1309,14 +1359,14 @@
             data: { _token: '{{ csrf_token() }}', id: id },
             success: function(data) {
                 if (data.status) {
-                    display_sweet_alert_over_modal("Succès", data.message, "success", "btn btn-primary");
+                    display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
                     setTimeout(function() { window.location.reload(); }, 1500);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!", data.message, "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
-                display_sweet_alert_over_modal("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.genError, "warning", "btn btn-danger");
             }
         });
     }
@@ -1332,26 +1382,26 @@
             data: formData,
             beforeSend: function() {
                 $("#btnSaveGroupe").prop("disabled", true);
-                $("#btnSaveGroupe").html('<i class="spinner-border spinner-border-sm"></i> Enregistrement...');
+                $("#btnSaveGroupe").html('<i class="spinner-border spinner-border-sm"></i> ' + PARAM_I18N.saving);
             },
             success: function(data) {
                 $("#btnSaveGroupe").prop("disabled", false);
-                $("#btnSaveGroupe").html('<i class="bx bx-save me-1"></i> Enregistrer');
+                $("#btnSaveGroupe").html(PARAM_I18N.savePct);
 
                 if (data.error) {
                     printErrorMsg(data.error);
-                    display_sweet_alert_over_modal("Erreur !!", data.message || 'Veuillez corriger les erreurs', "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message || PARAM_I18N.fixErrors, "warning", "btn btn-danger");
                 } else if (data.status) {
-                    display_sweet_alert_over_modal("Succès", data.message, "success", "btn btn-primary");
+                    display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
                     setTimeout(function() { window.location.reload(); }, 2000);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!", data.message, "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
                 $("#btnSaveGroupe").prop("disabled", false);
-                $("#btnSaveGroupe").html('<i class="bx bx-save me-1"></i> Enregistrer');
-                display_sweet_alert_over_modal("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                $("#btnSaveGroupe").html(PARAM_I18N.savePct);
+                display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.genError, "warning", "btn btn-danger");
             }
         });
     }
@@ -1367,40 +1417,40 @@
             data: formData,
             beforeSend: function() {
                 $("#btnUpdateGroupe" + id).prop("disabled", true);
-                $("#btnUpdateGroupe" + id).html('<i class="spinner-border spinner-border-sm"></i> Mise à jour...');
+                $("#btnUpdateGroupe" + id).html('<i class="spinner-border spinner-border-sm"></i> ' + PARAM_I18N.updating);
             },
             success: function(data) {
                 $("#btnUpdateGroupe" + id).prop("disabled", false);
-                $("#btnUpdateGroupe" + id).html('<i class="bx bx-save me-1"></i> Mettre à jour');
+                $("#btnUpdateGroupe" + id).html(PARAM_I18N.saveUpdate);
 
                 if (data.error) {
                     printErrorMsg(data.error);
-                    display_sweet_alert_over_modal("Erreur !!", data.message || 'Veuillez corriger les erreurs', "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message || PARAM_I18N.fixErrors, "warning", "btn btn-danger");
                 } else if (data.status) {
-                    display_sweet_alert_over_modal("Succès", data.message, "success", "btn btn-primary");
+                    display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
                     setTimeout(function() { window.location.reload(); }, 2000);
                 } else {
-                    display_sweet_alert_over_modal("Erreur !!", data.message, "warning", "btn btn-danger");
+                    display_sweet_alert_over_modal(PARAM_I18N.error, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
                 $("#btnUpdateGroupe" + id).prop("disabled", false);
-                $("#btnUpdateGroupe" + id).html('<i class="bx bx-save me-1"></i> Mettre à jour');
-                display_sweet_alert_over_modal("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                $("#btnUpdateGroupe" + id).html(PARAM_I18N.saveUpdate);
+                display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.genError, "warning", "btn btn-danger");
             }
         });
     }
 
     function delete_groupe(id) {
         Swal.fire({
-            title: 'Confirmation',
-            text: 'Voulez-vous vraiment supprimer ce groupe ? Les propriétaires seront dissociés.',
+            title: PARAM_I18N.delGrpTitle,
+            text: PARAM_I18N.delGrpText,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Oui, supprimer',
-            cancelButtonText: 'Annuler'
+            confirmButtonText: PARAM_I18N.delYes,
+            cancelButtonText: PARAM_I18N.cancel
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -1409,14 +1459,14 @@
                     data: { _token: '{{ csrf_token() }}', id: id },
                     success: function(data) {
                         if (data.status) {
-                            display_sweet_alert_over_modal("Succès", data.message, "success", "btn btn-primary");
+                            display_sweet_alert_over_modal(PARAM_I18N.success, data.message, "success", "btn btn-primary");
                             setTimeout(function() { window.location.reload(); }, 1500);
                         } else {
-                            display_sweet_alert_over_modal("Erreur !!", data.message, "warning", "btn btn-danger");
+                            display_sweet_alert_over_modal(PARAM_I18N.error, data.message, "warning", "btn btn-danger");
                         }
                     },
                     error: function() {
-                        display_sweet_alert_over_modal("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                        display_sweet_alert_over_modal(PARAM_I18N.error, PARAM_I18N.genError, "warning", "btn btn-danger");
                     }
                 });
             }
@@ -1448,7 +1498,7 @@
                     if (!placeholder) {
                         var ph = document.createElement('span');
                         ph.className = 'ms-placeholder';
-                        ph.textContent = 'Cliquez pour sélectionner...';
+                        ph.textContent = PARAM_I18N.msPlaceholder;
                         tags.appendChild(ph);
                     } else {
                         placeholder.style.display = '';
@@ -1513,7 +1563,7 @@
                         if (!emptyMsg) {
                             emptyMsg = document.createElement('div');
                             emptyMsg.className = 'ms-empty';
-                            emptyMsg.textContent = 'Aucun propriétaire trouvé';
+                            emptyMsg.textContent = PARAM_I18N.msNoResults;
                             wrapper.querySelector('.ms-options').appendChild(emptyMsg);
                         }
                         emptyMsg.style.display = '';
@@ -1645,9 +1695,9 @@
     }
 
     window.contratOpenModal = function(index) {
-        if (!articleModal) { alert('Veuillez patienter, la page se charge encore.'); return; }
+        if (!articleModal) { alert(PARAM_I18N.waitPage); return; }
         var isEdit = (typeof index === 'number');
-        document.getElementById('modalArticleTitle').textContent = isEdit ? "Modifier l'article" : "Ajouter un article";
+        document.getElementById('modalArticleTitle').textContent = isEdit ? PARAM_I18N.articleEdit : PARAM_I18N.articleAdd;
         document.getElementById('article-edit-index').value = isEdit ? index : '';
         document.getElementById('article-titre').value  = isEdit ? (window.contratArticles[index].titre||'') : '';
         document.getElementById('article-contenu').value = isEdit ? (window.contratArticles[index].contenu||'') : '';
@@ -1669,18 +1719,30 @@
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data.status) {
-                Swal.fire({ icon: 'success', title: 'Succès', text: successMsg || data.message, timer: 2000, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: PARAM_I18N.success, text: successMsg || data.message, timer: 2000, showConfirmButton: false });
             } else {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: data.message || "Échec de l'enregistrement." });
+                Swal.fire({ icon: 'error', title: PARAM_I18N.error, text: data.message || PARAM_I18N.saveFail });
             }
         })
         .catch(function() {
-            Swal.fire({ icon: 'error', title: 'Erreur réseau', text: 'Impossible de contacter le serveur.' });
+            Swal.fire({ icon: 'error', title: PARAM_I18N.netErrTitle, text: PARAM_I18N.serverError });
         })
         .finally(function() {
-            if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = '<i class="bx bx-save me-1"></i>Enregistrer le modèle'; }
+            if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = PARAM_I18N.btnSaveTpl; }
         });
     }
+
+    // ── Insertion de variable dans le textarea du modal ──────────────
+    window.insertVariableInArticle = function(variable) {
+        var ta = document.getElementById('article-contenu');
+        if (!ta) return;
+        var start = ta.selectionStart;
+        var end   = ta.selectionEnd;
+        var val   = ta.value;
+        ta.value  = val.substring(0, start) + variable + val.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + variable.length;
+        ta.focus();
+    };
 
     // ── Ajout / Modification depuis le modal ─────────────────────────
     window.contratSaveArticle = function() {
@@ -1690,9 +1752,9 @@
         var titre   = titreEl.value.trim();
         var contenu = contEl.value.trim();
         var ok = true;
-        if (!titre)   { titreEl.classList.add('is-invalid'); document.getElementById('err-article-titre').textContent = 'Le titre est obligatoire.'; ok = false; }
+        if (!titre)   { titreEl.classList.add('is-invalid'); document.getElementById('err-article-titre').textContent = PARAM_I18N.titleReq; ok = false; }
         else          { titreEl.classList.remove('is-invalid'); }
-        if (!contenu) { contEl.classList.add('is-invalid');   document.getElementById('err-article-contenu').textContent = 'Le contenu est obligatoire.'; ok = false; }
+        if (!contenu) { contEl.classList.add('is-invalid');   document.getElementById('err-article-contenu').textContent = PARAM_I18N.contentReq; ok = false; }
         else          { contEl.classList.remove('is-invalid'); }
         if (!ok) return;
 
@@ -1703,26 +1765,26 @@
 
         renderArticlesList();
         if (articleModal) articleModal.hide();
-        saveArticlesToServer(isEdit ? 'Article modifié et enregistré.' : 'Article ajouté et enregistré.');
+        saveArticlesToServer(isEdit ? PARAM_I18N.articleEdited : PARAM_I18N.articleAdded);
     };
 
     // ── Suppression avec confirmation SweetAlert + sauvegarde auto ───
     window.contratDeleteArticle = function(index) {
         var article = window.contratArticles[index];
         Swal.fire({
-            title: 'Supprimer cet article ?',
-            html: article ? '<strong>' + article.titre + '</strong><br><small class="text-muted">Cette suppression sera enregistrée immédiatement.</small>' : '',
+            title: PARAM_I18N.delArtTitle,
+            html: article ? '<strong>' + article.titre + '</strong><br><small class="text-muted">' + PARAM_I18N.delArtSaved + '</small>' : '',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: '<i class="bx bx-trash me-1"></i>Supprimer',
-            cancelButtonText: 'Annuler',
+            confirmButtonText: PARAM_I18N.delBtn,
+            cancelButtonText: PARAM_I18N.cancel,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
         }).then(function(result) {
             if (result.isConfirmed) {
                 window.contratArticles.splice(index, 1);
                 renderArticlesList();
-                saveArticlesToServer('Article supprimé et enregistré.');
+                saveArticlesToServer(PARAM_I18N.articleDel);
             }
         });
     };
@@ -1744,12 +1806,12 @@
     if (btnReset) {
         btnReset.addEventListener('click', function() {
             Swal.fire({
-                title: 'Remettre par défaut ?',
-                html: 'Tous vos articles personnalisés seront <strong>remplacés</strong> par les articles par défaut.<br><small class="text-muted">Cette action est irréversible.</small>',
+                title: PARAM_I18N.resetTitle,
+                html: PARAM_I18N.resetHtml,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '<i class="bx bx-reset me-1"></i>Remettre par défaut',
-                cancelButtonText: 'Annuler',
+                confirmButtonText: PARAM_I18N.resetBtn,
+                cancelButtonText: PARAM_I18N.cancel,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6c757d',
             }).then(function(result) {
@@ -1766,11 +1828,11 @@
         formContrat.addEventListener('submit', function(e) {
             e.preventDefault();
             if (!window.contratArticles || window.contratArticles.length === 0) {
-                Swal.fire({ icon: 'warning', title: 'Attention', text: "Ajoutez au moins un article avant d'enregistrer." });
+                Swal.fire({ icon: 'warning', title: PARAM_I18N.warning, text: PARAM_I18N.noArticles });
                 return;
             }
             var btn = formContrat.querySelector('[type="submit"]');
-            saveArticlesToServer('Modèle de contrat enregistré avec succès.', btn);
+            saveArticlesToServer(PARAM_I18N.tplSaved, btn);
         });
     }
 
@@ -1799,7 +1861,7 @@
         const form = document.getElementById('formCommConfig');
         const data = new FormData(form);
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Enregistrement…';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + PARAM_I18N.commSaving;
         try {
             const res  = await fetch('{{ route("store_comm_config") }}', {
                 method: 'POST',
@@ -1808,15 +1870,15 @@
             });
             const json = await res.json();
             if (json.status) {
-                Swal.fire({ icon: 'success', title: 'Succès', text: json.message, timer: 2500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: PARAM_I18N.success, text: json.message, timer: 2500, showConfirmButton: false });
             } else {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: json.message });
+                Swal.fire({ icon: 'error', title: PARAM_I18N.error, text: json.message });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Erreur réseau', text: err.message });
+            Swal.fire({ icon: 'error', title: PARAM_I18N.netErrTitle, text: err.message });
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-save me-1"></i>Enregistrer la configuration';
+            btn.innerHTML = PARAM_I18N.btnSaveComm;
         }
     });
 })();
@@ -2088,28 +2150,68 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalArticleTitle">Ajouter un article</h5>
+                <h5 class="modal-title" id="modalArticleTitle">{{ __('pages.param_article_add_btn') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="article-edit-index" value="">
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Titre de l'article <span class="text-danger">*</span></label>
-                    <input type="text" id="article-titre" class="form-control" placeholder="Ex: Durée du bail">
+                    <label class="form-label fw-semibold">{{ __('pages.param_art_modal_title_lbl') }} <span class="text-danger">*</span></label>
+                    <input type="text" id="article-titre" class="form-control" placeholder="{{ __('pages.param_art_modal_title_ph') }}">
                     <div class="invalid-feedback" id="err-article-titre"></div>
                 </div>
+
+                {{-- Variables disponibles dans le modal --}}
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Contenu <span class="text-danger">*</span></label>
+                    <div class="accordion accordion-flush" id="accordionVariablesModal">
+                        <div class="accordion-item border rounded">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVariablesModal">
+                                    <i class="bx bx-code-alt me-2 text-primary"></i>
+                                    <strong class="small">{{ __('pages.param_art_modal_vars') }}</strong>
+                                    <span class="ms-2 text-muted" style="font-size:12px;">{{ __('pages.param_art_modal_vars_click') }}</span>
+                                </button>
+                            </h2>
+                            <div id="collapseVariablesModal" class="accordion-collapse collapse">
+                                <div class="accordion-body py-2 px-2">
+                                    @php
+                                    $varsModal = [
+                                        ['{nom_agence}',__('pages.param_var_agency_name')],['{adresse_agence}',__('pages.param_var_agency_address')],['{telephone_agence}',__('pages.param_var_agency_phone')],
+                                        ['{nom_locataire}',__('pages.param_var_tenant_name')],['{telephone_locataire}',__('pages.param_var_tenant_phone')],['{profession_locataire}',__('pages.param_var_tenant_job')],['{adresse_locataire}',__('pages.param_var_tenant_address')],
+                                        ['{nom_maison}',__('pages.param_var_house_name')],['{quartier_maison}',__('pages.param_var_house_district')],['{type_chambre}',__('pages.param_var_room_type')],['{numero_chambre}',__('pages.param_var_room_number')],
+                                        ['{montant_loyer}',__('pages.param_var_rent')],['{nombre_caution}',__('pages.param_var_caution_months')],['{montant_caution}',__('pages.param_var_caution_amount')],['{caution_courant}',__('pages.param_var_caution_elec')],['{caution_eau}',__('pages.param_var_caution_water')],
+                                        ['{nombre_avance}',__('pages.param_var_advance_months')],['{montant_avance}',__('pages.param_var_advance_amount')],['{mode_paiement}',__('pages.param_var_payment_mode')],
+                                        ['{date_entree}',__('pages.param_var_entry_date')],['{date_contrat}',__('pages.param_var_contract_date')],
+                                    ];
+                                    @endphp
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach($varsModal as $v)
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary py-0 px-2"
+                                            style="font-size:11px;font-family:monospace;"
+                                            title="{{ $v[1] }}"
+                                            onclick="insertVariableInArticle('{{ $v[0] }}')">{{ $v[0] }}</button>
+                                        @endforeach
+                                    </div>
+                                    <p class="small text-muted mt-2 mb-0"><i class="bx bx-mouse-alt me-1"></i>{{ __('pages.param_var_insert_hint') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ __('pages.param_art_modal_content') }} <span class="text-danger">*</span></label>
                     <textarea id="article-contenu" class="form-control" rows="8"
-                        placeholder="Rédigez le contenu de l'article. Utilisez les variables comme {montant_loyer}, {nom_locataire}, etc."></textarea>
+                        placeholder="{{ __('pages.param_art_modal_content_ph') }}"></textarea>
                     <div class="invalid-feedback" id="err-article-contenu"></div>
-                    <small class="text-muted">Utilisez les retours à la ligne pour la mise en forme.</small>
+                    <small class="text-muted">{{ __('pages.param_art_modal_hint') }}</small>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.param_btn_cancel') }}</button>
                 <button type="button" class="btn btn-primary" onclick="contratSaveArticle()">
-                    <i class="bx bx-save me-1"></i>Enregistrer
+                    <i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save') }}
                 </button>
             </div>
         </div>

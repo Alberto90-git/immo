@@ -3,11 +3,11 @@
 @section('content')
 
   @section('title')
-    <title>Gestion reporting</title>
+    <title>{{ __('pages.dos_title') }}</title>
   @endsection
 
     <div class="container-xxl flex-grow-1 container-p-y">
-       <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion publicité</h4>
+       <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('common.home_breadcrumb') }} /</span> {{ __('pages.dos_breadcrumb') }}</h4>
       
         <div class="col-xl-12">
             <div class="nav-align-top mb-4">
@@ -23,7 +23,7 @@
                         aria-controls="navs-pills-justified-dossier_client"
                         aria-selected="true">
 
-                        <i class="tf-icons bx bx-home"></i> Besoin des clients
+                        <i class="tf-icons bx bx-home"></i> {{ __('pages.dos_tab_clients') }}
                         {{-- <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger">3</span> --}}
                     </button>
                     </li>
@@ -38,7 +38,7 @@
                         aria-controls="navs-pills-justified-dossier_parcelle"
                         aria-selected="false"
                     >
-                        <i class="tf-icons bx bx-user"></i> Annoces des biens
+                        <i class="tf-icons bx bx-user"></i> {{ __('pages.dos_tab_parcelles') }}
                     </button>
                     </li>
                     
@@ -54,13 +54,13 @@
                                 <div class="row align-items-center">
                                     <!-- Date début -->
                                     <div class="col-md-6">
-                                        <label for="date_debut">Date début</label>
+                                        <label for="date_debut">{{ __('pages.dos_label_date_start') }}</label>
                                         <input type="date" name="date_debut" id="date_debut" class="form-control" required>
                                     </div>
-                            
+
                                     <!-- Date fin -->
                                     <div class="col-md-6">
-                                        <label for="date_fin">Date fin</label>
+                                        <label for="date_fin">{{ __('pages.dos_label_date_end') }}</label>
                                         <input type="date" name="date_fin" id="date_fin" class="form-control" required>
                                     </div>
                                 </div>
@@ -78,13 +78,13 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">Agence</th>
-                                    <th scope="col">Nom & prénom client</th>
-                                    <th scope="col">Téléphone</th>
-                                    <th scope="col">Zone voulue</th>
-                                    <th scope="col">Superficie</th>
-                                    <th scope="col">Budget</th>
-                                    <th scope="col">Date cloture du besoin</th>
+                                    <th scope="col">{{ __('pages.dos_th_agency') }}</th>
+                                    <th scope="col">{{ __('pages.dos_th_client_name') }}</th>
+                                    <th scope="col">{{ __('pages.dos_th_phone') }}</th>
+                                    <th scope="col">{{ __('pages.dos_th_zone') }}</th>
+                                    <th scope="col">{{ __('pages.dos_th_area') }}</th>
+                                    <th scope="col">{{ __('pages.dos_th_budget') }}</th>
+                                    <th scope="col">{{ __('pages.dos_th_close_date') }}</th>
                                   </tr>
                                 </thead>
                                 <tbody id="list_clients">
@@ -104,13 +104,13 @@
                                   <div class="row align-items-center">
                                       <!-- Date début -->
                                       <div class="col-md-6">
-                                          <label for="date_debut2">Date début</label>
+                                          <label for="date_debut2">{{ __('pages.dos_label_date_start') }}</label>
                                           <input type="date" name="date_debut2" id="date_debut2" class="form-control" required>
                                       </div>
-                              
+
                                       <!-- Date fin -->
                                       <div class="col-md-6">
-                                          <label for="date_fin2">Date fin</label>
+                                          <label for="date_fin2">{{ __('pages.dos_label_date_end') }}</label>
                                           <input type="date" name="date_fin2" id="date_fin2" class="form-control" required>
                                       </div>
                                   </div>
@@ -127,14 +127,14 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                               <tr>
-                                <th scope="col">Agence</th>
-                                <th scope="col">Nom & prénom annonceur</th>
-                                <th scope="col">Téléphone</th>
-                                <th scope="col">Quartier parcelle</th>
-                                <th scope="col">Superficie</th>
-                                <th scope="col">Prix</th>
-                                <th scope="col">Acheteur</th>
-                                <th scope="col">Date cloture annonce</th>
+                                <th scope="col">{{ __('pages.dos_th_agency') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_seller_name') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_phone') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_district') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_area') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_price') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_buyer') }}</th>
+                                <th scope="col">{{ __('pages.dos_th_close_ad') }}</th>
                               </tr>
                             </thead>
                             <tbody id="list_parcelles">
@@ -152,11 +152,15 @@
     
     <script>
 
+        var DOS_I18N = {
+            alertDate: '{{ __('pages.dos_alert_date') }}',
+        };
+
         $.ajaxSetup({
           headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           }
-        });   
+        });
     
     
         $('#date_fin').on('change',function(e)
@@ -168,7 +172,7 @@
     
             if(date_fin === null )
             {
-                alert('Merci de sélectionner une date');
+                alert(DOS_I18N.alertDate);
                 return false;
             }
             else
@@ -208,7 +212,7 @@
     
             if(date_fin2 === null )
             {
-                alert('Merci de sélectionner une date');
+                alert(DOS_I18N.alertDate);
                 return false;
             }
             else

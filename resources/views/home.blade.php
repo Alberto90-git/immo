@@ -3,7 +3,7 @@
 @section('content')
 
   @section('title')
-    <title>Accueil</title>
+    <title>{{ __('dashboard.title') }}</title>
   @endsection
 
 {{-- Chart.js --}}
@@ -52,10 +52,10 @@
     <div class="col-md-5 col-lg-4">
       <div class="card stat-card">
         <div class="card-body py-2 px-3">
-          <label class="form-label small text-muted mb-1"><i class="bx bx-filter-alt me-1"></i>Filtrer par agence</label>
+          <label class="form-label small text-muted mb-1"><i class="bx bx-filter-alt me-1"></i>{{ __('dashboard.filter_agency') }}</label>
           <select class="form-select form-select-sm" id="annexe_id">
-            <option value="" disabled selected>-- Sélectionner une agence --</option>
-            <option value="all">-- Toutes les agences --</option>
+            <option value="" disabled selected>{{ __('dashboard.select_agency') }}</option>
+            <option value="all">{{ __('dashboard.all_agencies') }}</option>
             @foreach($liste as $list)
               <option value="{{ $list->idannexes }}">{{ $list->designation }}</option>
             @endforeach
@@ -69,12 +69,12 @@
   {{-- ─── Vue agence non-admin ─── --}}
   @if(Auth::user()->is_admin != 1)
     <div class="card mb-4">
-      <h5 class="card-header text-center">Liste de tous les locataires</h5>
+      <h5 class="card-header text-center">{{ __('dashboard.all_tenants') }}</h5>
       <div class="table-responsive text-nowrap">
         <table class="table table-hover border-primary" style="width:100%">
           <thead><tr>
-            <th>Maison</th><th>N° chambre</th><th>Locataire</th>
-            <th>Téléphone</th><th>Profession</th><th>Date d'entrée</th>
+            <th>{{ __('dashboard.house') }}</th><th>{{ __('dashboard.room_no') }}</th><th>{{ __('dashboard.tenant') }}</th>
+            <th>{{ __('dashboard.phone') }}</th><th>{{ __('dashboard.profession') }}</th><th>{{ __('dashboard.entry_date') }}</th>
           </tr></thead>
           <tbody>
             @forelse($data['locataire'] ?? [] as $items)
@@ -87,7 +87,7 @@
               <td>{{ $items->date_entree }}</td>
             </tr>
             @empty
-            <tr><td colspan="6" class="text-center text-muted">Aucun locataire</td></tr>
+            <tr><td colspan="6" class="text-center text-muted">{{ __('dashboard.no_tenant') }}</td></tr>
             @endforelse
           </tbody>
         </table>
@@ -95,11 +95,11 @@
     </div>
 
     <div class="card mb-4">
-      <h5 class="card-header text-center">Liste de tous les propriétaires et leurs maisons</h5>
+      <h5 class="card-header text-center">{{ __('dashboard.all_owners') }}</h5>
       <div class="table-responsive text-nowrap">
         <table class="table table-hover border-primary" style="width:100%">
           <thead><tr>
-            <th>Nom & prénom</th><th>Téléphone</th><th>Adresse</th><th>Maison</th><th>Quartier</th>
+            <th>{{ __('dashboard.first_last_name') }}</th><th>{{ __('dashboard.phone') }}</th><th>{{ __('dashboard.address') }}</th><th>{{ __('dashboard.house') }}</th><th>{{ __('dashboard.district') }}</th>
           </tr></thead>
           <tbody>
             @forelse($data['proprioMaison'] ?? [] as $items)
@@ -111,7 +111,7 @@
               <td>{{ $items->quartier }}</td>
             </tr>
             @empty
-            <tr><td colspan="5" class="text-center text-muted">Aucun propriétaire</td></tr>
+            <tr><td colspan="5" class="text-center text-muted">{{ __('dashboard.no_owner') }}</td></tr>
             @endforelse
           </tbody>
         </table>
@@ -130,9 +130,9 @@
         <div class="card-body d-flex align-items-center gap-3">
           <div class="stat-icon bg-label-primary"><i class="bx bxs-user-check text-primary"></i></div>
           <div>
-            <div class="kpi-label">Propriétaires</div>
+            <div class="kpi-label">{{ __('dashboard.owners') }}</div>
             <div class="kpi-value" id="nombre_proprio">{{ $data['nombreProprio'] ?? 0 }}</div>
-            <div class="kpi-sub">au total</div>
+            <div class="kpi-sub">{{ __('dashboard.in_total') }}</div>
           </div>
         </div>
       </div>
@@ -144,9 +144,9 @@
         <div class="card-body d-flex align-items-center gap-3">
           <div class="stat-icon bg-label-success"><i class="bx bxs-buildings text-success"></i></div>
           <div>
-            <div class="kpi-label">Maisons</div>
+            <div class="kpi-label">{{ __('dashboard.houses') }}</div>
             <div class="kpi-value" id="nombre_maison">{{ $data['nombreMaison'] ?? 0 }}</div>
-            <div class="kpi-sub">au total</div>
+            <div class="kpi-sub">{{ __('dashboard.in_total') }}</div>
           </div>
         </div>
       </div>
@@ -158,9 +158,9 @@
         <div class="card-body d-flex align-items-center gap-3">
           <div class="stat-icon bg-label-warning"><i class="bx bxs-group text-warning"></i></div>
           <div>
-            <div class="kpi-label">Locataires</div>
+            <div class="kpi-label">{{ __('dashboard.tenants') }}</div>
             <div class="kpi-value" id="nombre_locataire">{{ $data['nombreLocataire'] ?? 0 }}</div>
-            <div class="kpi-sub">actifs</div>
+            <div class="kpi-sub">{{ __('dashboard.actives') }}</div>
           </div>
         </div>
       </div>
@@ -172,9 +172,9 @@
         <div class="card-body d-flex align-items-center gap-3">
           <div class="stat-icon bg-label-info"><i class="bx bx-door-open text-info"></i></div>
           <div>
-            <div class="kpi-label">Chambres</div>
+            <div class="kpi-label">{{ __('dashboard.rooms') }}</div>
             <div class="kpi-value" id="nombre_chambre">{{ $data['nombreChambre'] ?? 0 }}</div>
-            <div class="kpi-sub">au total</div>
+            <div class="kpi-sub">{{ __('dashboard.in_total') }}</div>
           </div>
         </div>
       </div>
@@ -189,11 +189,11 @@
         <div class="card-body d-flex align-items-center gap-3">
           <div class="stat-icon" style="background:rgba(255,165,0,.15)"><i class="bx bx-money text-warning" style="font-size:1.8rem"></i></div>
           <div>
-            <div class="kpi-label">Revenus — {{ now()->translatedFormat('F Y') }}</div>
+            <div class="kpi-label">{{ __('dashboard.revenue_month') }} — {{ now()->translatedFormat('F Y') }}</div>
             <div class="kpi-value text-success" id="total_revenus_mois">
               {{ number_format($data['totalRevenusMois'] ?? 0, 0, ',', ' ') }} F
             </div>
-            <div class="kpi-sub">Total encaissé ce mois</div>
+            <div class="kpi-sub">{{ __('dashboard.total_collected') }}</div>
           </div>
         </div>
       </div>
@@ -211,10 +211,10 @@
           <div class="d-flex align-items-center gap-3 mb-1">
             <div class="stat-icon bg-label-danger"><i class="bx bx-home-heart text-danger"></i></div>
             <div>
-              <div class="kpi-label">Taux d'occupation</div>
+              <div class="kpi-label">{{ __('dashboard.occupancy_rate') }}</div>
               <div class="kpi-value" id="taux_occupation">{{ $taux }}%</div>
               <div class="kpi-sub" id="occ_detail">
-                <span id="nb_occupees">{{ $nbOccupees }}</span> / <span id="nb_total_chambres">{{ $nbChambres }}</span> chambres occupées
+                <span id="nb_occupees">{{ $nbOccupees }}</span> / <span id="nb_total_chambres">{{ $nbChambres }}</span> {{ __('dashboard.rooms_occupied') }}
               </div>
             </div>
           </div>
@@ -234,9 +234,9 @@
         <div class="card-body d-flex align-items-center gap-3">
           <div class="stat-icon" style="background:rgba(105,108,255,.12)"><i class="bx bx-user-plus" style="color:#696cff;font-size:1.8rem"></i></div>
           <div>
-            <div class="kpi-label">Nouvelles entrées — {{ now()->translatedFormat('F') }}</div>
+            <div class="kpi-label">{{ __('dashboard.new_entries') }} — {{ now()->translatedFormat('F') }}</div>
             <div class="kpi-value" style="color:#696cff">{{ $locMois }}</div>
-            <div class="kpi-sub">locataire(s) entré(s) ce mois</div>
+            <div class="kpi-sub">{{ __('dashboard.tenants_entered') }}</div>
           </div>
         </div>
       </div>
@@ -250,7 +250,7 @@
     <div class="col-12 col-lg-8">
       <div class="card chart-card h-100">
         <div class="card-header d-flex align-items-center justify-content-between pb-0">
-          <h6 class="mb-0"><i class="bx bx-bar-chart-alt-2 me-1 text-primary"></i>Paiements mensuels (12 mois)</h6>
+          <h6 class="mb-0"><i class="bx bx-bar-chart-alt-2 me-1 text-primary"></i>{{ __('dashboard.monthly_payments') }}</h6>
           <span class="badge bg-label-primary">F CFA</span>
         </div>
         <div class="card-body">
@@ -263,13 +263,13 @@
     <div class="col-12 col-lg-4">
       <div class="card chart-card h-100">
         <div class="card-header pb-0">
-          <h6 class="mb-0"><i class="bx bx-pie-chart-alt me-1 text-danger"></i>Occupation des chambres</h6>
+          <h6 class="mb-0"><i class="bx bx-pie-chart-alt me-1 text-danger"></i>{{ __('dashboard.room_occupation') }}</h6>
         </div>
         <div class="card-body d-flex flex-column align-items-center justify-content-center">
           <canvas id="chartOccupation" style="max-height:220px;max-width:220px"></canvas>
           <div class="d-flex gap-4 mt-3 small">
-            <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#696cff"></span>Occupées (<span id="leg_occ">{{ $nbOccupees }}</span>)</span>
-            <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#e7e9ef"></span>Libres (<span id="leg_lib">{{ $nbChambres - $nbOccupees }}</span>)</span>
+            <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#696cff"></span>{{ __('dashboard.occupied') }} (<span id="leg_occ">{{ $nbOccupees }}</span>)</span>
+            <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#e7e9ef"></span>{{ __('dashboard.free') }} (<span id="leg_lib">{{ $nbChambres - $nbOccupees }}</span>)</span>
           </div>
         </div>
       </div>
@@ -282,8 +282,8 @@
     <div class="col-12">
       <div class="card chart-card">
         <div class="card-header d-flex align-items-center justify-content-between pb-0">
-          <h6 class="mb-0"><i class="bx bx-line-chart me-1 text-success"></i>Évolution des entrées locataires (12 mois)</h6>
-          <span class="badge bg-label-success">par mois</span>
+          <h6 class="mb-0"><i class="bx bx-line-chart me-1 text-success"></i>{{ __('dashboard.tenant_evolution') }}</h6>
+          <span class="badge bg-label-success">{{ __('dashboard.per_month') }}</span>
         </div>
         <div class="card-body">
           <canvas id="chartLocataires" style="max-height:220px"></canvas>
@@ -299,14 +299,14 @@
     <div class="col-12 col-xl-7">
       <div class="card chart-card">
         <div class="card-header pb-2">
-          <h6 class="mb-0"><i class="bx bx-receipt me-1 text-warning"></i>Derniers paiements</h6>
+          <h6 class="mb-0"><i class="bx bx-receipt me-1 text-warning"></i>{{ __('dashboard.latest_payments') }}</h6>
         </div>
         <div class="table-responsive">
           <table class="table table-sm table-hover mb-0">
             <thead class="table-light">
               <tr>
-                <th>Locataire</th><th>Maison</th>
-                <th>Mois réglé</th><th>Montant</th><th>Mode</th><th>Date</th>
+                <th>{{ __('dashboard.tenant') }}</th><th>{{ __('dashboard.house') }}</th>
+                <th>{{ __('dashboard.month_paid') }}</th><th>{{ __('dashboard.amount') }}</th><th>{{ __('dashboard.mode') }}</th><th>{{ __('dashboard.date') }}</th>
               </tr>
             </thead>
             <tbody id="tbody_paiements">
@@ -320,7 +320,7 @@
                 <td>{{ \Carbon\Carbon::parse($p->date_paiement)->format('d/m/Y') }}</td>
               </tr>
               @empty
-              <tr><td colspan="6" class="text-center text-muted py-3">Aucun paiement enregistré</td></tr>
+              <tr><td colspan="6" class="text-center text-muted py-3">{{ __('dashboard.no_payment') }}</td></tr>
               @endforelse
             </tbody>
           </table>
@@ -332,15 +332,15 @@
     <div class="col-12 col-xl-5">
       <div class="card chart-card">
         <div class="card-header pb-2">
-          <h6 class="mb-0"><i class="bx bx-list-ul me-1 text-info"></i>Locataires — agence sélectionnée</h6>
+          <h6 class="mb-0"><i class="bx bx-list-ul me-1 text-info"></i>{{ __('dashboard.tenants_agency') }}</h6>
         </div>
         <div class="table-responsive" style="max-height:340px;overflow-y:auto">
           <table class="table table-sm table-hover mb-0">
             <thead class="table-light">
-              <tr><th>Maison</th><th>Chambre</th><th>Locataire</th><th>Date entrée</th></tr>
+              <tr><th>{{ __('dashboard.house') }}</th><th>{{ __('dashboard.room') }}</th><th>{{ __('dashboard.tenant') }}</th><th>{{ __('dashboard.entry_date') }}</th></tr>
             </thead>
             <tbody id="list_locataire">
-              <tr><td colspan="4" class="text-center text-muted py-3">Sélectionnez une agence</td></tr>
+              <tr><td colspan="4" class="text-center text-muted py-3">{{ __('dashboard.select_agency_msg') }}</td></tr>
             </tbody>
           </table>
         </div>
@@ -352,15 +352,15 @@
   {{-- Liste propriétaires via annexe --}}
   <div class="card chart-card mb-4">
     <div class="card-header pb-2">
-      <h6 class="mb-0"><i class="bx bx-buildings me-1 text-success"></i>Propriétaires & maisons — agence sélectionnée</h6>
+      <h6 class="mb-0"><i class="bx bx-buildings me-1 text-success"></i>{{ __('dashboard.owners_agency') }}</h6>
     </div>
     <div class="table-responsive">
       <table class="table table-sm table-hover mb-0">
         <thead class="table-light">
-          <tr><th>Nom & prénom</th><th>Téléphone</th><th>Adresse</th><th>Maison</th><th>Quartier</th></tr>
+          <tr><th>{{ __('dashboard.first_last_name') }}</th><th>{{ __('dashboard.phone') }}</th><th>{{ __('dashboard.address') }}</th><th>{{ __('dashboard.house') }}</th><th>{{ __('dashboard.district') }}</th></tr>
         </thead>
         <tbody id="list_proprio">
-          <tr><td colspan="5" class="text-center text-muted py-3">Sélectionnez une agence</td></tr>
+          <tr><td colspan="5" class="text-center text-muted py-3">{{ __('dashboard.select_agency_msg') }}</td></tr>
         </tbody>
       </table>
     </div>
@@ -385,7 +385,7 @@ var chartPaiements = new Chart(ctxBar, {
   data: {
     labels: moisLabels,
     datasets: [{
-      label: 'Montant (F CFA)',
+      label: '{{ __('dashboard.chart_amount') }}',
       data: paiementsParMois,
       backgroundColor: 'rgba(105,108,255,0.75)',
       borderRadius: 6,
@@ -426,7 +426,7 @@ var ctxDonut = document.getElementById('chartOccupation');
 var chartOccupation = new Chart(ctxDonut, {
   type: 'doughnut',
   data: {
-    labels: ['Occupées', 'Libres'],
+    labels: ['{{ __('dashboard.occupied') }}', '{{ __('dashboard.free') }}'],
     datasets: [{
       data: [nbOccupees, Math.max(nbTotal - nbOccupees, 0)],
       backgroundColor: ['#696cff', '#e7e9ef'],
@@ -439,7 +439,7 @@ var chartOccupation = new Chart(ctxDonut, {
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: { label: function(ctx) { return ' ' + ctx.parsed + ' chambre(s)'; } }
+        callbacks: { label: function(ctx) { return ' ' + ctx.parsed + ' {{ __('dashboard.rooms') }}'; } }
       }
     }
   }
@@ -452,7 +452,7 @@ var chartLocataires = new Chart(ctxLine, {
   data: {
     labels: moisLabels,
     datasets: [{
-      label: 'Nouvelles entrées',
+      label: '{{ __('dashboard.new_entries') }}',
       data: locatairesParMois,
       borderColor: '#71dd37',
       backgroundColor: 'rgba(113,221,55,.12)',
@@ -467,7 +467,7 @@ var chartLocataires = new Chart(ctxLine, {
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: { label: function(ctx) { return ' ' + ctx.parsed.y + ' locataire(s)'; } }
+        callbacks: { label: function(ctx) { return ' ' + ctx.parsed.y + ' {{ __('dashboard.tenants_count') }}'; } }
       }
     },
     scales: {
@@ -530,8 +530,8 @@ $('#annexe_id').on('change', function() {
     dataType: 'json',
     success: function(data) {
       // Tables
-      $('#list_locataire').html(data.getlist  || '<tr><td colspan="4" class="text-center text-muted">Aucune donnée</td></tr>');
-      $('#list_proprio').html(data.getlist2   || '<tr><td colspan="5" class="text-center text-muted">Aucune donnée</td></tr>');
+      $('#list_locataire').html(data.getlist  || '<tr><td colspan="4" class="text-center text-muted">{{ __('dashboard.no_data') }}</td></tr>');
+      $('#list_proprio').html(data.getlist2   || '<tr><td colspan="5" class="text-center text-muted">{{ __('dashboard.no_data') }}</td></tr>');
 
       // KPI simples
       document.getElementById('nombre_proprio').textContent   = data.nombre_proprio;
@@ -545,7 +545,7 @@ $('#annexe_id').on('change', function() {
       }
     },
     error: function() {
-      console.error('Erreur lors du chargement des données.');
+      console.error('{{ __('dashboard.load_error') }}');
     }
   });
 });
@@ -554,10 +554,10 @@ $('#annexe_id').on('change', function() {
 $(document).ready(function() {
   if (!sessionStorage.getItem('welcome_shown')) {
     Swal.fire({
-      title: 'Bienvenue sur votre espace de travail !',
+      title: '{{ __('dashboard.welcome_title') }}',
       text: '{{ Auth::user()->nom }} {{ Auth::user()->prenom }}',
       icon: 'success',
-      confirmButtonText: "C'est parti !",
+      confirmButtonText: '{{ __('dashboard.welcome_btn') }}',
       timer: 4000,
       showConfirmButton: true,
     });
@@ -579,13 +579,13 @@ function updatePaymentBadge(provider, sandbox) {
     var badge = document.getElementById('payment-status-badge');
     if (provider === 'kkiapay') {
         badge.className = 'badge bg-success fs-6 px-3 py-2';
-        badge.textContent = 'KKiaPay — ' + (sandbox ? 'Sandbox' : 'Production');
+        badge.textContent = 'KKiaPay — ' + (sandbox ? '{{ __('dashboard.sandbox') }}' : '{{ __('dashboard.production') }}');
     } else if (provider === 'fedapay') {
         badge.className = 'badge bg-warning text-dark fs-6 px-3 py-2';
-        badge.textContent = 'FedaPay — ' + (sandbox ? 'Sandbox' : 'Production');
+        badge.textContent = 'FedaPay — ' + (sandbox ? '{{ __('dashboard.sandbox') }}' : '{{ __('dashboard.production') }}');
     } else {
         badge.className = 'badge bg-secondary fs-6 px-3 py-2';
-        badge.textContent = 'Paiement désactivé';
+        badge.textContent = '{{ __('dashboard.payment_disabled') }}';
     }
 }
 
@@ -608,7 +608,7 @@ $('#payment-config-form').on('submit', function(e) {
 
     var btn = document.getElementById('btn-save-payment');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> Enregistrement...';
+    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> {{ __('dashboard.saving') }}';
 
     var payload = {
         active_payment_provider: $('input[name="active_payment_provider"]:checked').val(),
@@ -638,19 +638,19 @@ $('#payment-config-form').on('submit', function(e) {
                     : (payload.fedapay_sandbox === 1);
                 updatePaymentBadge(chosenProvider, isSandbox);
                 $('#kkiapay_private_key, #kkiapay_secret_key, #fedapay_secret_key').val('');
-                Swal.fire({ title: 'Succès', text: data.message, icon: 'success', timer: 2500, showConfirmButton: false });
+                Swal.fire({ title: '{{ __('dashboard.swal_success') }}', text: data.message, icon: 'success', timer: 2500, showConfirmButton: false });
                 refreshKeyFields();
             } else {
-                Swal.fire('Erreur', data.message || 'Une erreur est survenue.', 'error');
+                Swal.fire('{{ __('dashboard.swal_error') }}', data.message || '{{ __('dashboard.swal_generic_error') }}', 'error');
             }
         },
         error: function(xhr) {
-            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Une erreur est survenue.';
-            Swal.fire('Erreur', msg, 'error');
+            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : '{{ __('dashboard.swal_generic_error') }}';
+            Swal.fire('{{ __('dashboard.swal_error') }}', msg, 'error');
         },
         complete: function() {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-save me-1"></i> Enregistrer la configuration';
+            btn.innerHTML = '<i class="bx bx-save me-1"></i> {{ __('dashboard.save_config') }}';
         }
     });
 });
@@ -670,9 +670,9 @@ function refreshKeyFields() {
             $('#kkiapay_sandbox').val(data.kkiapay_sandbox ? '1' : '0');
             $('#fedapay_public_key').val(data.fedapay_public_key || '');
             $('#fedapay_sandbox').val(data.fedapay_sandbox ? '1' : '0');
-            if (data.has_kkiapay_private_key) $('#kkiapay_private_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
-            if (data.has_kkiapay_secret_key)  $('#kkiapay_secret_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
-            if (data.has_fedapay_secret_key)  $('#fedapay_secret_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+            if (data.has_kkiapay_private_key) $('#kkiapay_private_key').attr('placeholder', '{{ __('dashboard.key_defined') }}');
+            if (data.has_kkiapay_secret_key)  $('#kkiapay_secret_key').attr('placeholder', '{{ __('dashboard.key_defined') }}');
+            if (data.has_fedapay_secret_key)  $('#fedapay_secret_key').attr('placeholder', '{{ __('dashboard.key_defined') }}');
         }
     });
 }

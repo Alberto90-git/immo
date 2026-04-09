@@ -4,7 +4,7 @@
 @section('content')
 
 @section('title')
-<title>Gestion fonction</title>
+<title>{{ __('pages.role_create_title') }}</title>
 @endsection
 
 
@@ -12,14 +12,14 @@
 
     @include('notification.display_message')
 
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span>Gestion fonction / Liste des permissions</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.role_create_title') }}</h4>
 
     <div class="card">
         <!-- Notifications -->
         @can('liste-role')
             <div class="ms-3 demo-inline-spacing">
                 <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
-                    <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
+                    <span class="tf-icons bx bx-arrow-back"></span>&nbsp; {{ __('pages.role_btn_list') }}
                 </a>
             </div>
         @endcan
@@ -51,8 +51,8 @@
 
         <div class="col-md-6 p-3">
             <div class="form-group ms-3">
-                <label for="roleName" class="form-label">Nom fonction <span style="color: red;">*</span></label>
-                <input type="text" name="name" id="roleName" class="form-control" placeholder="Nom fonction" autocomplete="off">
+                <label for="roleName" class="form-label">{{ __('pages.role_label_name') }} <span style="color: red;">*</span></label>
+                <input type="text" name="name" id="roleName" class="form-control" placeholder="{{ __('pages.role_ph_name') }}" autocomplete="off">
                 <span class="text-danger small name_err"></span>
             </div>
         </div>
@@ -76,7 +76,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllParametrage" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -99,7 +99,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllProprietaire" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -123,7 +123,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllMaison" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -146,7 +146,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllChambre" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -169,7 +169,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllPrix" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -192,7 +192,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllLocataire" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -216,7 +216,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllPaiement" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -239,7 +239,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllSta" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -262,7 +262,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllDossier" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -285,7 +285,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllAbonnement" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -309,7 +309,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllPub" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 
@@ -333,7 +333,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllEnvoi" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
 
@@ -356,7 +356,7 @@
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
                                 <input type="checkbox" id="selectAllUser" class="form-check-input select-all">
-                                Tout sélectionner
+                                {{ __('pages.role_perm_all') }}
                             </label>
                         </div>
                 

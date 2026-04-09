@@ -142,6 +142,21 @@ class PubliciteController extends Controller
                     return response()->json([
                         'status' => true,
                         'message' => "Publicité ajoutée avec succès",
+                        'data' => [
+                            'id'           => $pub->id,
+                            'localisation' => $pub->localisation,
+                            'Superficie'   => $pub->Superficie,
+                            'price'        => $pub->price,
+                            'telephone'    => $pub->telephone,
+                            'description'  => $pub->description,
+                            'image_url'    => $pub->image_url,
+                            'image_url2'   => $pub->image_url2,
+                            'image_url3'   => $pub->image_url3,
+                            'image_url4'   => $pub->image_url4,
+                            'image_count'  => $pub->image_count,
+                            'annexe_name'  => get_annexee_name($pub->idannexe_ref),
+                            'published_at' => $pub->published_at ? $pub->published_at->format('d/m/Y H:i') : null,
+                        ],
                     ]);
                 }
 
@@ -173,13 +188,19 @@ class PubliciteController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return redirect()->back()->withErrors($validator);
+                    return response()->json([
+                        'status' => false,
+                        'errors' => $validator->errors(),
+                    ]);
                 }
 
                 // Utiliser l'annexe active centralisée
                 $idannexe_ref = get_active_annexe_id();
                 if (!$idannexe_ref) {
-                    return redirect()->back()->with('error', "Veuillez sélectionner une agence dans le header");
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Veuillez sélectionner une agence dans le header",
+                    ]);
                 }
 
                 $updateData = [
@@ -214,21 +235,41 @@ class PubliciteController extends Controller
                     }
                 }
 
-                $pub = Publicite::where('id',$request->id)->update($updateData);
+                Publicite::where('id',$request->id)->update($updateData);
+                $updatedPub = Publicite::find($request->id);
 
-                if ($pub) {
+                if ($updatedPub) {
 
                     activity()->performedOn(new Publicite())
                             ->causedBy(Auth::user()->id)
                             ->log('Modification de publicité par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                    return redirect()->back()->with('message', 'Publicité modifiée avec succès');
+                    return response()->json([
+                        'status'  => true,
+                        'message' => 'Publicité modifiée avec succès',
+                        'data'    => [
+                            'id'          => $updatedPub->id,
+                            'localisation'=> $updatedPub->localisation,
+                            'Superficie'  => $updatedPub->Superficie,
+                            'price'       => $updatedPub->price,
+                            'telephone'   => $updatedPub->telephone,
+                            'description' => $updatedPub->description,
+                            'image_url'   => $updatedPub->image_url,
+                            'image_url2'  => $updatedPub->image_url2,
+                            'image_url3'  => $updatedPub->image_url3,
+                            'image_url4'  => $updatedPub->image_url4,
+                            'image_count' => $updatedPub->image_count,
+                        ],
+                    ]);
                 }
 
             }
             catch (QueryException $e) {
 
-                return redirect()->back()->with('error', 'Erreur lors de la modification');
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Erreur lors de la modification',
+                ]);
 
             }
     }
@@ -360,11 +401,17 @@ class PubliciteController extends Controller
                     ->causedBy(Auth::user()->id)
                     ->log('Suppression de la publicité'.$objetDeleted->description.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-        return back()->with('message','Suppression effectuée avec succès');
+        return response()->json([
+            'status'  => true,
+            'message' => 'Suppression effectuée avec succès',
+        ]);
 
         } catch (QueryException $e) {
 
-            return back()->with('error','Echéc, veuillez verifier les données');
+            return response()->json([
+                'status'  => false,
+                'message' => 'Échec, veuillez vérifier les données',
+            ]);
         }
     }
 }

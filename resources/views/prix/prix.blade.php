@@ -5,8 +5,8 @@
 <div class="pagetitle">
   <nav>
     <ol class="breadcrumb">
-       <li class="breadcrumb-item"><a href="{{ route('home') }}">Accueil</a></li>
-      <li class="breadcrumb-item active">Gestion des prix</li>
+       <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('common.home_breadcrumb') }}</a></li>
+      <li class="breadcrumb-item active">{{ __('pages.price_breadcrumb') }}</li>
     </ol>
   </nav>
 </div>
@@ -31,7 +31,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header text-white" style="background-color: #012970;">
-          <h5 class="modal-title">Définir prix par chambre</h5>
+          <h5 class="modal-title">{{ __('pages.price_add_modal') }}</h5>
         </div>
         <div class="modal-body">
 
@@ -42,9 +42,9 @@
                 <div class="alert-primary bg-primary text-light" id="afficher"></div>
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Choisir une maison<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_choose_house') }}<span style="color: red;">*</span></label>
                   <select required="" class="form-select @error('nom_maison') is-invalid @enderror" name= "nom_maison" id="nom_maison" aria-label="Default select example">
-                      <option selected disabled value="">Choisir une maison</option>
+                      <option selected disabled value="">{{ __('pages.price_choose_house_opt') }}</option>
                       @if(isset($allMaison))
                         @foreach($allMaison as $terme)
                           <option  value="{{$terme->id}}">{{$terme->nom_maison}}</option>
@@ -55,9 +55,9 @@
                 </div>
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Choisir une chambre<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_choose_room') }}<span style="color: red;">*</span></label>
                   <select class="form-select @error('numero_chambre') is-invalid @enderror" name="numero_chambre" id="numero_chambre" aria-label="Default select example">
-                      <option selected disabled value="">Choisir une chambre</option>
+                      <option selected disabled value="">{{ __('pages.price_choose_room_opt') }}</option>
                   </select>
                     <span class="invalid-feedback numero_chambre_err" role="alert">
                         </span>
@@ -65,14 +65,14 @@
 
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Type chambre<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_room_type') }}<span style="color: red;">*</span></label>
                   <input type="text" name="type_chambre" class="form-control @error('type_chambre') is-invalid @enderror" id="type_chambre_getData" readonly disabled>
                   <span class="invalid-feedback type_chambre_err" role="alert">
                   </span>
                 </div>
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Prix / mois<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_per_month') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prix" class="form-control @error('prix') is-invalid @enderror" id="prix" required>
                   <span class="invalid-feedback prix_err" role="alert">
                   </span>
@@ -80,8 +80,8 @@
 
 	            </div>
     	        <div class="modal-footer">
-    	          <button type="button" class="btn btn-secondary" onclick="(this);" id="close" data-bs-dismiss="modal">Fermer</button>
-    	          <button  class="btn sbg1" id="valider"><span class="fa fa-save" id="a"></span><span id="s">Enregistrer</span></button>
+    	          <button type="button" class="btn btn-secondary" onclick="(this);" id="close" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
+    	          <button  class="btn sbg1" id="valider"><span class="fa fa-save" id="a"></span><span id="s">{{ __('common.btn_save') }}</span></button>
                 
     	        </div>
 	         </form>
@@ -99,16 +99,16 @@
               @endcan
           <div class="card recent-sales overflow-auto">
             <div class="card-body">
-              <h2 class="text-center"><u>Liste des prix par chambre</u></h2>
+              <h2 class="text-center"><u>{{ __('pages.price_list') }}</u></h2>
 
               <table class="table datatable border-primary">
                 <thead>
                   <tr>
-                    <th scope="col">Agence</th>
-                    <th scope="col">Nom maison</th>
-                    <th scope="col">N° chambre</th>
-                    <th scope="col">Type de chambre</th>
-                    <th scope="col">Prix</th>
+                    <th scope="col">{{ __('pages.price_th_agency') }}</th>
+                    <th scope="col">{{ __('pages.price_th_house') }}</th>
+                    <th scope="col">{{ __('pages.price_th_room') }}</th>
+                    <th scope="col">{{ __('pages.price_th_type') }}</th>
+                    <th scope="col">{{ __('pages.price_th_price') }}</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
                   </tr>
@@ -162,12 +162,12 @@
 	    <div class="modal-dialog modal-dialog-centered">
 	      <div class="modal-content">
 	        <div class="modal-header text-white" style="background-color: #012970;">
-	          <h5 class="modal-title">Suppression</h5>
+	          <h5 class="modal-title">{{ __('pages.price_delete_modal') }}</h5>
 	        </div>
 	        <div class="modal-body">
 
 	              <form class="row g-3" method="post" action="{{ route('destroy_prix') }}">
-	              	 Voulez-vous vraiment supprimer cette ligne ?
+	              	 {{ __('pages.price_delete_confirm') }}
 	               @csrf
                   <input type="hidden" name="prix_id" class="form-control" id="prix_id" value="{{ $items->id }}">
 
@@ -175,8 +175,8 @@
 	                <input type="hidden" name="chambre_id22" class="form-control" id="chambre_id" value="{{ $items->chambre_id }}">
 
 			        <div class="modal-footer">
-			          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
-			           <button type="submit" class="btn btn-danger" >Oui</button>
+			          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.price_delete_no') }}</button>
+			           <button type="submit" class="btn btn-danger" >{{ __('pages.price_delete_yes') }}</button>
 			        </div>
 		         </form>
 		      </div>
@@ -191,7 +191,7 @@
 	    <div class="modal-dialog modal-dialog-centered">
 	      <div class="modal-content">
 	        <div class="modal-header text-white" style="background-color: #012970;">
-	          <h5 class="modal-title">Modification d'un prix</h5>
+	          <h5 class="modal-title">{{ __('pages.price_edit_modal') }}</h5>
 	        </div>
 	        <div class="modal-body">
 
@@ -206,38 +206,38 @@
                <input type="hidden" name="chambre_id2" class="form-control" id="id" value="{{ $items->chambre_id }}">
 
                <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Choisir une maison<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_choose_house') }}<span style="color: red;">*</span></label>
                   <input type="text" name="numero_chambre" value="{{$items->nom_maison}}" class="form-control @error('numero_chambre') is-invalid @enderror" id="numero_chambre" readonly disabled>
                   <span class="invalid-feedback numero_chambre_err" role="alert">
                   </span>
                 </div>
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">N° de la chambre<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_room_num') }}<span style="color: red;">*</span></label>
                   <input type="text" name="numero_chambre" value="{{ $items->numero_chambre }}" class="form-control @error('numero_chambre') is-invalid @enderror" id="numero_chambre" readonly disabled>
                   <span class="invalid-feedback numero_chambre_err" role="alert">
                   </span>
                 </div>
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Type de chambre<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_th_type') }}<span style="color: red;">*</span></label>
                   <input type="text" name="numero_chambre" value="{{ $items->type_chambre }}" class="form-control @error('numero_chambre') is-invalid @enderror" id="numero_chambre" readonly disabled>
                   <span class="invalid-feedback numero_chambre_err" role="alert">
                   </span>
                 </div>
 
                 <div class="col-12">
-                  <label for="inputNanme4" class="form-label">Prix / mois<span style="color: red;">*</span></label>
+                  <label for="inputNanme4" class="form-label">{{ __('pages.price_per_month') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prix" value="{{ $items->prix }}" class="form-control @error('prix') is-invalid @enderror" onkeypress="return /[0-9]/i.test(event.key)" id="prix" required>
                   <span class="invalid-feedback prix_err" role="alert">
                   </span>
                 </div>
 
-                
+
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="close" data-bs-dismiss="modal">Fermer</button>
-                <button  class="btn sbg1" id="valider"><span class="fa fa-save" id="a"></span><span id="s">Enregistrer</span></button>
+                <button type="button" class="btn btn-secondary" id="close" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
+                <button  class="btn sbg1" id="valider"><span class="fa fa-save" id="a"></span><span id="s">{{ __('common.btn_save') }}</span></button>
                 
               </div>
            </form>
@@ -252,6 +252,14 @@
  </section>
 
 <script>
+  var PRIX_I18N = {
+      alertHouse:  '{{ __('pages.price_alert_house') }}',
+      alertRoom:   '{{ __('pages.price_alert_room') }}',
+      inProgress:  '{{ __('pages.price_in_progress') }}',
+      btnSave:     '{{ __('common.btn_save') }}',
+      swalSuccess: '{{ __('common.swal_success') }} !!',
+      swalError:   '{{ __('common.swal_error') }} !!',
+  };
 
   function limit(element) {
       var max_chars = 12;
@@ -283,7 +291,7 @@
     //var idrefDemande = $('#idrefDemande').val(); 
     if(nom_maison2 === null )
     {
-        alert('Merci de sélectionner une maison');
+        alert(PRIX_I18N.alertHouse);
         return false;
     }
     else
@@ -317,7 +325,7 @@
 
     if(numero_chambre_go === null )
     {
-        alert('Merci de sélectionner un type de chambre');
+        alert(PRIX_I18N.alertRoom);
         return false;
     }
     else
@@ -370,14 +378,14 @@
           beforeSend: function(data) {
               $("#AjouterPrix button#close").prop("disabled", true);
               $("#AjouterPrix button#valider").prop("disabled", true);
-              $("#AjouterPrix button#valider").html('<i class="text-center fa fa-spinner fa-pulse fa-1x fa-fw ml-2">En cours...</i>');
+              $("#AjouterPrix button#valider").html('<i class="text-center fa fa-spinner fa-pulse fa-1x fa-fw ml-2">' + PRIX_I18N.inProgress + '</i>');
           },
           success: function(data) {
 
 
               $("#AjouterPrix button#close").prop("disabled", false);
               $("#AjouterPrix button#valider").prop("disabled", false);
-              $("#AjouterPrix button#valider").html('Enregistrer');
+              $("#AjouterPrix button#valider").html(PRIX_I18N.btnSave);
 
 
               if (!$.isEmptyObject(data.error)) {
@@ -389,13 +397,12 @@
 
                      // alert(data.message);
                       //$("#AjouterPrix div#afficher").html(data.message)
-                    display_message("Super !!",data.message,"success","btn btn-primary");
+                    display_message(PRIX_I18N.swalSuccess, data.message, "success", "btn btn-primary");
 
 
                       $("#AjouterPrix form#formulaire")[0].reset();
                   } else {
-                     // $("#AjouterPrix div#afficher").html(data.message)
-                    display_message("Erreur !!",data.message,"warning","btn btn-danger");
+                    display_message(PRIX_I18N.swalError, data.message, "warning", "btn btn-danger");
 
 
                   }

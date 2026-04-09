@@ -4,15 +4,15 @@
 @section('content')
 
     @section('title')
-    <title>Gestion utilisateur</title>
+    <title>{{ __('pages.user_title') }}</title>
     @endsection
     
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil/Gestion utilisateur/</span>Modification</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('pages.user_breadcrumb') }}</span></h4>
 
         <div class="ms-3 demo-inline-spacing">
             <a href="{{ route('getUserView') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Retour
+                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; {{ __('common.btn_back') }}
             </a>
         </div> <br>
 
@@ -29,7 +29,7 @@
                     <input type="text" value="{{ encrypt_id($user->id) }}" name="user" hidden>
 
                     <div class="row mb-3">
-                        <label for="nom" class="col-sm-2 col-form-label">Nom<span style="color: red;">*</span></label>
+                        <label for="nom" class="col-sm-2 col-form-label">{{ __('pages.user_label_name') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" value="{{ $user->nom }}"class="form-control  @error('nom') is-invalid @enderror" id="nom" name="nom" required>
                             <span class="text-danger error-text nom_err small mb-2"></span>
@@ -38,7 +38,7 @@
 
 
                     <div class="row mb-3">
-                        <label for="prenom" class="col-sm-2 col-form-label">Prénom<span style="color: red;">*</span></label>
+                        <label for="prenom" class="col-sm-2 col-form-label">{{ __('pages.user_label_firstname') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" value="{{ $user->prenom }}"  class="form-control  @error('prenom') is-invalid @enderror" id="prenom" name="prenom" required>
                             <span class="text-danger error-text prenom_err small mb-2"></span>
@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Email<span style="color: red;">*</span></label>
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">{{ __('pages.user_label_email') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="email" class="form-control  @error('email') is-invalid @enderror" value="{{ $user->email }}" id="email" name="email" required>
                             <span class="text-danger error-text email_err small mb-2"></span>
@@ -55,7 +55,7 @@
 
 
                     <div class="row mb-3">
-                        <label for="grade" class="col-sm-2 col-form-label">Grade<span style="color: red;">*</span></label>
+                        <label for="grade" class="col-sm-2 col-form-label">{{ __('pages.user_label_grade') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" value="{{ $user->grade }}" class="form-control  @error('grade') is-invalid @enderror" id="grade" name="grade" required>
                             <span class="text-danger error-text grade_err small mb-2"></span>
@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Fonctions<span style="color: red;">*</span></label>
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">{{ __('pages.user_label_roles') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             {!! Form::select('roles[]', $roles,$userRole, array('class' => 'form-control')) !!}
 
@@ -75,7 +75,7 @@
                     <div class="mt-2 text-center">
                         <button class="btn btn-primary" id="valider" type="submit">
                             <span class="fa fa-save" id="a"></span>
-                            <span id="s">Enregistrer</span>
+                            <span id="s">{{ __('common.btn_save') }}</span>
                         </button>
                     </div>
 
@@ -90,7 +90,13 @@
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-
+<script>
+var EDIT_USER_SAVE_LBL    = '{{ __('common.btn_save') }}';
+var EDIT_USER_IN_PROGRESS = '{{ __('pages.owner_in_progress') }}';
+var EDIT_USER_SUCCESS_LBL = '{{ __('common.swal_success') }}';
+var EDIT_USER_ERROR_LBL   = '{{ __('common.swal_error') }}';
+var EDIT_USER_NOT_AUTH    = '{{ __('pages.user_not_authorized') }}';
+</script>
 
 <script>
     $(document).ready(function() {
@@ -116,7 +122,7 @@
             method: 'POST',
             data: donnees,
             beforeSend: function(data) {
-                $("#s").html("<i class='spinner-border spinner-border-sm'></i> En cours...");
+                $("#s").html("<i class='spinner-border spinner-border-sm'></i> " + EDIT_USER_IN_PROGRESS);
 
                 $("#a").removeClass("fa fa-save");
                 $("#a").addClass("spinner-border text-primary");
@@ -131,7 +137,7 @@
                 try {
                     if (data.status) {
 
-                        display_message("Super !!",data.message,"success","btn btn-primary");
+                        display_message(EDIT_USER_SUCCESS_LBL + " !!",data.message,"success","btn btn-primary");
 
                         $("#afficher").removeClass("alert alert-danger bg-danger text-light border-0 alert-dismissible fade show");
 
@@ -139,19 +145,19 @@
 
                         $("#update_user")[0].reset();
                     } else {
-                    display_message("Erreur !!",data.message,"warning","btn btn-danger");
+                    display_message(EDIT_USER_ERROR_LBL + " !!",data.message,"warning","btn btn-danger");
 
                         $("#afficher").addClass("alert alert-danger bg-danger text-light border-0 alert-dismissible fade show").html(data.message).show();
                     }
-                    $("#s").html("Enregistrer");
+                    $("#s").html(EDIT_USER_SAVE_LBL);
                     $("#a").removeClass("spinner-border spinner-border-sm");
                     $("#a").addClass("mdi mdi-content-save");
                     $("#valider").attr("disabled", false);
                 } catch (error) {
-                    display_message("Erreur !!",data.message,"warning","btn btn-danger");
+                    display_message(EDIT_USER_ERROR_LBL + " !!",data.message,"warning","btn btn-danger");
 
                     $("#afficher").addClass("alert alert-danger bg-danger text-light border-0 alert-dismissible fade show").html(data.message).show();
-                    $("#s").html("Enregistrer");
+                    $("#s").html(EDIT_USER_SAVE_LBL);
 
                     $("#a").removeClass("spinner-border spinner-border-sm");
                     $("#a").addClass("mdi mdi-content-save");
@@ -161,11 +167,11 @@
 
             },
             error: function(data) {
-                $("#s").html("Enregistrer");
+                $("#s").html(EDIT_USER_SAVE_LBL);
                 $("#a").removeClass("spinner-border spinner-border-sm");
                 $("#a").addClass("mdi mdi-content-save");
                 $("#valider").attr("disabled", false);
-                $("#afficher").addClass("alert alert-danger bg-danger text-light border-0 alert-dismissible fade show").html("vous n'êtes pas autorisé pour effectuer cette action").show();
+                $("#afficher").addClass("alert alert-danger bg-danger text-light border-0 alert-dismissible fade show").html(EDIT_USER_NOT_AUTH).show();
             }
         });
     }

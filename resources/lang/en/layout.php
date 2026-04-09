@@ -1,0 +1,72 @@
+<?php
+// Global layout translations: sidebar, navbar, modal
+
+return [
+
+    // ── Sidebar ────────────────────────────────────────────────────────
+    'home'                   => 'Home',
+    'settings'               => 'Settings',
+    'user_management'        => 'User management',
+    'roles'                  => 'Roles',
+    'users'                  => 'Users',
+    'super_admin'            => 'Super Admin',
+    'contact_messages'       => 'Contact messages',
+    'platform_config'        => 'Platform configuration',
+    'plans'                  => 'Subscription plans',
+    'messaging_rates'        => 'SMS & WhatsApp rates',
+    'company_management'     => 'Company management',
+    'owner_management'       => 'Owner management',
+    'house_management'       => 'Property management',
+    'room_management'        => 'Room management',
+    'tenant_management'      => 'Tenant management',
+    'rent_management'        => 'Rent management',
+    'communications'         => 'Communications',
+    'needs_ads'              => 'Needs & listings',
+    'client_needs'           => 'Client needs',
+    'property_ads'           => 'Property listings',
+    'reporting'              => 'Reporting',
+    'pmcl'                   => 'O/P/R/T',
+    'finance'                => 'Finance',
+    'receipts'               => 'Receipts',
+    'ads_management'         => 'Ads management',
+    'activity_log'           => 'Activity log',
+    'my_subscription'        => 'My Subscription',
+    'my_profile'             => 'My Profile',
+    'logout'                 => 'Logout',
+
+    // ── Navbar ─────────────────────────────────────────────────────────
+    'choose_agency'          => 'Choose an agency',
+    'notifications'          => 'Notifications',
+    'mark_all_read'          => 'Mark all as read',
+    'no_notification'        => 'No notifications',
+    'generate_contract'      => 'Generate lease agreement',
+    'password'               => 'Password',
+    'language'               => 'Language',
+    'french'                 => 'French',
+    'english'                => 'English',
+
+    // ── Agency toast ───────────────────────────────────────────────────
+    'toast_success'          => 'Success',
+    'toast_error'            => 'Error',
+    'agency_change_error'    => 'Unable to change agency.',
+    'network_error'          => 'An error occurred.',
+
+    // ── Contract modal ─────────────────────────────────────────────────
+    'modal_contract_title'   => 'Generate lease agreement',
+    'select_tenant'          => 'Select a tenant',
+    'choose_tenant'          => '-- Choose a tenant --',
+    'search_tenant'          => 'Search for a tenant...',
+    'tenant_info'            => 'Tenant information',
+    'label_name'             => 'Name:',
+    'label_phone'            => 'Phone:',
+    'label_house'            => 'Property:',
+    'label_room'             => 'Room:',
+    'label_rent'             => 'Rent:',
+    'btn_cancel'             => 'Cancel',
+    'btn_generate_pdf'       => 'Generate PDF',
+    'loading'                => 'Loading...',
+    'no_tenant_found'        => 'No tenants found',
+    'loading_error'          => 'Loading error',
+    'rent_suffix'            => 'F CFA / month',
+    'room_prefix'            => 'Rm.',
+];

@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
             'email_verified_at' => Carbon::now(),
             'last_login'        => Carbon::now(),
             'iddirection_ref'   => $direction->iddirection,
-            'idannexe_ref'      => $annexe->idannexe,
+            'idannexe_ref'      => $annexe->idannexes,
             'type_compte'       => 'Particulier',
         ]);
 

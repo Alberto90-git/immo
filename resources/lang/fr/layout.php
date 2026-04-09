@@ -1,0 +1,72 @@
+<?php
+// Traductions du layout global : sidebar, navbar, modal contrat
+
+return [
+
+    // ── Sidebar ────────────────────────────────────────────────────────
+    'home'                   => 'Accueil',
+    'settings'               => 'Paramétrage',
+    'user_management'        => 'Gestion utilisateur',
+    'roles'                  => 'Fonction',
+    'users'                  => 'Utilisateur',
+    'super_admin'            => 'Super Admin',
+    'contact_messages'       => 'Messages de contact',
+    'platform_config'        => 'Configuration plateforme',
+    'plans'                  => 'Plans d\'abonnement',
+    'messaging_rates'        => 'Tarifs SMS & WhatsApp',
+    'company_management'     => 'Gestion entreprise',
+    'owner_management'       => 'Gestion propriétaire',
+    'house_management'       => 'Gestion des maisons',
+    'room_management'        => 'Gestion des chambres',
+    'tenant_management'      => 'Gestion des locataires',
+    'rent_management'        => 'Gestion des loyers',
+    'communications'         => 'Communications',
+    'needs_ads'              => 'Gestion des besoins & annonces',
+    'client_needs'           => 'Besoins client',
+    'property_ads'           => 'Annonces des biens',
+    'reporting'              => 'Gestion reporting',
+    'pmcl'                   => 'P/M/C/L',
+    'finance'                => 'Finance',
+    'receipts'               => 'Recu',
+    'ads_management'         => 'Gestion publicité',
+    'activity_log'           => 'Log connexion',
+    'my_subscription'        => 'Mon Abonnement',
+    'my_profile'             => 'Mon Profil',
+    'logout'                 => 'Quitter',
+
+    // ── Navbar ─────────────────────────────────────────────────────────
+    'choose_agency'          => 'Choisir une agence',
+    'notifications'          => 'Notifications',
+    'mark_all_read'          => 'Tout marquer comme lu',
+    'no_notification'        => 'Aucune notification',
+    'generate_contract'      => 'Générer un contrat de bail',
+    'password'               => 'Mot de passe',
+    'language'               => 'Langue',
+    'french'                 => 'Français',
+    'english'                => 'Anglais',
+
+    // ── Toast agence ───────────────────────────────────────────────────
+    'toast_success'          => 'Succès',
+    'toast_error'            => 'Erreur',
+    'agency_change_error'    => 'Impossible de changer d\'agence.',
+    'network_error'          => 'Une erreur s\'est produite.',
+
+    // ── Modal contrat ──────────────────────────────────────────────────
+    'modal_contract_title'   => 'Générer un contrat de bail',
+    'select_tenant'          => 'Sélectionner un locataire',
+    'choose_tenant'          => '-- Choisir un locataire --',
+    'search_tenant'          => 'Rechercher un locataire...',
+    'tenant_info'            => 'Informations du locataire',
+    'label_name'             => 'Nom :',
+    'label_phone'            => 'Téléphone :',
+    'label_house'            => 'Maison :',
+    'label_room'             => 'Chambre :',
+    'label_rent'             => 'Loyer :',
+    'btn_cancel'             => 'Annuler',
+    'btn_generate_pdf'       => 'Générer le PDF',
+    'loading'                => 'Chargement...',
+    'no_tenant_found'        => 'Aucun locataire trouvé',
+    'loading_error'          => 'Erreur de chargement',
+    'rent_suffix'            => 'F CFA / mois',
+    'room_prefix'            => 'Ch.',
+];

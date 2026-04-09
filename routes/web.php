@@ -25,6 +25,7 @@ use App\Http\Controllers\SuperAdminPlanController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MessagingRateController;
 use App\Http\Controllers\TemoignageController;
+use App\Http\Controllers\LocaleController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +49,9 @@ use Illuminate\Support\Facades\Gate;
 
 
 Route::get('/', [ParametreController::class, 'welcome_page'])->name('accueil');
+
+// Changement de langue
+Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 // Formulaire de contact — public (sans authentification)
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
@@ -95,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::get('platform/kkiapay-config', [PlatformConfigController::class, 'getAdminConfig'])->name('platform.kkiapay.config');
     Route::post('platform/kkiapay-config', [PlatformConfigController::class, 'update'])->name('platform.kkiapay.update');
     Route::post('platform/at-config', [PlatformConfigController::class, 'updateAtConfig'])->name('platform.at.update');
+    Route::post('platform/contact-blocage', [PlatformConfigController::class, 'updateContactBlocage'])->name('platform.contact_blocage.update');
 
     // Routes Super Admin — Configuration des plans d'abonnement
     Route::get('super-admin/config-plans', [SuperAdminPlanController::class, 'index'])->name('super_admin.config_plans');

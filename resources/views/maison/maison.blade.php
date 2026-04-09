@@ -1,7 +1,7 @@
 @extends('layouts.template')
 
 @section('title')
-<title>Gestion maison</title>
+<title>{{ __('pages.house_title') }}</title>
 @endsection
 
 @section('content')
@@ -12,7 +12,7 @@
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion maison</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.house_breadcrumb') }}</h4>
 
     @include('notification.display_message')
 
@@ -30,17 +30,17 @@
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header bg-primary">
-            <h5 class="modal-title text-white">Ajouter une maison</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            <h5 class="modal-title text-white">{{ __('pages.house_add_modal') }}</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{{ __('common.btn_close') }}"></button>
           </div>
           <div class="modal-body">
             <form class="row g-3" id="formAjouterMaison">
               @csrf
 
               <div class="col-12">
-                <label class="form-label">Choisir un propriétaire <span class="text-danger">*</span></label>
+                <label class="form-label">{{ __('pages.house_choose_owner') }} <span class="text-danger">*</span></label>
                 <select required class="form-select" name="nom_proprietaire" id="nom_proprietaire">
-                  <option selected disabled value="">Choisir un propriétaire</option>
+                  <option selected disabled value="">{{ __('pages.house_choose_owner_opt') }}</option>
                   @if(isset($allProprios))
                     @foreach($allProprios as $terme)
                       <option value="{{ $terme->id }}">{{ $terme->nom }} {{ $terme->prenom }}</option>
@@ -50,24 +50,24 @@
               </div>
 
               <div class="col-12">
-                <label class="form-label">Nom de la maison <span class="text-danger">*</span></label>
+                <label class="form-label">{{ __('pages.house_name') }} <span class="text-danger">*</span></label>
                 <input type="text" name="nom_maison" class="form-control" id="nom_maison" required>
               </div>
 
               <div class="col-12">
-                <label class="form-label">Quartier <span class="text-danger">*</span></label>
+                <label class="form-label">{{ __('pages.house_district') }} <span class="text-danger">*</span></label>
                 <input type="text" name="quartier" class="form-control" id="quartier" required>
               </div>
 
               <div class="col-12">
-                <label class="form-label">Nombre de chambres <span class="text-danger">*</span></label>
+                <label class="form-label">{{ __('pages.house_room_count') }} <span class="text-danger">*</span></label>
                 <input type="number" min="1" name="nombre_chambre" class="form-control" id="nombre_chambre" required>
               </div>
 
               <div class="modal-footer mt-3">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
                 <button type="submit" class="btn btn-primary">
-                  <span class="bx bx-save me-1"></span> Enregistrer
+                  <span class="bx bx-save me-1"></span> {{ __('common.btn_save') }}
                 </button>
               </div>
             </form>
@@ -79,18 +79,18 @@
     {{-- Liste des maisons --}}
     <div class="card shadow-sm border-0">
       <div class="card-header bg-primary text-center">
-        <h5 class="mb-0 text-white"><i class="bx bx-home me-1"></i> Liste des maisons</h5>
+        <h5 class="mb-0 text-white"><i class="bx bx-home me-1"></i> {{ __('pages.house_list') }}</h5>
       </div>
       <div class="card-body">
         <div class="table-responsive">
           <table id="example" class="table table-striped table-hover align-middle mb-0" style="width:100%">
             <thead class="table-light">
               <tr>
-                <th>Propriétaire</th>
-                <th>Nom maison</th>
-                <th>Quartier</th>
-                <th>Nombre de chambres</th>
-                <th class="text-center">Actions</th>
+                <th>{{ __('pages.house_owner') }}</th>
+                <th>{{ __('common.th_house') }}</th>
+                <th>{{ __('pages.house_district') }}</th>
+                <th>{{ __('pages.house_room_count') }}</th>
+                <th class="text-center">{{ __('common.th_actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -104,7 +104,7 @@
                       <td>{{ $item->nombre_chambre }}</td>
                       <td class="text-center">
                         @can('modify-maison')
-                          <a class="btn btn-sm btn-primary me-1" title="Modifier"
+                          <a class="btn btn-sm btn-primary me-1" title="{{ __('common.title_edit') }}"
                              data-bs-toggle="modal" data-bs-target="#modifier{{ $item->id }}">
                             <i class="bx bx-edit-alt"></i>
                           </a>
@@ -112,7 +112,7 @@
                         @can('delete-maison')
                           <button type="button"
                                   class="btn btn-sm btn-danger btn-supprimer-maison"
-                                  title="Supprimer"
+                                  title="{{ __('common.title_delete') }}"
                                   data-id="{{ $item->id }}"
                                   data-nom="{{ $item->nom_maison }}">
                             <i class="bx bx-trash"></i>
@@ -136,8 +136,8 @@
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
               <div class="modal-header bg-primary">
-                <h5 class="modal-title text-white">Modifier une maison</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                <h5 class="modal-title text-white">{{ __('pages.house_edit_modal') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{{ __('common.btn_close') }}"></button>
               </div>
               <div class="modal-body">
                 <form class="row g-3 form-modifier-maison" data-id="{{ $items->id }}">
@@ -145,9 +145,9 @@
                   <input type="hidden" name="house_id" value="{{ $items->id }}">
 
                   <div class="col-12">
-                    <label class="form-label">Choisir un propriétaire <span class="text-danger">*</span></label>
+                    <label class="form-label">{{ __('pages.house_choose_owner') }} <span class="text-danger">*</span></label>
                     <select required class="form-select" name="nom_proprietaire2">
-                      <option selected disabled value="">Choisir un propriétaire</option>
+                      <option selected disabled value="">{{ __('pages.house_choose_owner_opt') }}</option>
                       @if(isset($allProprios))
                         @foreach($allProprios as $terme)
                           <option value="{{ $terme->id }}" {{ $items->proprio_id == $terme->id ? 'selected' : '' }}>
@@ -159,25 +159,25 @@
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Nom de la maison <span class="text-danger">*</span></label>
+                    <label class="form-label">{{ __('pages.house_name') }} <span class="text-danger">*</span></label>
                     <input type="text" name="nom_maison" class="form-control" value="{{ $items->nom_maison }}" required>
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Quartier <span class="text-danger">*</span></label>
+                    <label class="form-label">{{ __('pages.house_district') }} <span class="text-danger">*</span></label>
                     <input type="text" name="quartier" class="form-control" value="{{ $items->quartier }}" required>
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Nombre de chambres <span class="text-danger">*</span></label>
+                    <label class="form-label">{{ __('pages.house_room_count') }} <span class="text-danger">*</span></label>
                     <input type="number" min="1" name="nombre_chambre" class="form-control"
                            value="{{ $items->nombre_chambre }}" required>
                   </div>
 
                   <div class="modal-footer mt-3">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
                     <button type="submit" class="btn btn-primary">
-                      <span class="bx bx-save me-1"></span> Enregistrer
+                      <span class="bx bx-save me-1"></span> {{ __('common.btn_save') }}
                     </button>
                   </div>
                 </form>
@@ -200,6 +200,29 @@ var CAN_MODIFY_MAISON = {{ auth()->user()->can('modify-maison') ? 'true' : 'fals
 var CAN_DELETE_MAISON = {{ auth()->user()->can('delete-maison') ? 'true' : 'false' }};
 var ALL_PROPRIOS = @json($allProprios->map(fn($p) => ['id' => $p->id, 'nom' => $p->nom.' '.$p->prenom]));
 
+// i18n strings
+var I18N = {
+    editModal:      '{{ __('pages.house_edit_modal') }}',
+    chooseOwner:    '{{ __('pages.house_choose_owner_opt') }}',
+    houseName:      '{{ __('pages.house_name') }}',
+    district:       '{{ __('pages.house_district') }}',
+    roomCount:      '{{ __('pages.house_room_count') }}',
+    btnClose:       '{{ __('common.btn_close') }}',
+    btnSave:        '{{ __('common.btn_save') }}',
+    titleEdit:      '{{ __('common.title_edit') }}',
+    titleDelete:    '{{ __('common.title_delete') }}',
+    swalSuccess:    '{{ __('common.swal_success') }}',
+    swalWarning:    '{{ __('common.swal_warning') }}',
+    swalError:      '{{ __('common.swal_error') }}',
+    swalDeleted:    '{{ __('common.swal_deleted') }}',
+    swalUpdated:    '{{ __('common.swal_updated') }}',
+    swalUnexpected: '{{ __('common.swal_unexpected_error') }}',
+    deleteTitle:    '{{ __('pages.house_delete_title') }}',
+    deleteText:     '{{ __('pages.house_delete_text') }}',
+    btnYesDelete:   '{{ __('common.btn_yes_delete') }}',
+    btnCancel:      '{{ __('common.btn_cancel') }}',
+};
+
 // ─── Utilitaire fermeture modal ───────────────────────────────────────────────
 function closeModalClean(id) {
     const modalEl = document.getElementById(id);
@@ -221,7 +244,7 @@ function creerModalModifierMaison(m) {
     if (document.getElementById(modalId)) return; // déjà présent
 
     // Construire les options du select propriétaire
-    let optionsProprio = '<option selected disabled value="">Choisir un propriétaire</option>';
+    let optionsProprio = `<option selected disabled value="">${I18N.chooseOwner}</option>`;
     ALL_PROPRIOS.forEach(function(p) {
         optionsProprio += `<option value="${p.id}">${p.nom}</option>`;
     });
@@ -235,35 +258,35 @@ function creerModalModifierMaison(m) {
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white">Modifier une maison</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    <h5 class="modal-title text-white">${I18N.editModal}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="${I18N.btnClose}"></button>
                 </div>
                 <div class="modal-body">
                     <form class="row g-3 form-modifier-maison" data-id="${m.id}">
                         <input type="hidden" name="_token" value="${CSRF_TOKEN}">
                         <input type="hidden" name="house_id" value="${m.id}">
                         <div class="col-12">
-                            <label class="form-label">Choisir un propriétaire <span class="text-danger">*</span></label>
+                            <label class="form-label">${I18N.chooseOwner} <span class="text-danger">*</span></label>
                             <select required class="form-select" name="nom_proprietaire2">
                                 ${optionsProprio}
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Nom de la maison <span class="text-danger">*</span></label>
+                            <label class="form-label">${I18N.houseName} <span class="text-danger">*</span></label>
                             <input type="text" name="nom_maison" class="form-control" value="${m.nom_maison}" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Quartier <span class="text-danger">*</span></label>
+                            <label class="form-label">${I18N.district} <span class="text-danger">*</span></label>
                             <input type="text" name="quartier" class="form-control" value="${m.quartier}" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">Nombre de chambres <span class="text-danger">*</span></label>
+                            <label class="form-label">${I18N.roomCount} <span class="text-danger">*</span></label>
                             <input type="number" min="1" name="nombre_chambre" class="form-control" value="${m.nombre_chambre}" required>
                         </div>
                         <div class="modal-footer mt-3">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">${I18N.btnClose}</button>
                             <button type="submit" class="btn btn-primary">
-                                <span class="bx bx-save me-1"></span> Enregistrer
+                                <span class="bx bx-save me-1"></span> ${I18N.btnSave}
                             </button>
                         </div>
                     </form>
@@ -297,10 +320,10 @@ $(document).on('submit.page', '#formAjouterMaison', function(e) {
             // Boutons d'action
             let actions = '';
             if (CAN_MODIFY_MAISON) {
-                actions += `<a class="btn btn-sm btn-primary me-1" title="Modifier" data-bs-toggle="modal" data-bs-target="#modifier${m.id}"><i class="bx bx-edit-alt"></i></a>`;
+                actions += `<a class="btn btn-sm btn-primary me-1" title="${I18N.titleEdit}" data-bs-toggle="modal" data-bs-target="#modifier${m.id}"><i class="bx bx-edit-alt"></i></a>`;
             }
             if (CAN_DELETE_MAISON) {
-                actions += `<button type="button" class="btn btn-sm btn-danger btn-supprimer-maison" title="Supprimer" data-id="${m.id}" data-nom="${m.nom_maison}"><i class="bx bx-trash"></i></button>`;
+                actions += `<button type="button" class="btn btn-sm btn-danger btn-supprimer-maison" title="${I18N.titleDelete}" data-id="${m.id}" data-nom="${m.nom_maison}"><i class="bx bx-trash"></i></button>`;
             }
 
             // Ajouter la ligne au tableau
@@ -322,12 +345,12 @@ $(document).on('submit.page', '#formAjouterMaison', function(e) {
             // Reset formulaire (modal reste ouvert)
             form.reset();
 
-            Swal.fire({ icon: 'success', title: 'Succès', text: res.message, timer: 2500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: I18N.swalSuccess, text: res.message, timer: 2500, showConfirmButton: false });
         } else {
-            Swal.fire({ icon: 'warning', title: 'Attention', text: res.message });
+            Swal.fire({ icon: 'warning', title: I18N.swalWarning, text: res.message });
         }
     })
-    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+    .catch(() => Swal.fire({ icon: 'error', title: I18N.swalError, text: I18N.swalUnexpected }));
 });
 
 // ─── MODIFICATION (délégation — fonctionne après re-rendu DataTables) ─────────
@@ -352,13 +375,13 @@ $(document).on('submit.page', '.form-modifier-maison', function(e) {
                 cells[2].textContent = res.maison.quartier;
                 cells[3].textContent = res.maison.nombre_chambre;
             }
-            Swal.fire({ icon: 'success', title: 'Mis à jour', text: res.message, timer: 2500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: I18N.swalUpdated, text: res.message, timer: 2500, showConfirmButton: false });
             closeModalClean('modifier' + id);
         } else {
-            Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+            Swal.fire({ icon: 'error', title: I18N.swalError, text: res.message });
         }
     })
-    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+    .catch(() => Swal.fire({ icon: 'error', title: I18N.swalError, text: I18N.swalUnexpected }));
 });
 
 // ─── SUPPRESSION (délégation — fonctionne après re-rendu DataTables) ──────────
@@ -367,14 +390,14 @@ $(document).on('click.page', '.btn-supprimer-maison', function() {
     const nom = this.dataset.nom;
 
     Swal.fire({
-        title: 'Supprimer cette maison ?',
-        html: `<strong class="text-danger">${nom}</strong><br><small class="text-muted">Cette action supprimera également toutes les chambres et locataires associés.</small>`,
+        title: I18N.deleteTitle,
+        html: `<strong class="text-danger">${nom}</strong><br><small class="text-muted">${I18N.deleteText}</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler'
+        confirmButtonText: I18N.btnYesDelete,
+        cancelButtonText: I18N.btnCancel
     }).then(result => {
         if (!result.isConfirmed) return;
 
@@ -390,7 +413,7 @@ $(document).on('click.page', '.btn-supprimer-maison', function() {
         .then(r => r.json())
         .then(res => {
             if (res.status) {
-                Swal.fire({ icon: 'success', title: 'Supprimé', text: res.message, timer: 2500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: I18N.swalDeleted, text: res.message, timer: 2500, showConfirmButton: false });
                 if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
                     $('#example').DataTable().row('#row-maison-' + id).remove().draw(false);
                 } else {
@@ -398,10 +421,10 @@ $(document).on('click.page', '.btn-supprimer-maison', function() {
                     if (row) row.remove();
                 }
             } else {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+                Swal.fire({ icon: 'error', title: I18N.swalError, text: res.message });
             }
         })
-        .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+        .catch(() => Swal.fire({ icon: 'error', title: I18N.swalError, text: I18N.swalUnexpected }));
     });
 });
 

@@ -2,7 +2,7 @@
 
 @section('content')
 @section('title')
-<title>Gestion entreprise</title>
+<title>{{ __('pages.ent_title') }}</title>
 @endsection
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -13,7 +13,7 @@
       <div class="card text-center border-0 shadow-sm h-100">
         <div class="card-body py-3">
           <div class="fs-1 fw-bold text-primary">{{ $stats['total'] }}</div>
-          <div class="text-muted small">Total entreprises</div>
+          <div class="text-muted small">{{ __('pages.ent_stat_total') }}</div>
         </div>
       </div>
     </div>
@@ -21,7 +21,7 @@
       <div class="card text-center border-0 shadow-sm h-100">
         <div class="card-body py-3">
           <div class="fs-1 fw-bold text-success">{{ $stats['actifs'] }}</div>
-          <div class="text-muted small">Actives</div>
+          <div class="text-muted small">{{ __('pages.ent_stat_active') }}</div>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
       <div class="card text-center border-0 shadow-sm h-100">
         <div class="card-body py-3">
           <div class="fs-1 fw-bold text-warning">{{ $stats['en_attente'] }}</div>
-          <div class="text-muted small">En attente</div>
+          <div class="text-muted small">{{ __('pages.ent_stat_waiting') }}</div>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
       <div class="card text-center border-0 shadow-sm h-100">
         <div class="card-body py-3">
           <div class="fs-1 fw-bold text-danger">{{ $stats['expires'] }}</div>
-          <div class="text-muted small">Abonnements expirés</div>
+          <div class="text-muted small">{{ __('pages.ent_stat_expired') }}</div>
         </div>
       </div>
     </div>
@@ -46,12 +46,12 @@
   {{-- ===== Tableau principal entreprises ===== --}}
   <div class="card shadow-sm">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-      <h5 class="mb-0"><i class="bx bx-buildings me-1"></i> Liste des entreprises</h5>
+      <h5 class="mb-0"><i class="bx bx-buildings me-1"></i> {{ __('pages.ent_list_title') }}</h5>
       <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">Tous</button>
-        <button class="btn btn-sm btn-outline-success filter-btn" data-filter="actif">Actifs</button>
-        <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="attente">En attente</button>
-        <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="expire">Expirés</button>
+        <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="all">{{ __('pages.ent_filter_all') }}</button>
+        <button class="btn btn-sm btn-outline-success filter-btn" data-filter="actif">{{ __('pages.ent_filter_active') }}</button>
+        <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="attente">{{ __('pages.ent_filter_waiting') }}</button>
+        <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="expire">{{ __('pages.ent_filter_expired') }}</button>
       </div>
     </div>
 
@@ -59,15 +59,15 @@
       <table id="tableEntreprises" class="table table-hover align-middle" style="width:100%">
         <thead class="table-light">
           <tr>
-            <th>Entreprise</th>
-            <th>Admin</th>
-            <th>Plan</th>
-            <th>Maisons</th>
-            <th>Agences</th>
-            <th>Fin abonnement</th>
-            <th>Jours restants</th>
-            <th>Statut</th>
-            <th class="text-center">Actions</th>
+            <th>{{ __('pages.ent_th_company') }}</th>
+            <th>{{ __('pages.ent_th_admin') }}</th>
+            <th>{{ __('pages.ent_th_plan') }}</th>
+            <th>{{ __('pages.ent_th_houses') }}</th>
+            <th>{{ __('pages.ent_th_agencies') }}</th>
+            <th>{{ __('pages.ent_th_sub_end') }}</th>
+            <th>{{ __('pages.ent_th_days_left') }}</th>
+            <th>{{ __('pages.ent_th_status') }}</th>
+            <th class="text-center">{{ __('common.th_actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -95,7 +95,7 @@
 
               {{-- Plan --}}
               <td>
-                <span class="badge bg-info">{{ $item->plan_nom ?? 'Aucun' }}</span>
+                <span class="badge bg-info">{{ $item->plan_nom ?? __('pages.ent_badge_none') }}</span>
                 @if($item->plan_prix)
                   <div class="small text-muted">{{ number_format($item->plan_prix, 0, ',', '.') }} XOF/an</div>
                 @endif
@@ -135,7 +135,7 @@
                 @if(is_null($jours))
                   <span class="text-muted">-</span>
                 @elseif($jours < 0)
-                  <span class="badge bg-danger">Expiré</span>
+                  <span class="badge bg-danger">{{ __('pages.ent_badge_expired') }}</span>
                 @elseif($jours <= 7)
                   <span class="badge bg-warning text-dark">{{ $jours }}j</span>
                 @elseif($jours <= 30)
@@ -148,11 +148,11 @@
               {{-- Statut --}}
               <td>
                 @if($blocked)
-                  <span class="badge rounded-pill bg-danger">En attente</span>
+                  <span class="badge rounded-pill bg-danger">{{ __('pages.ent_badge_waiting') }}</span>
                 @elseif($expired)
-                  <span class="badge rounded-pill bg-warning text-dark">Expiré</span>
+                  <span class="badge rounded-pill bg-warning text-dark">{{ __('pages.ent_badge_expired') }}</span>
                 @else
-                  <span class="badge rounded-pill bg-success">Actif</span>
+                  <span class="badge rounded-pill bg-success">{{ __('pages.ent_badge_active') }}</span>
                 @endif
               </td>
 
@@ -172,7 +172,7 @@
                                 data-id="{{ $item->iddirection }}"
                                 data-action="debloquer"
                                 data-nom="{{ $item->designation }}">
-                          <i class="bx bx-check-circle me-1"></i> Valider
+                          <i class="bx bx-check-circle me-1"></i> {{ __('pages.ent_menu_validate') }}
                         </button>
                       </li>
                     @else
@@ -181,7 +181,7 @@
                                 data-id="{{ $item->iddirection }}"
                                 data-action="bloquer"
                                 data-nom="{{ $item->designation }}">
-                          <i class="bx bx-lock me-1"></i> Bloquer
+                          <i class="bx bx-lock me-1"></i> {{ __('pages.ent_menu_block') }}
                         </button>
                       </li>
                     @endif
@@ -194,7 +194,7 @@
                               data-id="{{ $item->iddirection }}"
                               data-nom="{{ $item->designation }}"
                               data-plan="{{ $item->idplan ?? '' }}">
-                        <i class="bx bx-transfer me-1"></i> Changer de plan
+                        <i class="bx bx-transfer me-1"></i> {{ __('pages.ent_menu_change_plan') }}
                       </button>
                     </li>
 
@@ -204,7 +204,7 @@
                               data-id="{{ $item->iddirection }}"
                               data-nom="{{ $item->designation }}"
                               data-fin="{{ $item->abonnement_fin ?? '' }}">
-                        <i class="bx bx-refresh me-1"></i> Renouveler
+                        <i class="bx bx-refresh me-1"></i> {{ __('pages.ent_menu_renew') }}
                       </button>
                     </li>
 
@@ -227,7 +227,7 @@
                               data-debut="{{ $item->abonnement_debut ? \Carbon\Carbon::parse($item->abonnement_debut)->format('d/m/Y') : '-' }}"
                               data-fin="{{ $item->abonnement_fin ? \Carbon\Carbon::parse($item->abonnement_fin)->format('d/m/Y') : '-' }}"
                               data-statut="{{ $item->statut_abonnement ?? '-' }}">
-                        <i class="bx bx-info-circle me-1"></i> Détails
+                        <i class="bx bx-info-circle me-1"></i> {{ __('pages.ent_menu_details') }}
                       </button>
                     </li>
 
@@ -246,14 +246,14 @@
   {{-- ===== Tableau annexes ===== --}}
   <div class="card shadow-sm">
     <div class="card-header">
-      <h5 class="mb-0"><i class="bx bx-sitemap me-1"></i> Liste des agences</h5>
+      <h5 class="mb-0"><i class="bx bx-sitemap me-1"></i> {{ __('pages.ent_agencies_title') }}</h5>
     </div>
     <div class="table-responsive">
       <table id="tableAnnexes" class="table table-hover align-middle" style="width:100%">
         <thead class="table-light">
           <tr>
-            <th>Entreprise / Agence</th>
-            <th>Statut</th>
+            <th>{{ __('pages.ent_th_company_agency') }}</th>
+            <th>{{ __('pages.ent_th_status') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -262,9 +262,9 @@
               <td>{{ get_status_entreprise($item->iddirection_ref, $item->idannexes) }}</td>
               <td>
                 @if(empty($item->blocage_annexe))
-                  <span class="badge rounded-pill bg-success">Actif</span>
+                  <span class="badge rounded-pill bg-success">{{ __('pages.ent_badge_active') }}</span>
                 @else
-                  <span class="badge rounded-pill bg-danger">Désactivé</span>
+                  <span class="badge rounded-pill bg-danger">{{ __('pages.ent_badge_disabled') }}</span>
                 @endif
               </td>
             </tr>
@@ -281,14 +281,14 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bx bx-transfer me-1"></i> Changer de plan</h5>
+        <h5 class="modal-title"><i class="bx bx-transfer me-1"></i> {{ __('pages.ent_modal_change_plan') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted mb-3">Entreprise : <strong id="cpNomEntreprise"></strong></p>
+        <p class="text-muted mb-3">{{ __('pages.ent_cp_company') }} <strong id="cpNomEntreprise"></strong></p>
         <input type="hidden" id="cpIdDirection">
         <div class="mb-3">
-          <label class="form-label">Nouveau plan</label>
+          <label class="form-label">{{ __('pages.ent_cp_new_plan') }}</label>
           <select class="form-select" id="cpIdPlan">
             @foreach($plans as $plan)
               <option value="{{ $plan->idplan }}">{{ $plan->nom }} — {{ number_format($plan->prix_annuel, 0, ',', '.') }} XOF/an</option>
@@ -296,17 +296,17 @@
           </select>
         </div>
         <div class="mb-3">
-          <label class="form-label">Durée (mois)</label>
+          <label class="form-label">{{ __('pages.ent_cp_duration') }}</label>
           <div class="input-group">
             <input type="number" class="form-control" id="cpDuree" value="12" min="1" max="60">
-            <span class="input-group-text">mois</span>
+            <span class="input-group-text">{{ __('pages.recu_th_month') }}</span>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.btn_cancel') }}</button>
         <button type="button" class="btn btn-primary" id="btnSaveChangePlan">
-          <i class="bx bx-save me-1"></i> Enregistrer
+          <i class="bx bx-save me-1"></i> {{ __('common.btn_save') }}
         </button>
       </div>
     </div>
@@ -318,25 +318,25 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bx bx-refresh me-1"></i> Renouveler l'abonnement</h5>
+        <h5 class="modal-title"><i class="bx bx-refresh me-1"></i> {{ __('pages.ent_modal_renew') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted mb-1">Entreprise : <strong id="rnNomEntreprise"></strong></p>
-        <p class="text-muted mb-3">Fin actuelle : <strong id="rnFinActuelle"></strong></p>
+        <p class="text-muted mb-1">{{ __('pages.ent_rn_company') }} <strong id="rnNomEntreprise"></strong></p>
+        <p class="text-muted mb-3">{{ __('pages.ent_rn_current_end') }} <strong id="rnFinActuelle"></strong></p>
         <input type="hidden" id="rnIdDirection">
         <div class="mb-3">
-          <label class="form-label">Durée supplémentaire (mois)</label>
+          <label class="form-label">{{ __('pages.ent_rn_extra_duration') }}</label>
           <div class="input-group">
             <input type="number" class="form-control" id="rnDuree" value="12" min="1" max="60">
-            <span class="input-group-text">mois</span>
+            <span class="input-group-text">{{ __('pages.recu_th_month') }}</span>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.btn_cancel') }}</button>
         <button type="button" class="btn btn-success" id="btnSaveRenouveler">
-          <i class="bx bx-refresh me-1"></i> Renouveler
+          <i class="bx bx-refresh me-1"></i> {{ __('pages.ent_rn_btn') }}
         </button>
       </div>
     </div>
@@ -348,7 +348,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bx bx-info-circle me-1"></i> Détails — <span id="dtNom"></span></h5>
+        <h5 class="modal-title"><i class="bx bx-info-circle me-1"></i> {{ __('pages.ent_modal_details') }} <span id="dtNom"></span></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -356,13 +356,13 @@
           <div class="col-md-6">
             <div class="card border-0 bg-light h-100">
               <div class="card-body">
-                <h6 class="text-muted text-uppercase small mb-3">Informations</h6>
+                <h6 class="text-muted text-uppercase small mb-3">{{ __('pages.ent_dt_info') }}</h6>
                 <table class="table table-sm table-borderless mb-0">
-                  <tr><td class="text-muted">Admin</td><td><strong id="dtAdmin"></strong></td></tr>
-                  <tr><td class="text-muted">Email admin</td><td id="dtEmailAdmin"></td></tr>
-                  <tr><td class="text-muted">Email direction</td><td id="dtEmailDir"></td></tr>
-                  <tr><td class="text-muted">Téléphone</td><td id="dtTel"></td></tr>
-                  <tr><td class="text-muted">Siège social</td><td id="dtSiege"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_admin') }}</td><td><strong id="dtAdmin"></strong></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_email_admin') }}</td><td id="dtEmailAdmin"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_email_dir') }}</td><td id="dtEmailDir"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_phone') }}</td><td id="dtTel"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_head_office') }}</td><td id="dtSiege"></td></tr>
                 </table>
               </div>
             </div>
@@ -370,19 +370,19 @@
           <div class="col-md-6">
             <div class="card border-0 bg-light h-100">
               <div class="card-body">
-                <h6 class="text-muted text-uppercase small mb-3">Abonnement</h6>
+                <h6 class="text-muted text-uppercase small mb-3">{{ __('pages.ent_dt_subscription') }}</h6>
                 <table class="table table-sm table-borderless mb-0">
-                  <tr><td class="text-muted">Plan</td><td><strong id="dtPlan"></strong></td></tr>
-                  <tr><td class="text-muted">Prix</td><td id="dtPrix"></td></tr>
-                  <tr><td class="text-muted">Début</td><td id="dtDebut"></td></tr>
-                  <tr><td class="text-muted">Fin</td><td id="dtFin"></td></tr>
-                  <tr><td class="text-muted">Statut</td><td id="dtStatut"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_plan') }}</td><td><strong id="dtPlan"></strong></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_price') }}</td><td id="dtPrix"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_start') }}</td><td id="dtDebut"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_end') }}</td><td id="dtFin"></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_status') }}</td><td id="dtStatut"></td></tr>
                 </table>
                 <hr>
-                <h6 class="text-muted text-uppercase small mb-2">Utilisation</h6>
+                <h6 class="text-muted text-uppercase small mb-2">{{ __('pages.ent_dt_usage') }}</h6>
                 <table class="table table-sm table-borderless mb-0">
-                  <tr><td class="text-muted">Maisons</td><td><strong id="dtMaisons"></strong></td></tr>
-                  <tr><td class="text-muted">Agences</td><td><strong id="dtAgences"></strong></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_houses') }}</td><td><strong id="dtMaisons"></strong></td></tr>
+                  <tr><td class="text-muted">{{ __('pages.ent_dt_agencies') }}</td><td><strong id="dtAgences"></strong></td></tr>
                 </table>
               </div>
             </div>
@@ -390,13 +390,28 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+var ENT_I18N = {
+    blockTitle:    '{{ __('pages.ent_swal_block_title') }}',
+    blockBtn:      '{{ __('pages.ent_swal_block_btn') }}',
+    validateTitle: '{{ __('pages.ent_swal_validate_title') }}',
+    validateBtn:   '{{ __('pages.ent_swal_validate_btn') }}',
+    cancel:        '{{ __('common.btn_cancel') }}',
+    success:       '{{ __('common.swal_success') }}',
+    error:         '{{ __('common.swal_error') }}',
+    ok:            '{{ __('pages.ent_swal_ok') }}',
+    networkError:  '{{ __('pages.ent_swal_network_error') }}',
+    inProgress:    '<span class="spinner-border spinner-border-sm me-1"></span>{{ __('pages.ent_in_progress') }}',
+    btnSave:       '<i class="bx bx-save me-1"></i> {{ __('common.btn_save') }}',
+    btnRenew:      '<i class="bx bx-refresh me-1"></i> {{ __('pages.ent_rn_btn') }}',
+    none:          '{{ __('pages.ent_none') }}',
+};
 // ── Scripts inline (pas via push/stack) pour que le SPA puisse les ré-exécuter
 // ── Événements nommés (.ent) + .off() avant .on() → pas de double-binding
 
@@ -456,15 +471,15 @@ $(document).off('click.ent', '.btn-toggle-block')
 
   if (action === 'bloquer') {
     Swal.fire({
-      title: 'Bloquer cette entreprise ?',
-      html: 'L\'entreprise <strong>' + nom + '</strong> sera suspendue.<br><small class="text-muted">Ses utilisateurs ne pourront plus se connecter.</small>',
+      title: ENT_I18N.blockTitle,
+      html: '{{ __('pages.ent_swal_block_html', ['%s' => '']) }}'.replace('%s', nom),
       icon: 'warning',
       iconColor: '#dc3545',
       showCancelButton: true,
       confirmButtonColor: '#dc3545',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Oui, bloquer',
-      cancelButtonText: 'Annuler',
+      confirmButtonText: ENT_I18N.blockBtn,
+      cancelButtonText: ENT_I18N.cancel,
       reverseButtons: true,
       focusCancel: true
     }).then(function (result) {
@@ -472,15 +487,15 @@ $(document).off('click.ent', '.btn-toggle-block')
     });
   } else {
     Swal.fire({
-      title: 'Valider cette entreprise ?',
-      html: 'L\'entreprise <strong>' + nom + '</strong> sera réactivée.<br><small class="text-muted">Ses utilisateurs pourront à nouveau se connecter.</small>',
+      title: ENT_I18N.validateTitle,
+      html: '{{ __('pages.ent_swal_validate_html', ['%s' => '']) }}'.replace('%s', nom),
       icon: 'question',
       iconColor: '#198754',
       showCancelButton: true,
       confirmButtonColor: '#198754',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Oui, valider',
-      cancelButtonText: 'Annuler',
+      confirmButtonText: ENT_I18N.validateBtn,
+      cancelButtonText: ENT_I18N.cancel,
       reverseButtons: true,
       focusCancel: true
     }).then(function (result) {
@@ -504,7 +519,7 @@ $(document).off('click.ent', '.btn-change-plan')
 $(document).off('click.ent', '#btnSaveChangePlan')
            .on('click.ent', '#btnSaveChangePlan', function () {
   var btn = $(this);
-  btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
+  btn.prop('disabled', true).html(ENT_I18N.inProgress);
   $.post("{{ route('entreprise.change-plan') }}", {
     _token: '{{ csrf_token() }}',
     iddirection: $('#cpIdDirection').val(),
@@ -513,11 +528,11 @@ $(document).off('click.ent', '#btnSaveChangePlan')
   })
   .done(function (res) {
     bootstrap.Modal.getInstance('#modalChangePlan').hide();
-    Swal.fire({ icon: res.status ? 'success' : 'error', title: res.status ? 'Succès' : 'Erreur', text: res.message, confirmButtonText: 'OK' })
+    Swal.fire({ icon: res.status ? 'success' : 'error', title: res.status ? ENT_I18N.success : ENT_I18N.error, text: res.message, confirmButtonText: ENT_I18N.ok })
         .then(function () { if (res.status) location.reload(); });
   })
-  .fail(function () { Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error'); })
-  .always(function () { btn.prop('disabled', false).html('<i class="bx bx-save me-1"></i> Enregistrer'); });
+  .fail(function () { Swal.fire(ENT_I18N.error, ENT_I18N.networkError, 'error'); })
+  .always(function () { btn.prop('disabled', false).html(ENT_I18N.btnSave); });
 });
 
 // ── Modal Renouveler ────────────────────────────────────────
@@ -527,14 +542,14 @@ $(document).off('click.ent', '.btn-renouveler')
   var btn = $(this);
   $('#rnIdDirection').val(btn.data('id'));
   $('#rnNomEntreprise').text(btn.data('nom'));
-  $('#rnFinActuelle').text(btn.data('fin') || 'Aucune');
+  $('#rnFinActuelle').text(btn.data('fin') || ENT_I18N.none);
   new bootstrap.Modal('#modalRenouveler').show();
 });
 
 $(document).off('click.ent', '#btnSaveRenouveler')
            .on('click.ent', '#btnSaveRenouveler', function () {
   var btn = $(this);
-  btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>En cours…');
+  btn.prop('disabled', true).html(ENT_I18N.inProgress);
   $.post("{{ route('entreprise.renouveler') }}", {
     _token: '{{ csrf_token() }}',
     iddirection: $('#rnIdDirection').val(),
@@ -542,11 +557,11 @@ $(document).off('click.ent', '#btnSaveRenouveler')
   })
   .done(function (res) {
     bootstrap.Modal.getInstance('#modalRenouveler').hide();
-    Swal.fire({ icon: res.status ? 'success' : 'error', title: res.status ? 'Succès' : 'Erreur', text: res.message, confirmButtonText: 'OK' })
+    Swal.fire({ icon: res.status ? 'success' : 'error', title: res.status ? ENT_I18N.success : ENT_I18N.error, text: res.message, confirmButtonText: ENT_I18N.ok })
         .then(function () { if (res.status) location.reload(); });
   })
-  .fail(function () { Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error'); })
-  .always(function () { btn.prop('disabled', false).html('<i class="bx bx-refresh me-1"></i> Renouveler'); });
+  .fail(function () { Swal.fire(ENT_I18N.error, ENT_I18N.networkError, 'error'); })
+  .always(function () { btn.prop('disabled', false).html(ENT_I18N.btnRenew); });
 });
 
 // ── Modal Détails ───────────────────────────────────────────

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
+<html lang="{{ app()->getLocale() }}" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Lokativ | Nouveau mot de passe</title>
+    <title>Lokativ | {{ __('pages.reinit_title') }}</title>
     <meta name="description" content="Réinitialisation de mot de passe Lokativ" />
 
     @include('css_file')
@@ -348,12 +348,12 @@
                 <span class="auth-brand-name">Lokativ</span>
               </div>
 
-              <h4>Nouveau mot de passe <span class="welcome-emoji">🔑</span></h4>
+              <h4>{{ __('pages.reinit_heading') }} <span class="welcome-emoji">🔑</span></h4>
 
               @include('display_message')
 
               <div class="auth-info-box">
-                Créez un mot de passe sécurisé pour protéger votre compte.
+                {{ __('pages.reinit_info_box') }}
               </div>
 
               <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('changementPwd') }}">
@@ -362,12 +362,12 @@
 
                 <div class="form-group">
                   <label for="Nouveau_mot_de_passe" class="form-label">
-                    🔐 Nouveau mot de passe
+                    {{ __('pages.reinit_label_new') }}
                   </label>
                   <div class="input-group input-group-merge">
                     <input type="password" id="Nouveau_mot_de_passe"
                            class="form-control" name="Nouveau_mot_de_passe"
-                           placeholder="Entrez votre nouveau mot de passe"
+                           placeholder="{{ __('pages.reinit_ph_new') }}"
                            aria-describedby="Nouveau_mot_de_passe" required />
                     <span class="input-group-text cursor-pointer" id="togglePassword1">
                       <i class="bx bx-hide" id="toggleIcon1"></i>
@@ -380,37 +380,37 @@
 
                 <div class="form-group">
                   <label for="confirm_mot_de_passe" class="form-label">
-                    🔒 Confirmer le mot de passe
+                    {{ __('pages.reinit_label_confirm') }}
                   </label>
                   <div class="input-group input-group-merge">
                     <input type="password" id="confirm_mot_de_passe"
                            class="form-control" name="confirm_mot_de_passe"
-                           placeholder="Confirmez votre nouveau mot de passe"
+                           placeholder="{{ __('pages.reinit_ph_confirm') }}"
                            aria-describedby="confirm_mot_de_passe" required />
                     <span class="input-group-text cursor-pointer" id="togglePassword2">
                       <i class="bx bx-hide" id="toggleIcon2"></i>
                     </span>
                   </div>
                   <div class="passwords-match" id="passwordsMatch">
-                    <i class="bx bx-check"></i> Les mots de passe correspondent
+                    <i class="bx bx-check"></i> {{ __('pages.reinit_match') }}
                   </div>
                   <div class="passwords-no-match" id="passwordsNoMatch">
-                    <i class="bx bx-x"></i> Les mots de passe ne correspondent pas
+                    <i class="bx bx-x"></i> {{ __('pages.reinit_no_match') }}
                   </div>
                 </div>
 
                 <div class="password-requirements" id="passwordRequirementsBlock">
-                  <h6>Critères de sécurité :</h6>
-                  <div class="requirement" id="minLength"><i class="bx bx-x"></i> Au moins 8 caractères</div>
-                  <div class="requirement" id="hasUpper"><i class="bx bx-x"></i> Une lettre majuscule</div>
-                  <div class="requirement" id="hasLower"><i class="bx bx-x"></i> Une lettre minuscule</div>
-                  <div class="requirement" id="hasNumber"><i class="bx bx-x"></i> Un chiffre</div>
-                  <div class="requirement" id="hasSpecial"><i class="bx bx-x"></i> Un caractère spécial</div>
+                  <h6>{{ __('pages.auth_criteria_title') }}</h6>
+                  <div class="requirement" id="minLength"><i class="bx bx-x"></i> {{ __('pages.auth_req_length') }}</div>
+                  <div class="requirement" id="hasUpper"><i class="bx bx-x"></i> {{ __('pages.auth_req_upper') }}</div>
+                  <div class="requirement" id="hasLower"><i class="bx bx-x"></i> {{ __('pages.auth_req_lower') }}</div>
+                  <div class="requirement" id="hasNumber"><i class="bx bx-x"></i> {{ __('pages.auth_req_number') }}</div>
+                  <div class="requirement" id="hasSpecial"><i class="bx bx-x"></i> {{ __('pages.auth_req_special') }}</div>
                 </div>
 
                 <div class="mb-3" style="margin-top:1.5rem;">
                   <button class="btn btn-primary" type="submit" name="connexion" id="submit">
-                    Valider le nouveau mot de passe
+                    {{ __('pages.reinit_btn') }}
                   </button>
                 </div>
               </form>
@@ -424,6 +424,12 @@
     @include('js_file')
 
     <script>
+      var REINIT_I18N = {
+          error:    '{{ __('pages.reinit_js_error') }}',
+          noMatch:  '{{ __('pages.reinit_js_no_match') }}',
+          loading:  '{{ __('pages.reinit_js_loading') }}',
+      };
+
       // Password visibility toggles
       document.getElementById('togglePassword1').addEventListener('click', function () {
         const input = document.getElementById('Nouveau_mot_de_passe');
@@ -512,8 +518,8 @@
         if (pw1 !== pw2) {
           e.preventDefault();
           Swal.fire({
-            icon: 'warning', title: 'ERREUR',
-            text: "Les mots de passe ne correspondent pas !",
+            icon: 'warning', title: REINIT_I18N.error,
+            text: REINIT_I18N.noMatch,
             confirmButtonClass: 'btn btn-danger', buttonsStyling: false
           });
           return;
@@ -521,7 +527,7 @@
         const btn = document.getElementById('submit');
         btn.classList.add('btn-loading');
         btn.disabled = true;
-        btn.textContent = 'Validation en cours...';
+        btn.textContent = REINIT_I18N.loading;
       });
 
       // Subtle parallax on shapes

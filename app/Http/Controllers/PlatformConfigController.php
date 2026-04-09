@@ -64,11 +64,14 @@ class PlatformConfigController extends Controller
             'at_whatsapp_product_id' => $paymentConfig->at_whatsapp_product_id ?? '',
         ];
 
+        $whatsappContactBlocage = $paymentConfig->whatsapp_contact_blocage ?? '';
+
         return view('super-admin.config_paiement', compact(
             'activePaymentProvider',
             'activePaymentSandbox',
             'paymentCfgData',
-            'atCfg'
+            'atCfg',
+            'whatsappContactBlocage'
         ));
     }
 
@@ -78,7 +81,7 @@ class PlatformConfigController extends Controller
     public function updateAtConfig(Request $request)
     {
         if (!Auth::user()->can('config-paiement')) {
-            return response()->json(['status' => false, 'message' => 'Accès refusé.'], 403);
+            return response()->json(['status' => false, 'message' => __('messages.access_denied')], 403);
         }
 
         $request->validate([
@@ -109,7 +112,36 @@ class PlatformConfigController extends Controller
 
         Log::info('Config Africa\'s Talking mise à jour', ['user' => Auth::user()->email]);
 
-        return response()->json(['status' => true, 'message' => 'Configuration Africa\'s Talking enregistrée avec succès.']);
+        return response()->json(['status' => true, 'message' => __('messages.at_config_saved')]);
+    }
+
+    /**
+     * Sauvegarde le numéro WhatsApp de contact affiché lors du blocage d'une entreprise.
+     */
+    public function updateContactBlocage(Request $request)
+    {
+        if (!Auth::user()->can('config-paiement')) {
+            return response()->json(['status' => false, 'message' => __('messages.access_denied')], 403);
+        }
+
+        $request->validate([
+            'whatsapp_contact_blocage' => 'nullable|string|max:30',
+        ]);
+
+        $numero = $request->filled('whatsapp_contact_blocage')
+            ? preg_replace('/\D/', '', trim($request->input('whatsapp_contact_blocage')))
+            : null;
+
+        $updateData = ['whatsapp_contact_blocage' => $numero, 'updated_at' => now()];
+
+        $exists = DB::table('platform_configs')->count() > 0;
+        if ($exists) {
+            DB::table('platform_configs')->update($updateData);
+        } else {
+            DB::table('platform_configs')->insert(array_merge($updateData, ['created_at' => now()]));
+        }
+
+        return response()->json(['status' => true, 'message' => __('messages.whatsapp_updated')]);
     }
 
     /**
@@ -118,13 +150,13 @@ class PlatformConfigController extends Controller
     public function getAdminConfig()
     {
         if (!Auth::user()->can('config-paiement')) {
-            return response()->json(['status' => false, 'message' => 'Accès refusé.'], 403);
+            return response()->json(['status' => false, 'message' => __('messages.access_denied')], 403);
         }
 
         $row = DB::table('platform_configs')->orderBy('id')->first();
 
         if (!$row) {
-            return response()->json(['status' => false, 'message' => 'Configuration introuvable.'], 500);
+            return response()->json(['status' => false, 'message' => __('messages.config_not_found')], 500);
         }
 
         return response()->json([
@@ -149,7 +181,7 @@ class PlatformConfigController extends Controller
     public function update(Request $request)
     {
         if (!Auth::user()->can('config-paiement')) {
-            return response()->json(['status' => false, 'message' => 'Accès refusé.'], 403);
+            return response()->json(['status' => false, 'message' => __('messages.access_denied')], 403);
         }
 
         $request->validate([
@@ -222,7 +254,7 @@ class PlatformConfigController extends Controller
 
         return response()->json([
             'status'  => true,
-            'message' => 'Configuration mise à jour avec succès.',
+            'message' => __('messages.config_saved'),
             'debug'   => [
                 'active_payment_provider' => $saved->active_payment_provider,
                 'kkiapay_enabled'         => (bool) $saved->kkiapay_enabled,

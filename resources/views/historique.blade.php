@@ -3,17 +3,17 @@
 @section('content')
 
 @section('title')
-    <title>Historique des connexions</title>
+    <title>{{ __('pages.history_title') }}</title>
 @endsection
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Accueil /</span> Historique des activites
+        <span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.history_breadcrumb') }}
     </h4>
 
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bx bx-history me-2"></i>Journal des activites</h5>
+            <h5 class="mb-0"><i class="bx bx-history me-2"></i>{{ __('pages.history_card') }}</h5>
             @if(isset($choix) && $choix == 'by_date')
                 <span class="badge bg-white text-primary fs-6">
                     <i class="bx bx-calendar me-1"></i>
@@ -31,29 +31,29 @@
             <form action="{{ route('chekhistorique') }}" method="post" class="row g-3 align-items-end mb-4">
                 @csrf
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold">Type de recherche</label>
+                    <label class="form-label fw-semibold">{{ __('pages.history_search_type') }}</label>
                     <select class="form-select" id="choix" name="choix" onchange="displayChoix();" required>
-                        <option value="by_date" {{ $currentChoix == 'by_date' ? 'selected' : '' }}>Par periode</option>
-                        <option value="by_user" {{ $currentChoix == 'by_user' ? 'selected' : '' }}>Par utilisateur</option>
+                        <option value="by_date" {{ $currentChoix == 'by_date' ? 'selected' : '' }}>{{ __('pages.history_by_period') }}</option>
+                        <option value="by_user" {{ $currentChoix == 'by_user' ? 'selected' : '' }}>{{ __('pages.history_by_user') }}</option>
                     </select>
                 </div>
 
                 <div class="col-md-3" id="date_debutDiv">
-                    <label class="form-label fw-semibold">Date debut</label>
+                    <label class="form-label fw-semibold">{{ __('pages.history_date_from') }}</label>
                     <input type="date" name="date_debut" id="date_debut" class="form-control"
                            value="{{ $dateDebut ?? now()->format('Y-m-d') }}">
                 </div>
 
                 <div class="col-md-3" id="date_finDiv">
-                    <label class="form-label fw-semibold">Date fin</label>
+                    <label class="form-label fw-semibold">{{ __('pages.history_date_to') }}</label>
                     <input type="date" name="date_fin" id="date_fin" class="form-control"
                            value="{{ $dateFin ?? now()->format('Y-m-d') }}">
                 </div>
 
                 <div class="col-md-4" id="user_nameDiv" style="display: none;">
-                    <label class="form-label fw-semibold">Utilisateur</label>
+                    <label class="form-label fw-semibold">{{ __('pages.history_user') }}</label>
                     <select class="form-select" id="user_name" name="user_name">
-                        <option value="">Selectionner un utilisateur</option>
+                        <option value="">{{ __('pages.history_user_opt') }}</option>
                         @if(isset($users))
                             @foreach($users as $val)
                                 <option value="{{ $val->id }}" {{ isset($userName) && $userName == $val->id ? 'selected' : '' }}>
@@ -66,7 +66,7 @@
 
                 <div class="col-md-2">
                     <button class="btn btn-primary w-100" type="submit">
-                        <i class="bx bx-search me-1"></i>Rechercher
+                        <i class="bx bx-search me-1"></i>{{ __('common.btn_search') }}
                     </button>
                 </div>
             </form>
@@ -77,22 +77,22 @@
                     <thead class="table-dark">
                         <tr>
                             <th class="text-center" style="width: 4%;">
-                                <i class="bx bx-hash me-1"></i>N
+                                <i class="bx bx-hash me-1"></i>{{ __('pages.history_th_n') }}
                             </th>
                             <th style="width: 14%;">
-                                <i class="bx bx-user me-1"></i>Utilisateur
+                                <i class="bx bx-user me-1"></i>{{ __('pages.history_th_user') }}
                             </th>
                             <th style="width: 26%;">
-                                <i class="bx bx-message-detail me-1"></i>Description de l'action
+                                <i class="bx bx-message-detail me-1"></i>{{ __('pages.history_th_action') }}
                             </th>
                             <th style="width: 22%;">
-                                <i class="bx bx-history me-1"></i>Ancienne valeur
+                                <i class="bx bx-history me-1"></i>{{ __('pages.history_th_old') }}
                             </th>
                             <th style="width: 22%;">
-                                <i class="bx bxs-edit me-1"></i>Nouvelle valeur
+                                <i class="bx bxs-edit me-1"></i>{{ __('pages.history_th_new') }}
                             </th>
                             <th class="text-center" style="width: 12%;">
-                                <i class="bx bx-calendar me-1"></i>Date et heure
+                                <i class="bx bx-calendar me-1"></i>{{ __('pages.history_th_date') }}
                             </th>
                         </tr>
                     </thead>
@@ -186,7 +186,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">Aucune activité trouvée</td>
+                                <td colspan="6" class="text-center text-muted py-4">{{ __('pages.history_empty') }}</td>
                             </tr>
                         @endif
                     </tbody>

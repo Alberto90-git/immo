@@ -21,7 +21,7 @@
             @if((Auth::user()->type_compte != 'Particulier') && (Auth::user()->is_admin == 1))
                 <div class="nav-item ms-3 position-relative">
                     <select class="form-select form-select-sm" id="agence-select" aria-label="Sélection d'agence">
-                        <option value="" {{ !$activeAnnexeId ? 'selected' : '' }} disabled>Choisir une agence</option>
+                        <option value="" {{ !$activeAnnexeId ? 'selected' : '' }} disabled>{{ __('layout.choose_agency') }}</option>
                         @if (isset($agences))
                             @foreach ($agences as $agence)
                                 <option value="{{ $agence->idannexes }}" {{ $activeAnnexeId == $agence->idannexes ? 'selected' : '' }}>
@@ -60,7 +60,7 @@
             @can('manager-contrat')
                 <!-- Bouton Contrat de bail -->
                 <li class="nav-item me-2">
-                    <a class="nav-link text-white" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#contratModal" title="Générer un contrat de bail">
+                    <a class="nav-link text-white" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#contratModal" title="{{ __('layout.generate_contract') }}">
                         <span class="d-flex align-items-center justify-content-center" style="width:38px; height:38px; background:#012970; border-radius:50%; color:white;">
                             <i class="bx bx-file" style="font-size:1.2rem;"></i>
                         </span>
@@ -87,10 +87,10 @@
                     style="width:360px; max-height:420px; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05);">
                     <li class="border-bottom">
                         <div class="d-flex align-items-center py-3 px-4">
-                            <h6 class="mb-0 me-auto fw-semibold">Notifications</h6>
+                            <h6 class="mb-0 me-auto fw-semibold">{{ __('layout.notifications') }}</h6>
                             <span class="badge bg-label-primary rounded-pill" id="notificationHeaderCount"
                                   style="background-color:rgba(105,108,255,0.16)!important; color:#696cff!important;">0</span>
-                            <a href="javascript:void(0);" class="ms-2 text-muted" id="markAllReadBtn" title="Tout marquer comme lu">
+                            <a href="javascript:void(0);" class="ms-2 text-muted" id="markAllReadBtn" title="{{ __('layout.mark_all_read') }}">
                                 <i class="bx bx-check-double" style="font-size:1.2rem;"></i>
                             </a>
                         </div>
@@ -99,13 +99,39 @@
                         <div id="notificationList" style="max-height:340px; overflow-y:auto;">
                             <div class="text-center py-4 text-muted">
                                 <i class="bx bx-bell-off" style="font-size:2rem;"></i>
-                                <p class="mb-0 mt-2" style="font-size:0.85rem;">Aucune notification</p>
+                                <p class="mb-0 mt-2" style="font-size:0.85rem;">{{ __('layout.no_notification') }}</p>
                             </div>
                         </div>
                     </li>
                 </ul>
             </li>
             <!--/ Notifications Bell -->
+
+            <!-- Sélecteur de langue -->
+            <li class="nav-item dropdown me-2">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" title="{{ __('dashboard.language') }}">
+                    <span class="d-flex align-items-center justify-content-center" style="width:38px; height:38px; background:#012970; border-radius:50%; color:white; font-size:0.75rem; font-weight:700; letter-spacing:0.5px;">
+                        {{ strtoupper(app()->getLocale()) }}
+                    </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width:130px;">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2 {{ app()->getLocale() === 'fr' ? 'active' : '' }}"
+                           href="{{ route('locale.switch', 'fr') }}">
+                            <span>🇫🇷</span> {{ __('dashboard.french') }}
+                            @if(app()->getLocale() === 'fr') <i class="bx bx-check ms-auto text-primary"></i> @endif
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2 {{ app()->getLocale() === 'en' ? 'active' : '' }}"
+                           href="{{ route('locale.switch', 'en') }}">
+                            <span>🇬🇧</span> {{ __('dashboard.english') }}
+                            @if(app()->getLocale() === 'en') <i class="bx bx-check ms-auto text-primary"></i> @endif
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--/ Sélecteur de langue -->
 
             <!-- User -->
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -139,13 +165,13 @@
                     <li>
                         <a class="dropdown-item" href="{{ route('profileView') }}">
                             <i class="bx bx-user me-2"></i>
-                            <span class="align-middle">Mon Profil</span>
+                            <span class="align-middle">{{ __('layout.my_profile') }}</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="{{ route('profileView') }}#password">
                             <i class="bx bx-lock-alt me-2"></i>
-                            <span class="align-middle">Mot de passe</span>
+                            <span class="align-middle">{{ __('layout.password') }}</span>
                         </a>
                     </li>
                     <li>
@@ -161,7 +187,7 @@
                             </form>
 
                             <i class="bx bx-power-off me-2"></i>
-                            <span class="align-middle">Quitter</span>
+                            <span class="align-middle">{{ __('layout.logout') }}</span>
                         </a>
                     </li>
                 </ul>
@@ -177,7 +203,7 @@
         <div class="modal-content">
             <div class="modal-header" style="background: #012970; color: white;">
                 <h5 class="modal-title text-white" id="contratModalLabel">
-                    <i class="bx bx-file me-2"></i>Générer un contrat de bail
+                    <i class="bx bx-file me-2"></i>{{ __('layout.modal_contract_title') }}
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -185,12 +211,12 @@
                 <form id="contratForm" method="POST" action="{{ route('download_contrat') }}">
                     @csrf
                     <div class="mb-3">
-                        <label for="contrat-locataire-select" class="form-label fw-bold">Sélectionner un locataire</label>
+                        <label for="contrat-locataire-select" class="form-label fw-bold">{{ __('layout.select_tenant') }}</label>
                         <select class="form-select" id="contrat-locataire-select" name="idlocataire" required>
-                            <option value="" selected disabled>-- Choisir un locataire --</option>
+                            <option value="" selected disabled>{{ __('layout.choose_tenant') }}</option>
                         </select>
                         <div class="mt-2">
-                            <input type="text" class="form-control form-control-sm" id="contrat-search" placeholder="Rechercher un locataire..." style="display:none;">
+                            <input type="text" class="form-control form-control-sm" id="contrat-search" placeholder="{{ __('layout.search_tenant') }}" style="display:none;">
                         </div>
                     </div>
 
@@ -199,23 +225,23 @@
                         <div class="card border-0" style="background:#f8f9fa;">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-2" style="color:#012970;">
-                                    <i class="bx bx-user me-1"></i>Informations du locataire
+                                    <i class="bx bx-user me-1"></i>{{ __('layout.tenant_info') }}
                                 </h6>
                                 <div class="row g-2" style="font-size:0.9rem;">
                                     <div class="col-6">
-                                        <strong>Nom :</strong> <span id="preview-nom"></span>
+                                        <strong>{{ __('layout.label_name') }}</strong> <span id="preview-nom"></span>
                                     </div>
                                     <div class="col-6">
-                                        <strong>Téléphone :</strong> <span id="preview-tel"></span>
+                                        <strong>{{ __('layout.label_phone') }}</strong> <span id="preview-tel"></span>
                                     </div>
                                     <div class="col-6">
-                                        <strong>Maison :</strong> <span id="preview-maison"></span>
+                                        <strong>{{ __('layout.label_house') }}</strong> <span id="preview-maison"></span>
                                     </div>
                                     <div class="col-6">
-                                        <strong>Chambre :</strong> <span id="preview-chambre"></span>
+                                        <strong>{{ __('layout.label_room') }}</strong> <span id="preview-chambre"></span>
                                     </div>
                                     <div class="col-12">
-                                        <strong>Loyer :</strong> <span id="preview-loyer" class="text-primary fw-bold"></span>
+                                        <strong>{{ __('layout.label_rent') }}</strong> <span id="preview-loyer" class="text-primary fw-bold"></span>
                                     </div>
                                 </div>
                             </div>
@@ -224,9 +250,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('layout.btn_cancel') }}</button>
                 <button type="button" class="btn btn-primary" id="contrat-generate-btn" disabled onclick="document.getElementById('contratForm').submit();">
-                    <i class="bx bx-download me-1"></i>Générer le PDF
+                    <i class="bx bx-download me-1"></i>{{ __('layout.btn_generate_pdf') }}
                 </button>
             </div>
         </div>
@@ -270,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function loadLocataires() {
-        locataireSelect.innerHTML = '<option value="" selected disabled>Chargement...</option>';
+        locataireSelect.innerHTML = '<option value="" selected disabled>{{ __('layout.loading') }}</option>';
 
         fetch('{{ route("api.locataires_contrat") }}', {
             headers: {
@@ -285,20 +311,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 populateSelect(locatairesData);
                 searchInput.style.display = 'block';
             } else {
-                locataireSelect.innerHTML = '<option value="" selected disabled>Aucun locataire trouvé</option>';
+                locataireSelect.innerHTML = '<option value="" selected disabled>{{ __('layout.no_tenant_found') }}</option>';
             }
         })
         .catch(function() {
-            locataireSelect.innerHTML = '<option value="" selected disabled>Erreur de chargement</option>';
+            locataireSelect.innerHTML = '<option value="" selected disabled>{{ __('layout.loading_error') }}</option>';
         });
     }
 
     function populateSelect(list) {
-        locataireSelect.innerHTML = '<option value="" selected disabled>-- Choisir un locataire --</option>';
+        locataireSelect.innerHTML = '<option value="" selected disabled>{{ __('layout.choose_tenant') }}</option>';
         list.forEach(function(loc) {
             var opt = document.createElement('option');
             opt.value = loc.id;
-            opt.textContent = loc.nom + ' ' + loc.prenom + ' - ' + loc.nom_maison + ' (Ch. ' + (loc.numero_chambre || '') + ')';
+            opt.textContent = loc.nom + ' ' + loc.prenom + ' - ' + loc.nom_maison + ' ({{ __('layout.room_prefix') }} ' + (loc.numero_chambre || '') + ')';
             opt.dataset.nom = loc.nom + ' ' + loc.prenom;
             opt.dataset.tel = loc.telephone || '';
             opt.dataset.maison = loc.nom_maison || '';
@@ -334,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('preview-maison').textContent = selected.dataset.maison;
                 document.getElementById('preview-chambre').textContent = selected.dataset.chambre;
                 var loyer = parseInt(selected.dataset.loyer) || 0;
-                document.getElementById('preview-loyer').textContent = loyer.toLocaleString('fr-FR') + ' F CFA / mois';
+                document.getElementById('preview-loyer').textContent = loyer.toLocaleString('fr-FR') + ' {{ __('layout.rent_suffix') }}';
                 previewDiv.classList.remove('d-none');
                 generateBtn.disabled = false;
             } else {
@@ -459,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingIndicator.style.display = 'none';
 
                 if (data.status) {
-                    showToast('Succès', data.message, 'success');
+                    showToast('{{ __('layout.toast_success') }}', data.message, 'success');
 
                     // Mettre à jour le titre de la page
                     if (data.data && data.data.nom) {
@@ -474,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.location.reload();
                     }, 1000);
                 } else {
-                    showToast('Erreur', data.message || 'Une erreur s\'est produite.', 'error');
+                    showToast('{{ __('layout.toast_error') }}', data.message || '{{ __('layout.network_error') }}', 'error');
                 }
             })
             .catch(error => {
@@ -482,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingIndicator.style.display = 'none';
 
                 // Afficher un message d'erreur
-                showToast('Erreur', 'Impossible de changer d\'agence.', 'error');
+                showToast('{{ __('layout.toast_error') }}', '{{ __('layout.agency_change_error') }}', 'error');
                 console.error('Erreur:', error);
             });
         }
@@ -552,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 listContainer.innerHTML =
                     '<div class="text-center py-4 text-muted">' +
                         '<i class="bx bx-bell-off" style="font-size:2rem;"></i>' +
-                        '<p class="mb-0 mt-2" style="font-size:0.85rem;">Aucune notification</p>' +
+                        '<p class="mb-0 mt-2" style="font-size:0.85rem;">{{ __('layout.no_notification') }}</p>' +
                     '</div>';
                 updateBadge(0);
                 return;

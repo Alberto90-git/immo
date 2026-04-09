@@ -324,6 +324,58 @@
             background: rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 14px; text-align: center;
         }
 
+        /* ── Phone mockup — mode clair (défaut) ── */
+        .phone-frame {
+            background: linear-gradient(160deg,#dbeafe 0%,#eff6ff 100%);
+            box-shadow: 0 36px 90px rgba(30,58,138,0.14), 0 0 0 1.5px rgba(37,99,235,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        .phone-island       { background: #bfdbfe; }
+        .phone-island-inner { background: #93c5fd; }
+        .phone-statusbar    { color: rgba(15,23,42,0.6); }
+        .phone-screen-bg    { background: #f1f5f9; }
+        .phone-appbar       { border-bottom: 1px solid rgba(0,0,0,0.07); }
+        .phone-brand-label  { color: rgba(15,23,42,0.38); }
+        .phone-screen-title { color: #1e293b; }
+        .phone-icon-btn     { background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.25); }
+        .phone-card         { background: #fff; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .phone-name         { color: #1e293b; }
+        .phone-sublabel     { color: rgba(15,23,42,0.45); }
+        .phone-stat-label   { color: rgba(15,23,42,0.5); }
+        .phone-chart-wrap   { background: rgba(37,99,235,0.06); }
+        .phone-chart-label  { color: rgba(15,23,42,0.5); }
+        .phone-inv-amount   { color: #1e293b; }
+        .phone-inv-date     { color: rgba(15,23,42,0.4); }
+        .phone-inv-row      { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.06); }
+        .phone-icon-sm      { color: rgba(15,23,42,0.35); }
+        .phone-billing-label{ color: rgba(15,23,42,0.5); }
+        .phone-dot-inactive { background: rgba(15,23,42,0.18); }
+
+        /* ── Phone mockup — mode sombre ── */
+        html[data-theme="dark"] .phone-frame {
+            background: linear-gradient(160deg,#0d1526 0%,#1a2540 100%);
+            box-shadow: 0 36px 90px rgba(0,0,0,0.6), 0 0 0 1.5px rgba(255,255,255,0.09), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        html[data-theme="dark"] .phone-island       { background: #060d18; }
+        html[data-theme="dark"] .phone-island-inner { background: #1e2d45; }
+        html[data-theme="dark"] .phone-statusbar    { color: rgba(255,255,255,0.65); }
+        html[data-theme="dark"] .phone-screen-bg    { background: #0b1120; }
+        html[data-theme="dark"] .phone-appbar       { border-bottom-color: rgba(255,255,255,0.06); }
+        html[data-theme="dark"] .phone-brand-label  { color: rgba(255,255,255,0.35); }
+        html[data-theme="dark"] .phone-screen-title { color: #fff; }
+        html[data-theme="dark"] .phone-icon-btn     { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); }
+        html[data-theme="dark"] .phone-card         { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); box-shadow: none; }
+        html[data-theme="dark"] .phone-name         { color: #fff; }
+        html[data-theme="dark"] .phone-sublabel     { color: rgba(255,255,255,0.38); }
+        html[data-theme="dark"] .phone-stat-label   { color: rgba(255,255,255,0.45); }
+        html[data-theme="dark"] .phone-chart-wrap   { background: rgba(255,255,255,0.04); }
+        html[data-theme="dark"] .phone-chart-label  { color: rgba(255,255,255,0.4); }
+        html[data-theme="dark"] .phone-inv-amount   { color: #f1f5f9; }
+        html[data-theme="dark"] .phone-inv-date     { color: rgba(255,255,255,0.32); }
+        html[data-theme="dark"] .phone-inv-row      { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+        html[data-theme="dark"] .phone-icon-sm      { color: rgba(255,255,255,0.35); }
+        html[data-theme="dark"] .phone-billing-label{ color: rgba(255,255,255,0.4); }
+        html[data-theme="dark"] .phone-dot-inactive { background: rgba(255,255,255,0.22); }
+
         @media (max-width: 1023px) {
             .hero-grid-inner { grid-template-columns: 1fr !important; }
             .hero-card-outer { display: none !important; }
@@ -1142,6 +1194,410 @@
             border: 0;
         }
         
+        /* ═══════════════════════════════════════════════════════
+           DARK MODE — html[data-theme="dark"]
+        ═══════════════════════════════════════════════════════ */
+
+        /* Transition douce globale */
+        *, *::before, *::after {
+            transition: background-color 0.28s ease, color 0.18s ease,
+                        border-color 0.28s ease, box-shadow 0.28s ease;
+        }
+
+        /* Bouton toggle thème */
+        .theme-toggle-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.22);
+            color: #fff; cursor: pointer; font-size: 15px;
+            transition: background 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        .theme-toggle-btn:hover { background: rgba(255,255,255,0.22); transform: rotate(20deg); }
+        .nav-scrolled .theme-toggle-btn { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+
+        /* Sélecteur de langue */
+        .lang-switcher {
+            display: inline-flex; align-items: center; gap: 0;
+            background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.22);
+            border-radius: 20px; overflow: hidden; flex-shrink: 0;
+        }
+        .lang-btn {
+            padding: 5px 10px; font-size: 0.72rem; font-weight: 800;
+            letter-spacing: 0.04em; cursor: pointer; border: none; background: transparent;
+            color: rgba(255,255,255,0.55); transition: all 0.2s;
+        }
+        .lang-btn.active { background: rgba(255,255,255,0.22); color: #fff; }
+        .nav-scrolled .lang-switcher { background: #eff6ff; border-color: #bfdbfe; }
+        .nav-scrolled .lang-btn { color: #94a3b8; }
+        .nav-scrolled .lang-btn.active { background: #2563eb; color: #fff; border-radius: 18px; }
+        /* Mobile lang */
+        .mob-lang-switcher {
+            display: inline-flex; align-items: center; gap: 0;
+            background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 20px; overflow: hidden;
+        }
+        .mob-lang-btn {
+            padding: 5px 12px; font-size: 0.75rem; font-weight: 800;
+            cursor: pointer; border: none; background: transparent;
+            color: rgba(255,255,255,0.5); transition: all 0.2s;
+        }
+        .mob-lang-btn.active { background: rgba(255,255,255,0.2); color: #fff; }
+
+        /* ─────────────────────────────────────────────────────
+           DARK MODE
+        ───────────────────────────────────────────────────── */
+        html[data-theme="dark"] body { background: #0f172a; color: #e2e8f0; }
+
+        /* Sections claires → fond sombre */
+        html[data-theme="dark"] #fonctionnalites,
+        html[data-theme="dark"] #sec-comment,
+        html[data-theme="dark"] #sec-partenaires,
+        html[data-theme="dark"] #biens,
+        html[data-theme="dark"] #portfolio,
+        html[data-theme="dark"] #temoignages,
+        html[data-theme="dark"] #tarifs,
+        html[data-theme="dark"] #sec-faq { background: #0f172a !important; }
+
+        /* Textes Tailwind */
+        html[data-theme="dark"] .text-gray-900,
+        html[data-theme="dark"] .text-gray-800,
+        html[data-theme="dark"] .text-gray-700 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .text-gray-600,
+        html[data-theme="dark"] .text-gray-500 { color: #94a3b8 !important; }
+        html[data-theme="dark"] .bg-blue-100  { background: rgba(37,99,235,0.25) !important; }
+        html[data-theme="dark"] .text-blue-700 { color: #93c5fd !important; }
+        html[data-theme="dark"] .bg-white { background-color: #1e293b !important; }
+        html[data-theme="dark"] .shadow-lg,
+        html[data-theme="dark"] .shadow-xl,
+        html[data-theme="dark"] .shadow-2xl { box-shadow: 0 4px 24px rgba(0,0,0,0.45) !important; }
+
+        /* ── Bento fonctionnalités ── */
+        html[data-theme="dark"] .bento-grid > div:not(.bento-card-large) {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.09) !important;
+        }
+        html[data-theme="dark"] .bento-grid > div > div[style*="border-radius:16px"] {
+            background: #273549 !important;
+            border-color: rgba(255,255,255,0.07) !important;
+        }
+        html[data-theme="dark"] .bento-grid h3,
+        html[data-theme="dark"] .bento-grid p[style*="color:#1e293b"],
+        html[data-theme="dark"] .bento-grid p[style*="color:#1e293b"] { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .bento-grid p[style*="color:#64748b"] { color: #94a3b8 !important; }
+        html[data-theme="dark"] .bento-grid div[style*="background:#eff6ff"],
+        html[data-theme="dark"] .bento-grid div[style*="background:#dcfce7"],
+        html[data-theme="dark"] .bento-grid div[style*="background:#f3e8ff"],
+        html[data-theme="dark"] .bento-grid div[style*="background:#ffedd5"],
+        html[data-theme="dark"] .bento-grid div[style*="background:#ffe4e6"],
+        html[data-theme="dark"] .bento-grid div[style*="background:#ccfbf1"] {
+            background: rgba(255,255,255,0.1) !important;
+        }
+
+        /* ── Section "Comment ça marche" ── */
+        html[data-theme="dark"] #sec-comment [style*="background:#fff"],
+        html[data-theme="dark"] #sec-comment [style*="background: #fff"],
+        html[data-theme="dark"] #sec-comment [style*="background:#f8faff"] {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        html[data-theme="dark"] #sec-comment [style*="color:#1e293b"],
+        html[data-theme="dark"] #sec-comment h3 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] #sec-comment [style*="color:#64748b"],
+        html[data-theme="dark"] #sec-comment [style*="color:#475569"] { color: #94a3b8 !important; }
+
+        /* ── Cards portfolio & biens ── */
+        html[data-theme="dark"] #portfolio .group.rounded-2xl,
+        html[data-theme="dark"] #biens .group.rounded-2xl {
+            background: #1e293b !important;
+        }
+        html[data-theme="dark"] #portfolio .text-gray-800,
+        html[data-theme="dark"] #biens .text-gray-800 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] #portfolio .text-gray-500,
+        html[data-theme="dark"] #portfolio .text-gray-600,
+        html[data-theme="dark"] #biens .text-gray-500,
+        html[data-theme="dark"] #biens .text-gray-600 { color: #94a3b8 !important; }
+        html[data-theme="dark"] #biens .text-gray-800 { color: #f1f5f9 !important; }
+
+        /* ── Témoignages cards ── */
+        html[data-theme="dark"] .testi-card {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.08) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.35) !important;
+        }
+        html[data-theme="dark"] .testi-name   { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .testi-role   { color: #94a3b8 !important; }
+        html[data-theme="dark"] .testi-text   { color: #cbd5e1 !important; }
+        html[data-theme="dark"] .testi-quote-mark { color: rgba(255,255,255,0.05) !important; }
+
+        /* ── Plans tarifaires ── */
+        html[data-theme="dark"] .plan-card {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        html[data-theme="dark"] .plan-card h4,
+        html[data-theme="dark"] .plan-card .plan-name { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .plan-card p,
+        html[data-theme="dark"] .plan-card ul li { color: #94a3b8 !important; }
+        html[data-theme="dark"] .plan-card.selected {
+            background: linear-gradient(135deg,#1e3a6e,#1e40af) !important;
+            border-color: #3b82f6 !important;
+        }
+        html[data-theme="dark"] .plan-card.selected h4 { color: #93c5fd !important; }
+
+        /* ── Pricing cards (#tarifs) ── */
+        html[data-theme="dark"] .pricing-card {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.09) !important;
+        }
+        html[data-theme="dark"] .pricing-card:hover { border-color: rgba(96,165,250,0.4) !important; }
+        html[data-theme="dark"] .pricing-card.featured { border-color: #3b82f6 !important; }
+        html[data-theme="dark"] .pricing-card .plan-header {
+            filter: brightness(0.55) saturate(0.6);
+        }
+        html[data-theme="dark"] .pricing-card h3[style*="color:#1e293b"] { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .pricing-card p[style*="color:#64748b"]  { color: #94a3b8 !important; }
+        html[data-theme="dark"] .pricing-card [style*="color:#1e293b"]   { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .pricing-card [style*="color:#64748b"],
+        html[data-theme="dark"] .pricing-card [style*="color:#475569"]   { color: #94a3b8 !important; }
+        html[data-theme="dark"] .pricing-card [style*="color:#334155"]   { color: #94a3b8 !important; }
+        html[data-theme="dark"] .pricing-card [style*="background:#f8fafc"],
+        html[data-theme="dark"] .pricing-card [style*="background:#f1f5f9"],
+        html[data-theme="dark"] .pricing-card [style*="background:#fff"] { background: #273549 !important; }
+        html[data-theme="dark"] .pricing-card .plan-feature-item { color: #94a3b8 !important; }
+        html[data-theme="dark"] .pricing-card .plan-feature-item.disabled { color: #475569 !important; }
+        html[data-theme="dark"] .pricing-card [style*="border:1px solid #e5e7eb"],
+        html[data-theme="dark"] .pricing-card [style*="border-color:#e5e7eb"] {
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        /* Fix: texte bloc prix en mode sombre */
+        html[data-theme="dark"] .pricing-card .plan-price-block { border-bottom-color: rgba(255,255,255,0.08) !important; }
+        html[data-theme="dark"] .pricing-card .plan-price-block p { color: #94a3b8 !important; }
+        html[data-theme="dark"] .pricing-card .plan-price-block p strong { color: #e2e8f0 !important; }
+        html[data-theme="dark"] .pricing-card .plan-price-block p span { color: #94a3b8 !important; }
+        html[data-theme="dark"] .pricing-card .plan-price-block > div > span[style*="color:#94a3b8"] { color: #94a3b8 !important; }
+        html[data-theme="dark"] #plans-container .plan-card small { color: #94a3b8 !important; }
+
+        /* ── FAQ — COMPLET ── */
+        html[data-theme="dark"] .faq-item {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        html[data-theme="dark"] .faq-item:hover { border-color: rgba(96,165,250,0.4) !important; }
+        html[data-theme="dark"] .faq-item.active { border-color: rgba(96,165,250,0.6) !important; }
+        html[data-theme="dark"] .faq-question h3 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .faq-icon-wrap   { background: rgba(37,99,235,0.2) !important; }
+        html[data-theme="dark"] .faq-chevron     { background: rgba(255,255,255,0.08) !important; }
+        html[data-theme="dark"] .faq-item.active .faq-chevron { background: rgba(37,99,235,0.3) !important; }
+        html[data-theme="dark"] .faq-answer-inner {
+            color: #94a3b8 !important;
+            border-top-color: rgba(255,255,255,0.08) !important;
+        }
+        html[data-theme="dark"] .faq-answer-inner strong { color: #cbd5e1 !important; }
+        /* Séparateurs de catégorie FAQ */
+        html[data-theme="dark"] #sec-faq [style*="background:#e2e8f0"] { background: #334155 !important; }
+        html[data-theme="dark"] #sec-faq [style*="color:#94a3b8"] { color: #64748b !important; }
+
+        /* ── Partenaires ── */
+        html[data-theme="dark"] #sec-partenaires [style*="background:#fff"],
+        html[data-theme="dark"] #sec-partenaires [style*="background: #fff"] {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+
+        /* ── Formulaire de création de compte (#compte) ── */
+        /* Carte blanche du formulaire */
+        html[data-theme="dark"] #compte [style*="background:#fff"] {
+            background: #1e293b !important;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6) !important;
+        }
+
+        /* Barre de progression */
+        html[data-theme="dark"] .progress-bar { background: #334155 !important; }
+
+        /* Pastilles d'étapes */
+        html[data-theme="dark"] .step {
+            background: #334155 !important;
+            border-color: #475569 !important;
+            color: #94a3b8 !important;
+        }
+        html[data-theme="dark"] .step.active {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #fff !important;
+        }
+        html[data-theme="dark"] .step.completed {
+            background: #10b981 !important;
+            border-color: #10b981 !important;
+            color: #fff !important;
+        }
+        html[data-theme="dark"] .step-label   { color: #64748b !important; }
+        html[data-theme="dark"] .step-item.active .step-label   { color: #60a5fa !important; }
+        html[data-theme="dark"] .step-item.completed .step-label { color: #34d399 !important; }
+        html[data-theme="dark"] .step-connector { background: #334155 !important; }
+        html[data-theme="dark"] .step-connector.done { background: #10b981 !important; }
+
+        /* Titres d'étapes */
+        html[data-theme="dark"] .step-form h3 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .step-form h3 .step-icon {
+            background: rgba(37,99,235,0.2) !important;
+            color: #60a5fa !important;
+        }
+
+        /* Cards type de compte (plan-card dans #compte) */
+        html[data-theme="dark"] #compte .plan-card {
+            background: #273549 !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        html[data-theme="dark"] #compte .plan-card h4 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] #compte .plan-card p  { color: #94a3b8 !important; }
+        html[data-theme="dark"] #compte .plan-card ul li { color: #94a3b8 !important; }
+        html[data-theme="dark"] #compte .plan-card.selected {
+            background: linear-gradient(135deg,#1e3a6e,#1e40af) !important;
+            border-color: #3b82f6 !important;
+        }
+        html[data-theme="dark"] #compte .plan-card .card-icon-wrap {
+            filter: brightness(0.75) saturate(0.7);
+        }
+
+        /* Champs de formulaire */
+        html[data-theme="dark"] .reg-field label { color: #cbd5e1 !important; }
+        html[data-theme="dark"] .reg-field .form-control {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] .reg-field .form-control::placeholder { color: #475569 !important; }
+        html[data-theme="dark"] .reg-field .form-control:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+        }
+
+        /* Section entreprise */
+        html[data-theme="dark"] .entreprise-section-card {
+            background: #162032 !important;
+            border-color: rgba(59,130,246,0.25) !important;
+        }
+        html[data-theme="dark"] .entreprise-section-card h5 { color: #60a5fa !important; }
+
+        /* Bloc conditions */
+        html[data-theme="dark"] #compte [style*="background:#f8faff"] {
+            background: #162032 !important;
+            border-color: rgba(59,130,246,0.25) !important;
+        }
+        html[data-theme="dark"] #compte .form-check-label { color: #94a3b8 !important; }
+
+        /* Séparateur form-navigation */
+        html[data-theme="dark"] .form-navigation { border-top-color: #334155 !important; }
+
+        /* Boutons de navigation */
+        html[data-theme="dark"] .btn-reg-prev {
+            background: #1e293b !important;
+            border-color: #475569 !important;
+            color: #94a3b8 !important;
+        }
+        html[data-theme="dark"] .btn-reg-prev:hover {
+            border-color: #64748b !important;
+            color: #f1f5f9 !important;
+        }
+
+        /* Select & intl-tel-input dans #compte */
+        html[data-theme="dark"] #compte select.form-control,
+        html[data-theme="dark"] #compte select,
+        html[data-theme="dark"] #compte .iti__flag-container,
+        html[data-theme="dark"] #compte .iti__selected-flag {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] #compte .iti__country-list {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] #compte .iti__country:hover,
+        html[data-theme="dark"] #compte .iti__country.iti__highlight {
+            background: #273549 !important;
+        }
+        /* Plans dynamiques chargés en JS (étape 3) */
+        html[data-theme="dark"] #plans-container .plan-card {
+            background: #273549 !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        html[data-theme="dark"] #plans-container .plan-card h4 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] #plans-container .plan-card p  { color: #94a3b8 !important; }
+        html[data-theme="dark"] #plans-container .plan-card ul li { color: #94a3b8 !important; }
+
+        /* ════════════════════════════════════════════════════
+           FOOTER — thème clair / sombre
+        ════════════════════════════════════════════════════ */
+
+        /* ── MODE SOMBRE : fond très sombre, textes clairs ── */
+        html[data-theme="dark"] .footer-main {
+            background: #060c18 !important;
+        }
+        /* Textes inline en gris foncé → rendus visibles */
+        html[data-theme="dark"] .footer-main [style*="color:#475569"] { color: #94a3b8 !important; }
+        html[data-theme="dark"] .footer-main [style*="color:#334155"] { color: #64748b  !important; }
+        html[data-theme="dark"] .footer-main [style*="color:#64748b"] { color: #94a3b8  !important; }
+        /* Logo "Lokativ" : reste blanc ✓ */
+        /* Liens */
+        html[data-theme="dark"] .footer-link       { color: #64748b !important; }
+        html[data-theme="dark"] .footer-link:hover { color: #93c5fd !important; }
+        /* Badge sécurité : rgba(255,255,255,x) déjà ok sur fond sombre ✓ */
+        /* Newsletter input : déjà ok sur fond sombre ✓ */
+        /* Séparateur grille */
+        html[data-theme="dark"] .footer-grid { border-bottom-color: rgba(255,255,255,0.06) !important; }
+        /* Copyright */
+        html[data-theme="dark"] .footer-copyright p { color: #64748b !important; }
+        html[data-theme="dark"] .footer-copyright strong { color: #94a3b8 !important; }
+        /* Icônes paiement */
+        html[data-theme="dark"] .footer-copyright i.fab { color: #64748b !important; }
+        /* Badge "Mobile Money" */
+        html[data-theme="dark"] .footer-copyright [style*="background:rgba(255,255,255,0.06)"] {
+            background: rgba(255,255,255,0.06) !important;
+            color: #64748b !important;
+        }
+
+        /* ── MODE CLAIR : fond clair, textes lisibles ── */
+        html[data-theme="light"] .footer-main {
+            background: #f1f5f9 !important;
+        }
+        /* Logo "Lokativ" et titres blancs → deveint sombres */
+        html[data-theme="light"] .footer-main span[style*="color:#fff"],
+        html[data-theme="light"] .footer-main p[style*="color:#fff"],
+        html[data-theme="light"] .footer-main h4[style*="color:#fff"] {
+            color: #1e293b !important;
+        }
+        /* Textes gris : déjà lisibles sur fond clair ✓ */
+        /* Liens */
+        html[data-theme="light"] .footer-link       { color: #64748b !important; }
+        html[data-theme="light"] .footer-link:hover { color: #2563eb !important; }
+        /* Badge sécurité : rgba(white) → fond light */
+        html[data-theme="light"] .footer-main [style*="background:rgba(255,255,255,0.04)"] {
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
+        }
+        /* Séparateur grille */
+        html[data-theme="light"] .footer-grid { border-bottom-color: #e2e8f0 !important; }
+        /* Newsletter input */
+        html[data-theme="light"] .footer-newsletter input {
+            background: #fff !important;
+            border-color: #e2e8f0 !important;
+            color: #1e293b !important;
+        }
+        html[data-theme="light"] .footer-newsletter input::placeholder { color: #94a3b8 !important; }
+        /* Icônes sociales */
+        html[data-theme="light"] .footer-social { filter: brightness(0.8) saturate(1.2); }
+        /* Copyright */
+        html[data-theme="light"] .footer-copyright [style*="color:#334155"] { color: #475569 !important; }
+        html[data-theme="light"] .footer-copyright i.fab { color: #94a3b8 !important; }
+        /* Badge "Mobile Money" */
+        html[data-theme="light"] .footer-copyright [style*="background:rgba(255,255,255,0.06)"] {
+            background: #e2e8f0 !important;
+            color: #475569 !important;
+        }
+
         /* Mode sombre */
         @media (prefers-color-scheme: dark) {
             .dark-mode-auto {
@@ -1413,20 +1869,27 @@
 
                 <!-- Desktop links -->
                 <div class="items-center hidden gap-7 md:flex">
-                    <a href="#accueil" class="text-white nav-link" style="color:rgba(255,255,255,0.88);">Accueil</a>
-                    <a href="#fonctionnalites" class="nav-link" style="color:rgba(255,255,255,0.88);">Fonctionnalités</a>
-                    <a href="#portfolio" class="nav-link" style="color:rgba(255,255,255,0.88);">Aperçu</a>
-                    <a href="#tarifs" class="nav-link" style="color:rgba(255,255,255,0.88);">Tarifs</a>
-                    <a href="#contact" class="nav-link" style="color:rgba(255,255,255,0.88);">Contact</a>
+                    <a href="#accueil" class="text-white nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.home">Accueil</a>
+                    <a href="#fonctionnalites" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.features">Fonctionnalités</a>
+                    <a href="#portfolio" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.preview">Aperçu</a>
+                    <a href="#tarifs" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.pricing">Tarifs</a>
+                    <a href="#contact" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.contact">Contact</a>
                 </div>
 
-                <!-- CTA buttons -->
+                <!-- CTA buttons + toggle thème + langue -->
                 <div class="items-center hidden gap-3 md:flex">
+                    <div class="lang-switcher" role="group" aria-label="Langue">
+                        <button class="lang-btn active" data-lang="fr" onclick="setLang('fr')">FR</button>
+                        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+                    </div>
+                    <button id="theme-toggle-desktop" class="theme-toggle-btn" aria-label="Changer le thème" title="Thème clair / sombre">
+                        <i class="fas fa-moon" id="theme-icon-desktop"></i>
+                    </button>
                     <a href="{{ route('login') }}" class="header-btn-login">
-                        <i class="fas fa-sign-in-alt" style="font-size:11px;"></i> Se connecter
+                        <i class="fas fa-sign-in-alt" style="font-size:11px;"></i> <span data-i18n="nav.login">Se connecter</span>
                     </a>
                     <a href="#compte" class="header-btn-register">
-                        <i class="fas fa-rocket" style="font-size:11px;"></i> Démarrer
+                        <i class="fas fa-rocket" style="font-size:11px;"></i> <span data-i18n="nav.start">Démarrer</span>
                     </a>
                 </div>
 
@@ -1460,11 +1923,42 @@
 
         <!-- Links -->
         <div style="flex:1;padding:8px 0;">
-            <a href="#accueil" class="mob-nav-link"><i class="fas fa-home"></i> Accueil</a>
-            <a href="#fonctionnalites" class="mob-nav-link"><i class="fas fa-bolt"></i> Fonctionnalités</a>
-            <a href="#portfolio" class="mob-nav-link"><i class="fas fa-desktop"></i> Aperçu</a>
-            <a href="#tarifs" class="mob-nav-link"><i class="fas fa-tags"></i> Tarifs</a>
-            <a href="#contact" class="mob-nav-link"><i class="fas fa-envelope"></i> Contact</a>
+            <a href="#accueil" class="mob-nav-link"><i class="fas fa-home"></i> <span data-i18n="nav.home">Accueil</span></a>
+            <a href="#fonctionnalites" class="mob-nav-link"><i class="fas fa-bolt"></i> <span data-i18n="nav.features">Fonctionnalités</span></a>
+            <a href="#portfolio" class="mob-nav-link"><i class="fas fa-desktop"></i> <span data-i18n="nav.preview">Aperçu</span></a>
+            <a href="#tarifs" class="mob-nav-link"><i class="fas fa-tags"></i> <span data-i18n="nav.pricing">Tarifs</span></a>
+            <a href="#contact" class="mob-nav-link"><i class="fas fa-envelope"></i> <span data-i18n="nav.contact">Contact</span></a>
+        </div>
+
+        <!-- Toggle langue mobile -->
+        <div style="padding:0.75rem 1.5rem;border-top:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.85rem;color:rgba(255,255,255,0.75);font-weight:600;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-globe" style="font-size:13px;color:#93c5fd;"></i> <span data-i18n="mob.language">Langue</span>
+            </span>
+            <div class="mob-lang-switcher">
+                <button class="mob-lang-btn active" data-lang="fr" onclick="setLang('fr')">FR</button>
+                <button class="mob-lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+            </div>
+        </div>
+
+        <!-- Toggle thème -->
+        <div class="mob-panel-theme-row" style="padding:0.75rem 1.5rem;border-top:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.85rem;color:rgba(255,255,255,0.75);font-weight:600;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-palette" style="font-size:13px;color:#93c5fd;"></i> Préférence d'affichage
+            </span>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span id="theme-label-mob" style="font-size:0.75rem;color:rgba(255,255,255,0.55);">Clair</span>
+                <button id="theme-toggle-mobile"
+                        style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;
+                               background:rgba(255,255,255,0.15);transition:background 0.3s;flex-shrink:0;"
+                        aria-label="Changer le thème">
+                    <span id="theme-toggle-knob"
+                          style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+                                 background:#fff;transition:transform 0.3s;display:flex;align-items:center;justify-content:center;font-size:10px;">
+                        ☀️
+                    </span>
+                </button>
+            </div>
         </div>
 
         <!-- CTA -->
@@ -1490,20 +1984,20 @@
                     <!-- Badge -->
                     <div class="hero-badge">
                         <span class="hero-badge-dot"></span>
-                        Plateforme de gestion immobilière
-                        <span style="background:rgba(74,222,128,0.2);color:#4ade80;border-radius:20px;padding:1px 8px;font-size:0.7rem;">Nouveau</span>
+                        <span data-i18n="hero.badge">Plateforme de gestion immobilière</span>
+                        <span style="background:rgba(74,222,128,0.2);color:#4ade80;border-radius:20px;padding:1px 8px;font-size:0.7rem;" data-i18n="hero.new">Nouveau</span>
                     </div>
 
                     <!-- Headline -->
                     <h1 style="font-size:clamp(2rem,4vw,3.6rem);font-weight:900;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1.25rem;">
-                        Gérez votre patrimoine
-                        <span style="display:block;background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;">
+                        <span data-i18n="hero.h1a">Gérez votre patrimoine</span>
+                        <span style="display:block;background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;" data-i18n="hero.h1b">
                             immobilier en ligne
                         </span>
                     </h1>
 
                     <!-- Subtext -->
-                    <p style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.72);max-width:480px;margin-bottom:2rem;">
+                    <p style="font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,0.72);max-width:480px;margin-bottom:2rem;" data-i18n="hero.sub">
                         Centralisez vos biens, automatisez la facturation, suivez les paiements et envoyez des documents via WhatsApp — tout en un seul endroit.
                     </p>
 
@@ -1511,91 +2005,219 @@
                     <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:2rem;">
                         <a href="#compte" style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:50px;font-weight:800;font-size:0.92rem;color:#1e3a8a;background:#fff;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,0.2);transition:all 0.22s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,0.25)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(0,0,0,0.2)'">
                             <i class="fas fa-rocket" style="font-size:13px;color:#2563eb;"></i>
-                            Démarrer gratuitement
+                            <span data-i18n="hero.cta1">Démarrer gratuitement</span>
                         </a>
                         <button id="btn-voir-demo" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:50px;font-weight:700;font-size:0.92rem;color:#fff;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);cursor:pointer;transition:all 0.22s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
                             <i class="fas fa-play-circle" style="font-size:13px;"></i>
-                            Voir la démo
+                            <span data-i18n="hero.cta2">Voir la démo</span>
                         </button>
                     </div>
 
                     <!-- Stats row -->
                     <div class="hero-stat-row">
-                        <span class="hero-stat"><i class="fas fa-users" style="color:#4ade80;"></i> 500+ gestionnaires</span>
-                        <span class="hero-stat"><i class="fas fa-home" style="color:#60a5fa;"></i> 10 000+ biens gérés</span>
-                        <span class="hero-stat"><i class="fas fa-star" style="color:#fbbf24;"></i> 4.9 / 5 satisfaction</span>
+                        <span class="hero-stat"><i class="fas fa-users" style="color:#4ade80;"></i> <span data-i18n="hero.stat1">500+ gestionnaires</span></span>
+                        <span class="hero-stat"><i class="fas fa-home" style="color:#60a5fa;"></i> <span data-i18n="hero.stat2">10 000+ biens gérés</span></span>
+                        <span class="hero-stat"><i class="fas fa-star" style="color:#fbbf24;"></i> <span data-i18n="hero.stat3">4.9 / 5 satisfaction</span></span>
                     </div>
                 </div>
 
-                <!-- RIGHT — mini dashboard card -->
-                <div class="hero-card-outer animate-float" style="max-width:440px;margin-left:auto;">
-                    <div class="hero-card-wrap">
-                        <!-- Browser-like header -->
-                        <div class="hero-card-header">
-                            <div class="hero-dots">
-                                <span style="background:#ef4444;"></span>
-                                <span style="background:#f59e0b;"></span>
-                                <span style="background:#22c55e;"></span>
-                            </div>
-                            <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:20px;padding:4px 12px;font-size:0.7rem;color:rgba(255,255,255,0.5);max-width:220px;">
-                                app.lokativ.com/home
+                <!-- RIGHT — phone mockup with 4 sliding screens -->
+                <div class="animate-float" style="max-width:240px;margin-left:auto;position:relative;">
+
+                    <!-- ── Phone frame ── -->
+                    <div class="phone-frame" style="border-radius:38px;padding:14px 10px 18px;position:relative;">
+
+                        <!-- Dynamic island -->
+                        <div class="phone-island" style="width:68px;height:18px;border-radius:0 0 12px 12px;margin:0 auto 7px;display:flex;align-items:center;justify-content:center;gap:6px;">
+                            <div class="phone-island-inner" style="width:5px;height:5px;border-radius:50%;"></div>
+                            <div class="phone-island-inner" style="width:26px;height:5px;border-radius:3px;"></div>
+                        </div>
+
+                        <!-- Status bar -->
+                        <div class="phone-statusbar" style="display:flex;justify-content:space-between;align-items:center;padding:0 10px 7px;font-size:0.5rem;font-weight:700;letter-spacing:0.03em;">
+                            <span>9:41</span>
+                            <div style="display:flex;gap:4px;align-items:center;">
+                                <i class="fas fa-signal" style="font-size:6px;"></i>
+                                <i class="fas fa-wifi" style="font-size:6px;"></i>
+                                <i class="fas fa-battery-three-quarters" style="font-size:6px;"></i>
                             </div>
                         </div>
 
-                        <div style="padding:20px 18px;">
-                            <!-- Mini stat cards -->
-                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
-                                <div class="hero-mini-stat">
-                                    <div style="font-size:1.2rem;font-weight:900;color:#fff;line-height:1;">24</div>
-                                    <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-top:2px;">Biens</div>
-                                    <div style="font-size:0.6rem;color:#4ade80;font-weight:700;margin-top:2px;">↑ +2</div>
-                                </div>
-                                <div class="hero-mini-stat">
-                                    <div style="font-size:1.2rem;font-weight:900;color:#fff;line-height:1;">38</div>
-                                    <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-top:2px;">Locataires</div>
-                                    <div style="font-size:0.6rem;color:#4ade80;font-weight:700;margin-top:2px;">↑ +4</div>
-                                </div>
-                                <div class="hero-mini-stat">
-                                    <div style="font-size:1.05rem;font-weight:900;color:#fff;line-height:1;">845k</div>
-                                    <div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-top:2px;">Revenus F</div>
-                                    <div style="font-size:0.6rem;color:#4ade80;font-weight:700;margin-top:2px;">↑ +12%</div>
-                                </div>
-                            </div>
+                        <!-- Screen slider -->
+                        <div class="phone-screen-bg" style="overflow:hidden;border-radius:18px;height:332px;">
+                            <div id="phone-track" style="display:flex;height:100%;width:400%;transition:transform 0.48s cubic-bezier(0.4,0,0.2,1);will-change:transform;">
 
-                            <!-- Mini chart -->
-                            <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
-                                <div style="font-size:0.68rem;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:8px;">Encaissements — 6 mois</div>
-                                <div style="display:flex;align-items:flex-end;gap:4px;height:50px;">
-                                    @foreach([45,62,55,78,88,95] as $h)
-                                    <div style="flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#60a5fa,#2563eb);height:{{ $h }}%;opacity:0.85;"></div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <!-- Recent activity -->
-                            <div style="display:flex;flex-direction:column;gap:7px;">
-                                @foreach([
-                                    ['Kokou A.','Loyer payé · 85 000 F','#4ade80','KA','#052e16'],
-                                    ['Fatima O.','Contrat signé · Studio','#60a5fa','FO','#0c1a35'],
-                                    ['Jean P.','Rappel envoyé · WhatsApp','#fbbf24','JP','#2d1a00'],
-                                ] as $item)
-                                <div class="hero-mini-row">
-                                    <div style="width:30px;height:30px;border-radius:50%;background:{{ $item[4] }};border:1.5px solid {{ $item[2] }};display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:{{ $item[2] }};flex-shrink:0;">{{ $item[3] }}</div>
-                                    <div style="flex:1;min-width:0;">
-                                        <div style="font-size:0.72rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $item[0] }}</div>
-                                        <div style="font-size:0.62rem;color:rgba(255,255,255,0.45);">{{ $item[1] }}</div>
+                                {{-- ═══ ÉCRAN 1 : Tableau de bord ═══ --}}
+                                <div class="phone-screen-bg" style="width:25%;flex-shrink:0;height:100%;display:flex;flex-direction:column;overflow:hidden;">
+                                    <!-- App bar -->
+                                    <div class="phone-appbar" style="padding:10px 12px 8px;display:flex;justify-content:space-between;align-items:center;">
+                                        <div>
+                                            <div class="phone-brand-label" style="font-size:0.56rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Lokativ</div>
+                                            <div class="phone-screen-title" style="font-size:0.7rem;font-weight:800;" data-i18n="phone.s1.title">Tableau de bord</div>
+                                        </div>
+                                        <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:0.5rem;font-weight:800;color:#fff;">K</div>
                                     </div>
-                                    <div style="width:7px;height:7px;border-radius:50%;background:{{ $item[2] }};flex-shrink:0;box-shadow:0 0 6px {{ $item[2] }};"></div>
+                                    <!-- 2×2 stat grid -->
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:8px 10px 5px;">
+                                        <div style="background:rgba(59,130,246,0.13);border:1px solid rgba(59,130,246,0.22);border-radius:10px;padding:7px 8px;">
+                                            <div class="phone-name" style="font-size:1rem;font-weight:900;line-height:1.1;">24</div>
+                                            <div class="phone-stat-label" style="font-size:0.48rem;margin-top:1px;" data-i18n="hero.mini.props">Biens</div>
+                                            <div style="font-size:0.46rem;color:#4ade80;font-weight:700;margin-top:2px;">↑ +2</div>
+                                        </div>
+                                        <div style="background:rgba(16,185,129,0.13);border:1px solid rgba(16,185,129,0.22);border-radius:10px;padding:7px 8px;">
+                                            <div class="phone-name" style="font-size:1rem;font-weight:900;line-height:1.1;">38</div>
+                                            <div class="phone-stat-label" style="font-size:0.48rem;margin-top:1px;" data-i18n="hero.mini.tenants">Locataires</div>
+                                            <div style="font-size:0.46rem;color:#4ade80;font-weight:700;margin-top:2px;">↑ +4</div>
+                                        </div>
+                                        <div style="background:rgba(245,158,11,0.13);border:1px solid rgba(245,158,11,0.22);border-radius:10px;padding:7px 8px;">
+                                            <div class="phone-name" style="font-size:0.75rem;font-weight:900;line-height:1.1;">845k F</div>
+                                            <div class="phone-stat-label" style="font-size:0.48rem;margin-top:1px;" data-i18n="hero.mini.revenue">Revenus</div>
+                                            <div style="font-size:0.46rem;color:#4ade80;font-weight:700;margin-top:2px;">↑ +12%</div>
+                                        </div>
+                                        <div style="background:rgba(239,68,68,0.13);border:1px solid rgba(239,68,68,0.22);border-radius:10px;padding:7px 8px;">
+                                            <div class="phone-name" style="font-size:1rem;font-weight:900;line-height:1.1;">2</div>
+                                            <div class="phone-stat-label" style="font-size:0.48rem;margin-top:1px;" data-i18n="phone.unpaid">Impayés</div>
+                                            <div style="font-size:0.46rem;color:#f87171;font-weight:700;margin-top:2px;">↑ +1</div>
+                                        </div>
+                                    </div>
+                                    <!-- Mini chart -->
+                                    <div class="phone-chart-wrap" style="margin:0 10px 6px;border-radius:10px;padding:8px 10px;">
+                                        <div class="phone-chart-label" style="font-size:0.46rem;font-weight:600;margin-bottom:6px;" data-i18n="hero.mini.chart">Encaissements — 6 mois</div>
+                                        <div style="display:flex;align-items:flex-end;gap:3px;height:32px;">
+                                            @foreach([40,58,50,72,84,95] as $hh)
+                                            <div style="flex:1;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#60a5fa,#2563eb);height:{{ $hh }}%;opacity:0.85;"></div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <!-- Recent activity -->
+                                    <div style="padding:0 10px;display:flex;flex-direction:column;gap:5px;">
+                                        @foreach([
+                                            ['Kokou A.','Loyer payé · 85 000 F','#4ade80','KA','#052e16','hero.act.1'],
+                                            ['Fatima O.','Contrat signé · Studio','#60a5fa','FO','#0c1a35','hero.act.2'],
+                                            ['Jean P.','Rappel WhatsApp','#fbbf24','JP','#2d1a00','hero.act.3'],
+                                        ] as $ai)
+                                        <div style="display:flex;align-items:center;gap:7px;">
+                                            <div style="width:22px;height:22px;border-radius:50%;background:{{ $ai[4] }};border:1.5px solid {{ $ai[2] }};display:flex;align-items:center;justify-content:center;font-size:0.42rem;font-weight:800;color:{{ $ai[2] }};flex-shrink:0;">{{ $ai[3] }}</div>
+                                            <div style="flex:1;min-width:0;">
+                                                <div class="phone-name" style="font-size:0.52rem;font-weight:700;">{{ $ai[0] }}</div>
+                                                <div class="phone-sublabel" style="font-size:0.44rem;" data-i18n="{{ $ai[5] }}">{{ $ai[1] }}</div>
+                                            </div>
+                                            <div style="width:5px;height:5px;border-radius:50%;background:{{ $ai[2] }};box-shadow:0 0 4px {{ $ai[2] }};"></div>
+                                        </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                                @endforeach
+
+                                {{-- ═══ ÉCRAN 2 : Mes biens ═══ --}}
+                                <div class="phone-screen-bg" style="width:25%;flex-shrink:0;height:100%;display:flex;flex-direction:column;overflow:hidden;">
+                                    <div class="phone-appbar" style="padding:10px 12px 8px;display:flex;justify-content:space-between;align-items:center;">
+                                        <div class="phone-screen-title" style="font-size:0.7rem;font-weight:800;" data-i18n="phone.s2.title">Mes biens</div>
+                                        <div class="phone-icon-btn" style="display:flex;align-items:center;gap:4px;border-radius:8px;padding:3px 8px;">
+                                            <i class="fas fa-plus" style="color:#60a5fa;font-size:6px;"></i>
+                                            <span style="font-size:0.46rem;color:#60a5fa;font-weight:700;" data-i18n="phone.s2.add">Ajouter</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding:8px 10px;display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+                                        @foreach([
+                                            ['Villa Cocotiers','Cotonou · 4 pièces','#4ade80','Loué','phone.status.rented','fa-home'],
+                                            ['Appt Studio B12','Abomey-Calavi','#60a5fa','Disponible','phone.status.avail','fa-building'],
+                                            ['Maison Tokpa','Cotonou · 3 pièces','#fbbf24','Maintenance','phone.status.maint','fa-tools'],
+                                            ['Chambre 5, Lot 8','Porto-Novo','#a78bfa','Loué','phone.status.rented','fa-door-open'],
+                                        ] as $bp)
+                                        <div class="phone-card" style="border-radius:10px;padding:7px 9px;display:flex;align-items:center;gap:7px;">
+                                            <div style="width:26px;height:26px;border-radius:8px;background:{{ $bp[2] }}18;border:1px solid {{ $bp[2] }}33;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                                <i class="fas {{ $bp[5] }}" style="color:{{ $bp[2] }};font-size:10px;"></i>
+                                            </div>
+                                            <div style="flex:1;min-width:0;">
+                                                <div class="phone-name" style="font-size:0.54rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $bp[0] }}</div>
+                                                <div class="phone-sublabel" style="font-size:0.44rem;">{{ $bp[1] }}</div>
+                                            </div>
+                                            <span style="font-size:0.41rem;font-weight:700;color:{{ $bp[2] }};background:{{ $bp[2] }}20;border-radius:6px;padding:2px 5px;white-space:nowrap;" data-i18n="{{ $bp[4] }}">{{ $bp[3] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                {{-- ═══ ÉCRAN 3 : Locataires ═══ --}}
+                                <div class="phone-screen-bg" style="width:25%;flex-shrink:0;height:100%;display:flex;flex-direction:column;overflow:hidden;">
+                                    <div class="phone-appbar" style="padding:10px 12px 8px;display:flex;justify-content:space-between;align-items:center;">
+                                        <div class="phone-screen-title" style="font-size:0.7rem;font-weight:800;" data-i18n="phone.s3.title">Locataires</div>
+                                        <i class="fas fa-search phone-icon-sm" style="font-size:11px;"></i>
+                                    </div>
+                                    <div style="padding:8px 10px;display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+                                        @foreach([
+                                            ['Kokou Agbodjan','85 000 F/mois','#4ade80','KA','#052e16','À jour','phone.pay.ok'],
+                                            ['Fatima Ouédraogo','45 000 F/mois','#ef4444','FO','#1f0707','Impayé','phone.pay.late'],
+                                            ['Jean Pierre T.','60 000 F/mois','#fbbf24','JP','#2d1a00','En attente','phone.pay.wait'],
+                                            ['Aïssatou Bah','75 000 F/mois','#4ade80','AB','#052e16','À jour','phone.pay.ok'],
+                                        ] as $lt)
+                                        <div class="phone-card" style="border-radius:10px;padding:7px 9px;display:flex;align-items:center;gap:7px;">
+                                            <div style="width:26px;height:26px;border-radius:50%;background:{{ $lt[4] }};border:1.5px solid {{ $lt[2] }};display:flex;align-items:center;justify-content:center;font-size:0.45rem;font-weight:800;color:{{ $lt[2] }};flex-shrink:0;">{{ $lt[3] }}</div>
+                                            <div style="flex:1;min-width:0;">
+                                                <div class="phone-name" style="font-size:0.54rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $lt[0] }}</div>
+                                                <div class="phone-sublabel" style="font-size:0.44rem;">{{ $lt[1] }}</div>
+                                            </div>
+                                            <span style="font-size:0.41rem;font-weight:700;color:{{ $lt[2] }};background:{{ $lt[2] }}20;border-radius:6px;padding:2px 5px;white-space:nowrap;" data-i18n="{{ $lt[6] }}">{{ $lt[5] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                {{-- ═══ ÉCRAN 4 : Facturation ═══ --}}
+                                <div class="phone-screen-bg" style="width:25%;flex-shrink:0;height:100%;display:flex;flex-direction:column;overflow:hidden;">
+                                    <div class="phone-appbar" style="padding:10px 12px 8px;display:flex;justify-content:space-between;align-items:center;">
+                                        <div class="phone-screen-title" style="font-size:0.7rem;font-weight:800;" data-i18n="phone.s4.title">Facturation</div>
+                                        <i class="fas fa-chart-bar phone-icon-sm" style="font-size:11px;"></i>
+                                    </div>
+                                    <!-- Summary -->
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:8px 10px 5px;">
+                                        <div style="background:rgba(16,185,129,0.13);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:7px 8px;">
+                                            <div class="phone-billing-label" style="font-size:0.44rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;" data-i18n="phone.billing.collected">Encaissé</div>
+                                            <div style="font-size:0.68rem;font-weight:900;color:#4ade80;margin-top:3px;">845 000 F</div>
+                                        </div>
+                                        <div style="background:rgba(245,158,11,0.13);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:7px 8px;">
+                                            <div class="phone-billing-label" style="font-size:0.44rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;" data-i18n="phone.billing.pending">En attente</div>
+                                            <div style="font-size:0.68rem;font-weight:900;color:#fbbf24;margin-top:3px;">105 000 F</div>
+                                        </div>
+                                    </div>
+                                    <!-- Invoice rows -->
+                                    <div style="padding:4px 10px;display:flex;flex-direction:column;gap:5px;">
+                                        @foreach([
+                                            ['Kokou A.','85 000 F','Jan 2025','#4ade80','Payé','phone.pay.paid'],
+                                            ['Fatima O.','45 000 F','Jan 2025','#ef4444','Impayé','phone.pay.late'],
+                                            ['Jean P.','60 000 F','Jan 2025','#fbbf24','En attente','phone.pay.wait'],
+                                            ['Aïssatou B.','75 000 F','Déc 2024','#4ade80','Payé','phone.pay.paid'],
+                                        ] as $inv)
+                                        <div class="phone-inv-row" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:8px;">
+                                            <div style="flex:1;min-width:0;">
+                                                <div class="phone-name" style="font-size:0.52rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $inv[0] }}</div>
+                                                <div class="phone-inv-date" style="font-size:0.42rem;">{{ $inv[2] }}</div>
+                                            </div>
+                                            <div class="phone-inv-amount" style="font-size:0.52rem;font-weight:800;">{{ $inv[1] }}</div>
+                                            <span style="font-size:0.4rem;font-weight:700;color:{{ $inv[3] }};background:{{ $inv[3] }}20;border-radius:5px;padding:2px 4px;white-space:nowrap;" data-i18n="{{ $inv[5] }}">{{ $inv[4] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
                             </div>
+                        </div>
+                        <!-- /Screen slider -->
+
+                        <!-- Navigation dots -->
+                        <div style="display:flex;justify-content:center;gap:5px;margin-top:11px;">
+                            <span class="phone-nav-dot" style="width:18px;height:4px;border-radius:2px;background:#3b82f6;cursor:pointer;transition:all 0.3s;display:inline-block;"></span>
+                            <span class="phone-nav-dot phone-dot-inactive" style="width:6px;height:4px;border-radius:2px;cursor:pointer;transition:all 0.3s;display:inline-block;"></span>
+                            <span class="phone-nav-dot phone-dot-inactive" style="width:6px;height:4px;border-radius:2px;cursor:pointer;transition:all 0.3s;display:inline-block;"></span>
+                            <span class="phone-nav-dot phone-dot-inactive" style="width:6px;height:4px;border-radius:2px;cursor:pointer;transition:all 0.3s;display:inline-block;"></span>
                         </div>
                     </div>
+                    <!-- /Phone frame -->
 
-                    <!-- Trust badge below card -->
-                    <div style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.75rem;color:rgba(255,255,255,0.5);">
+                    <!-- Trust badge -->
+                    <div style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.72rem;color:rgba(255,255,255,0.48);">
                         <i class="fas fa-shield-alt" style="color:#4ade80;font-size:11px;"></i>
-                        Données hébergées en sécurité · SSL · RGPD
+                        <span data-i18n="hero.trust">Données hébergées en sécurité · SSL · RGPD</span>
                     </div>
                 </div>
 
@@ -1617,12 +2239,12 @@
 
             <div class="text-center mb-14">
                 <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
-                    <i class="fas fa-bolt me-1"></i> Tout-en-un
+                    <i class="fas fa-bolt me-1"></i> <span data-i18n="sec.features.badge">Tout-en-un</span>
                 </span>
-                <h2 class="mb-3 text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
-                    Des fonctionnalités <span class="text-blue-600">puissantes</span>
+                <h2 class="mb-3 text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl" data-i18n="sec.features.h2">
+                    Des fonctionnalités puissantes
                 </h2>
-                <p class="max-w-2xl mx-auto text-gray-500 text-base sm:text-lg">
+                <p class="max-w-2xl mx-auto text-gray-500 text-base sm:text-lg" data-i18n="sec.features.sub">
                     Tous les outils dont vous avez besoin pour gérer votre patrimoine immobilier au quotidien
                 </p>
             </div>
@@ -1637,12 +2259,12 @@
                     <div style="width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
                         <i class="fas fa-building" style="font-size:24px;color:#fff;"></i>
                     </div>
-                    <h3 style="font-size:1.35rem;font-weight:800;margin-bottom:0.75rem;">Gestion des propriétés</h3>
-                    <p style="font-size:0.88rem;opacity:0.82;line-height:1.6;margin:0;">Centralisez toutes vos propriétés en un seul endroit. Maisons, appartements, chambres — suivez chaque bien, ses documents et son historique.</p>
+                    <h3 style="font-size:1.35rem;font-weight:800;margin-bottom:0.75rem;" data-i18n="feat.prop.title">Gestion des propriétés</h3>
+                    <p style="font-size:0.88rem;opacity:0.82;line-height:1.6;margin:0;" data-i18n="feat.prop.desc">Centralisez toutes vos propriétés en un seul endroit. Maisons, appartements, chambres — suivez chaque bien, ses documents et son historique.</p>
                     <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap;">
-                        <span style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;">Multi-sites</span>
-                        <span style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;">Documents</span>
-                        <span style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;">Historique</span>
+                        <span style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;" data-i18n="feat.prop.tag1">Multi-sites</span>
+                        <span style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;" data-i18n="feat.prop.tag2">Documents</span>
+                        <span style="background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;" data-i18n="feat.prop.tag3">Historique</span>
                     </div>
                 </div>
 
@@ -1652,8 +2274,8 @@
                         <i class="fas fa-users" style="font-size:20px;color:#16a34a;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;">Gestion des locataires</h3>
-                        <p style="font-size:0.83rem;color:#64748b;margin:0;line-height:1.5;">Contrats, paiements, communications et historique complet pour chaque locataire.</p>
+                        <h3 style="font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;" data-i18n="feat.tenant.title">Gestion des locataires</h3>
+                        <p style="font-size:0.83rem;color:#64748b;margin:0;line-height:1.5;" data-i18n="feat.tenant.desc">Contrats, paiements, communications et historique complet pour chaque locataire.</p>
                     </div>
                 </div>
 
@@ -1663,8 +2285,8 @@
                         <i class="fas fa-file-invoice-dollar" style="font-size:20px;color:#7c3aed;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;">Facturation automatique</h3>
-                        <p style="font-size:0.83rem;color:#64748b;margin:0;line-height:1.5;">Générez vos quittances de loyer et suivez les paiements en temps réel.</p>
+                        <h3 style="font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;" data-i18n="feat.billing.title">Facturation automatique</h3>
+                        <p style="font-size:0.83rem;color:#64748b;margin:0;line-height:1.5;" data-i18n="feat.billing.desc">Générez vos quittances de loyer et suivez les paiements en temps réel.</p>
                     </div>
                 </div>
 
@@ -1674,8 +2296,8 @@
                         <i class="fas fa-chart-pie" style="font-size:20px;color:#ea580c;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;">Tableau de bord analytique</h3>
-                        <p style="font-size:0.83rem;color:#64748b;margin:0;line-height:1.5;">Revenus, taux d'occupation, rentabilité — tout en un coup d'œil.</p>
+                        <h3 style="font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;" data-i18n="feat.dash.title">Tableau de bord analytique</h3>
+                        <p style="font-size:0.83rem;color:#64748b;margin:0;line-height:1.5;" data-i18n="feat.dash.desc">Revenus, taux d'occupation, rentabilité — tout en un coup d'œil.</p>
                     </div>
                 </div>
 
@@ -1686,8 +2308,8 @@
                             <i class="fas fa-bell" style="font-size:16px;color:#e11d48;"></i>
                         </div>
                         <div>
-                            <p style="font-size:0.9rem;font-weight:800;color:#1e293b;margin:0 0 3px;">Rappels intelligents</p>
-                            <p style="font-size:0.77rem;color:#64748b;margin:0;">Notifications automatiques pour loyers et contrats</p>
+                            <p style="font-size:0.9rem;font-weight:800;color:#1e293b;margin:0 0 3px;" data-i18n="feat.alerts.title">Rappels intelligents</p>
+                            <p style="font-size:0.77rem;color:#64748b;margin:0;" data-i18n="feat.alerts.desc">Notifications automatiques pour loyers et contrats</p>
                         </div>
                     </div>
                     <div style="border-radius:16px;background:#f0fdfa;border:1.5px solid #99f6e4;padding:1.25rem;display:flex;align-items:center;gap:14px;flex:1;">
@@ -1695,8 +2317,8 @@
                             <i class="fas fa-file-contract" style="font-size:16px;color:#0d9488;"></i>
                         </div>
                         <div>
-                            <p style="font-size:0.9rem;font-weight:800;color:#1e293b;margin:0 0 3px;">Documents & Contrats</p>
-                            <p style="font-size:0.77rem;color:#64748b;margin:0;">Génération de baux et stockage sécurisé</p>
+                            <p style="font-size:0.9rem;font-weight:800;color:#1e293b;margin:0 0 3px;" data-i18n="feat.docs.title">Documents & Contrats</p>
+                            <p style="font-size:0.77rem;color:#64748b;margin:0;" data-i18n="feat.docs.desc">Génération de baux et stockage sécurisé</p>
                         </div>
                     </div>
                 </div>
@@ -1722,17 +2344,17 @@
     <!-- ═══════════════════════════════════════════
          COMMENT ÇA MARCHE
     ═══════════════════════════════════════════ -->
-    <section style="padding:5rem 0;background:linear-gradient(180deg,#f8faff 0%,#fff 100%);">
+    <section id="sec-comment" style="padding:5rem 0;background:linear-gradient(180deg,#f8faff 0%,#fff 100%);">
         <div class="px-4 mx-auto max-w-6xl sm:px-6 lg:px-8">
 
             <div class="text-center mb-14">
                 <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
-                    <i class="fas fa-map-signs me-1"></i> En 4 étapes
+                    <i class="fas fa-map-signs me-1"></i> <span data-i18n="sec.how.badge">En 4 étapes</span>
                 </span>
-                <h2 class="mb-3 text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
-                    Comment ça <span class="text-blue-600">marche ?</span>
+                <h2 class="mb-3 text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl" data-i18n="sec.how.h2">
+                    Comment ça marche ?
                 </h2>
-                <p class="max-w-xl mx-auto text-gray-500 text-base">
+                <p class="max-w-xl mx-auto text-gray-500 text-base" data-i18n="sec.how.sub">
                     Démarrez en quelques minutes et gérez votre patrimoine comme un pro
                 </p>
             </div>
@@ -1745,10 +2367,10 @@
 
                 @php
                 $howSteps = [
-                    ['num'=>1,'icon'=>'fa-user-plus','color'=>'#2563eb','bg'=>'#eff6ff','title'=>'Créez votre compte','desc'=>'Inscrivez-vous gratuitement en moins de 2 minutes, sans carte bancaire.'],
-                    ['num'=>2,'icon'=>'fa-home','color'=>'#7c3aed','bg'=>'#f3e8ff','title'=>'Ajoutez vos biens','desc'=>'Renseignez vos propriétés, chambres et leurs caractéristiques.'],
-                    ['num'=>3,'icon'=>'fa-users','color'=>'#059669','bg'=>'#ecfdf5','title'=>'Gérez vos locataires','desc'=>'Ajoutez vos locataires, créez leurs contrats et suivez les paiements.'],
-                    ['num'=>4,'icon'=>'fa-magic','color'=>'#ea580c','bg'=>'#fff7ed','title'=>'Automatisez tout','desc'=>'Laissez Lokativ générer les factures, rappels et documents automatiquement.'],
+                    ['num'=>1,'icon'=>'fa-user-plus','color'=>'#2563eb','bg'=>'#eff6ff','i18n'=>'step.1','title'=>'Créez votre compte','desc'=>'Inscrivez-vous gratuitement en moins de 2 minutes, sans carte bancaire.'],
+                    ['num'=>2,'icon'=>'fa-home','color'=>'#7c3aed','bg'=>'#f3e8ff','i18n'=>'step.2','title'=>'Ajoutez vos biens','desc'=>'Renseignez vos propriétés, chambres et leurs caractéristiques.'],
+                    ['num'=>3,'icon'=>'fa-users','color'=>'#059669','bg'=>'#ecfdf5','i18n'=>'step.3','title'=>'Gérez vos locataires','desc'=>'Ajoutez vos locataires, créez leurs contrats et suivez les paiements.'],
+                    ['num'=>4,'icon'=>'fa-magic','color'=>'#ea580c','bg'=>'#fff7ed','i18n'=>'step.4','title'=>'Automatisez tout','desc'=>'Laissez Lokativ générer les factures, rappels et documents automatiquement.'],
                 ];
                 @endphp
 
@@ -1761,8 +2383,8 @@
                         </div>
                         <div style="position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:{{ $s['color'] }};color:#fff;font-size:0.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px {{ $s['color'] }}55;">{{ $s['num'] }}</div>
                     </div>
-                    <h3 style="font-size:0.98rem;font-weight:800;color:#1e293b;margin-bottom:8px;">{{ $s['title'] }}</h3>
-                    <p style="font-size:0.82rem;color:#64748b;line-height:1.55;margin:0;">{{ $s['desc'] }}</p>
+                    <h3 style="font-size:0.98rem;font-weight:800;color:#1e293b;margin-bottom:8px;" data-i18n="{{ $s['i18n'] }}.title">{{ $s['title'] }}</h3>
+                    <p style="font-size:0.82rem;color:#64748b;line-height:1.55;margin:0;" data-i18n="{{ $s['i18n'] }}.desc">{{ $s['desc'] }}</p>
                 </div>
                 @endforeach
             </div>
@@ -1770,7 +2392,7 @@
             <!-- CTA bas -->
             <div style="text-align:center;margin-top:3rem;">
                 <a href="#compte" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;font-weight:700;font-size:0.95rem;padding:13px 32px;border-radius:50px;text-decoration:none;box-shadow:0 4px 20px rgba(37,99,235,0.35);transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    Commencer maintenant <i class="fas fa-arrow-right"></i>
+                    <span data-i18n="step.cta">Commencer maintenant</span> <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -1784,10 +2406,10 @@
             <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;color:#fff;">
                 @php
                 $stats = [
-                    ['val'=>'500+','label'=>'Utilisateurs actifs','icon'=>'fa-users'],
-                    ['val'=>'2 500+','label'=>'Propriétés gérées','icon'=>'fa-home'],
-                    ['val'=>'15M+','label'=>'XOF de loyers traités','icon'=>'fa-coins'],
-                    ['val'=>'97%','label'=>'Taux de satisfaction','icon'=>'fa-heart'],
+                    ['val'=>'500+','label'=>'Utilisateurs actifs','icon'=>'fa-users','i18n'=>'stat.users'],
+                    ['val'=>'2 500+','label'=>'Propriétés gérées','icon'=>'fa-home','i18n'=>'stat.props'],
+                    ['val'=>'15M+','label'=>'XOF de loyers traités','icon'=>'fa-coins','i18n'=>'stat.revenue'],
+                    ['val'=>'97%','label'=>'Taux de satisfaction','icon'=>'fa-heart','i18n'=>'stat.satisfaction'],
                 ];
                 @endphp
                 @foreach($stats as $stat)
@@ -1796,7 +2418,7 @@
                         <i class="fas {{ $stat['icon'] }}" style="font-size:18px;color:#93c5fd;"></i>
                     </div>
                     <div style="font-size:2.2rem;font-weight:900;letter-spacing:-0.02em;line-height:1;">{{ $stat['val'] }}</div>
-                    <p style="font-size:0.82rem;color:#bfdbfe;margin-top:6px;">{{ $stat['label'] }}</p>
+                    <p style="font-size:0.82rem;color:#bfdbfe;margin-top:6px;" data-i18n="{{ $stat['i18n'] }}">{{ $stat['label'] }}</p>
                 </div>
                 @endforeach
             </div>
@@ -1806,10 +2428,10 @@
     <!-- ═══════════════════════════════════════════
          ILS NOUS FONT CONFIANCE
     ═══════════════════════════════════════════ -->
-    <section style="padding:3.5rem 0;background:#f8faff;overflow:hidden;">
+    <section id="sec-partenaires" style="padding:3.5rem 0;background:#f8faff;overflow:hidden;">
         <div class="px-4 mx-auto max-w-5xl sm:px-6 lg:px-8">
             <div style="text-align:center;margin-bottom:2rem;">
-                <p style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;">Ils nous font confiance</p>
+                <p style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;" data-i18n="partners.label">Ils nous font confiance</p>
             </div>
 
             <!-- Défilement infini -->
@@ -1844,13 +2466,13 @@
     <section id="biens" class="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-blue-50 to-white">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="mb-12 text-center lg:mb-16">
-                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full" data-i18n="biens.badge">
                     Nos offres du moment
                 </span>
                 <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl">
-                    Biens <span class="text-blue-600">Immobiliers</span> Disponibles
+                    <span data-i18n="biens.h2a">Biens</span> <span class="text-blue-600" data-i18n="biens.h2b">Immobiliers</span> <span data-i18n="biens.h2c">Disponibles</span>
                 </h2>
-                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg">
+                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg" data-i18n="biens.sub">
                     Découvrez nos dernières offres immobilières disponibles
                 </p>
             </div>
@@ -2007,23 +2629,23 @@
     <section id="portfolio" class="py-12 sm:py-16 lg:py-20 bg-white">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="mb-10 text-center">
-                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">Interface moderne</span>
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full" data-i18n="portfolio.badge">Interface moderne</span>
                 <h2 class="mb-4 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">
-                    Aperçu de la <span class="text-blue-600">plateforme</span>
+                    <span data-i18n="portfolio.h2a">Aperçu de la</span> <span class="text-blue-600" data-i18n="portfolio.h2b">plateforme</span>
                 </h2>
-                <p class="max-w-2xl mx-auto text-base text-gray-500 sm:text-lg">
+                <p class="max-w-2xl mx-auto text-base text-gray-500 sm:text-lg" data-i18n="portfolio.sub">
                     Explorez les écrans intuitifs conçus pour simplifier votre gestion immobilière
                 </p>
             </div>
 
             <!-- Tabs -->
             <div class="ap-tabs">
-                <button class="ap-tab active" onclick="switchApScreen(this,'ap-dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
-                <button class="ap-tab" onclick="switchApScreen(this,'ap-biens')"><i class="fas fa-home"></i> Biens</button>
-                <button class="ap-tab" onclick="switchApScreen(this,'ap-locataires')"><i class="fas fa-user-friends"></i> Locataires</button>
-                <button class="ap-tab" onclick="switchApScreen(this,'ap-facturation')"><i class="fas fa-receipt"></i> Facturation</button>
-                <button class="ap-tab" onclick="switchApScreen(this,'ap-stats')"><i class="fas fa-chart-bar"></i> Statistiques</button>
-                <button class="ap-tab" onclick="switchApScreen(this,'ap-rapports')"><i class="fas fa-file-pdf"></i> Rapports</button>
+                <button class="ap-tab active" onclick="switchApScreen(this,'ap-dashboard')"><i class="fas fa-tachometer-alt"></i> <span data-i18n="portfolio.tab1">Dashboard</span></button>
+                <button class="ap-tab" onclick="switchApScreen(this,'ap-biens')"><i class="fas fa-home"></i> <span data-i18n="portfolio.tab2">Biens</span></button>
+                <button class="ap-tab" onclick="switchApScreen(this,'ap-locataires')"><i class="fas fa-user-friends"></i> <span data-i18n="portfolio.tab3">Locataires</span></button>
+                <button class="ap-tab" onclick="switchApScreen(this,'ap-facturation')"><i class="fas fa-receipt"></i> <span data-i18n="portfolio.tab4">Facturation</span></button>
+                <button class="ap-tab" onclick="switchApScreen(this,'ap-stats')"><i class="fas fa-chart-bar"></i> <span data-i18n="portfolio.tab5">Statistiques</span></button>
+                <button class="ap-tab" onclick="switchApScreen(this,'ap-rapports')"><i class="fas fa-file-pdf"></i> <span data-i18n="portfolio.tab6">Rapports</span></button>
             </div>
 
             <!-- Screen mockup -->
@@ -2247,15 +2869,15 @@
     </script>
 
     <!-- Témoignages Section -->
-    <section class="py-12 sm:py-16 lg:py-20" style="background:linear-gradient(135deg,#f8faff 0%,#eef2ff 100%);">
+    <section id="temoignages" class="py-12 sm:py-16 lg:py-20" style="background:linear-gradient(135deg,#f8faff 0%,#eef2ff 100%);">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="mb-12 text-center">
-                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">Ils nous font confiance</span>
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full" data-i18n="sec.testi.badge">Témoignages</span>
                 <h2 class="mb-4 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">
-                    Ce que disent nos <span class="text-blue-600">clients</span>
+                    <span data-i18n="sec.testi.h2a">Ce que disent</span> nos <span class="text-blue-600" data-i18n="sec.testi.h2b">clients</span>
                 </h2>
-                <p class="max-w-2xl mx-auto text-base text-gray-500 sm:text-lg">
-                    Des gestionnaires immobiliers satisfaits à travers toute l'Afrique de l'Ouest
+                <p class="max-w-2xl mx-auto text-base text-gray-500 sm:text-lg" data-i18n="sec.testi.sub">
+                    Des milliers de gestionnaires font confiance à Lokativ pour simplifier leur quotidien.
                 </p>
             </div>
 
@@ -2431,10 +3053,10 @@
                 <p style="font-size:0.9rem;color:#64748b;margin-bottom:20px;">Rejoignez <strong style="color:#1e293b;">+500 gestionnaires</strong> qui font confiance à Lokativ</p>
                 <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;">
                     <a href="#compte" class="inline-flex items-center gap-2 px-8 py-3 font-bold text-white rounded-full" style="background:linear-gradient(135deg,#1d4ed8,#2563eb);box-shadow:0 4px 20px rgba(37,99,235,0.3);text-decoration:none;font-size:0.92rem;">
-                        Démarrer gratuitement <i class="fas fa-arrow-right"></i>
+                        <span data-i18n="sec.testi.cta1">Démarrer gratuitement</span> <i class="fas fa-arrow-right"></i>
                     </a>
                     <button id="openTestiModal" style="display:inline-flex;align-items:center;gap:8px;padding:0.75rem 1.75rem;border-radius:50px;border:2px solid #2563eb;background:#fff;color:#2563eb;font-weight:700;font-size:0.92rem;cursor:pointer;transition:all 0.25s;">
-                        <i class="fas fa-star" style="font-size:13px;"></i> Partager votre avis
+                        <span data-i18n="sec.testi.cta2">⭐ Partager votre avis</span>
                     </button>
                 </div>
             </div>
@@ -2445,12 +3067,13 @@
     <section id="tarifs" class="py-12 sm:py-16 lg:py-20" style="background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="mb-14 text-center">
-                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">Tarification transparente</span>
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full" data-i18n="sec.pricing.badge">Tarification transparente</span>
                 <h2 class="mb-4 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">
-                    Des plans <span class="text-blue-600">adaptés</span> à votre patrimoine
+                    <span data-i18n="sec.pricing.h2a">Des plans adaptés à</span>
+                    <span class="text-blue-600" data-i18n="sec.pricing.h2b">chaque besoin</span>
                 </h2>
-                <p class="max-w-2xl mx-auto text-base text-gray-500 sm:text-lg">
-                    Commencez gratuitement, évoluez à votre rythme. Sans engagement, sans frais cachés.
+                <p class="max-w-2xl mx-auto text-base text-gray-500 sm:text-lg" data-i18n="sec.pricing.sub">
+                    Démarrez gratuitement. Évoluez selon votre croissance.
                 </p>
             </div>
 
@@ -2473,10 +3096,12 @@
                         $badgeBg      = '#dcfce7';
                         $badgeColor   = '#15803d';
                         $badgeLabel   = 'Essai gratuit';
+                        $badgeI18nKey = 'plan.badge.free';
                         $badgeIcon    = 'fa-gift';
                         $btnStyle     = 'background:#22c55e;color:#fff;';
                         $btnHoverCls  = '';
                         $btnLabel     = 'Essayer gratuitement';
+                        $btnI18nKey   = 'plan.btn.free';
                         $headerBg     = 'linear-gradient(135deg,#dcfce7,#bbf7d0)';
                         $iconColor    = '#16a34a';
                         $planIcon     = 'fa-seedling';
@@ -2487,10 +3112,12 @@
                         $badgeBg      = '#eff6ff';
                         $badgeColor   = '#1d4ed8';
                         $badgeLabel   = 'Plus populaire';
+                        $badgeI18nKey = 'plan.badge.featured';
                         $badgeIcon    = 'fa-star';
                         $btnStyle     = 'background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,0.4);';
                         $btnHoverCls  = '';
                         $btnLabel     = 'Choisir ce plan';
+                        $btnI18nKey   = 'plan.btn.featured';
                         $headerBg     = 'linear-gradient(135deg,#eff6ff,#dbeafe)';
                         $iconColor    = '#2563eb';
                         $planIcon     = 'fa-rocket';
@@ -2501,10 +3128,12 @@
                         $badgeBg      = '#faf5ff';
                         $badgeColor   = '#7e22ce';
                         $badgeLabel   = 'Entreprise';
+                        $badgeI18nKey = 'plan.badge.pro';
                         $badgeIcon    = 'fa-building';
                         $btnStyle     = 'background:#fff;color:#7e22ce;border:2px solid #a855f7;';
                         $btnHoverCls  = '';
                         $btnLabel     = 'Nous contacter';
+                        $btnI18nKey   = 'plan.btn.pro';
                         $headerBg     = 'linear-gradient(135deg,#faf5ff,#f3e8ff)';
                         $iconColor    = '#a855f7';
                         $planIcon     = 'fa-crown';
@@ -2515,10 +3144,12 @@
                         $badgeBg      = '#f1f5f9';
                         $badgeColor   = '#475569';
                         $badgeLabel   = 'Débutant';
+                        $badgeI18nKey = 'plan.badge.default';
                         $badgeIcon    = 'fa-bolt';
                         $btnStyle     = 'background:#fff;color:#3b82f6;border:2px solid #3b82f6;';
                         $btnHoverCls  = '';
                         $btnLabel     = 'Commencer';
+                        $btnI18nKey   = 'plan.btn.default';
                         $headerBg     = 'linear-gradient(135deg,#f8fafc,#f1f5f9)';
                         $iconColor    = '#64748b';
                         $planIcon     = 'fa-chart-line';
@@ -2526,20 +3157,20 @@
 
                     // Libellé maisons
                     if ($plan->max_maisons === null || $plan->max_maisons === 0) {
-                        $maisonLabel = 'Maisons <strong>illimitées</strong>';
+                        $maisonLabel = '<span data-i18n-html="plan.maisons.unlimited">Maisons <strong>illimitées</strong></span>';
                     } else {
-                        $maisonLabel = 'Jusqu\'à <strong>' . $plan->max_maisons . ' maisons</strong>';
+                        $maisonLabel = '<span data-i18n="plan.maisons.upto">Jusqu\'à</span> <strong>' . $plan->max_maisons . ' <span data-i18n="plan.maisons.unit">maisons</span></strong>';
                     }
 
                     // Libellé annexes
                     if ($plan->max_annexes === null) {
-                        $annexeLabel = 'Agences <strong>illimitées</strong>';
+                        $annexeLabel = '<span data-i18n-html="plan.annexes.unlimited">Agences <strong>illimitées</strong></span>';
                         $annexeOk    = true;
                     } elseif ($plan->max_annexes > 0) {
-                        $annexeLabel = 'Jusqu\'à <strong>' . $plan->max_annexes . ' agence(s)</strong>';
+                        $annexeLabel = '<span data-i18n="plan.annexes.upto">Jusqu\'à</span> <strong>' . $plan->max_annexes . ' <span data-i18n="plan.annexes.unit">agence(s)</span></strong>';
                         $annexeOk    = true;
                     } else {
-                        $annexeLabel = 'Multi-agences';
+                        $annexeLabel = '<span data-i18n="plan.annexes.none">Multi-agences</span>';
                         $annexeOk    = false;
                     }
                 @endphp
@@ -2549,7 +3180,7 @@
                     {{-- Badge Populaire --}}
                     @if($isFeatured)
                         <div class="plan-badge-popular">
-                            <i class="fas fa-star me-1" style="font-size:9px;"></i> Populaire
+                            <i class="fas fa-star me-1" style="font-size:9px;"></i> <span data-i18n="plan.popular">Populaire</span>
                         </div>
                     @endif
 
@@ -2561,7 +3192,7 @@
                             </div>
                             <span style="display:inline-flex;align-items:center;gap:4px;background:{{ $badgeBg }};color:{{ $badgeColor }};font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">
                                 <i class="fas {{ $badgeIcon }}" style="font-size:9px;"></i>
-                                {{ $badgeLabel }}
+                                <span data-i18n="{{ $badgeI18nKey }}">{{ $badgeLabel }}</span>
                             </span>
                         </div>
                         <h3 style="font-size:1.2rem;font-weight:800;color:#1e293b;margin:0 0 0.25rem;">{{ $plan->nom }}</h3>
@@ -2577,13 +3208,13 @@
                                 <span style="font-size:2.4rem;font-weight:900;color:{{ $priceColor }};line-height:1;">0</span>
                                 <span style="font-size:1rem;color:#94a3b8;font-weight:500;">XOF</span>
                             </div>
-                            <p style="font-size:0.78rem;color:#64748b;margin:0;">Pendant <strong>14 jours</strong> · Sans CB requise</p>
+                            <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n-html="plan.trial.text">Pendant <strong>14 jours</strong> · Sans CB requise</p>
                         @else
                             <div style="display:flex;align-items:baseline;gap:4px;padding:0.75rem 0 0.25rem;">
                                 <span style="font-size:2.1rem;font-weight:900;color:{{ $priceColor }};line-height:1;">{{ number_format($plan->prix_annuel, 0, ',', ' ') }}</span>
                                 <span style="font-size:0.9rem;color:#94a3b8;font-weight:500;">XOF / an</span>
                             </div>
-                            <p style="font-size:0.78rem;color:#64748b;margin:0;">soit {{ number_format($plan->prix_annuel / 12, 0, ',', ' ') }} XOF / mois</p>
+                            <p style="font-size:0.78rem;color:#64748b;margin:0;"><span data-i18n="plan.price.soit">soit</span> {{ number_format($plan->prix_annuel / 12, 0, ',', ' ') }} XOF <span data-i18n="plan.price.permonth">/ mois</span></p>
                         @endif
                     </div>
 
@@ -2591,7 +3222,7 @@
                     <div class="plan-features">
 
                         {{-- Gestion --}}
-                        <p class="plan-section-label">Gestion immobilière</p>
+                        <p class="plan-section-label" data-i18n="plan.cat.gestion">Gestion immobilière</p>
 
                         <div class="plan-feature-item">
                             <i class="fas fa-home plan-feature-icon" style="color:{{ $accentColor }};"></i>
@@ -2603,35 +3234,35 @@
                         </div>
                         <div class="plan-feature-item">
                             <i class="fas fa-check-circle plan-feature-icon" style="color:{{ $accentColor }};"></i>
-                            <span>Tableau de bord complet</span>
+                            <span data-i18n="plan.feat.dashboard">Tableau de bord complet</span>
                         </div>
                         <div class="plan-feature-item">
                             <i class="fas fa-check-circle plan-feature-icon" style="color:{{ $accentColor }};"></i>
-                            <span>Gestion des locataires</span>
+                            <span data-i18n="plan.feat.tenants">Gestion des locataires</span>
                         </div>
                         <div class="plan-feature-item">
                             <i class="fas fa-check-circle plan-feature-icon" style="color:{{ $accentColor }};"></i>
-                            <span>Facturation automatique</span>
+                            <span data-i18n="plan.feat.billing">Facturation automatique</span>
                         </div>
 
                         {{-- Communication --}}
-                        <p class="plan-section-label">Communication</p>
+                        <p class="plan-section-label" data-i18n="plan.cat.comm">Communication</p>
 
                         {{-- Email --}}
                         @if($plan->max_envois_email === null)
                             <div class="plan-feature-item">
                                 <i class="fas fa-envelope plan-feature-icon" style="color:#3b82f6;"></i>
-                                <span><strong>Emails illimités</strong> / mois</span>
+                                <span data-i18n-html="plan.emails.unlimited"><strong>Emails illimités</strong> / mois</span>
                             </div>
                         @elseif($plan->max_envois_email > 0)
                             <div class="plan-feature-item">
                                 <i class="fas fa-envelope plan-feature-icon" style="color:#3b82f6;"></i>
-                                <span><strong>{{ $plan->max_envois_email }}</strong> email(s) / mois</span>
+                                <span><strong>{{ $plan->max_envois_email }}</strong> <span data-i18n="plan.emails.suffix">email(s) / mois</span></span>
                             </div>
                         @else
                             <div class="plan-feature-item disabled">
                                 <i class="fas fa-times-circle plan-feature-icon" style="color:#d1d5db;"></i>
-                                <span>Envoi par email</span>
+                                <span data-i18n="plan.emails.none">Envoi par email</span>
                             </div>
                         @endif
 
@@ -2639,17 +3270,17 @@
                         @if($plan->max_rappels_loyer === null)
                             <div class="plan-feature-item">
                                 <i class="fas fa-bell plan-feature-icon" style="color:#f59e0b;"></i>
-                                <span><strong>Rappels loyer illimités</strong> (email)</span>
+                                <span data-i18n-html="plan.rappels.unlimited"><strong>Rappels loyer illimités</strong> (email)</span>
                             </div>
                         @elseif(isset($plan->max_rappels_loyer) && $plan->max_rappels_loyer > 0)
                             <div class="plan-feature-item">
                                 <i class="fas fa-bell plan-feature-icon" style="color:#f59e0b;"></i>
-                                <span><strong>{{ $plan->max_rappels_loyer }}</strong> rappel(s) loyer / mois (email)</span>
+                                <span><strong>{{ $plan->max_rappels_loyer }}</strong> <span data-i18n="plan.rappels.suffix">rappel(s) loyer / mois (email)</span></span>
                             </div>
                         @else
                             <div class="plan-feature-item disabled">
                                 <i class="fas fa-times-circle plan-feature-icon" style="color:#d1d5db;"></i>
-                                <span>Rappels de loyer</span>
+                                <span data-i18n="plan.rappels.none">Rappels de loyer</span>
                             </div>
                         @endif
 
@@ -2657,17 +3288,17 @@
                         @if($plan->max_preavis === null)
                             <div class="plan-feature-item">
                                 <i class="fas fa-door-open plan-feature-icon" style="color:#ef4444;"></i>
-                                <span><strong>Préavis illimités</strong> / mois (email)</span>
+                                <span data-i18n-html="plan.preavis.unlimited"><strong>Préavis illimités</strong> / mois (email)</span>
                             </div>
                         @elseif(isset($plan->max_preavis) && $plan->max_preavis > 0)
                             <div class="plan-feature-item">
                                 <i class="fas fa-door-open plan-feature-icon" style="color:#ef4444;"></i>
-                                <span><strong>{{ $plan->max_preavis }}</strong> préavis / mois (email)</span>
+                                <span><strong>{{ $plan->max_preavis }}</strong> <span data-i18n="plan.preavis.suffix">préavis / mois (email)</span></span>
                             </div>
                         @else
                             <div class="plan-feature-item disabled">
                                 <i class="fas fa-times-circle plan-feature-icon" style="color:#d1d5db;"></i>
-                                <span>Envoi de préavis</span>
+                                <span data-i18n="plan.preavis.none">Envoi de préavis</span>
                             </div>
                         @endif
 
@@ -2675,8 +3306,8 @@
                         @if(($plan->sms_enabled ?? true) || ($plan->whatsapp_enabled ?? true))
                             <div class="plan-feature-item" style="flex-wrap:wrap;gap:4px;">
                                 <i class="fas fa-comments plan-feature-icon" style="color:#10b981;"></i>
-                                <span style="margin-right:4px;">SMS &amp; WhatsApp</span>
-                                <span class="badge-ppu"><i class="fas fa-coins" style="font-size:9px;"></i> Pay-per-use</span>
+                                <span style="margin-right:4px;" data-i18n="plan.sms_wa">SMS &amp; WhatsApp</span>
+                                <span class="badge-ppu"><i class="fas fa-coins" style="font-size:9px;"></i> <span data-i18n="plan.ppu">Pay-per-use</span></span>
                             </div>
                         @endif
 
@@ -2684,25 +3315,25 @@
                         @if($plan->whatsapp_enabled ?? true)
                             <div class="plan-feature-item" style="flex-wrap:wrap;gap:4px;">
                                 <i class="fab fa-whatsapp plan-feature-icon" style="color:#25d366;"></i>
-                                <span style="margin-right:4px;">Envoi docs WhatsApp</span>
-                                <span class="badge-ppu"><i class="fas fa-coins" style="font-size:9px;"></i> Pay-per-use</span>
+                                <span style="margin-right:4px;" data-i18n="plan.docs_wa">Envoi docs WhatsApp</span>
+                                <span class="badge-ppu"><i class="fas fa-coins" style="font-size:9px;"></i> <span data-i18n="plan.ppu">Pay-per-use</span></span>
                             </div>
                         @else
                             <div class="plan-feature-item disabled">
                                 <i class="fas fa-times-circle plan-feature-icon" style="color:#d1d5db;"></i>
-                                <span>Envoi docs WhatsApp</span>
+                                <span data-i18n="plan.docs_wa">Envoi docs WhatsApp</span>
                             </div>
                         @endif
 
                         {{-- Publicités --}}
                         @if($plan->max_publicites === null || $plan->max_publicites > 0)
-                            <p class="plan-section-label">Visibilité</p>
+                            <p class="plan-section-label" data-i18n="plan.cat.visib">Visibilité</p>
                             <div class="plan-feature-item">
                                 <i class="fas fa-bullhorn plan-feature-icon" style="color:#f59e0b;"></i>
                                 @if($plan->max_publicites === null)
-                                    <span><strong>Publicités illimitées</strong></span>
+                                    <span data-i18n-html="plan.ads.unlimited"><strong>Publicités illimitées</strong></span>
                                 @else
-                                    <span><strong>{{ $plan->max_publicites }}</strong> publicité(s) max</span>
+                                    <span><strong>{{ $plan->max_publicites }}</strong> <span data-i18n="plan.ads.suffix">publicité(s) max</span></span>
                                 @endif
                             </div>
                         @endif
@@ -2711,7 +3342,7 @@
 
                     {{-- CTA --}}
                     <a href="#compte" class="plan-btn" style="{{ $btnStyle }}">
-                        {{ $btnLabel }}
+                        <span data-i18n="{{ $btnI18nKey }}">{{ $btnLabel }}</span>
                         <i class="fas fa-arrow-right ms-2" style="font-size:12px;"></i>
                     </a>
                 </div>
@@ -2722,7 +3353,7 @@
             <div class="mt-12 text-center">
                 <p class="text-sm text-gray-500">
                     <i class="mr-1 text-blue-500 fas fa-shield-alt"></i>
-                    Tous les plans incluent une <strong>période d'essai</strong> · Annulation facile · Support inclus
+                    <span data-i18n-html="plan.note">Tous les plans incluent une <strong>période d'essai</strong> · Annulation facile · Support inclus</span>
                 </p>
             </div>
         </div>
@@ -2738,13 +3369,13 @@
                 <!-- ── Colonne gauche : branding ── -->
                 <div style="color:#fff;padding-top:1rem;">
                     <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#93c5fd;font-size:0.75rem;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem;letter-spacing:0.06em;text-transform:uppercase;">
-                        <i class="fas fa-rocket" style="font-size:10px;"></i> Démarrez gratuitement
+                        <i class="fas fa-rocket" style="font-size:10px;"></i> <span data-i18n="reg.badge">Démarrez gratuitement</span>
                     </span>
                     <h2 style="font-size:2rem;font-weight:900;line-height:1.2;margin-bottom:1rem;letter-spacing:-0.02em;">
-                        Créer votre compte<br>
+                        <span data-i18n="reg.h2">Créer votre compte</span><br>
                         <span style="background:linear-gradient(135deg,#60a5fa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Lokativ</span>
                     </h2>
-                    <p style="color:#94a3b8;font-size:0.95rem;line-height:1.7;margin-bottom:2rem;">
+                    <p style="color:#94a3b8;font-size:0.95rem;line-height:1.7;margin-bottom:2rem;" data-i18n="reg.sub">
                         Rejoignez des centaines de gestionnaires immobiliers. Configuré en moins de 3 minutes.
                     </p>
 
@@ -2755,8 +3386,8 @@
                                 <i class="fas fa-shield-alt" style="color:#34d399;font-size:14px;"></i>
                             </div>
                             <div>
-                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;">Données sécurisées</p>
-                                <p style="font-size:0.78rem;color:#64748b;margin:0;">Chiffrement SSL · Sauvegarde quotidienne</p>
+                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat1.title">Données sécurisées</p>
+                                <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n="reg.feat1.sub">Chiffrement SSL · Sauvegarde quotidienne</p>
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;">
@@ -2764,8 +3395,8 @@
                                 <i class="fas fa-credit-card" style="color:#60a5fa;font-size:14px;"></i>
                             </div>
                             <div>
-                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;">Sans CB pour l'essai</p>
-                                <p style="font-size:0.78rem;color:#64748b;margin:0;">14 jours gratuits · Annulation facile</p>
+                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat2.title">Sans CB pour l'essai</p>
+                                <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n="reg.feat2.sub">14 jours gratuits · Annulation facile</p>
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;">
@@ -2773,22 +3404,22 @@
                                 <i class="fas fa-headset" style="color:#c084fc;font-size:14px;"></i>
                             </div>
                             <div>
-                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;">Support inclus</p>
-                                <p style="font-size:0.78rem;color:#64748b;margin:0;">Assistance email & WhatsApp</p>
+                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat3.title">Support inclus</p>
+                                <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n="reg.feat3.sub">Assistance email & WhatsApp</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Témoignage -->
                     <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px 20px;">
-                        <p style="font-size:0.85rem;color:#cbd5e1;font-style:italic;margin-bottom:12px;line-height:1.6;">
+                        <p style="font-size:0.85rem;color:#cbd5e1;font-style:italic;margin-bottom:12px;line-height:1.6;" data-i18n="reg.quote">
                             « Lokativ a transformé ma façon de gérer mes 12 propriétés. Je gagne des heures chaque mois. »
                         </p>
                         <div style="display:flex;align-items:center;gap:10px;">
                             <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;">K</div>
                             <div>
                                 <p style="font-weight:700;font-size:0.82rem;color:#f1f5f9;margin:0;">Kofi A.</p>
-                                <p style="font-size:0.75rem;color:#64748b;margin:0;">Promoteur immobilier · Cotonou</p>
+                                <p style="font-size:0.75rem;color:#64748b;margin:0;" data-i18n="reg.quote.role">Promoteur immobilier · Cotonou</p>
                             </div>
                         </div>
                     </div>
@@ -2806,17 +3437,17 @@
                     <div class="step-indicator">
                         <div class="step-item active" id="step-item-1">
                             <div class="step active" id="step-1">1</div>
-                            <span class="step-label">Profil</span>
+                            <span class="step-label" data-i18n="reg.step1.label">Profil</span>
                         </div>
                         <div class="step-connector" id="connector-1"></div>
                         <div class="step-item" id="step-item-2">
                             <div class="step" id="step-2">2</div>
-                            <span class="step-label">Infos</span>
+                            <span class="step-label" data-i18n="reg.step2.label">Infos</span>
                         </div>
                         <div class="step-connector" id="connector-2"></div>
                         <div class="step-item" id="step-item-3">
                             <div class="step" id="step-3">3</div>
-                            <span class="step-label">Plan</span>
+                            <span class="step-label" data-i18n="reg.step3.label">Plan</span>
                         </div>
                     </div>
 
@@ -2824,7 +3455,7 @@
                     <div class="step-form active" id="step-form-1">
                         <h3>
                             <span class="step-icon"><i class="fas fa-user-tag"></i></span>
-                            Quel est votre profil ?
+                            <span data-i18n="reg.step1.title">Quel est votre profil ?</span>
                         </h3>
 
                         <div class="account-type-grid">
@@ -2833,12 +3464,12 @@
                                 <div class="card-icon-wrap" style="background:linear-gradient(135deg,#dbeafe,#eff6ff);">
                                     <i class="fas fa-user" style="color:#2563eb;"></i>
                                 </div>
-                                <h4>Particulier</h4>
-                                <p>Gérez votre patrimoine personnel en toute simplicité</p>
+                                <h4 data-i18n="reg.type.perso">Particulier</h4>
+                                <p data-i18n="reg.type.perso.desc">Gérez votre patrimoine personnel en toute simplicité</p>
                                 <ul>
-                                    <li>Jusqu'à 10 propriétés</li>
-                                    <li>Tableau de bord personnalisé</li>
-                                    <li>Support par email</li>
+                                    <li data-i18n="reg.type.perso.li1">Jusqu'à 10 propriétés</li>
+                                    <li data-i18n="reg.type.perso.li2">Tableau de bord personnalisé</li>
+                                    <li data-i18n="reg.type.perso.li3">Support par email</li>
                                 </ul>
                             </div>
                             <div class="plan-card" data-type="entreprise">
@@ -2846,12 +3477,12 @@
                                 <div class="card-icon-wrap" style="background:linear-gradient(135deg,#f3e8ff,#faf5ff);">
                                     <i class="fas fa-building" style="color:#7c3aed;"></i>
                                 </div>
-                                <h4>Entreprise</h4>
-                                <p>Solution complète pour les professionnels de l'immobilier</p>
+                                <h4 data-i18n="reg.type.biz">Entreprise</h4>
+                                <p data-i18n="reg.type.biz.desc">Solution complète pour les professionnels de l'immobilier</p>
                                 <ul>
-                                    <li>Propriétés illimitées</li>
-                                    <li>Multi-agences</li>
-                                    <li>Support prioritaire</li>
+                                    <li data-i18n="reg.type.biz.li1">Propriétés illimitées</li>
+                                    <li data-i18n="reg.type.biz.li2">Multi-agences</li>
+                                    <li data-i18n="reg.type.biz.li3">Support prioritaire</li>
                                 </ul>
                             </div>
                         </div>
@@ -2861,7 +3492,7 @@
                         <div class="form-navigation">
                             <div></div>
                             <button type="button" class="btn-reg-next" onclick="nextStep(2)" disabled id="btn-next-1">
-                                Continuer <i class="fas fa-arrow-right"></i>
+                                <span data-i18n="reg.next">Continuer</span> <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
@@ -2870,20 +3501,20 @@
                     <div class="step-form" id="step-form-2">
                         <h3>
                             <span class="step-icon"><i class="fas fa-id-card"></i></span>
-                            Vos informations
+                            <span data-i18n="reg.step2.title">Vos informations</span>
                         </h3>
 
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="reg-field">
-                                    <label for="nom">Nom <span class="text-danger">*</span></label>
+                                    <label for="nom" data-i18n="reg.label.nom">Nom</label>
                                     <input type="text" class="form-control" id="nom" name="nom" placeholder="Dupont" required>
                                     <div class="invalid-feedback">Veuillez saisir votre nom.</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="reg-field">
-                                    <label for="prenom">Prénom <span class="text-danger">*</span></label>
+                                    <label for="prenom" data-i18n="reg.label.prenom">Prénom</label>
                                     <input type="text" class="form-control" id="prenom" name="prenom" placeholder="Jean" required>
                                     <div class="invalid-feedback">Veuillez saisir votre prénom.</div>
                                 </div>
@@ -2891,13 +3522,13 @@
                         </div>
 
                         <div class="reg-field">
-                            <label for="email">Adresse email <span class="text-danger">*</span></label>
+                            <label for="email" data-i18n="reg.label.email">Adresse email</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="vous@exemple.com" required>
                             <div class="invalid-feedback">Veuillez saisir une adresse email valide.</div>
                         </div>
 
                         <div class="reg-field">
-                            <label for="telephone">Téléphone <span class="text-danger">*</span></label>
+                            <label for="telephone" data-i18n="reg.label.phone">Téléphone</label>
                             <input type="tel" class="form-control" id="telephone" name="telephone">
                             <div class="invalid-feedback" id="telephone-error">Veuillez saisir un numéro de téléphone valide.</div>
                         </div>
@@ -2907,20 +3538,20 @@
                             <div class="entreprise-section-card">
                                 <h5>
                                     <i class="fas fa-building"></i>
-                                    Informations de l'entreprise
+                                    <span data-i18n="reg.company.title">Informations de l'entreprise</span>
                                 </h5>
                                 <div class="reg-field">
-                                    <label for="designation">Nom de l'entreprise <span class="text-danger">*</span></label>
+                                    <label for="designation" data-i18n="reg.label.company">Nom de l'entreprise</label>
                                     <input type="text" class="form-control" id="designation" name="designation" placeholder="Immobilière XYZ">
                                     <div class="invalid-feedback">Veuillez saisir le nom de l'entreprise.</div>
                                 </div>
                                 <div class="reg-field">
-                                    <label for="adresse">Adresse <span class="text-danger">*</span></label>
+                                    <label for="adresse" data-i18n="reg.label.address">Adresse</label>
                                     <input type="text" class="form-control" id="adresse" name="adresse" placeholder="123 rue de l'Immobilier">
                                     <div class="invalid-feedback">Veuillez saisir l'adresse.</div>
                                 </div>
                                 <div class="reg-field">
-                                    <label for="email_entreprise">Email de l'entreprise <span class="text-danger">*</span></label>
+                                    <label for="email_entreprise" data-i18n="reg.label.company.email">Email de l'entreprise</label>
                                     <input type="email" class="form-control" id="email_entreprise" name="email_entreprise" placeholder="contact@entreprise.com">
                                     <div class="invalid-feedback">Veuillez saisir l'email de l'entreprise.</div>
                                 </div>
@@ -2929,10 +3560,10 @@
 
                         <div class="form-navigation">
                             <button type="button" class="btn-reg-prev" onclick="prevStep(1)">
-                                <i class="fas fa-arrow-left"></i> Retour
+                                <i class="fas fa-arrow-left"></i> <span data-i18n="reg.prev">Retour</span>
                             </button>
                             <button type="button" class="btn-reg-next" onclick="nextStep(3)" id="btn-next-2">
-                                Continuer <i class="fas fa-arrow-right"></i>
+                                <span data-i18n="reg.next">Continuer</span> <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
@@ -2941,10 +3572,10 @@
                     <div class="step-form" id="step-form-3">
                         <h3>
                             <span class="step-icon"><i class="fas fa-layer-group"></i></span>
-                            Choisissez votre plan
+                            <span data-i18n="reg.step3.title">Choisissez votre plan</span>
                         </h3>
 
-                        <div id="plans-container">
+                        <div id="plans-container" style="display:flex;flex-direction:column;gap:0.75rem;">
                             <!-- Plans chargés dynamiquement -->
                         </div>
 
@@ -2952,7 +3583,7 @@
                             <div class="form-check" style="margin:0;">
                                 <input type="checkbox" class="form-check-input" id="conditions" required>
                                 <label class="form-check-label" for="conditions" style="font-size:0.82rem;color:#475569;line-height:1.5;">
-                                    J'accepte les <a href="{{ route('legal.cgu') }}" target="_blank" class="text-primary fw-semibold">conditions générales d'utilisation</a> et la <a href="{{ route('legal.confidentialite') }}" target="_blank" class="text-primary fw-semibold">politique de confidentialité</a>.
+                                    <span data-i18n="reg.cgu.prefix">J'accepte les</span> <a href="{{ route('legal.cgu') }}" target="_blank" class="text-primary fw-semibold" data-i18n="reg.cgu.link1">conditions générales d'utilisation</a> <span data-i18n="reg.cgu.and">et la</span> <a href="{{ route('legal.confidentialite') }}" target="_blank" class="text-primary fw-semibold" data-i18n="reg.cgu.link2">politique de confidentialité</a><span data-i18n="reg.cgu.dot">.</span>
                                 </label>
                                 <div class="invalid-feedback">Vous devez accepter les conditions pour continuer.</div>
                             </div>
@@ -2960,11 +3591,11 @@
 
                         <div class="form-navigation">
                             <button type="button" class="btn-reg-prev" onclick="prevStep(2)">
-                                <i class="fas fa-arrow-left"></i> Retour
+                                <i class="fas fa-arrow-left"></i> <span data-i18n="reg.prev">Retour</span>
                             </button>
                             <button type="button" class="btn-reg-submit" id="btn-submit" onclick="submitForm()" disabled>
                                 <i class="fas fa-check-circle"></i>
-                                <span id="btn-submit-label">Créer mon compte</span>
+                                <span id="btn-submit-label" data-i18n="reg.submit">Créer mon compte</span>
                             </button>
                         </div>
                     </div>
@@ -2985,19 +3616,20 @@
     </style>
 
     <!-- FAQ Section -->
-    <section class="py-12 sm:py-16 lg:py-20" style="background:linear-gradient(180deg,#f8faff 0%,#fff 100%);">
+    <section id="sec-faq" class="py-12 sm:py-16 lg:py-20" style="background:linear-gradient(180deg,#f8faff 0%,#fff 100%);">
         <div class="px-4 mx-auto max-w-3xl sm:px-6 lg:px-8">
 
             <!-- En-tête -->
             <div class="mb-12 text-center">
                 <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
-                    <i class="fas fa-circle-question me-1"></i> Aide & Réponses
+                    <i class="fas fa-circle-question me-1"></i> <span data-i18n="sec.faq.badge">Aide & Réponses</span>
                 </span>
                 <h2 class="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
-                    Questions <span class="text-blue-600">fréquentes</span>
+                    <span data-i18n="sec.faq.h2a">Questions</span> <span class="text-blue-600" data-i18n="sec.faq.h2b">fréquentes</span>
                 </h2>
                 <p class="text-gray-500 text-base">
-                    Tout ce que vous devez savoir avant de démarrer. Une question ? <a href="#contact" class="text-blue-600 font-medium hover:underline">Contactez-nous</a>.
+                    <span data-i18n="sec.faq.sub">Tout ce que vous devez savoir avant de démarrer.</span>
+                    <a href="#contact" class="text-blue-600 font-medium hover:underline">Contactez-nous</a>.
                 </p>
             </div>
 
@@ -3005,7 +3637,7 @@
             <div class="faq-category-label" style="display:flex;gap:10px;align-items:center;margin-bottom:1rem;">
                 <span style="flex:1;height:1px;background:#e2e8f0;"></span>
                 <span style="display:inline-flex;align-items:center;gap:6px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;">
-                    <i class="fas fa-play-circle" style="color:#3b82f6;"></i> Démarrage
+                    <i class="fas fa-play-circle" style="color:#3b82f6;"></i> <span data-i18n="faq.cat.start">Démarrage</span>
                 </span>
                 <span style="flex:1;height:1px;background:#e2e8f0;"></span>
             </div>
@@ -3017,13 +3649,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-rocket" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Comment puis-je commencer à utiliser Lokativ ?</h3>
+                        <h3 data-i18n="faq.q1">Comment puis-je commencer à utiliser Lokativ ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a1">
                             C'est très simple ! Créez un compte gratuit en cliquant sur <strong>"Créer un compte"</strong>, renseignez vos informations et vous pourrez immédiatement ajouter vos propriétés. Aucune carte bancaire n'est requise pour l'offre d'essai.
                         </div>
                     </div>
@@ -3035,13 +3667,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-shield-alt" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Mes données sont-elles sécurisées ?</h3>
+                        <h3 data-i18n="faq.q2">Mes données sont-elles sécurisées ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a2">
                             Absolument. Nous utilisons un chiffrement <strong>SSL de bout en bout</strong> et nos serveurs sont hébergés dans des centres de données sécurisés. Vos données sont sauvegardées quotidiennement et ne sont jamais partagées avec des tiers.
                         </div>
                     </div>
@@ -3052,7 +3684,7 @@
             <div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem;margin-top:1.5rem;">
                 <span style="flex:1;height:1px;background:#e2e8f0;"></span>
                 <span style="display:inline-flex;align-items:center;gap:6px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;">
-                    <i class="fas fa-credit-card" style="color:#3b82f6;"></i> Abonnement & Paiement
+                    <i class="fas fa-credit-card" style="color:#3b82f6;"></i> <span data-i18n="faq.cat.billing">Abonnement & Paiement</span>
                 </span>
                 <span style="flex:1;height:1px;background:#e2e8f0;"></span>
             </div>
@@ -3064,13 +3696,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-sync-alt" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Puis-je changer de plan à tout moment ?</h3>
+                        <h3 data-i18n="faq.q3">Puis-je changer de plan à tout moment ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a3">
                             Oui, vous pouvez passer à un plan supérieur à tout moment depuis votre espace <strong>"Mon abonnement"</strong>. Le paiement se fait via KKiaPay ou FedaPay. Vous pouvez également rétrograder à la fin de votre période d'abonnement.
                         </div>
                     </div>
@@ -3082,13 +3714,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-comments-dollar" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Comment fonctionne la facturation des SMS et WhatsApp ?</h3>
+                        <h3 data-i18n="faq.q4">Comment fonctionne la facturation des SMS et WhatsApp ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a4">
                             Les envois SMS et WhatsApp sont <strong>pay-per-use</strong> : vous payez uniquement ce que vous utilisez. Avant chaque envoi, le coût total est calculé selon votre pays et le nombre de destinataires. Le paiement s'effectue via l'agrégateur (KKiaPay ou FedaPay) et est vérifié avant l'envoi.
                         </div>
                     </div>
@@ -3099,7 +3731,7 @@
             <div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem;margin-top:1.5rem;">
                 <span style="flex:1;height:1px;background:#e2e8f0;"></span>
                 <span style="display:inline-flex;align-items:center;gap:6px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#94a3b8;">
-                    <i class="fas fa-cogs" style="color:#3b82f6;"></i> Fonctionnalités
+                    <i class="fas fa-cogs" style="color:#3b82f6;"></i> <span data-i18n="faq.cat.features">Fonctionnalités</span>
                 </span>
                 <span style="flex:1;height:1px;background:#e2e8f0;"></span>
             </div>
@@ -3111,13 +3743,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-file-invoice" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Comment fonctionne la facturation automatique ?</h3>
+                        <h3 data-i18n="faq.q5">Comment fonctionne la facturation automatique ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a5">
                             Une fois vos locataires et les montants de loyer configurés, Lokativ <strong>génère automatiquement</strong> les quittances à chaque échéance. Vous pouvez envoyer des rappels par email, SMS ou WhatsApp et consulter l'historique complet des paiements.
                         </div>
                     </div>
@@ -3129,13 +3761,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-mobile-alt" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Y a-t-il une application mobile ?</h3>
+                        <h3 data-i18n="faq.q6">Y a-t-il une application mobile ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a6">
                             Lokativ est <strong>entièrement responsive</strong> et fonctionne parfaitement sur tous les appareils mobiles via votre navigateur. Vous pouvez également l'installer comme PWA (Progressive Web App) directement depuis votre téléphone.
                         </div>
                     </div>
@@ -3147,13 +3779,13 @@
                         <div class="faq-icon-wrap">
                             <i class="fas fa-headset" style="color:#3b82f6;font-size:14px;"></i>
                         </div>
-                        <h3>Proposez-vous une assistance technique ?</h3>
+                        <h3 data-i18n="faq.q7">Proposez-vous une assistance technique ?</h3>
                         <div class="faq-chevron">
                             <i class="fas fa-chevron-down" style="color:#64748b;font-size:11px;"></i>
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <div class="faq-answer-inner">
+                        <div class="faq-answer-inner" data-i18n-html="faq.a7">
                             Oui ! Les utilisateurs en essai bénéficient d'un <strong>support par email</strong>. Les plans payants incluent un support prioritaire via WhatsApp et email avec des temps de réponse garantis sous 24h.
                         </div>
                     </div>
@@ -3162,10 +3794,10 @@
 
             <!-- CTA bas de FAQ -->
             <div class="mt-10 text-center p-6 rounded-2xl" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);">
-                <p class="text-gray-700 font-medium mb-3">Vous n'avez pas trouvé votre réponse ?</p>
+                <p class="text-gray-700 font-medium mb-3" data-i18n="faq.cta.text">Vous n'avez pas trouvé votre réponse ?</p>
                 <a href="#contact" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white" style="background:linear-gradient(135deg,#2563eb,#3b82f6);box-shadow:0 4px 14px rgba(59,130,246,0.3);">
                     <i class="fas fa-paper-plane"></i>
-                    Envoyer un message
+                    <span data-i18n="faq.cta.btn">Envoyer un message</span>
                 </a>
             </div>
         </div>
@@ -3182,12 +3814,12 @@
             <!-- Heading -->
             <div style="text-align:center;margin-bottom:3.5rem;">
                 <span style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:50px;padding:6px 18px;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:1rem;letter-spacing:0.04em;">
-                    <i class="fas fa-headset" style="margin-right:6px;color:#60a5fa;"></i>Support & Contact
+                    <i class="fas fa-headset" style="margin-right:6px;color:#60a5fa;"></i><span data-i18n="contact.badge">Support & Contact</span>
                 </span>
-                <h2 style="font-size:clamp(1.8rem,3.5vw,3rem);font-weight:900;color:#fff;margin-bottom:0.75rem;letter-spacing:-0.02em;">
-                    Contactez-<span style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;">nous</span>
+                <h2 style="font-size:clamp(1.8rem,3.5vw,3rem);font-weight:900;color:#fff;margin-bottom:0.75rem;letter-spacing:-0.02em;" data-i18n="contact.h2">
+                    Contactez-nous
                 </h2>
-                <p style="color:rgba(255,255,255,0.6);font-size:1rem;max-width:480px;margin:0 auto;">
+                <p style="color:rgba(255,255,255,0.6);font-size:1rem;max-width:480px;margin:0 auto;" data-i18n="contact.sub">
                     Notre équipe répond en moins de 2h. Posez vos questions, demandez une démo ou signalez un problème.
                 </p>
             </div>
@@ -3199,17 +3831,17 @@
                     <!-- Cards info -->
                     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;">
                         @foreach([
-                            ['fa-map-marker-alt','#60a5fa','rgba(96,165,250,0.15)','Adresse','Cotonou, Bénin — Quartier Akpakpa'],
-                            ['fa-phone-alt','#4ade80','rgba(74,222,128,0.15)','Téléphone','+229 XX XX XX XX'],
-                            ['fa-envelope','#a78bfa','rgba(167,139,250,0.15)','Email','contact@lokativ.com'],
-                            ['fa-clock','#fbbf24','rgba(251,191,36,0.15)','Horaires','Lun–Ven : 8h–18h · Sam : 9h–13h'],
+                            ['fa-map-marker-alt','#60a5fa','rgba(96,165,250,0.15)','Adresse','Cotonou, Bénin — Quartier Akpakpa','contact.info.address'],
+                            ['fa-phone-alt','#4ade80','rgba(74,222,128,0.15)','Téléphone','+229 XX XX XX XX','contact.info.phone'],
+                            ['fa-envelope','#a78bfa','rgba(167,139,250,0.15)','Email','contact@lokativ.com','contact.info.email'],
+                            ['fa-clock','#fbbf24','rgba(251,191,36,0.15)','Horaires','Lun–Ven : 8h–18h · Sam : 9h–13h','contact.info.hours'],
                         ] as $info)
                         <div class="contact-info-card">
                             <div class="contact-icon-wrap" style="background:{{ $info[2] }};color:{{ $info[1] }};">
                                 <i class="fas {{ $info[0] }}"></i>
                             </div>
                             <div>
-                                <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">{{ $info[3] }}</div>
+                                <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;" data-i18n="{{ $info[5] }}">{{ $info[3] }}</div>
                                 <div style="font-size:0.88rem;font-weight:600;color:rgba(255,255,255,0.9);">{{ $info[4] }}</div>
                             </div>
                         </div>
@@ -3218,7 +3850,7 @@
 
                     <!-- Réseaux sociaux -->
                     <div>
-                        <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Suivez-nous</div>
+                        <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;" data-i18n="contact.social">Suivez-nous</div>
                         <div style="display:flex;gap:10px;">
                             <a href="#" class="contact-social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                             <a href="#" class="contact-social-btn" title="Twitter/X"><i class="fab fa-twitter"></i></a>
@@ -3234,8 +3866,8 @@
                             <i class="fas fa-bolt" style="color:#4ade80;font-size:14px;"></i>
                         </div>
                         <div>
-                            <div style="font-size:0.8rem;font-weight:700;color:#4ade80;">Réponse rapide garantie</div>
-                            <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:2px;">Temps de réponse moyen : 1h30 en heures ouvrées</div>
+                            <div style="font-size:0.8rem;font-weight:700;color:#4ade80;" data-i18n="contact.fast">Réponse rapide garantie</div>
+                            <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:2px;" data-i18n="contact.fast.sub">Temps de réponse moyen : 1h30 en heures ouvrées</div>
                         </div>
                     </div>
                 </div>
@@ -3243,50 +3875,50 @@
                 <!-- RIGHT — Formulaire -->
                 <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:22px;padding:32px 28px;">
                     <div style="margin-bottom:22px;">
-                        <h3 style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:4px;">Envoyez-nous un message</h3>
-                        <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);">Remplissez le formulaire, nous vous répondons rapidement.</p>
+                        <h3 style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:4px;" data-i18n="contact.form.title">Envoyez-nous un message</h3>
+                        <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);" data-i18n="contact.form.sub">Remplissez le formulaire, nous vous répondons rapidement.</p>
                     </div>
 
                     <form id="contact-form">
                         @csrf
                         <div class="contact-form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
                             <div>
-                                <label for="contact_nom" class="contact-label text-white">Nom</label>
-                                <input type="text" id="contact_nom" name="contact_nom" class="contact-field" placeholder="Votre nom" required>
+                                <label for="contact_nom" class="contact-label text-white" data-i18n="contact.label.nom">Nom</label>
+                                <input type="text" id="contact_nom" name="contact_nom" class="contact-field" placeholder="Votre nom" data-i18n-ph="contact.ph.nom" required>
                             </div>
                             <div>
-                                <label for="contact_prenom" class="contact-label text-white">Prénom</label>
-                                <input type="text" id="contact_prenom" name="contact_prenom" class="contact-field" placeholder="Votre prénom" required>
+                                <label for="contact_prenom" class="contact-label text-white" data-i18n="contact.label.prenom">Prénom</label>
+                                <input type="text" id="contact_prenom" name="contact_prenom" class="contact-field" placeholder="Votre prénom" data-i18n-ph="contact.ph.prenom" required>
                             </div>
                         </div>
 
                         <div style="margin-bottom:12px;">
-                            <label for="contact_email" class="contact-label text-white">Adresse email</label>
+                            <label for="contact_email" class="contact-label text-white" data-i18n="contact.label.email">Adresse email</label>
                             <input type="email" id="contact_email" name="contact_email" class="contact-field" placeholder="votre@email.com" required>
                         </div>
 
                         <div style="margin-bottom:12px;">
-                            <label for="contact_sujet" class="contact-label text-white">Sujet</label>
+                            <label for="contact_sujet" class="contact-label text-white" data-i18n="contact.label.sujet">Sujet</label>
                             <select id="contact_sujet" name="contact_sujet" class="contact-field" required>
-                                <option value="">Sélectionnez un sujet</option>
-                                <option value="information">Demande d'information</option>
-                                <option value="demo">Demande de démonstration</option>
-                                <option value="support">Support technique</option>
-                                <option value="partenariat">Partenariat</option>
-                                <option value="autre">Autre</option>
+                                <option value="" data-i18n="contact.opt.select">Sélectionnez un sujet</option>
+                                <option value="information" data-i18n="contact.opt.info">Demande d'information</option>
+                                <option value="demo" data-i18n="contact.opt.demo">Demande de démonstration</option>
+                                <option value="support" data-i18n="contact.opt.support">Support technique</option>
+                                <option value="partenariat" data-i18n="contact.opt.partner">Partenariat</option>
+                                <option value="autre" data-i18n="contact.opt.other">Autre</option>
                             </select>
                         </div>
 
                         <div style="margin-bottom:18px;">
-                            <label for="contact_message" class="contact-label text-white">Message</label>
-                            <textarea id="contact_message" name="contact_message" rows="4" class="contact-field" placeholder="Décrivez votre demande..." required style="resize:vertical;min-height:100px;"></textarea>
+                            <label for="contact_message" class="contact-label text-white" data-i18n="contact.label.msg">Message</label>
+                            <textarea id="contact_message" name="contact_message" rows="4" class="contact-field" placeholder="Décrivez votre demande..." data-i18n-ph="contact.ph.msg" required style="resize:vertical;min-height:100px;"></textarea>
                         </div>
 
                         <div id="contact-alert" style="display:none;" class="mb-4 p-3 rounded-xl text-sm font-medium"></div>
 
                         <button type="submit" id="contact-btn" style="width:100%;padding:13px;border-radius:12px;border:none;font-weight:800;font-size:0.9rem;color:#fff;background:linear-gradient(135deg,#1d4ed8,#2563eb);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(37,99,235,0.35);transition:all 0.22s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 26px rgba(37,99,235,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 18px rgba(37,99,235,0.35)'">
                             <i class="fas fa-paper-plane" style="font-size:13px;"></i>
-                            Envoyer le message
+                            <span data-i18n="contact.btn">Envoyer le message</span>
                         </button>
                     </form>
                 </div>
@@ -3305,19 +3937,19 @@
             <!-- Badge -->
             <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:50px;padding:7px 18px;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:1.75rem;">
                 <span style="width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;display:inline-block;"></span>
-                500+ gestionnaires nous font déjà confiance
+                <span data-i18n="sec.cta.badge">500+ gestionnaires nous font déjà confiance</span>
             </div>
 
             <!-- Titre -->
             <h2 style="font-size:clamp(2rem,4.5vw,3.5rem);font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1.25rem;">
-                Prêt à simplifier votre<br>
-                <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;">
+                <span data-i18n="sec.cta.h2a">Prêt à simplifier votre</span><br>
+                <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;" data-i18n="sec.cta.h2b">
                     gestion immobilière ?
                 </span>
             </h2>
 
             <!-- Sous-titre -->
-            <p style="font-size:1.05rem;color:rgba(255,255,255,0.65);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;">
+            <p style="font-size:1.05rem;color:rgba(255,255,255,0.65);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;" data-i18n="sec.cta.sub">
                 Démarrez gratuitement en 2 minutes. Pas de carte bancaire requise, pas d'engagement. Évoluez à votre rythme.
             </p>
 
@@ -3325,11 +3957,11 @@
             <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:2.5rem;">
                 <a href="#compte" class="cta-btn-primary">
                     <i class="fas fa-rocket" style="color:#2563eb;font-size:14px;"></i>
-                    Créer un compte gratuit
+                    <span data-i18n="sec.cta.btn1">Créer un compte gratuit</span>
                 </a>
                 <a href="#contact" class="cta-btn-secondary">
                     <i class="fas fa-comments" style="font-size:14px;"></i>
-                    Parler à un expert
+                    <span data-i18n="sec.cta.btn2">Parler à un expert</span>
                 </a>
             </div>
 
@@ -3366,7 +3998,7 @@
                         <span style="font-size:1.35rem;font-weight:900;color:#fff;letter-spacing:-0.02em;">Lokativ</span>
                     </a>
 
-                    <p style="font-size:0.83rem;color:#475569;line-height:1.75;margin-bottom:1.5rem;max-width:260px;">
+                    <p style="font-size:0.83rem;color:#475569;line-height:1.75;margin-bottom:1.5rem;max-width:260px;" data-i18n="footer.desc">
                         La plateforme de gestion immobilière conçue pour les propriétaires et agences d'Afrique de l'Ouest.
                     </p>
 
@@ -3388,7 +4020,7 @@
 
                 <!-- Colonne 2 — Navigation -->
                 <div>
-                    <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.1rem;">Navigation</h4>
+                    <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.1rem;" data-i18n="footer.nav">Navigation</h4>
                     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px;">
                         @foreach([
                             ['#accueil','Accueil'],
@@ -3405,7 +4037,7 @@
 
                 <!-- Colonne 3 — Fonctionnalités -->
                 <div>
-                    <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.1rem;">Fonctionnalités</h4>
+                    <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.1rem;" data-i18n="footer.features">Fonctionnalités</h4>
                     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px;">
                         @foreach([
                             'Gestion des biens',
@@ -3422,7 +4054,7 @@
 
                 <!-- Colonne 4 — Légal -->
                 <div>
-                    <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.1rem;">Légal</h4>
+                    <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1.1rem;" data-i18n="footer.legal">Légal</h4>
                     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:2px;">
                         <li><a href="{{ route('legal.cgu') }}" class="footer-link"><i class="fas fa-chevron-right"></i>Conditions d'utilisation</a></li>
                         <li><a href="{{ route('legal.confidentialite') }}" class="footer-link"><i class="fas fa-chevron-right"></i>Confidentialité</a></li>
@@ -3432,7 +4064,7 @@
 
                     <!-- Newsletter mini -->
                     <div style="margin-top:1.75rem;">
-                        <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Restez informé</h4>
+                        <h4 style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;" data-i18n="footer.newsletter">Restez informé</h4>
                         <div class="footer-newsletter" style="display:flex;gap:6px;">
                             <input type="email" placeholder="votre@email.com" style="flex:1;min-width:0;padding:9px 12px;border-radius:9px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.05);color:#cbd5e1;font-size:0.78rem;outline:none;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
                             <button style="padding:9px 12px;border-radius:9px;border:none;background:#2563eb;color:#fff;font-size:0.78rem;font-weight:700;cursor:pointer;flex-shrink:0;" title="S'abonner">
@@ -3450,7 +4082,7 @@
                     Fabriqué avec <i class="fas fa-heart" style="color:#ef4444;font-size:10px;"></i> en Afrique de l'Ouest.
                 </p>
                 <div style="display:flex;align-items:center;gap:10px;">
-                    <span style="font-size:0.72rem;color:#334155;font-weight:600;">Paiements acceptés :</span>
+                    <span style="font-size:0.72rem;color:#334155;font-weight:600;" data-i18n="footer.payment">Paiements acceptés :</span>
                     <i class="fab fa-cc-visa" style="font-size:1.4rem;color:#334155;"></i>
                     <i class="fab fa-cc-mastercard" style="font-size:1.4rem;color:#334155;"></i>
                     <span style="font-size:0.72rem;color:#334155;font-weight:700;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;">Mobile Money</span>
@@ -4933,7 +5565,7 @@
 
                 <!-- Rôle -->
                 <div style="margin-bottom:1rem;">
-                    <label class="testi-form-label" for="testi-role">Rôle / Ville <span style="color:#94a3b8;font-weight:400;">(facultatif)</span></label>
+                    <label class="testi-form-label" for="testi-role">Ville <span style="color:#94a3b8;font-weight:400;">(facultatif)</span></label>
                     <input type="text" id="testi-role" class="testi-form-input" placeholder="Ex : Propriétaire · Cotonou" maxlength="100">
                 </div>
 
@@ -5179,6 +5811,674 @@
                 submitBtn.textContent = 'Publier mon avis';
             }
         });
+    })();
+    </script>
+
+    <script>
+    // ── Sélecteur de langue ───────────────────────────────────────────────────
+    var LANG_DICT = {
+        fr: {
+            /* Navigation */
+            'nav.home'      : 'Accueil',
+            'nav.features'  : 'Fonctionnalités',
+            'nav.preview'   : 'Aperçu',
+            'nav.pricing'   : 'Tarifs',
+            'nav.contact'   : 'Contact',
+            'nav.login'     : 'Se connecter',
+            'nav.start'     : 'Démarrer',
+            'mob.language'  : 'Langue',
+            'mob.theme'     : 'Préférence d\'affichage',
+            'mob.light'     : 'Clair',
+            'mob.dark'      : 'Sombre',
+            'mob.login'     : 'Se connecter',
+            'mob.start'     : 'Démarrer gratuitement',
+            /* Hero */
+            'hero.badge'    : 'Plateforme de gestion immobilière',
+            'hero.new'      : 'Nouveau',
+            'hero.h1a'      : 'Gérez votre patrimoine',
+            'hero.h1b'      : 'immobilier en ligne',
+            'hero.sub'      : 'Centralisez vos biens, automatisez la facturation, suivez les paiements et envoyez des documents via WhatsApp — tout en un seul endroit.',
+            'hero.cta1'     : 'Démarrer gratuitement',
+            'hero.cta2'     : 'Voir la démo',
+            'hero.stat1'    : '500+ gestionnaires',
+            'hero.stat2'    : '10 000+ biens gérés',
+            'hero.stat3'    : '4.9 / 5 satisfaction',
+            /* Sections */
+            'sec.features.badge': 'Tout-en-un',
+            'sec.features.h2'   : 'Des fonctionnalités puissantes',
+            'sec.features.sub'  : 'Tous les outils dont vous avez besoin pour gérer votre patrimoine immobilier au quotidien',
+            'sec.how.badge'     : 'En 4 étapes',
+            'sec.how.h2'        : 'Comment ça marche ?',
+            'sec.how.sub'       : 'Démarrez en quelques minutes et gérez votre patrimoine comme un pro',
+            'sec.testi.badge'   : 'Témoignages',
+            'sec.testi.h2a'     : 'Ce que disent',
+            'sec.testi.h2b'     : 'nos clients',
+            'sec.testi.sub'     : 'Des milliers de gestionnaires font confiance à Lokativ pour simplifier leur quotidien.',
+            'sec.testi.cta1'    : 'Démarrer gratuitement',
+            'sec.testi.cta2'    : '⭐ Partager votre avis',
+            'sec.pricing.badge' : 'Tarifs',
+            'sec.pricing.h2a'   : 'Des plans adaptés à',
+            'sec.pricing.h2b'   : 'chaque besoin',
+            'sec.pricing.sub'   : 'Démarrez gratuitement. Évoluez selon votre croissance.',
+            'sec.faq.badge'     : 'Aide & Réponses',
+            'sec.faq.h2a'       : 'Questions',
+            'sec.faq.h2b'       : 'fréquentes',
+            'sec.faq.sub'       : 'Tout ce que vous devez savoir avant de démarrer.',
+            'sec.cta.h2a'       : 'Prêt à simplifier votre',
+            'sec.cta.h2b'       : 'gestion immobilière ?',
+            'sec.cta.sub'       : 'Démarrez gratuitement en 2 minutes. Pas de carte bancaire requise, pas d\'engagement. Évoluez à votre rythme.',
+            'sec.cta.badge'     : '500+ gestionnaires nous font déjà confiance',
+            'sec.cta.btn1'      : 'Créer un compte gratuit',
+            'sec.cta.btn2'      : 'Parler à un expert',
+            /* Features */
+            'feat.prop.title'   : 'Gestion des propriétés',
+            'feat.prop.desc'    : 'Centralisez toutes vos propriétés en un seul endroit. Maisons, appartements, chambres — suivez chaque bien, ses documents et son historique.',
+            'feat.prop.tag1'    : 'Multi-sites',
+            'feat.prop.tag2'    : 'Documents',
+            'feat.prop.tag3'    : 'Historique',
+            'feat.tenant.title' : 'Gestion des locataires',
+            'feat.tenant.desc'  : 'Contrats, paiements, communications et historique complet pour chaque locataire.',
+            'feat.billing.title': 'Facturation automatique',
+            'feat.billing.desc' : 'Générez vos quittances de loyer et suivez les paiements en temps réel.',
+            'feat.dash.title'   : 'Tableau de bord analytique',
+            'feat.dash.desc'    : 'Revenus, taux d\'occupation, rentabilité — tout en un coup d\'œil.',
+            'feat.alerts.title' : 'Rappels intelligents',
+            'feat.alerts.desc'  : 'Notifications automatiques pour loyers et contrats',
+            'feat.docs.title'   : 'Documents & Contrats',
+            'feat.docs.desc'    : 'Génération de baux et stockage sécurisé',
+            /* How it works */
+            'step.1.title'      : 'Créez votre compte',
+            'step.1.desc'       : 'Inscrivez-vous gratuitement en moins de 2 minutes, sans carte bancaire.',
+            'step.2.title'      : 'Ajoutez vos biens',
+            'step.2.desc'       : 'Renseignez vos propriétés, chambres et leurs caractéristiques.',
+            'step.3.title'      : 'Gérez vos locataires',
+            'step.3.desc'       : 'Ajoutez vos locataires, créez leurs contrats et suivez les paiements.',
+            'step.4.title'      : 'Automatisez tout',
+            'step.4.desc'       : 'Laissez Lokativ générer les factures, rappels et documents automatiquement.',
+            'step.cta'          : 'Commencer maintenant',
+            /* Stats */
+            'stat.users'        : 'Utilisateurs actifs',
+            'stat.props'        : 'Propriétés gérées',
+            'stat.revenue'      : 'XOF de loyers traités',
+            'stat.satisfaction' : 'Taux de satisfaction',
+            /* Partners */
+            'partners.label'    : 'Ils nous font confiance',
+            /* Biens */
+            'biens.badge'       : 'Nos offres du moment',
+            'biens.h2a'         : 'Biens',
+            'biens.h2b'         : 'Immobiliers',
+            'biens.h2c'         : 'Disponibles',
+            'biens.sub'         : 'Découvrez nos dernières offres immobilières disponibles',
+            /* Portfolio */
+            'portfolio.badge'   : 'Interface moderne',
+            'portfolio.h2a'     : 'Aperçu de la',
+            'portfolio.h2b'     : 'plateforme',
+            'portfolio.sub'     : 'Explorez les écrans intuitifs conçus pour simplifier votre gestion immobilière',
+            'portfolio.tab1'    : 'Dashboard',
+            'portfolio.tab2'    : 'Biens',
+            'portfolio.tab3'    : 'Locataires',
+            'portfolio.tab4'    : 'Facturation',
+            'portfolio.tab5'    : 'Statistiques',
+            'portfolio.tab6'    : 'Rapports',
+            /* Contact */
+            'contact.badge'         : 'Support & Contact',
+            'contact.h2'            : 'Contactez-nous',
+            'contact.sub'           : 'Notre équipe répond en moins de 2h. Posez vos questions, demandez une démo ou signalez un problème.',
+            'contact.form.title'    : 'Envoyez-nous un message',
+            'contact.form.sub'      : 'Remplissez le formulaire, nous vous répondons rapidement.',
+            'contact.btn'           : 'Envoyer le message',
+            'contact.info.address'  : 'Adresse',
+            'contact.info.phone'    : 'Téléphone',
+            'contact.info.email'    : 'Email',
+            'contact.info.hours'    : 'Horaires',
+            'contact.social'        : 'Suivez-nous',
+            'contact.fast'          : 'Réponse rapide garantie',
+            'contact.fast.sub'      : 'Temps de réponse moyen : 1h30 en heures ouvrées',
+            'contact.label.nom'     : 'Nom',
+            'contact.label.prenom'  : 'Prénom',
+            'contact.label.email'   : 'Adresse email',
+            'contact.label.sujet'   : 'Sujet',
+            'contact.label.msg'     : 'Message',
+            'contact.ph.nom'        : 'Votre nom',
+            'contact.ph.prenom'     : 'Votre prénom',
+            'contact.ph.msg'        : 'Décrivez votre demande...',
+            'contact.opt.select'    : 'Sélectionnez un sujet',
+            'contact.opt.info'      : 'Demande d\'information',
+            'contact.opt.demo'      : 'Demande de démonstration',
+            'contact.opt.support'   : 'Support technique',
+            'contact.opt.partner'   : 'Partenariat',
+            'contact.opt.other'     : 'Autre',
+            /* FAQ */
+            'faq.cat.start'     : 'Démarrage',
+            'faq.cat.billing'   : 'Abonnement & Paiement',
+            'faq.cat.features'  : 'Fonctionnalités',
+            'faq.q1'            : 'Comment puis-je commencer à utiliser Lokativ ?',
+            'faq.q2'            : 'Mes données sont-elles sécurisées ?',
+            'faq.q3'            : 'Puis-je changer de plan à tout moment ?',
+            'faq.q4'            : 'Comment fonctionne la facturation des SMS et WhatsApp ?',
+            'faq.q5'            : 'Comment fonctionne la facturation automatique ?',
+            'faq.q6'            : 'Y a-t-il une application mobile ?',
+            'faq.q7'            : 'Proposez-vous une assistance technique ?',
+            'faq.a1'            : 'C\'est très simple ! Créez un compte gratuit en cliquant sur <strong>"Créer un compte"</strong>, renseignez vos informations et vous pourrez immédiatement ajouter vos propriétés. Aucune carte bancaire n\'est requise pour l\'offre d\'essai.',
+            'faq.a2'            : 'Absolument. Nous utilisons un chiffrement <strong>SSL de bout en bout</strong> et nos serveurs sont hébergés dans des centres de données sécurisés. Vos données sont sauvegardées quotidiennement et ne sont jamais partagées avec des tiers.',
+            'faq.a3'            : 'Oui, vous pouvez passer à un plan supérieur à tout moment depuis votre espace <strong>"Mon abonnement"</strong>. Le paiement se fait via KKiaPay ou FedaPay. Vous pouvez également rétrograder à la fin de votre période d\'abonnement.',
+            'faq.a4'            : 'Les envois SMS et WhatsApp sont <strong>pay-per-use</strong> : vous payez uniquement ce que vous utilisez. Avant chaque envoi, le coût total est calculé selon votre pays et le nombre de destinataires. Le paiement s\'effectue via l\'agrégateur (KKiaPay ou FedaPay) et est vérifié avant l\'envoi.',
+            'faq.a5'            : 'Une fois vos locataires et les montants de loyer configurés, Lokativ <strong>génère automatiquement</strong> les quittances à chaque échéance. Vous pouvez envoyer des rappels par email, SMS ou WhatsApp et consulter l\'historique complet des paiements.',
+            'faq.a6'            : 'Lokativ est <strong>entièrement responsive</strong> et fonctionne parfaitement sur tous les appareils mobiles via votre navigateur. Vous pouvez également l\'installer comme PWA (Progressive Web App) directement depuis votre téléphone.',
+            'faq.a7'            : 'Oui ! Les utilisateurs en essai bénéficient d\'un <strong>support par email</strong>. Les plans payants incluent un support prioritaire via WhatsApp et email avec des temps de réponse garantis sous 24h.',
+            'faq.cta.text'      : 'Vous n\'avez pas trouvé votre réponse ?',
+            'faq.cta.btn'       : 'Envoyer un message',
+            /* Compte / inscription */
+            /* Hero mini UI & phone screens */
+            'hero.mini.props'          : 'Biens',
+            'hero.mini.tenants'        : 'Locataires',
+            'hero.mini.revenue'        : 'Revenus',
+            'hero.mini.chart'          : 'Encaissements — 6 mois',
+            'hero.act.1'               : 'Loyer payé · 85 000 F',
+            'hero.act.2'               : 'Contrat signé · Studio',
+            'hero.act.3'               : 'Rappel WhatsApp',
+            'hero.trust'               : 'Données hébergées en sécurité · SSL · RGPD',
+            'phone.s1.title'           : 'Tableau de bord',
+            'phone.s2.title'           : 'Mes biens',
+            'phone.s2.add'             : 'Ajouter',
+            'phone.s3.title'           : 'Locataires',
+            'phone.s4.title'           : 'Facturation',
+            'phone.unpaid'             : 'Impayés',
+            'phone.status.rented'      : 'Loué',
+            'phone.status.avail'       : 'Disponible',
+            'phone.status.maint'       : 'Maintenance',
+            'phone.pay.ok'             : 'À jour',
+            'phone.pay.late'           : 'Impayé',
+            'phone.pay.wait'           : 'En attente',
+            'phone.pay.paid'           : 'Payé',
+            'phone.billing.collected'  : 'Encaissé',
+            'phone.billing.pending'    : 'En attente',
+            'reg.badge'             : 'Démarrez gratuitement',
+            'reg.h2'                : 'Créer votre compte',
+            'reg.sub'               : 'Rejoignez des centaines de gestionnaires immobiliers. Configuré en moins de 3 minutes.',
+            'reg.feat1.title'       : 'Données sécurisées',
+            'reg.feat1.sub'         : 'Chiffrement SSL · Sauvegarde quotidienne',
+            'reg.feat2.title'       : 'Sans CB pour l\'essai',
+            'reg.feat2.sub'         : '14 jours gratuits · Annulation facile',
+            'reg.feat3.title'       : 'Support inclus',
+            'reg.feat3.sub'         : 'Assistance email & WhatsApp',
+            'reg.step1.label'       : 'Profil',
+            'reg.step2.label'       : 'Infos',
+            'reg.step3.label'       : 'Plan',
+            'reg.step1.title'       : 'Quel est votre profil ?',
+            'reg.type.perso'        : 'Particulier',
+            'reg.type.perso.desc'   : 'Gérez votre patrimoine personnel en toute simplicité',
+            'reg.type.perso.li1'    : 'Jusqu\'à 10 propriétés',
+            'reg.type.perso.li2'    : 'Tableau de bord personnalisé',
+            'reg.type.perso.li3'    : 'Support par email',
+            'reg.type.biz'          : 'Entreprise',
+            'reg.type.biz.desc'     : 'Solution complète pour les professionnels de l\'immobilier',
+            'reg.type.biz.li1'      : 'Propriétés illimitées',
+            'reg.type.biz.li2'      : 'Multi-agences',
+            'reg.type.biz.li3'      : 'Support prioritaire',
+            'reg.next'              : 'Continuer',
+            'reg.prev'              : 'Retour',
+            'reg.step2.title'       : 'Vos informations',
+            'reg.label.nom'         : 'Nom',
+            'reg.label.prenom'      : 'Prénom',
+            'reg.label.email'       : 'Adresse email',
+            'reg.label.phone'       : 'Téléphone',
+            'reg.company.title'     : 'Informations de l\'entreprise',
+            'reg.label.company'     : 'Nom de l\'entreprise',
+            'reg.label.address'     : 'Adresse',
+            'reg.label.company.email': 'Email de l\'entreprise',
+            'reg.step3.title'       : 'Choisissez votre plan',
+            'reg.submit'            : 'Créer mon compte',
+            'reg.quote'             : '« Lokativ a transformé ma façon de gérer mes 12 propriétés. Je gagne des heures chaque mois. »',
+            'reg.quote.role'        : 'Promoteur immobilier · Cotonou',
+            'reg.cgu.prefix'        : 'J\'accepte les',
+            'reg.cgu.link1'         : 'conditions générales d\'utilisation',
+            'reg.cgu.and'           : 'et la',
+            'reg.cgu.link2'         : 'politique de confidentialité',
+            'reg.cgu.dot'           : '.',
+            /* Plans */
+            'plan.cat.gestion'      : 'Gestion immobilière',
+            'plan.cat.comm'         : 'Communication',
+            'plan.cat.visib'        : 'Visibilité',
+            'plan.feat.dashboard'   : 'Tableau de bord complet',
+            'plan.feat.tenants'     : 'Gestion des locataires',
+            'plan.feat.billing'     : 'Facturation automatique',
+            'plan.popular'          : 'Populaire',
+            'plan.badge.free'       : 'Essai gratuit',
+            'plan.badge.featured'   : 'Plus populaire',
+            'plan.badge.pro'        : 'Entreprise',
+            'plan.badge.default'    : 'Débutant',
+            'plan.btn.free'         : 'Essayer gratuitement',
+            'plan.btn.featured'     : 'Choisir ce plan',
+            'plan.btn.pro'          : 'Nous contacter',
+            'plan.btn.default'      : 'Commencer',
+            'plan.maisons.unlimited': 'Maisons <strong>illimitées</strong>',
+            'plan.maisons.upto'     : 'Jusqu\'à',
+            'plan.maisons.unit'     : 'maisons',
+            'plan.annexes.unlimited': 'Agences <strong>illimitées</strong>',
+            'plan.annexes.upto'     : 'Jusqu\'à',
+            'plan.annexes.unit'     : 'agence(s)',
+            'plan.annexes.none'     : 'Multi-agences',
+            'plan.trial.text'       : 'Pendant <strong>14 jours</strong> · Sans CB requise',
+            'plan.price.soit'       : 'soit',
+            'plan.price.permonth'   : '/ mois',
+            'plan.emails.unlimited' : '<strong>Emails illimités</strong> / mois',
+            'plan.emails.suffix'    : 'email(s) / mois',
+            'plan.emails.none'      : 'Envoi par email',
+            'plan.rappels.unlimited': '<strong>Rappels loyer illimités</strong> (email)',
+            'plan.rappels.suffix'   : 'rappel(s) loyer / mois (email)',
+            'plan.rappels.none'     : 'Rappels de loyer',
+            'plan.preavis.unlimited': '<strong>Préavis illimités</strong> / mois (email)',
+            'plan.preavis.suffix'   : 'préavis / mois (email)',
+            'plan.preavis.none'     : 'Envoi de préavis',
+            'plan.sms_wa'           : 'SMS & WhatsApp',
+            'plan.ppu'              : 'Pay-per-use',
+            'plan.docs_wa'          : 'Envoi docs WhatsApp',
+            'plan.ads.unlimited'    : '<strong>Publicités illimitées</strong>',
+            'plan.ads.suffix'       : 'publicité(s) max',
+            'plan.note'             : 'Tous les plans incluent une <strong>période d\'essai</strong> · Annulation facile · Support inclus',
+            /* Footer */
+            'footer.desc'       : 'La plateforme de gestion immobilière conçue pour les propriétaires et agences d\'Afrique de l\'Ouest.',
+            'footer.nav'        : 'Navigation',
+            'footer.features'   : 'Fonctionnalités',
+            'footer.legal'      : 'Légal',
+            'footer.newsletter' : 'Restez informé',
+            'footer.copy'       : '© __YEAR__ Lokativ — Tous droits réservés. Fabriqué avec ❤ en Afrique de l\'Ouest.',
+            'footer.payment'    : 'Paiements acceptés :',
+        },
+        en: {
+            /* Navigation */
+            'nav.home'      : 'Home',
+            'nav.features'  : 'Features',
+            'nav.preview'   : 'Preview',
+            'nav.pricing'   : 'Pricing',
+            'nav.contact'   : 'Contact',
+            'nav.login'     : 'Log in',
+            'nav.start'     : 'Get started',
+            'mob.language'  : 'Language',
+            'mob.theme'     : 'Display preference',
+            'mob.light'     : 'Light',
+            'mob.dark'      : 'Dark',
+            'mob.login'     : 'Log in',
+            'mob.start'     : 'Start for free',
+            /* Hero */
+            'hero.badge'    : 'Property management platform',
+            'hero.new'      : 'New',
+            'hero.h1a'      : 'Manage your real estate',
+            'hero.h1b'      : 'portfolio online',
+            'hero.sub'      : 'Centralize your properties, automate billing, track payments and send documents via WhatsApp — all in one place.',
+            'hero.cta1'     : 'Get started for free',
+            'hero.cta2'     : 'Watch the demo',
+            'hero.stat1'    : '500+ managers',
+            'hero.stat2'    : '10,000+ properties managed',
+            'hero.stat3'    : '4.9 / 5 satisfaction',
+            /* Sections */
+            'sec.features.badge': 'All-in-one',
+            'sec.features.h2'   : 'Powerful features',
+            'sec.features.sub'  : 'All the tools you need to manage your real estate portfolio daily',
+            'sec.how.badge'     : 'In 4 steps',
+            'sec.how.h2'        : 'How does it work?',
+            'sec.how.sub'       : 'Get started in minutes and manage your properties like a pro',
+            'sec.testi.badge'   : 'Testimonials',
+            'sec.testi.h2a'     : 'What our',
+            'sec.testi.h2b'     : 'clients say',
+            'sec.testi.sub'     : 'Thousands of managers trust Lokativ to simplify their daily work.',
+            'sec.testi.cta1'    : 'Get started for free',
+            'sec.testi.cta2'    : '⭐ Share your review',
+            'sec.pricing.badge' : 'Pricing',
+            'sec.pricing.h2a'   : 'Plans tailored to',
+            'sec.pricing.h2b'   : 'every need',
+            'sec.pricing.sub'   : 'Start for free. Scale as you grow.',
+            'sec.faq.badge'     : 'Help & Answers',
+            'sec.faq.h2a'       : 'Frequently asked',
+            'sec.faq.h2b'       : 'questions',
+            'sec.faq.sub'       : 'Everything you need to know before getting started.',
+            'sec.cta.h2a'       : 'Ready to simplify your',
+            'sec.cta.h2b'       : 'property management?',
+            'sec.cta.sub'       : 'Get started for free in 2 minutes. No credit card required, no commitment. Grow at your own pace.',
+            'sec.cta.badge'     : '500+ managers already trust us',
+            'sec.cta.btn1'      : 'Create a free account',
+            'sec.cta.btn2'      : 'Talk to an expert',
+            /* Features */
+            'feat.prop.title'   : 'Property Management',
+            'feat.prop.desc'    : 'Centralize all your properties in one place. Houses, apartments, rooms — track each property, its documents and full history.',
+            'feat.prop.tag1'    : 'Multi-site',
+            'feat.prop.tag2'    : 'Documents',
+            'feat.prop.tag3'    : 'History',
+            'feat.tenant.title' : 'Tenant Management',
+            'feat.tenant.desc'  : 'Contracts, payments, communications and complete history for each tenant.',
+            'feat.billing.title': 'Automatic Billing',
+            'feat.billing.desc' : 'Generate rent receipts and track payments in real time.',
+            'feat.dash.title'   : 'Analytics Dashboard',
+            'feat.dash.desc'    : 'Revenue, occupancy rate, profitability — all at a glance.',
+            'feat.alerts.title' : 'Smart Reminders',
+            'feat.alerts.desc'  : 'Automatic notifications for rents and contracts',
+            'feat.docs.title'   : 'Documents & Contracts',
+            'feat.docs.desc'    : 'Lease generation and secure storage',
+            /* How it works */
+            'step.1.title'      : 'Create your account',
+            'step.1.desc'       : 'Sign up for free in under 2 minutes, no credit card required.',
+            'step.2.title'      : 'Add your properties',
+            'step.2.desc'       : 'Enter your properties, rooms and their characteristics.',
+            'step.3.title'      : 'Manage your tenants',
+            'step.3.desc'       : 'Add your tenants, create their contracts and track payments.',
+            'step.4.title'      : 'Automate everything',
+            'step.4.desc'       : 'Let Lokativ automatically generate invoices, reminders and documents.',
+            'step.cta'          : 'Get started now',
+            /* Stats */
+            'stat.users'        : 'Active users',
+            'stat.props'        : 'Properties managed',
+            'stat.revenue'      : 'XOF in rents processed',
+            'stat.satisfaction' : 'Satisfaction rate',
+            /* Partners */
+            'partners.label'    : 'They trust us',
+            /* Biens */
+            'biens.badge'       : 'Current listings',
+            'biens.h2a'         : 'Available',
+            'biens.h2b'         : 'Real Estate',
+            'biens.h2c'         : 'Properties',
+            'biens.sub'         : 'Discover our latest available real estate listings',
+            /* Portfolio */
+            'portfolio.badge'   : 'Modern interface',
+            'portfolio.h2a'     : 'Preview of the',
+            'portfolio.h2b'     : 'platform',
+            'portfolio.sub'     : 'Explore the intuitive screens designed to simplify your property management',
+            'portfolio.tab1'    : 'Dashboard',
+            'portfolio.tab2'    : 'Properties',
+            'portfolio.tab3'    : 'Tenants',
+            'portfolio.tab4'    : 'Billing',
+            'portfolio.tab5'    : 'Statistics',
+            'portfolio.tab6'    : 'Reports',
+            /* Contact */
+            'contact.badge'         : 'Support & Contact',
+            'contact.h2'            : 'Contact us',
+            'contact.sub'           : 'Our team responds in under 2 hours. Ask your questions, request a demo or report an issue.',
+            'contact.form.title'    : 'Send us a message',
+            'contact.form.sub'      : 'Fill in the form, we\'ll get back to you quickly.',
+            'contact.btn'           : 'Send message',
+            'contact.info.address'  : 'Address',
+            'contact.info.phone'    : 'Phone',
+            'contact.info.email'    : 'Email',
+            'contact.info.hours'    : 'Hours',
+            'contact.social'        : 'Follow us',
+            'contact.fast'          : 'Fast response guaranteed',
+            'contact.fast.sub'      : 'Average response time: 1h30 during business hours',
+            'contact.label.nom'     : 'Last name',
+            'contact.label.prenom'  : 'First name',
+            'contact.label.email'   : 'Email address',
+            'contact.label.sujet'   : 'Subject',
+            'contact.label.msg'     : 'Message',
+            'contact.ph.nom'        : 'Your last name',
+            'contact.ph.prenom'     : 'Your first name',
+            'contact.ph.msg'        : 'Describe your request...',
+            'contact.opt.select'    : 'Select a subject',
+            'contact.opt.info'      : 'Information request',
+            'contact.opt.demo'      : 'Demo request',
+            'contact.opt.support'   : 'Technical support',
+            'contact.opt.partner'   : 'Partnership',
+            'contact.opt.other'     : 'Other',
+            /* FAQ */
+            'faq.cat.start'     : 'Getting started',
+            'faq.cat.billing'   : 'Subscription & Payment',
+            'faq.cat.features'  : 'Features',
+            'faq.q1'            : 'How do I get started with Lokativ?',
+            'faq.q2'            : 'Is my data secure?',
+            'faq.q3'            : 'Can I change my plan at any time?',
+            'faq.q4'            : 'How does SMS and WhatsApp billing work?',
+            'faq.q5'            : 'How does automatic billing work?',
+            'faq.q6'            : 'Is there a mobile app?',
+            'faq.q7'            : 'Do you offer technical support?',
+            'faq.a1'            : 'It\'s easy! Create a free account by clicking <strong>"Create an account"</strong>, fill in your information and you can immediately add your properties. No credit card is required for the trial offer.',
+            'faq.a2'            : 'Absolutely. We use <strong>end-to-end SSL encryption</strong> and our servers are hosted in secure data centers. Your data is backed up daily and never shared with third parties.',
+            'faq.a3'            : 'Yes, you can upgrade to a higher plan at any time from your <strong>"My subscription"</strong> space. Payment is made via KKiaPay or FedaPay. You can also downgrade at the end of your subscription period.',
+            'faq.a4'            : 'SMS and WhatsApp sending is <strong>pay-per-use</strong>: you only pay for what you use. Before each send, the total cost is calculated based on your country and the number of recipients. Payment is processed via the aggregator (KKiaPay or FedaPay) and verified before sending.',
+            'faq.a5'            : 'Once your tenants and rent amounts are configured, Lokativ <strong>automatically generates</strong> receipts at each due date. You can send reminders by email, SMS or WhatsApp and view the full payment history.',
+            'faq.a6'            : 'Lokativ is <strong>fully responsive</strong> and works perfectly on all mobile devices via your browser. You can also install it as a PWA (Progressive Web App) directly from your phone.',
+            'faq.a7'            : 'Yes! Trial users benefit from <strong>email support</strong>. Paid plans include priority support via WhatsApp and email with guaranteed response times within 24h.',
+            'faq.cta.text'      : 'Didn\'t find your answer?',
+            'faq.cta.btn'       : 'Send a message',
+            /* Compte / inscription */
+            /* Hero mini UI & phone screens */
+            'hero.mini.props'          : 'Properties',
+            'hero.mini.tenants'        : 'Tenants',
+            'hero.mini.revenue'        : 'Revenue',
+            'hero.mini.chart'          : 'Collections — 6 months',
+            'hero.act.1'               : 'Rent paid · 85,000 F',
+            'hero.act.2'               : 'Contract signed · Studio',
+            'hero.act.3'               : 'WhatsApp reminder',
+            'hero.trust'               : 'Securely hosted data · SSL · GDPR',
+            'phone.s1.title'           : 'Dashboard',
+            'phone.s2.title'           : 'My properties',
+            'phone.s2.add'             : 'Add',
+            'phone.s3.title'           : 'Tenants',
+            'phone.s4.title'           : 'Billing',
+            'phone.unpaid'             : 'Unpaid',
+            'phone.status.rented'      : 'Rented',
+            'phone.status.avail'       : 'Available',
+            'phone.status.maint'       : 'Maintenance',
+            'phone.pay.ok'             : 'Up to date',
+            'phone.pay.late'           : 'Unpaid',
+            'phone.pay.wait'           : 'Pending',
+            'phone.pay.paid'           : 'Paid',
+            'phone.billing.collected'  : 'Collected',
+            'phone.billing.pending'    : 'Pending',
+            'reg.badge'             : 'Get started for free',
+            'reg.h2'                : 'Create your account',
+            'reg.sub'               : 'Join hundreds of property managers. Set up in under 3 minutes.',
+            'reg.feat1.title'       : 'Secure data',
+            'reg.feat1.sub'         : 'SSL encryption · Daily backup',
+            'reg.feat2.title'       : 'No card for trial',
+            'reg.feat2.sub'         : '14 days free · Easy cancellation',
+            'reg.feat3.title'       : 'Support included',
+            'reg.feat3.sub'         : 'Email & WhatsApp assistance',
+            'reg.step1.label'       : 'Profile',
+            'reg.step2.label'       : 'Info',
+            'reg.step3.label'       : 'Plan',
+            'reg.step1.title'       : 'What is your profile?',
+            'reg.type.perso'        : 'Individual',
+            'reg.type.perso.desc'   : 'Manage your personal assets with ease',
+            'reg.type.perso.li1'    : 'Up to 10 properties',
+            'reg.type.perso.li2'    : 'Personalized dashboard',
+            'reg.type.perso.li3'    : 'Email support',
+            'reg.type.biz'          : 'Business',
+            'reg.type.biz.desc'     : 'Complete solution for real estate professionals',
+            'reg.type.biz.li1'      : 'Unlimited properties',
+            'reg.type.biz.li2'      : 'Multi-agency',
+            'reg.type.biz.li3'      : 'Priority support',
+            'reg.next'              : 'Continue',
+            'reg.prev'              : 'Back',
+            'reg.step2.title'       : 'Your information',
+            'reg.label.nom'         : 'Last name',
+            'reg.label.prenom'      : 'First name',
+            'reg.label.email'       : 'Email address',
+            'reg.label.phone'       : 'Phone',
+            'reg.company.title'     : 'Company information',
+            'reg.label.company'     : 'Company name',
+            'reg.label.address'     : 'Address',
+            'reg.label.company.email': 'Company email',
+            'reg.step3.title'       : 'Choose your plan',
+            'reg.submit'            : 'Create my account',
+            'reg.quote'             : '"Lokativ transformed the way I manage my 12 properties. I save hours every month."',
+            'reg.quote.role'        : 'Real estate developer · Cotonou',
+            'reg.cgu.prefix'        : 'I accept the',
+            'reg.cgu.link1'         : 'terms of use',
+            'reg.cgu.and'           : 'and the',
+            'reg.cgu.link2'         : 'privacy policy',
+            'reg.cgu.dot'           : '.',
+            /* Plans */
+            'plan.cat.gestion'      : 'Property management',
+            'plan.cat.comm'         : 'Communication',
+            'plan.cat.visib'        : 'Visibility',
+            'plan.feat.dashboard'   : 'Full dashboard',
+            'plan.feat.tenants'     : 'Tenant management',
+            'plan.feat.billing'     : 'Automatic billing',
+            'plan.popular'          : 'Popular',
+            'plan.badge.free'       : 'Free trial',
+            'plan.badge.featured'   : 'Most popular',
+            'plan.badge.pro'        : 'Enterprise',
+            'plan.badge.default'    : 'Starter',
+            'plan.btn.free'         : 'Start for free',
+            'plan.btn.featured'     : 'Choose this plan',
+            'plan.btn.pro'          : 'Contact us',
+            'plan.btn.default'      : 'Get started',
+            'plan.maisons.unlimited': 'Unlimited <strong>houses</strong>',
+            'plan.maisons.upto'     : 'Up to',
+            'plan.maisons.unit'     : 'houses',
+            'plan.annexes.unlimited': 'Unlimited <strong>agencies</strong>',
+            'plan.annexes.upto'     : 'Up to',
+            'plan.annexes.unit'     : 'agency(ies)',
+            'plan.annexes.none'     : 'Multi-agency',
+            'plan.trial.text'       : 'For <strong>14 days</strong> · No card required',
+            'plan.price.soit'       : 'i.e.',
+            'plan.price.permonth'   : '/ month',
+            'plan.emails.unlimited' : '<strong>Unlimited emails</strong> / month',
+            'plan.emails.suffix'    : 'email(s) / month',
+            'plan.emails.none'      : 'Email sending',
+            'plan.rappels.unlimited': '<strong>Unlimited rent reminders</strong> (email)',
+            'plan.rappels.suffix'   : 'reminder(s) / month (email)',
+            'plan.rappels.none'     : 'Rent reminders',
+            'plan.preavis.unlimited': '<strong>Unlimited notices</strong> / month (email)',
+            'plan.preavis.suffix'   : 'notice(s) / month (email)',
+            'plan.preavis.none'     : 'Notice sending',
+            'plan.sms_wa'           : 'SMS & WhatsApp',
+            'plan.ppu'              : 'Pay-per-use',
+            'plan.docs_wa'          : 'Send docs via WhatsApp',
+            'plan.ads.unlimited'    : '<strong>Unlimited ads</strong>',
+            'plan.ads.suffix'       : 'ad(s) max',
+            'plan.note'             : 'All plans include a <strong>trial period</strong> · Easy cancellation · Support included',
+            /* Footer */
+            'footer.desc'       : 'The property management platform designed for owners and agencies in West Africa.',
+            'footer.nav'        : 'Navigation',
+            'footer.features'   : 'Features',
+            'footer.legal'      : 'Legal',
+            'footer.newsletter' : 'Stay informed',
+            'footer.copy'       : '© __YEAR__ Lokativ — All rights reserved. Made with ❤ in West Africa.',
+            'footer.payment'    : 'Accepted payments:',
+        }
+    };
+
+    var currentLang = localStorage.getItem('lokativ-lang') || 'fr';
+
+    function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('lokativ-lang', lang);
+        // Cookie synchrone lu directement par le middleware PHP (pas de race condition)
+        document.cookie = 'lokativ_locale=' + lang + '; path=/; max-age=31536000; SameSite=Lax';
+        fetch('/locale/' + lang).catch(function(){});
+
+        var t = LANG_DICT[lang];
+        if (!t) return;
+
+        /* Appliquer les traductions via data-i18n */
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n');
+            if (t[key] !== undefined) {
+                var val = t[key].replace('__YEAR__', new Date().getFullYear());
+                el.textContent = val;
+            }
+        });
+
+        /* Appliquer les placeholders via data-i18n-ph */
+        document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-ph');
+            if (t[key] !== undefined) el.placeholder = t[key];
+        });
+
+        /* Appliquer via data-i18n-html (innerHTML, pour les balises <strong> etc.) */
+        document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-html');
+            if (t[key] !== undefined) el.innerHTML = t[key];
+        });
+
+        /* Mettre à jour les boutons actifs (desktop + mobile) */
+        document.querySelectorAll('[data-lang]').forEach(function(btn) {
+            var isActive = btn.getAttribute('data-lang') === lang;
+            btn.classList.toggle('active', isActive);
+        });
+
+        /* Attribut lang sur <html> */
+        document.documentElement.setAttribute('lang', lang);
+    }
+
+    /* Init au chargement */
+    setLang(currentLang);
+    </script>
+
+    <script>
+    // ── Carrousel téléphone hero ──────────────────────────────────────────────
+    (function () {
+        var track  = document.getElementById('phone-track');
+        var dots   = document.querySelectorAll('.phone-nav-dot');
+        var total  = 4;
+        var cur    = 0;
+        var timer;
+
+        function goTo(n) {
+            cur = ((n % total) + total) % total;
+            track.style.transform = 'translateX(-' + (cur * 25) + '%)';
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            dots.forEach(function (d, i) {
+                d.style.width      = i === cur ? '18px' : '6px';
+                d.style.background = i === cur ? '#3b82f6' : (isDark ? 'rgba(255,255,255,0.22)' : 'rgba(15,23,42,0.18)');
+            });
+        }
+
+        function restart() {
+            clearInterval(timer);
+            timer = setInterval(function () { goTo(cur + 1); }, 3600);
+        }
+
+        dots.forEach(function (d, i) {
+            d.addEventListener('click', function () { goTo(i); restart(); });
+        });
+
+        restart();
+
+        // Allow theme toggle to refresh dot colors
+        window.phoneRefreshDots = function () { goTo(cur); };
+    })();
+    </script>
+
+    <script>
+    // ── Thème clair / sombre ──────────────────────────────────────────────────
+    (function () {
+        var html        = document.documentElement;
+        var btnDesktop  = document.getElementById('theme-toggle-desktop');
+        var iconDesktop = document.getElementById('theme-icon-desktop');
+        var btnMobile   = document.getElementById('theme-toggle-mobile');
+        var knob        = document.getElementById('theme-toggle-knob');
+        var labelMob    = document.getElementById('theme-label-mob');
+
+        // Lire la préférence sauvegardée (ou détecter le système)
+        var saved = localStorage.getItem('lokativ-theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = saved ? saved === 'dark' : prefersDark;
+
+        function apply(dark) {
+            isDark = dark;
+            html.setAttribute('data-theme', dark ? 'dark' : 'light');
+            localStorage.setItem('lokativ-theme', dark ? 'dark' : 'light');
+
+            // Icône desktop
+            if (iconDesktop) {
+                iconDesktop.className = dark ? 'fas fa-sun' : 'fas fa-moon';
+            }
+            // Toggle mobile
+            if (knob)      knob.textContent   = dark ? '🌙' : '☀️';
+            if (knob)      knob.style.transform = dark ? 'translateX(20px)' : 'translateX(0)';
+            if (btnMobile) btnMobile.style.background = dark ? '#2563eb' : 'rgba(255,255,255,0.15)';
+            if (labelMob)  labelMob.textContent = dark ? 'Sombre' : 'Clair';
+            // Refresh phone carousel dot colors
+            if (window.phoneRefreshDots) window.phoneRefreshDots();
+        }
+
+        // Appliquer au chargement
+        apply(isDark);
+
+        // Bouton desktop
+        if (btnDesktop) btnDesktop.addEventListener('click', function () { apply(!isDark); });
+        // Bouton mobile
+        if (btnMobile)  btnMobile.addEventListener('click',  function () { apply(!isDark); });
     })();
     </script>
 

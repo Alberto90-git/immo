@@ -72,7 +72,7 @@
       <li class="menu-item {{ request()->routeIs('home') ? 'active' : '' }}">
         <a href="{{ route('home') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-home-smile"></i>
-          <div data-i18n="Accueil">Accueil</div>
+          <div>{{ __('layout.home') }}</div>
         </a>
       </li>
 
@@ -80,7 +80,7 @@
         <li class="menu-item {{ request()->routeIs('parametrage') ? 'active' : '' }}">
           <a href="{{ route('parametrage') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-cog"></i>
-            <div data-i18n="Parametrage">Parametrage</div>
+            <div>{{ __('layout.settings') }}</div>
           </a>
         </li>
       @endcan
@@ -90,14 +90,14 @@
         <li class="menu-item {{ request()->is('roles*') || request()->is('gerer-user*') || request()->is('password-off-line') ? 'active open' : '' }}">
           <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-user-circle"></i>
-            <div data-i18n="Gestion utilisateur">Gestion utilisateur</div>
+            <div>{{ __('layout.user_management') }}</div>
           </a>
-         
+
           <ul class="menu-sub">
             @can('gestion-role')
               <li class="menu-item {{ request()->is('roles*') ? 'active' : '' }}">
                 <a href="{{ route('roles.index') }}" class="menu-link" data-spa-prefix="/roles">
-                  <div data-i18n="Fonction">Fonction</div>
+                  <div>{{ __('layout.roles') }}</div>
                 </a>
               </li>
             @endcan
@@ -105,7 +105,7 @@
             @can('gestion-utilisateur')
               <li class="menu-item {{ request()->is('gerer-user*') ? 'active' : '' }}">
                 <a href="{{ route('getUserView') }}" class="menu-link" data-spa-prefix="/gerer-user">
-                  <div data-i18n="Utilisateur">Utilisateur</div>
+                  <div>{{ __('layout.users') }}</div>
                 </a>
               </li>
             @endcan
@@ -119,7 +119,7 @@
         <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') || request()->routeIs('getViewCompte') || request()->routeIs('super_admin.config_plans') || request()->routeIs('super_admin.contact_messages') || request()->routeIs('super_admin.messaging_rates') ? 'active open' : '' }}">
           <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-shield-quarter"></i>
-            <div data-i18n="Super Admin">Super Admin</div>
+            <div>{{ __('layout.super_admin') }}</div>
             @if($nbContactNonLus > 0)
               <span class="badge rounded-pill bg-danger ms-auto">{{ $nbContactNonLus }}</span>
             @endif
@@ -128,7 +128,7 @@
             <li class="menu-item {{ request()->routeIs('super_admin.contact_messages') ? 'active' : '' }}">
               <a href="{{ route('super_admin.contact_messages') }}" class="menu-link d-flex align-items-center">
                 <i class="bx bx-envelope me-2" style="font-size:1rem;"></i>
-                <div>Messages de contact</div>
+                <div>{{ __('layout.contact_messages') }}</div>
                 @if($nbContactNonLus > 0)
                   <span class="badge rounded-pill bg-danger ms-auto">{{ $nbContactNonLus }}</span>
                 @endif
@@ -136,22 +136,22 @@
             </li>
             <li class="menu-item {{ request()->routeIs('super_admin.config_paiement') ? 'active' : '' }}">
               <a href="{{ route('super_admin.config_paiement') }}" class="menu-link">
-                <div data-i18n="Prestataire de paiement">Prestataire de paiement</div>
+                <div>{{ __('layout.platform_config') }}</div>
               </a>
             </li>
             <li class="menu-item {{ request()->routeIs('super_admin.config_plans') ? 'active' : '' }}">
               <a href="{{ route('super_admin.config_plans') }}" class="menu-link">
-                <div data-i18n="Plans abonnement">Plans d'abonnement</div>
+                <div>{{ __('layout.plans') }}</div>
               </a>
             </li>
             <li class="menu-item {{ request()->routeIs('super_admin.messaging_rates') ? 'active' : '' }}">
               <a href="{{ route('super_admin.messaging_rates') }}" class="menu-link">
-                <div data-i18n="Tarifs SMS/WA">Tarifs SMS &amp; WhatsApp</div>
+                <div>{{ __('layout.messaging_rates') }}</div>
               </a>
             </li>
             <li class="menu-item {{ request()->routeIs('getViewCompte') ? 'active' : '' }}">
               <a href="{{ route('getViewCompte') }}" class="menu-link">
-                <div data-i18n="Gestion entreprise">Gestion entreprise</div>
+                <div>{{ __('layout.company_management') }}</div>
               </a>
             </li>
           </ul>
@@ -162,7 +162,7 @@
         <li class="menu-item {{ request()->is('gerer-proprietaire*') || request()->routeIs('proprietaires.index') ? 'active' : '' }}">
           <a href="{{ route('proprietaires.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-user-pin"></i>
-            <div data-i18n="Gestion proprietaire">Gestion proprietaire</div>
+            <div>{{ __('layout.owner_management') }}</div>
           </a>
         </li>
       @endcan
@@ -171,7 +171,7 @@
         <li class="menu-item {{ request()->is('gerer-maison*') ? 'active' : '' }}">
           <a href="{{ route('get_maisonView') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-home-alt"></i>
-            <div data-i18n="Gestion des maisons">Gestion des maisons</div>
+            <div>{{ __('layout.house_management') }}</div>
           </a>
         </li>
       @endcan
@@ -180,16 +180,16 @@
         <li class="menu-item {{ request()->is('gerer-chambre*') ? 'active' : '' }}">
           <a href="{{ route('get_chambreView') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-door-open"></i>
-            <div data-i18n="Gestion des chambres">Gestion des chambres</div>
+            <div>{{ __('layout.room_management') }}</div>
           </a>
         </li>
       @endcan
 
-      @can('gestion-locataire') 
+      @can('gestion-locataire')
         <li class="menu-item {{ request()->is('gerer-locataire*') ? 'active' : '' }}">
           <a href="{{ route('get_locataireView') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-user-check"></i>
-            <div data-i18n="Gestion des locataires">Gestion des locataires</div>
+            <div>{{ __('layout.tenant_management') }}</div>
           </a>
         </li>
       @endcan
@@ -198,7 +198,7 @@
         <li class="menu-item {{ request()->is('gerer-facture*') ? 'active' : '' }}">
           <a href="{{ route('get_factureView') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-money"></i>
-            <div data-i18n="Gestion des loyers">Gestion des loyers</div>
+            <div>{{ __('layout.rent_management') }}</div>
           </a>
         </li>
       @endcan
@@ -207,7 +207,7 @@
         <li class="menu-item {{ request()->is('envoi-document*') ? 'active' : '' }}">
           <a href="{{ route('envoi_document.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-message-dots"></i>
-            <div data-i18n="Communications">Communications</div>
+            <div>{{ __('layout.communications') }}</div>
           </a>
         </li>
       @endcan
@@ -216,20 +216,20 @@
         <li class="menu-item {{ request()->is('client') || request()->is('parcelle') ? 'active open' : '' }}">
           <a href="javascript:void(0);" class="menu-link menu-toggle">
             <i class="menu-icon tf-icons bx bx-folder-open"></i>
-            <div data-i18n="Gestion des dossiers">Gestion des besoins & annonces</div>
+            <div>{{ __('layout.needs_ads') }}</div>
           </a>
           <ul class="menu-sub">
             @can('dossier-client')
               <li class="menu-item {{ request()->is('client') ? 'active' : '' }}">
                 <a href="{{ route('getViewClient') }}" class="menu-link">
-                  <div data-i18n="Dossier client">Besoins client</div>
+                  <div>{{ __('layout.client_needs') }}</div>
                 </a>
               </li>
             @endcan
             @can('dossier-parcelle')
               <li class="menu-item {{ request()->is('parcelle') ? 'active' : '' }}">
                 <a href="{{ route('getViewParcelle') }}" class="menu-link">
-                  <div data-i18n="Dossier parcelle">Annonces des biens</div>
+                  <div>{{ __('layout.property_ads') }}</div>
                 </a>
               </li>
             @endcan
@@ -241,13 +241,13 @@
       <li class="menu-item {{ request()->is('gerer-statistique*') || request()->is('finance') || request()->is('statistique-recu') || request()->is('statistique-dossier') ? 'active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
-          <div data-i18n="Gestion reporting">Gestion reporting</div>
+          <div>{{ __('layout.reporting') }}</div>
         </a>
         <ul class="menu-sub">
           @can('proprio-house-chambre-locataire')
             <li class="menu-item {{ request()->is('gerer-statistique*') ? 'active' : '' }}">
               <a href="{{ route('get_statistiqueView') }}" class="menu-link">
-                <div data-i18n="P/M/C/L">P/M/C/L</div>
+                <div>{{ __('layout.pmcl') }}</div>
               </a>
             </li>
           @endcan
@@ -255,7 +255,7 @@
           @can('financier')
             <li class="menu-item {{ request()->is('finance') ? 'active' : '' }}">
               <a href="{{ route('getFinance') }}" class="menu-link">
-                <div data-i18n="Finance">Finance</div>
+                <div>{{ __('layout.finance') }}</div>
               </a>
             </li>
           @endcan
@@ -263,7 +263,7 @@
           @can('ancien-recu')
             <li class="menu-item {{ request()->is('statistique-recu') ? 'active' : '' }}">
               <a href="{{ route('getRecu') }}" class="menu-link">
-                <div data-i18n="Recu">Recu</div>
+                <div>{{ __('layout.receipts') }}</div>
               </a>
             </li>
           @endcan
@@ -271,7 +271,7 @@
           @can('gestion-sta-dossier')
             <li class="menu-item {{ request()->is('statistique-dossier') ? 'active' : '' }}">
               <a href="{{ route('getDossier') }}" class="menu-link">
-                <div data-i18n="Gestion dossier">Gestion des besoins & annonces</div>
+                <div>{{ __('layout.needs_ads') }}</div>
               </a>
             </li>
           @endcan
@@ -284,7 +284,7 @@
         <li class="menu-item {{ request()->is('publicite*') ? 'active' : '' }}">
           <a href="{{ route('pub_displaying') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-speaker"></i>
-            <div data-i18n="Gestion publicite">Gestion publicité</div>
+            <div>{{ __('layout.ads_management') }}</div>
           </a>
         </li>
       @endcan
@@ -293,7 +293,7 @@
       <li class="menu-item {{ request()->is('historique') ? 'active' : '' }}">
         <a href="{{ route('historique') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-history"></i>
-          <div data-i18n="Log connexion">Log connexion</div>
+          <div>{{ __('layout.activity_log') }}</div>
         </a>
       </li>
       @endcan
@@ -303,17 +303,17 @@
         <li class="menu-item {{ request()->routeIs('plans.index') ? 'active' : '' }}">
           <a href="{{ route('plans.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-credit-card"></i>
-            <div data-i18n="Mon Abonnement">Mon Abonnement</div>
+            <div>{{ __('layout.my_subscription') }}</div>
           </a>
         </li>
       @endcan
-      
+
 
       <!-- Mon Profil -->
       <li class="menu-item {{ request()->routeIs('profileView') ? 'active' : '' }}">
         <a href="{{ route('profileView') }}" class="menu-link">
           <i class="menu-icon tf-icons bx bx-user"></i>
-          <div data-i18n="Mon Profil">Mon Profil</div>
+          <div>{{ __('layout.my_profile') }}</div>
         </a>
       </li>
 
@@ -326,7 +326,7 @@
                 @csrf
               </form>
               <i class="menu-icon tf-icons bx bx-power-off text-danger"></i>
-              <span class="text-danger">Quitter</span>
+              <span class="text-danger">{{ __('layout.logout') }}</span>
         </a>
       </li>
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
+<html lang="{{ app()->getLocale() }}" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Lokativ | Réinitialiser mot de passe</title>
+    <title>Lokativ | {{ __('pages.forgot_title') }}</title>
     <meta name="description" content="Réinitialisation de mot de passe Lokativ" />
 
     @include('css_file')
@@ -280,22 +280,22 @@
                 <span class="auth-brand-name">Lokativ</span>
               </div>
 
-              <h4>Mot de passe oublié ? <span class="lock-emoji">🔒</span></h4>
+              <h4>{{ __('pages.forgot_heading') }} <span class="lock-emoji">🔒</span></h4>
 
               @include('display_message')
 
               <div class="instruction-box">
-                Entrez votre adresse email et nous vous enverrons des instructions pour réinitialiser votre mot de passe.
+                {{ __('pages.forgot_instruction') }}
               </div>
 
               <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('forgot-password') }}">
                 @csrf
                 <div class="form-group">
-                  <label for="email" class="form-label">Email</label>
+                  <label for="email" class="form-label">{{ __('pages.forgot_label') }}</label>
                   <input type="email"
                          class="form-control @error('email') is-invalid @enderror"
                          id="email" name="email"
-                         placeholder="votre@email.com"
+                         placeholder="{{ __('pages.forgot_ph') }}"
                          autofocus required />
                   @error('email')
                   <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
@@ -304,14 +304,14 @@
 
                 <div class="mb-3">
                   <button class="btn btn-primary" type="submit" id="submit">
-                    Envoyer les instructions
+                    {{ __('pages.forgot_btn') }}
                   </button>
                 </div>
               </form>
 
               <a href="{{ route('login') }}" class="back-link">
                 <i class="bx bx-chevron-left"></i>
-                Retour à la connexion
+                {{ __('pages.forgot_back') }}
               </a>
 
             </div>
@@ -327,7 +327,7 @@
         const btn = document.getElementById('submit');
         btn.classList.add('btn-loading');
         btn.disabled = true;
-        btn.textContent = 'Envoi en cours...';
+        btn.textContent = '{{ __('pages.forgot_btn_loading') }}';
       });
 
       // Subtle parallax on shapes

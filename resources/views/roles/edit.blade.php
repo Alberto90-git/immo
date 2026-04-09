@@ -1,7 +1,7 @@
 @extends('layouts.template')
 
 @section('title')
-<title>Gestion fonction</title>
+<title>{{ __('pages.role_title') }}</title>
 @endsection
 
 @section('content')
@@ -10,14 +10,14 @@
 
     @include('notification.display_message')
 
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion fonction / Modification</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.role_edit_breadcrumb') }}</h4>
 
     <div class="card">
 
         @can('liste-role')
             <div class="ms-3 demo-inline-spacing">
                 <a href="{{ route('roles.index') }}" class="btn rounded-pill btn-primary">
-                    <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Consulter la liste des fonctions
+                    <span class="tf-icons bx bx-arrow-back"></span>&nbsp; {{ __('pages.role_btn_list_fn') }}
                 </a>
             </div>
         @endcan
@@ -29,9 +29,9 @@
 
             <div class="col-md-6 p-3">
                 <div class="form-group ms-3">
-                    <label for="roleName" class="form-label">Nom fonction <span style="color: red;">*</span></label>
+                    <label for="roleName" class="form-label">{{ __('pages.role_label_name_fn') }} <span style="color: red;">*</span></label>
                     <input type="text" name="name" id="roleName" class="form-control"
-                           placeholder="Nom fonction" autocomplete="off" value="{{ $role->name }}">
+                           placeholder="{{ __('pages.role_ph_name_fn') }}" autocomplete="off" value="{{ $role->name }}">
                     <span class="text-danger small name_err"></span>
                 </div>
             </div>
@@ -40,18 +40,18 @@
                 <table class="table table-striped table-borderless border-bottom">
                     <thead>
                         <tr>
-                            <th class="text-nowrap">MENU</th>
-                            <th class="text-nowrap text-center">Liste des permissions</th>
+                            <th class="text-nowrap">{{ __('pages.role_th_menu') }}</th>
+                            <th class="text-nowrap text-center">{{ __('pages.role_th_perm') }}</th>
                         </tr>
                     </thead>
                     <tbody>
 
                         <tr>
-                            <td class="text-nowrap">Paramétrage</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_config') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllParametrage" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllParametrage" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -70,11 +70,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Propriétaire</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_owner') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllProprietaire" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllProprietaire" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -93,11 +93,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Maison</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_house') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllMaison" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllMaison" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -116,11 +116,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Chambre</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_room') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllChambre" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllChambre" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -139,11 +139,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Prix</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_price') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllPrix" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllPrix" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -162,11 +162,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Locataire</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_tenant') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllLocataire" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllLocataire" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -185,11 +185,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Paiement</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_payment') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllPaiement" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllPaiement" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -208,11 +208,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Statistique</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_stats') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllSta" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllSta" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -231,11 +231,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Gestion des besoins &amp; annonces</td>
+                            <td class="text-nowrap">{!! __('pages.role_menu_listings') !!}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllDossier" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllDossier" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -254,11 +254,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Gestion publicité</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_ads') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllPub" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllPub" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -277,11 +277,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Gestion des abonnements</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_subs') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllAbonnement" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllAbonnement" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -300,11 +300,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Communication</td>
+                            <td class="text-nowrap">{{ __('pages.role_menu_comm') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllEnvoi" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllEnvoi" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -321,11 +321,11 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Permission fonction &amp; utilisateur</td>
+                            <td class="text-nowrap">{!! __('pages.role_menu_perms') !!}</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
-                                        <input type="checkbox" id="selectAllUser" class="form-check-input select-all"> Tout sélectionner
+                                        <input type="checkbox" id="selectAllUser" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
                                     </label>
                                 </div>
                                 <div class="d-flex flex-wrap">
@@ -351,7 +351,7 @@
                 @can('modifier-role')
                     <div class="mt-4">
                         <button type="submit" id="btnUpdateRole" class="btn btn-primary me-2">
-                            <span id="btnUpdateText">Enregistrer</span>
+                            <span id="btnUpdateText">{{ __('common.btn_save') }}</span>
                         </button>
                     </div>
                 @endcan
@@ -364,6 +364,14 @@
 </div>
 
 <script>
+    var ROLE_I18N = {
+        inProgress: '<span class="spinner-border spinner-border-sm me-1"></span>{{ __('pages.owner_in_progress') }}',
+        btnSave:    '{{ __('common.btn_save') }}',
+        warning:    '{{ __('common.swal_warning') }}',
+        success:    '{{ __('common.swal_success') }} !',
+        error:      '{{ __('common.swal_error') }}',
+        updateErr:  '{{ __('pages.role_update_error') }}',
+    };
 
     /* ── "Tout sélectionner" ── */
     function setupSelectAll(selectAllId, checkboxClass) {
@@ -410,7 +418,7 @@
             data: formData,
             beforeSend: function () {
                 $('#btnUpdateRole').prop('disabled', true);
-                $('#btnUpdateText').html('<span class="spinner-border spinner-border-sm me-1"></span>En cours...');
+                $('#btnUpdateText').html(ROLE_I18N.inProgress);
             },
             success: function (data) {
                 if (data.error && !$.isEmptyObject(data.error)) {
@@ -420,20 +428,20 @@
                     }
                     if (data.error.permission) {
                         var msg = Array.isArray(data.error.permission) ? data.error.permission[0] : data.error.permission;
-                        display_message('Attention', msg, 'warning', 'btn btn-warning');
+                        display_message(ROLE_I18N.warning, msg, 'warning', 'btn btn-warning');
                     }
                     return;
                 }
-                display_message('Succès !', data.message, 'success', 'btn btn-primary');
+                display_message(ROLE_I18N.success, data.message, 'success', 'btn btn-primary');
             },
             error: function (xhr) {
-                var msg = 'Une erreur s\'est produite.';
+                var msg = ROLE_I18N.updateErr;
                 if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                display_message('Erreur', msg, 'error', 'btn btn-danger');
+                display_message(ROLE_I18N.error, msg, 'error', 'btn btn-danger');
             },
             complete: function () {
                 $('#btnUpdateRole').prop('disabled', false);
-                $('#btnUpdateText').text('Enregistrer');
+                $('#btnUpdateText').text(ROLE_I18N.btnSave);
             }
         });
     }

@@ -2,10 +2,10 @@
 <script>
     Swal.fire({
         icon: 'success',
-        title: 'Succès',
+        title: '{{ __('pages.flash_success') }}',
         text: "{{ Session::get('success') }}",
         showConfirmButton: true,
-        confirmButtonText: 'Fermer',
+        confirmButtonText: '{{ __('pages.flash_close') }}',
         timer: 3000,
         timerProgressBar: true
     });
@@ -16,10 +16,10 @@
 <script>
     Swal.fire({
         icon: 'error',
-        title: 'Erreur',
+        title: '{{ __('pages.flash_error') }}',
         text: "{{ Session::get('error') }}",
         showConfirmButton: true,
-        confirmButtonText: 'Fermer',
+        confirmButtonText: '{{ __('pages.flash_close') }}',
         timer: 3000,
         timerProgressBar: true
     });

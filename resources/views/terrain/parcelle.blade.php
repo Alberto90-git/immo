@@ -4,14 +4,14 @@
 @section('content')
 
   @section('title')
-    <title>Gestion annonce</title>
+    <title>{{ __('pages.par_title') }}</title>
   @endsection
 
   @include('notification.display_message')
 
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion des annonces</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('common.home_breadcrumb') }} /</span> {{ __('pages.par_breadcrumb') }}</h4>
 
     @can('ajouter-parcelle')
       <div class="col-md-6">
@@ -30,7 +30,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Ajouter une annonce</h5>
+            <h5 class="modal-title">{{ __('pages.par_modal_add') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -38,46 +38,46 @@
                @csrf
 
                 <div class="col-6">
-                  <label class="form-label">Nom propriétaire<span style="color: red;">*</span></label>
+                  <label class="form-label">{{ __('pages.par_label_owner_name') }}<span style="color: red;">*</span></label>
                   <input type="text" name="nom" class="form-control" id="nom" required="">
                   <span class="invalid-feedback nom_err" role="alert"></span>
                 </div>
 
                 <div class="col-6">
-                  <label class="form-label">Prénom propriétaire<span style="color: red;">*</span></label>
+                  <label class="form-label">{{ __('pages.par_label_owner_first') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prenom" class="form-control" id="prenom" required="">
                   <span class="invalid-feedback prenom_err" role="alert"></span>
                 </div>
 
                 <div class="col-6">
-                  <label class="form-label">Téléphone<span style="color: red;">*</span></label>
+                  <label class="form-label">{{ __('pages.par_label_phone') }}<span style="color: red;">*</span></label>
                   <input type="text" name="telephone" class="form-control" id="telephone" required=""
                     onkeypress="return /[0-9]/i.test(event.key)">
                   <span class="invalid-feedback telephone_err" role="alert"></span>
                 </div>
 
                 <div class="col-6">
-                  <label class="form-label">Quartier parcelle<span style="color: red;">*</span></label>
+                  <label class="form-label">{{ __('pages.par_label_district') }}<span style="color: red;">*</span></label>
                   <input type="text" name="quartier" class="form-control" id="quartier" required="">
                   <span class="invalid-feedback quartier_err" role="alert"></span>
                 </div>
 
                 <div class="col-6">
-                  <label class="form-label">Superficie (m²)</label>
+                  <label class="form-label">{{ __('pages.par_label_area') }}</label>
                   <input type="text" name="superficie" class="form-control" id="superficie"
                     onkeypress="return /[0-9]/i.test(event.key)">
                 </div>
 
                 <div class="col-6">
-                  <label class="form-label">Prix (XOF)<span style="color: red;">*</span></label>
+                  <label class="form-label">{{ __('pages.par_label_price') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prix" class="form-control" id="prix" required="">
                   <span class="invalid-feedback prix_err" role="alert"></span>
                 </div>
 
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
                   <button type="submit" class="btn btn-primary" id="valider">
-                    <span class="fa fa-save"></span> Enregistrer
+                    <span class="fa fa-save"></span> {{ __('common.btn_save') }}
                   </button>
                 </div>
             </form>
@@ -103,7 +103,7 @@
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-phone fs-4 text-primary mb-1"></i>
-                    <div class="small text-muted">Téléphone</div>
+                    <div class="small text-muted">{{ __('pages.par_detail_phone') }}</div>
                     <div class="fw-semibold" id="d-parcelle-telephone">—</div>
                   </div>
                 </div>
@@ -112,7 +112,7 @@
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-map fs-4 text-success mb-1"></i>
-                    <div class="small text-muted">Quartier</div>
+                    <div class="small text-muted">{{ __('pages.par_detail_district') }}</div>
                     <div class="fw-semibold" id="d-parcelle-quartier">—</div>
                   </div>
                 </div>
@@ -121,7 +121,7 @@
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-area fs-4 text-info mb-1"></i>
-                    <div class="small text-muted">Superficie</div>
+                    <div class="small text-muted">{{ __('pages.par_detail_area') }}</div>
                     <div class="fw-semibold"><span id="d-parcelle-superficie">—</span> m²</div>
                   </div>
                 </div>
@@ -130,7 +130,7 @@
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-money fs-4 text-warning mb-1"></i>
-                    <div class="small text-muted">Prix</div>
+                    <div class="small text-muted">{{ __('pages.par_detail_price') }}</div>
                     <div class="fw-semibold"><span id="d-parcelle-prix">—</span> XOF</div>
                   </div>
                 </div>
@@ -138,7 +138,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
           </div>
         </div>
       </div>
@@ -149,7 +149,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Modification</h5>
+            <h5 class="modal-title">{{ __('pages.par_modal_edit') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -158,36 +158,36 @@
               <input type="hidden" name="id" id="mp-id">
 
               <div class="col-6">
-                <label class="form-label">Nom<span style="color: red;">*</span></label>
+                <label class="form-label">{{ __('pages.par_label_name') }}<span style="color: red;">*</span></label>
                 <input type="text" name="nom" id="mp-nom" class="form-control" required>
               </div>
               <div class="col-6">
-                <label class="form-label">Prénom<span style="color: red;">*</span></label>
+                <label class="form-label">{{ __('pages.par_label_firstname') }}<span style="color: red;">*</span></label>
                 <input type="text" name="prenom" id="mp-prenom" class="form-control" required>
               </div>
               <div class="col-6">
-                <label class="form-label">Téléphone<span style="color: red;">*</span></label>
+                <label class="form-label">{{ __('pages.par_label_phone') }}<span style="color: red;">*</span></label>
                 <input type="text" name="telephone" id="mp-telephone" class="form-control" required
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
               <div class="col-6">
-                <label class="form-label">Quartier parcelle<span style="color: red;">*</span></label>
+                <label class="form-label">{{ __('pages.par_label_district') }}<span style="color: red;">*</span></label>
                 <input type="text" name="quartier" id="mp-quartier" class="form-control" required>
               </div>
               <div class="col-6">
-                <label class="form-label">Superficie (m²)</label>
+                <label class="form-label">{{ __('pages.par_label_area') }}</label>
                 <input type="text" name="superficie" id="mp-superficie" class="form-control"
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
               <div class="col-6">
-                <label class="form-label">Prix (XOF)<span style="color: red;">*</span></label>
+                <label class="form-label">{{ __('pages.par_label_price') }}<span style="color: red;">*</span></label>
                 <input type="text" name="prix" id="mp-prix" class="form-control" required
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="submit" class="btn btn-primary" id="mp-submit">Enregistrer</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
+                <button type="submit" class="btn btn-primary" id="mp-submit">{{ __('common.btn_save') }}</button>
               </div>
             </form>
           </div>
@@ -200,17 +200,17 @@
       <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Suppression d'une annonce</h5>
+            <h5 class="modal-title">{{ __('pages.par_modal_delete') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form onsubmit="deleteParcelle(event)">
               @csrf
               <input type="hidden" name="id" id="sp-id">
-              <p>Voulez-vous vraiment supprimer cette ligne ?</p>
+              <p>{{ __('pages.par_delete_confirm') }}</p>
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Non</button>
-                <button type="submit" class="btn btn-outline-danger" id="sp-submit">Oui</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_no') }}</button>
+                <button type="submit" class="btn btn-outline-danger" id="sp-submit">{{ __('common.btn_yes') }}</button>
               </div>
             </form>
           </div>
@@ -223,18 +223,18 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Cloturer une annonce</h5>
+            <h5 class="modal-title">{{ __('pages.par_modal_close') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form onsubmit="cloturerParcelle(event)">
               @csrf
               <input type="hidden" name="id" id="cp-id">
-              <p>Voulez-vous vraiment cloturer cette offre de vente ?</p>
+              <p>{{ __('pages.par_close_confirm') }}</p>
               <div class="col-12 mb-3">
-                <label class="form-label">Choisissez le client acheteur<span style="color: red;">*</span></label>
+                <label class="form-label">{{ __('pages.par_label_buyer') }}<span style="color: red;">*</span></label>
                 <select class="form-select" name="client_acheteur" id="cp-client-acheteur" required>
-                  <option selected disabled value="">Choisissez le client acheteur</option>
+                  <option selected disabled value="">{{ __('pages.par_label_buyer') }}</option>
                   @if(isset($all_customers))
                     @foreach($all_customers as $terme)
                       <option value="{{ $terme->id }}">{{ $terme->nom }} {{ $terme->prenom }}</option>
@@ -243,8 +243,8 @@
                 </select>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Non</button>
-                <button type="submit" class="btn btn-danger shadow" id="cp-submit">Oui</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_no') }}</button>
+                <button type="submit" class="btn btn-danger shadow" id="cp-submit">{{ __('common.btn_yes') }}</button>
               </div>
             </form>
           </div>
@@ -254,15 +254,15 @@
 
     <!-- Hoverable Table rows -->
     <div class="card">
-      <h5 class="card-header text-center">Liste des annonces</h5>
+      <h5 class="card-header text-center">{{ __('pages.par_card_title') }}</h5>
       <div class="table-responsive text-nowrap">
         <table id="example" class="table table-hover border-primary" style="width:100%">
           <thead>
             <tr>
-              <th scope="col">Nom &amp; Prénom</th>
-              <th scope="col">Téléphone</th>
-              <th scope="col">Status</th>
-              <th scope="col">Actions</th>
+              <th scope="col">{{ __('pages.par_th_name') }}</th>
+              <th scope="col">{{ __('pages.par_th_phone') }}</th>
+              <th scope="col">{{ __('pages.par_th_status') }}</th>
+              <th scope="col">{{ __('common.th_actions') }}</th>
             </tr>
           </thead>
           <tbody class="table-border-bottom-0" id="parcelles-tbody">
@@ -282,34 +282,34 @@
                     <td>{{ $item->telephone }}</td>
                     <td>
                       @if($item->status == '')
-                        <span class="badge rounded-pill bg-success">En attente</span>
+                        <span class="badge rounded-pill bg-success">{{ __('pages.par_badge_pending') }}</span>
                       @else
-                        <span class="badge rounded-pill bg-danger">Déjà vendu</span>
+                        <span class="badge rounded-pill bg-danger">{{ __('pages.par_badge_sold') }}</span>
                       @endif
                     </td>
                     <td>
                       @can('modifier-parcelle')
                         @if($item->status == '')
-                          <button class="btn rounded-pill btn-primary btn-modifier-parcelle" title="Modifier">
+                          <button class="btn rounded-pill btn-primary btn-modifier-parcelle" title="{{ __('common.title_edit') }}">
                             <i class="bx bx-edit-alt me-1"></i>
                           </button>
                         @endif
                       @endcan
                       @can('supprimer-parcelle')
                         @if($item->status == '')
-                          <button class="btn rounded-pill btn-danger btn-supprimer-parcelle" title="Supprimer">
+                          <button class="btn rounded-pill btn-danger btn-supprimer-parcelle" title="{{ __('common.title_delete') }}">
                             <i class="bx bx-trash me-1"></i>
                           </button>
                         @endif
                       @endcan
                       @can('cloturer-parcelle')
                         @if($item->status == '')
-                          <button class="btn rounded-pill btn-success btn-cloturer-parcelle" title="Cloturer">
+                          <button class="btn rounded-pill btn-success btn-cloturer-parcelle" title="{{ __('pages.par_title_close') }}">
                             <i class="bx bx-check-circle me-1"></i>
                           </button>
                         @endif
                       @endcan
-                      <button class="btn rounded-pill btn-primary btn-details-parcelle" title="Détails">
+                      <button class="btn rounded-pill btn-primary btn-details-parcelle" title="{{ __('common.title_details') }}">
                         <i class="bx bx-zoom-in me-1"></i>
                       </button>
                     </td>
@@ -324,6 +324,25 @@
     <!--/ Hoverable Table rows -->
 
     <script>
+    var PAR_I18N = {
+        processing:   '<span class="spinner-border spinner-border-sm me-1"></span> {{ __('pages.par_processing') }}',
+        btnSave:      '<span class="fa fa-save"></span> {{ __('common.btn_save') }}',
+        btnYes:       '{{ __('common.btn_yes') }}',
+        success:      '{{ __('pages.par_swal_success') }}',
+        error:        '{{ __('pages.par_swal_error') }}',
+        errorShort:   '{{ __('pages.par_swal_error_short') }}',
+        successShort: '{{ __('pages.par_swal_success_short') }}',
+        deleted:      '{{ __('pages.par_swal_deleted') }}',
+        closed:       '{{ __('pages.par_swal_closed') }}',
+        genericError: '{{ __('pages.par_swal_generic_error') }}',
+        badgePending: '{{ __('pages.par_badge_pending') }}',
+        badgeSold:    '{{ __('pages.par_badge_sold') }}',
+        titleEdit:    '{{ __('common.title_edit') }}',
+        titleDelete:  '{{ __('common.title_delete') }}',
+        titleClose:   '{{ __('pages.par_title_close') }}',
+        titleDetails: '{{ __('common.title_details') }}',
+    };
+
     function closeModalParcelle(selector) {
         $(selector).modal('hide');
         setTimeout(function() {
@@ -376,7 +395,7 @@
     function save_parcelle(e) {
         e.preventDefault();
         var btn = $('#valider');
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> En cours...');
+        btn.prop('disabled', true).html(PAR_I18N.processing);
 
         var data = new FormData($('#formulaire')[0]);
 
@@ -387,7 +406,7 @@
             contentType: false,
             data: data,
             success: function(data) {
-                btn.prop('disabled', false).html('<span class="fa fa-save"></span> Enregistrer');
+                btn.prop('disabled', false).html(PAR_I18N.btnSave);
 
                 if (data.error && !$.isEmptyObject(data.error)) {
                     printErrorMsg(data.error);
@@ -407,24 +426,24 @@
                         ' data-status="">' +
                         '<th scope="row">' + p.nom + ' ' + p.prenom + '</th>' +
                         '<td>' + p.telephone + '</td>' +
-                        '<td><span class="badge rounded-pill bg-success">En attente</span></td>' +
+                        '<td><span class="badge rounded-pill bg-success">' + PAR_I18N.badgePending + '</span></td>' +
                         '<td>' +
-                        @can('modifier-parcelle') '<button class="btn rounded-pill btn-primary btn-modifier-parcelle" title="Modifier"><i class="bx bx-edit-alt me-1"></i></button> ' + @endcan
-                        @can('supprimer-parcelle') '<button class="btn rounded-pill btn-danger btn-supprimer-parcelle" title="Supprimer"><i class="bx bx-trash me-1"></i></button> ' + @endcan
-                        @can('cloturer-parcelle') '<button class="btn rounded-pill btn-success btn-cloturer-parcelle" title="Cloturer"><i class="bx bx-check-circle me-1"></i></button> ' + @endcan
-                        '<button class="btn rounded-pill btn-primary btn-details-parcelle" title="Détails"><i class="bx bx-zoom-in me-1"></i></button>' +
+                        @can('modifier-parcelle') '<button class="btn rounded-pill btn-primary btn-modifier-parcelle" title="' + PAR_I18N.titleEdit + '"><i class="bx bx-edit-alt me-1"></i></button> ' + @endcan
+                        @can('supprimer-parcelle') '<button class="btn rounded-pill btn-danger btn-supprimer-parcelle" title="' + PAR_I18N.titleDelete + '"><i class="bx bx-trash me-1"></i></button> ' + @endcan
+                        @can('cloturer-parcelle') '<button class="btn rounded-pill btn-success btn-cloturer-parcelle" title="' + PAR_I18N.titleClose + '"><i class="bx bx-check-circle me-1"></i></button> ' + @endcan
+                        '<button class="btn rounded-pill btn-primary btn-details-parcelle" title="' + PAR_I18N.titleDetails + '"><i class="bx bx-zoom-in me-1"></i></button>' +
                         '</td></tr>';
 
                     $('#parcelles-tbody').prepend(newRow);
                     $('#formulaire')[0].reset();
-                    display_message("Super !!", data.message, "success", "btn btn-primary");
+                    display_message(PAR_I18N.success, data.message, "success", "btn btn-primary");
                 } else {
-                    display_message("Erreur !!", data.message, "warning", "btn btn-danger");
+                    display_message(PAR_I18N.error, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
-                btn.prop('disabled', false).html('<span class="fa fa-save"></span> Enregistrer');
-                display_message("Erreur !!", "Une erreur est survenue", "warning", "btn btn-danger");
+                btn.prop('disabled', false).html(PAR_I18N.btnSave);
+                display_message(PAR_I18N.error, PAR_I18N.genericError, "warning", "btn btn-danger");
             }
         });
     }
@@ -433,14 +452,14 @@
     function updateParcelle(e) {
         e.preventDefault();
         var btn = $('#mp-submit');
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> En cours...');
+        btn.prop('disabled', true).html(PAR_I18N.processing);
 
         $.ajax({
             url: "{{ route('update_terrain') }}",
             method: "POST",
             data: $('#formModifParcelle').serialize(),
             success: function(data) {
-                btn.prop('disabled', false).html('Enregistrer');
+                btn.prop('disabled', false).html('{{ __('common.btn_save') }}');
                 if (data.status) {
                     var id       = $('#mp-id').val();
                     var nom      = $('#mp-nom').val().toUpperCase();
@@ -457,14 +476,14 @@
                         'data-quartier': quartier, 'data-superficie': sup, 'data-prix': prix
                     });
                     closeModalParcelle('#sharedModifierParcelle');
-                    display_message("Succès !", data.message, "success", "btn btn-primary");
+                    display_message(PAR_I18N.successShort, data.message, "success", "btn btn-primary");
                 } else {
-                    display_message("Erreur !", data.message, "warning", "btn btn-danger");
+                    display_message(PAR_I18N.errorShort, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
-                btn.prop('disabled', false).html('Enregistrer');
-                display_message("Erreur !", "Une erreur est survenue", "warning", "btn btn-danger");
+                btn.prop('disabled', false).html('{{ __('common.btn_save') }}');
+                display_message(PAR_I18N.errorShort, PAR_I18N.genericError, "warning", "btn btn-danger");
             }
         });
     }
@@ -473,7 +492,7 @@
     function deleteParcelle(e) {
         e.preventDefault();
         var btn = $('#sp-submit');
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> En cours...');
+        btn.prop('disabled', true).html(PAR_I18N.processing);
         var id = $('#sp-id').val();
 
         $.ajax({
@@ -481,18 +500,18 @@
             method: "POST",
             data: { _token: $('meta[name="csrf-token"]').attr('content'), id: id },
             success: function(data) {
-                btn.prop('disabled', false).html('Oui');
+                btn.prop('disabled', false).html(PAR_I18N.btnYes);
                 if (data.status) {
                     $('#row-' + id).fadeOut(400, function() { $(this).remove(); });
                     closeModalParcelle('#sharedSupprimerParcelle');
-                    display_message("Supprimé !", data.message, "success", "btn btn-primary");
+                    display_message(PAR_I18N.deleted, data.message, "success", "btn btn-primary");
                 } else {
-                    display_message("Erreur !", data.message, "warning", "btn btn-danger");
+                    display_message(PAR_I18N.errorShort, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
-                btn.prop('disabled', false).html('Oui');
-                display_message("Erreur !", "Une erreur est survenue", "warning", "btn btn-danger");
+                btn.prop('disabled', false).html(PAR_I18N.btnYes);
+                display_message(PAR_I18N.errorShort, PAR_I18N.genericError, "warning", "btn btn-danger");
             }
         });
     }
@@ -501,7 +520,7 @@
     function cloturerParcelle(e) {
         e.preventDefault();
         var btn = $('#cp-submit');
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> En cours...');
+        btn.prop('disabled', true).html(PAR_I18N.processing);
         var id = $('#cp-id').val();
         var client_acheteur = $('#cp-client-acheteur').val();
 
@@ -514,20 +533,20 @@
                 client_acheteur: client_acheteur
             },
             success: function(data) {
-                btn.prop('disabled', false).html('Oui');
+                btn.prop('disabled', false).html(PAR_I18N.btnYes);
                 if (data.status) {
                     var row = $('#row-' + id);
-                    row.find('td:nth-child(3) span').removeClass('bg-success').addClass('bg-danger').text('Déjà vendu');
+                    row.find('td:nth-child(3) span').removeClass('bg-success').addClass('bg-danger').text(PAR_I18N.badgeSold);
                     row.find('.btn-modifier-parcelle, .btn-supprimer-parcelle, .btn-cloturer-parcelle').remove();
                     closeModalParcelle('#sharedCloturerParcelle');
-                    display_message("Clôturé !", data.message, "success", "btn btn-primary");
+                    display_message(PAR_I18N.closed, data.message, "success", "btn btn-primary");
                 } else {
-                    display_message("Erreur !", data.message, "warning", "btn btn-danger");
+                    display_message(PAR_I18N.errorShort, data.message, "warning", "btn btn-danger");
                 }
             },
             error: function() {
-                btn.prop('disabled', false).html('Oui');
-                display_message("Erreur !", "Une erreur est survenue", "warning", "btn btn-danger");
+                btn.prop('disabled', false).html(PAR_I18N.btnYes);
+                display_message(PAR_I18N.errorShort, PAR_I18N.genericError, "warning", "btn btn-danger");
             }
         });
     }

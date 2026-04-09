@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
+<html lang="{{ app()->getLocale() }}" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
     data-assets-path="../assets/" data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Lokativ | Changer mot de passe</title>
+    <title>Lokativ | {{ __('pages.chpwd_title') }}</title>
     <meta name="description" content="Changer votre mot de passe pour sécuriser votre compte Lokativ" />
     @include('css_file')
 
@@ -280,8 +280,8 @@
                             <span class="auth-brand-name">Lokativ</span>
                         </div>
 
-                        <h4>Changer votre mot de passe 🔑</h4>
-                        <p class="auth-subtitle">Mettez à jour vos identifiants de connexion</p>
+                        <h4>{{ __('pages.chpwd_heading') }}</h4>
+                        <p class="auth-subtitle">{{ __('pages.chpwd_subtitle') }}</p>
 
                         @include('display_message')
 
@@ -289,7 +289,7 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                                <label for="email" class="form-label">{{ __('pages.login_email') }}</label>
                                 <input type="email"
                                        class="form-control @error('email') is-invalid @enderror"
                                        id="email" name="email"
@@ -300,7 +300,7 @@
                             </div>
 
                             <div class="mb-3 form-password-toggle">
-                                <label class="form-label" for="Ancien_mot_de_passe">Ancien mot de passe</label>
+                                <label class="form-label" for="Ancien_mot_de_passe">{{ __('pages.chpwd_label_old') }}</label>
                                 <div class="input-group input-group-merge">
                                     <input type="password" id="Ancien_mot_de_passe"
                                            class="form-control @error('Ancien_mot_de_passe') is-invalid @enderror"
@@ -315,7 +315,7 @@
                             </div>
 
                             <div class="mb-3 form-password-toggle">
-                                <label class="form-label" for="Nouveau_mot_de_passe">Nouveau mot de passe</label>
+                                <label class="form-label" for="Nouveau_mot_de_passe">{{ __('pages.chpwd_label_new') }}</label>
                                 <div class="input-group input-group-merge">
                                     <input type="password" id="Nouveau_mot_de_passe"
                                            class="form-control @error('Nouveau_mot_de_passe') is-invalid @enderror"
@@ -332,17 +332,17 @@
                                 </div>
                                 <small style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="password-strength-text"></small>
                                 <div class="password-requirements" id="passwordRequirementsBlock">
-                                    <h6>Critères de sécurité :</h6>
-                                    <div class="requirement" id="req-minLength"><i class="bx bx-x"></i> Au moins 8 caractères</div>
-                                    <div class="requirement" id="req-hasUpper"><i class="bx bx-x"></i> Une lettre majuscule</div>
-                                    <div class="requirement" id="req-hasLower"><i class="bx bx-x"></i> Une lettre minuscule</div>
-                                    <div class="requirement" id="req-hasNumber"><i class="bx bx-x"></i> Un chiffre</div>
-                                    <div class="requirement" id="req-hasSpecial"><i class="bx bx-x"></i> Un caractère spécial</div>
+                                    <h6>{{ __('pages.auth_criteria_title') }}</h6>
+                                    <div class="requirement" id="req-minLength"><i class="bx bx-x"></i> {{ __('pages.auth_req_length') }}</div>
+                                    <div class="requirement" id="req-hasUpper"><i class="bx bx-x"></i> {{ __('pages.auth_req_upper') }}</div>
+                                    <div class="requirement" id="req-hasLower"><i class="bx bx-x"></i> {{ __('pages.auth_req_lower') }}</div>
+                                    <div class="requirement" id="req-hasNumber"><i class="bx bx-x"></i> {{ __('pages.auth_req_number') }}</div>
+                                    <div class="requirement" id="req-hasSpecial"><i class="bx bx-x"></i> {{ __('pages.auth_req_special') }}</div>
                                 </div>
                             </div>
 
                             <button class="btn btn-primary" id="form_submit1" type="submit" name="Confirmer1">
-                                Modifier le mot de passe
+                                {{ __('pages.chpwd_btn') }}
                             </button>
                         </form>
 
@@ -355,6 +355,15 @@
     @include('js_file')
 
     <script>
+        var CHPWD_I18N = {
+            veryWeak:   '{{ __('pages.auth_strength_very_weak') }}',
+            weak:       '{{ __('pages.auth_strength_weak') }}',
+            medium:     '{{ __('pages.auth_strength_medium') }}',
+            strong:     '{{ __('pages.auth_strength_strong') }}',
+            veryStrong: '{{ __('pages.auth_strength_very_strong') }}',
+            loading:    '{{ __('pages.chpwd_js_loading') }}',
+        };
+
         // Password visibility toggle
         document.querySelectorAll('.input-group-text').forEach(icon => {
             icon.addEventListener('click', function () {
@@ -404,11 +413,11 @@
                 if (strengthBar && strengthText) {
                     let strength = 0, text = '', color = '';
                     if (password.length === 0) { strength = 0; text = ''; color = ''; }
-                    else if (validCount <= 1)   { strength = 20; text = 'Très faible'; color = '#f87171'; }
-                    else if (validCount === 2)  { strength = 40; text = 'Faible'; color = '#fb923c'; }
-                    else if (validCount === 3)  { strength = 60; text = 'Moyen'; color = '#facc15'; }
-                    else if (validCount === 4)  { strength = 80; text = 'Fort'; color = '#4ade80'; }
-                    else                       { strength = 100; text = 'Très fort'; color = '#22c55e'; }
+                    else if (validCount <= 1)   { strength = 20; text = CHPWD_I18N.veryWeak; color = '#f87171'; }
+                    else if (validCount === 2)  { strength = 40; text = CHPWD_I18N.weak; color = '#fb923c'; }
+                    else if (validCount === 3)  { strength = 60; text = CHPWD_I18N.medium; color = '#facc15'; }
+                    else if (validCount === 4)  { strength = 80; text = CHPWD_I18N.strong; color = '#4ade80'; }
+                    else                       { strength = 100; text = CHPWD_I18N.veryStrong; color = '#22c55e'; }
                     strengthBar.style.width           = strength + '%';
                     strengthBar.style.backgroundColor = color;
                     strengthText.textContent          = text;
@@ -425,7 +434,7 @@
             form.addEventListener('submit', function () {
                 submitBtn.classList.add('btn-loading');
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Modification en cours...';
+                submitBtn.textContent = CHPWD_I18N.loading;
             });
         }
     </script>

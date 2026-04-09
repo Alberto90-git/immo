@@ -3,23 +3,23 @@
 @section('content')
 
 @section('title')
-  <title>Mon Profil</title>
+  <title>{{ __('pages.profile_title') }}</title>
 @endsection
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Paramètres /</span> Mon Profil</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('pages.profile_breadcrumb') }}</span> {{ __('pages.profile_title') }}</h4>
 
     <div class="row">
       <div class="col-md-12">
         <ul class="nav nav-pills flex-column flex-md-row mb-3" id="profileTabs">
           <li class="nav-item">
             <a class="nav-link active" id="tab-account" href="javascript:void(0);" onclick="showTab('account')">
-              <i class="bx bx-user me-1"></i> Informations personnelles
+              <i class="bx bx-user me-1"></i> {{ __('pages.profile_tab_info') }}
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="tab-password" href="javascript:void(0);" onclick="showTab('password')">
-              <i class="bx bx-lock-alt me-1"></i> Mot de passe
+              <i class="bx bx-lock-alt me-1"></i> {{ __('pages.profile_tab_password') }}
             </a>
           </li>
         </ul>
@@ -27,7 +27,7 @@
         <!-- Section Informations personnelles -->
         <div id="section-account">
           <div class="card mb-4">
-            <h5 class="card-header">Informations personnelles</h5>
+            <h5 class="card-header">{{ __('pages.profile_card_info') }}</h5>
             <div class="card-body">
               <div class="d-flex align-items-start align-items-sm-center gap-4 mb-4">
                 <div class="avatar avatar-xl">
@@ -50,7 +50,7 @@
                 <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                 <div class="row">
                   <div class="mb-3 col-md-6">
-                    <label for="nom" class="form-label">Nom</label>
+                    <label for="nom" class="form-label">{{ __('pages.profile_lastname') }}</label>
                     <input
                       class="form-control"
                       type="text"
@@ -62,7 +62,7 @@
                     <div class="invalid-feedback" id="error-nom"></div>
                   </div>
                   <div class="mb-3 col-md-6">
-                    <label for="prenom" class="form-label">Prénom</label>
+                    <label for="prenom" class="form-label">{{ __('pages.profile_firstname') }}</label>
                     <input
                       class="form-control"
                       type="text"
@@ -74,7 +74,7 @@
                     <div class="invalid-feedback" id="error-prenom"></div>
                   </div>
                   <div class="mb-3 col-md-6">
-                    <label for="email" class="form-label">E-mail</label>
+                    <label for="email" class="form-label">{{ __('pages.profile_email') }}</label>
                     <input
                       class="form-control"
                       type="email"
@@ -85,10 +85,10 @@
                       disabled
                       style="background-color: #f5f5f9;"
                     />
-                    <small class="text-muted">L'adresse email ne peut pas être modifiée.</small>
+                    <small class="text-muted">{{ __('pages.profile_email_readonly') }}</small>
                   </div>
                   <div class="mb-3 col-md-6">
-                    <label for="grade" class="form-label">Fonction / Grade</label>
+                    <label for="grade" class="form-label">{{ __('pages.profile_grade') }}</label>
                     <input
                       class="form-control"
                       type="text"
@@ -103,9 +103,9 @@
                 <div class="mt-2">
                   <button type="submit" class="btn btn-primary me-2" id="btnSaveProfile">
                     <span class="spinner-border spinner-border-sm d-none" id="spinnerProfile" role="status"></span>
-                    Enregistrer
+                    {{ __('common.btn_save') }}
                   </button>
-                  <button type="reset" class="btn btn-outline-secondary">Annuler</button>
+                  <button type="reset" class="btn btn-outline-secondary">{{ __('common.btn_cancel') }}</button>
                 </div>
               </form>
             </div>
@@ -115,11 +115,11 @@
         <!-- Section Mot de passe -->
         <div id="section-password" style="display: none;">
           <div class="card mb-4">
-            <h5 class="card-header">Modifier le mot de passe</h5>
+            <h5 class="card-header">{{ __('pages.profile_card_password') }}</h5>
             <div class="card-body">
               <div class="alert alert-info mb-4">
                 <i class="bx bx-info-circle me-1"></i>
-                Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*#?&).
+                {{ __('pages.profile_pwd_rules') }}
               </div>
 
               <div id="passwordAlertSuccess" class="alert alert-success d-none" role="alert"></div>
@@ -129,7 +129,7 @@
                 @csrf
                 <div class="row">
                   <div class="mb-3 col-md-6">
-                    <label for="Ancien_mot_de_passe" class="form-label">Ancien mot de passe</label>
+                    <label for="Ancien_mot_de_passe" class="form-label">{{ __('pages.profile_old_pwd') }}</label>
                     <div class="input-group">
                       <input
                         class="form-control"
@@ -147,7 +147,7 @@
                 </div>
                 <div class="row">
                   <div class="mb-3 col-md-6">
-                    <label for="Nouveau_mot_de_passe" class="form-label">Nouveau mot de passe</label>
+                    <label for="Nouveau_mot_de_passe" class="form-label">{{ __('pages.profile_new_pwd') }}</label>
                     <div class="input-group">
                       <input
                         class="form-control"
@@ -163,7 +163,7 @@
                     <div class="invalid-feedback" id="error-Nouveau_mot_de_passe"></div>
                   </div>
                   <div class="mb-3 col-md-6">
-                    <label for="Confirmer_mot_de_passe" class="form-label">Confirmer le nouveau mot de passe</label>
+                    <label for="Confirmer_mot_de_passe" class="form-label">{{ __('pages.profile_confirm_pwd') }}</label>
                     <div class="input-group">
                       <input
                         class="form-control"
@@ -182,7 +182,7 @@
                 <div class="mt-2">
                   <button type="submit" class="btn btn-primary me-2" id="btnChangePassword">
                     <span class="spinner-border spinner-border-sm d-none" id="spinnerPassword" role="status"></span>
-                    Modifier le mot de passe
+                    {{ __('pages.profile_btn_pwd') }}
                   </button>
                 </div>
               </form>
@@ -195,6 +195,10 @@
 </div>
 
 <script>
+  var PROFILE_FIX_ERRORS   = '{{ __('pages.profile_fix_errors') }}';
+  var PROFILE_GENERIC_ERR  = '{{ __('pages.profile_generic_error') }}';
+  var PROFILE_RETRY_ERR    = '{{ __('pages.profile_retry_error') }}';
+
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -258,18 +262,18 @@
             $('#' + field).addClass('is-invalid');
             $('#error-' + field).text(errors[field][0]);
           }
-          $('#profileAlertError').removeClass('d-none').text('Veuillez corriger les erreurs.');
+          $('#profileAlertError').removeClass('d-none').text(PROFILE_FIX_ERRORS);
         } else if (data.status) {
           $('#profileAlertSuccess').removeClass('d-none').text(data.message);
           setTimeout(function() { location.reload(); }, 1500);
         } else {
-          $('#profileAlertError').removeClass('d-none').text(data.message || 'Une erreur est survenue.');
+          $('#profileAlertError').removeClass('d-none').text(data.message || PROFILE_GENERIC_ERR);
         }
       },
       error: function() {
         $('#spinnerProfile').addClass('d-none');
         $('#btnSaveProfile').prop('disabled', false);
-        $('#profileAlertError').removeClass('d-none').text('Une erreur est survenue. Veuillez réessayer.');
+        $('#profileAlertError').removeClass('d-none').text(PROFILE_RETRY_ERR);
       }
     });
   });
@@ -300,12 +304,12 @@
             $('#' + field).addClass('is-invalid');
             $('#error-' + field).text(errors[field][0]);
           }
-          $('#passwordAlertError').removeClass('d-none').text('Veuillez corriger les erreurs.');
+          $('#passwordAlertError').removeClass('d-none').text(PROFILE_FIX_ERRORS);
         } else if (data.status) {
           $('#passwordAlertSuccess').removeClass('d-none').text(data.message);
           document.getElementById('formPasswordChange').reset();
         } else {
-          $('#passwordAlertError').removeClass('d-none').text(data.message || 'Une erreur est survenue.');
+          $('#passwordAlertError').removeClass('d-none').text(data.message || PROFILE_GENERIC_ERR);
         }
       },
       error: function(xhr) {
@@ -318,9 +322,9 @@
             $('#' + field).addClass('is-invalid');
             $('#error-' + field).text(errors[field][0]);
           }
-          $('#passwordAlertError').removeClass('d-none').text('Veuillez corriger les erreurs.');
+          $('#passwordAlertError').removeClass('d-none').text(PROFILE_FIX_ERRORS);
         } else {
-          $('#passwordAlertError').removeClass('d-none').text('Une erreur est survenue. Veuillez réessayer.');
+          $('#passwordAlertError').removeClass('d-none').text(PROFILE_RETRY_ERR);
         }
       }
     });

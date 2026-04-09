@@ -335,8 +335,8 @@ class HomeController extends Controller
                 . '</tr>';
         }
 
-        if (!$vide)  $vide  = '<tr><td colspan="4" class="text-center text-muted">Aucune donnée</td></tr>';
-        if (!$vide2) $vide2 = '<tr><td colspan="5" class="text-center text-muted">Aucune donnée</td></tr>';
+        if (!$vide)  $vide  = '<tr><td colspan="4" class="text-center text-muted">' . __('messages.no_data') . '</td></tr>';
+        if (!$vide2) $vide2 = '<tr><td colspan="5" class="text-center text-muted">' . __('messages.no_data') . '</td></tr>';
 
         // Statistiques graphiques pour cette annexe
         Carbon::setLocale('fr');
@@ -441,7 +441,7 @@ class HomeController extends Controller
 
               return response()->json([
                   'status' => true,
-                  'message' => "Mise à jour effectuée avec succès",
+                  'message' => __('messages.update_success'),
               ]);
 
             }
@@ -450,7 +450,7 @@ class HomeController extends Controller
 
             return response()->json([
                     'status' => false,
-                    'message' => "Echec,essayez encore",
+                    'message' => __('messages.update_fail'),
             ]);
         }
 
@@ -492,16 +492,16 @@ class HomeController extends Controller
 
                 return response()->json([
                     'status' => true,
-                    'message' => "Mise à jour effectuée avec succès",
+                    'message' => __('messages.update_success'),
                 ]);
 
             }
-           
+
         }
         catch (QueryException $e) {
             return response()->json([
                 'status' => false,
-                'message' => "Echec,essayez encore",
+                'message' => __('messages.update_fail'),
             ]);
         }
     }
@@ -512,12 +512,14 @@ class HomeController extends Controller
         $authUser = Auth::user();
 
         // Construire la liste des users visibles selon le rôle
+        $isAdmin = ($authUser->is_admin == 1 && $authUser->type_compte != 'Particulier');
+
         $userQuery = User::whereNull('status')
                          ->where('iddirection_ref', $authUser->iddirection_ref)
                          ->select('id', 'nom', 'prenom', 'idannexe_ref');
 
         // Non-admin : restreint à sa propre agence
-        if (Gate::none(['Is_admin'])) {
+        if (!$isAdmin) {
             $userQuery->where('idannexe_ref', $authUser->idannexe_ref);
         }
 
@@ -588,7 +590,7 @@ class HomeController extends Controller
                     ->first();
 
         if (!$data) {
-            return redirect()->back()->with('error', 'Locataire introuvable');
+            return redirect()->back()->with('error', __('messages.tenant_not_found'));
         }
 
         // Récupérer les infos de l'agence
@@ -699,7 +701,7 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Erreur lors de la récupération des locataires'
+                'message' => __('messages.fetch_tenants_error')
             ]);
         }
     }

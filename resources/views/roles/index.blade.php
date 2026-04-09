@@ -1,7 +1,7 @@
 @extends('layouts.template')
 
 @section('title')
-    <title>Gestion des fonctions</title>
+    <title>{{ __('pages.role_title') }}</title>
 @endsection
 
 @section('content')
@@ -13,11 +13,11 @@
     <!-- Titre de la page -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold">
-            <span class="text-muted fw-light">Accueil /</span> Gestion des fonctions / Liste des fonctions
+            <span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.role_title') }} / {{ __('pages.role_list_title') }}
         </h4>
         @can('ajouter-role')
             <a href="{{ route('roles.create') }}" class="btn btn-success rounded-pill">
-                <i class="bx bx-plus me-1"></i> Nouveau fonction
+                <i class="bx bx-plus me-1"></i> {{ __('pages.role_btn_new') }}
             </a>
         @endcan
     </div>
@@ -25,9 +25,9 @@
     <!-- Tableau des fonctions -->
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Liste des fonctions</h5>
+            <h5 class="mb-0">{{ __('pages.role_list_title') }}</h5>
             <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bx bx-refresh"></i> Actualiser
+                <i class="bx bx-refresh"></i> {{ __('common.btn_refresh') }}
             </a>
         </div>
 
@@ -35,9 +35,9 @@
             <table class="table table-hover table-bordered mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
-                        <th>Nom du fonction</th>
-                        <th class="text-center">Actions</th>
+                        <th>{{ __('pages.role_th_number') }}</th>
+                        <th>{{ __('pages.role_th_name') }}</th>
+                        <th class="text-center">{{ __('pages.role_th_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,19 +50,19 @@
                                 </td>
                                 <td class="text-center">
                                     @can('liste-role')
-                                    <a href="{{ route('roles.show', encrypt_id($role->id)) }}" class="btn btn-icon btn-outline-info me-1" title="Voir">
+                                    <a href="{{ route('roles.show', encrypt_id($role->id)) }}" class="btn btn-icon btn-outline-info me-1" title="{{ __('common.title_view') }}">
                                         <i class="bx bx-show"></i>
                                     </a>
                                     @endcan
 
                                     @can('modifier-role')
-                                    <a href="{{ route('roles.edit', encrypt_id($role->id)) }}" class="btn btn-icon btn-outline-warning me-1" title="Modifier">
+                                    <a href="{{ route('roles.edit', encrypt_id($role->id)) }}" class="btn btn-icon btn-outline-warning me-1" title="{{ __('common.title_edit') }}">
                                         <i class="bx bx-edit-alt"></i>
                                     </a>
                                     @endcan
 
                                     @can('supprimer-role')
-                                    <button type="button" class="btn btn-icon btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $role->id }}" title="Supprimer">
+                                    <button type="button" class="btn btn-icon btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $role->id }}" title="{{ __('common.title_delete') }}">
                                         <i class="bx bx-trash"></i>
                                     </button>
                                     @endcan
@@ -74,18 +74,18 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title" id="deleteModalLabel{{ $role->id }}">Confirmation de suppression</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                            <h5 class="modal-title" id="deleteModalLabel{{ $role->id }}">{{ __('pages.role_delete_title') }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('common.btn_close') }}"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Êtes-vous sûr de vouloir supprimer le fonction <strong>{{ $role->name }}</strong> ?
+                                            {{ __('pages.role_delete_msg') }} <strong>{{ $role->name }}</strong> ?
                                         </div>
                                         <div class="modal-footer">
                                             <form method="POST" action="{{ route('roles.destroy', encrypt_id($role->id)) }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.btn_cancel') }}</button>
+                                                <button type="submit" class="btn btn-danger">{{ __('common.btn_delete') }}</button>
                                             </form>
                                         </div>
                                     </div>
@@ -94,7 +94,7 @@
 
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center text-muted">Aucun fonction trouvé.</td>
+                                <td colspan="3" class="text-center text-muted">{{ __('pages.role_empty') }}</td>
                             </tr>
                         @endforelse
                     @endcan

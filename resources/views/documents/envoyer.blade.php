@@ -2,7 +2,7 @@
 
 @section('content')
 @section('title')
-    <title>Communications</title>
+    <title>{{ __('pages.env_title') }}</title>
 @endsection
 
 <style>
@@ -103,7 +103,7 @@
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Accueil /</span> Communications
+        <span class="text-muted fw-light">{{ __('common.home_breadcrumb') }} /</span> {{ __('pages.env_breadcrumb') }}
     </h4>
 
     @include('notification.display_message')
@@ -113,8 +113,8 @@
         <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
             <i class="bx bx-error-circle me-2 fs-5"></i>
             <div>
-                L'adresse email d'envoi n'est pas configurée.
-                <a href="{{ route('parametrage') }}" class="alert-link">Configurer dans Paramétrage → Communication</a>
+                {{ __('pages.env_alert_no_email') }}
+                <a href="{{ route('parametrage') }}" class="alert-link">{{ __('pages.env_alert_configure') }}</a>
             </div>
         </div>
     @endif
@@ -122,14 +122,14 @@
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between pb-0 flex-wrap gap-2">
             <div class="card-title mb-0">
-                <h5 class="m-0 me-2"><i class="bx bx-message-dots me-1"></i>Envoi de Documents</h5>
-                <small class="text-muted">Envoyez des documents aux locataires et propriétaires via Email ou WhatsApp</small>
+                <h5 class="m-0 me-2"><i class="bx bx-message-dots me-1"></i>{{ __('pages.env_section_send') }}</h5>
+                <small class="text-muted">{{ __('pages.env_section_send_sub') }}</small>
             </div>
             {{-- Barre d'action sélection multiple (cachée par défaut) --}}
             <div id="actionBar" class="d-none d-flex align-items-center gap-2">
-                <span class="text-muted small" id="selectionLabel">0 sélectionné(s)</span>
+                <span class="text-muted small" id="selectionLabel">0 {{ __('pages.env_action_selected') }}</span>
                 <button class="btn btn-primary btn-sm" id="btnEnvoyerSelection">
-                    <i class="bx bx-send me-1"></i>Envoyer la sélection (<span id="selectionCount">0</span>)
+                    <i class="bx bx-send me-1"></i>{{ __('pages.env_action_send_selection') }} (<span id="selectionCount">0</span>)
                 </button>
             </div>
         </div>
@@ -142,7 +142,7 @@
                             data-bs-toggle="tab" data-bs-target="#pane-loc"
                             type="button" role="tab">
                         <i class="bx bx-user-check"></i>
-                        Locataires
+                        {{ __('pages.env_tab_tenants') }}
                         <span class="badge ms-1">{{ $locataires->count() }}</span>
                     </button>
                 </li>
@@ -151,7 +151,7 @@
                             data-bs-toggle="tab" data-bs-target="#pane-proprio"
                             type="button" role="tab">
                         <i class="bx bx-building-house"></i>
-                        Propriétaires
+                        {{ __('pages.env_tab_owners') }}
                         <span class="badge ms-1">{{ $proprietaires->count() }}</span>
                     </button>
                 </li>
@@ -162,21 +162,21 @@
                 <div class="tab-pane fade show active" id="pane-loc">
                     <div class="mb-3">
                         <input type="text" id="searchLoc" class="form-control search-input"
-                               placeholder="Rechercher un locataire…">
+                               placeholder="{{ __('pages.env_ph_search_tenant') }}">
                     </div>
                     <div class="table-scroll-wrapper">
                         <table class="table table-hover" id="tableLoc">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width:40px;">
-                                        <input type="checkbox" id="checkAllLoc" class="form-check-input" title="Tout sélectionner">
+                                        <input type="checkbox" id="checkAllLoc" class="form-check-input" title="{{ __('pages.env_select_all') }}">
                                     </th>
-                                    <th>Nom</th>
-                                    <th>Maison / Chambre</th>
-                                    <th>Téléphone</th>
-                                    <th>Email</th>
-                                    <th>Documents disponibles</th>
-                                    <th>Action</th>
+                                    <th>{{ __('pages.env_th_name') }}</th>
+                                    <th>{{ __('pages.env_th_housing') }}</th>
+                                    <th>{{ __('pages.env_th_phone') }}</th>
+                                    <th>{{ __('pages.env_th_email') }}</th>
+                                    <th>{{ __('pages.env_th_documents') }}</th>
+                                    <th>{{ __('pages.env_th_action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -197,11 +197,11 @@
                                         <td>{{ $loc->telephone }}</td>
                                         <td>{{ $loc->email ?? '—' }}</td>
                                         <td>
-                                            <span class="badge bg-label-primary me-1">Contrat</span>
-                                            <span class="badge bg-label-info me-1">Caution</span>
+                                            <span class="badge bg-label-primary me-1">{{ __('pages.env_badge_contract') }}</span>
+                                            <span class="badge bg-label-info me-1">{{ __('pages.env_badge_deposit') }}</span>
                                             @if(isset($facturesParLocataire[$loc->id]) && $facturesParLocataire[$loc->id]->isNotEmpty())
                                                 <span class="badge bg-label-success">
-                                                    {{ $facturesParLocataire[$loc->id]->count() }} quittance(s)
+                                                    {{ $facturesParLocataire[$loc->id]->count() }} {{ __('pages.env_badge_receipts') }}
                                                 </span>
                                             @endif
                                         </td>
@@ -213,12 +213,12 @@
                                                     data-tel="{{ $loc->telephone ?? '' }}"
                                                     data-email="{{ $loc->email ?? '' }}"
                                                     data-factures='@json($facturesParLocataire[$loc->id] ?? [])'>
-                                                <i class="bx bx-send me-1"></i>Envoyer
+                                                <i class="bx bx-send me-1"></i>{{ __('pages.env_btn_send') }}
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="7" class="text-center text-muted">Aucun locataire actif trouvé.</td></tr>
+                                    <tr><td colspan="7" class="text-center text-muted">{{ __('pages.env_empty_no_tenants') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -229,20 +229,20 @@
                 <div class="tab-pane fade" id="pane-proprio">
                     <div class="mb-3">
                         <input type="text" id="searchProprio" class="form-control search-input"
-                               placeholder="Rechercher un propriétaire…">
+                               placeholder="{{ __('pages.env_ph_search_owner') }}">
                     </div>
                     <div class="table-scroll-wrapper">
                         <table class="table table-hover" id="tableProprio">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width:40px;">
-                                        <input type="checkbox" id="checkAllProprio" class="form-check-input" title="Tout sélectionner">
+                                        <input type="checkbox" id="checkAllProprio" class="form-check-input" title="{{ __('pages.env_select_all') }}">
                                     </th>
-                                    <th>Nom</th>
-                                    <th>Téléphone</th>
-                                    <th>Email</th>
-                                    <th>Documents disponibles</th>
-                                    <th>Action</th>
+                                    <th>{{ __('pages.env_th_name') }}</th>
+                                    <th>{{ __('pages.env_th_phone') }}</th>
+                                    <th>{{ __('pages.env_th_email') }}</th>
+                                    <th>{{ __('pages.env_th_documents') }}</th>
+                                    <th>{{ __('pages.env_th_action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -262,8 +262,8 @@
                                         <td>{{ $proprio->telephone }}</td>
                                         <td>{{ $proprio->email ?? '—' }}</td>
                                         <td>
-                                            <span class="badge bg-label-warning me-1">Relevé propriétaire</span>
-                                            <span class="badge bg-label-secondary">Relevé agence</span>
+                                            <span class="badge bg-label-warning me-1">{{ __('pages.env_badge_owner_stmt') }}</span>
+                                            <span class="badge bg-label-secondary">{{ __('pages.env_badge_agency_stmt') }}</span>
                                         </td>
                                         <td>
                                             <button class="btn btn-sm btn-success btn-envoyer"
@@ -273,12 +273,12 @@
                                                     data-tel="{{ $proprio->telephone ?? '' }}"
                                                     data-email="{{ $proprio->email ?? '' }}"
                                                     data-factures='[]'>
-                                                <i class="bx bx-send me-1"></i>Envoyer
+                                                <i class="bx bx-send me-1"></i>{{ __('pages.env_btn_send') }}
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="6" class="text-center text-muted">Aucun propriétaire trouvé.</td></tr>
+                                    <tr><td colspan="6" class="text-center text-muted">{{ __('pages.env_empty_no_owners') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -292,16 +292,16 @@
     <div class="card mt-4">
         <div class="card-header d-flex align-items-center justify-content-between pb-0 flex-wrap gap-2">
             <div class="card-title mb-0">
-                <h5 class="m-0 me-2"><i class="bx bx-bell me-1"></i>Notifications Locataires</h5>
-                <small class="text-muted">Envoyez des rappels de loyer et des préavis de fin de bail</small>
+                <h5 class="m-0 me-2"><i class="bx bx-bell me-1"></i>{{ __('pages.env_section_notif') }}</h5>
+                <small class="text-muted">{{ __('pages.env_section_notif_sub') }}</small>
             </div>
             <div id="actionBarNotif" class="d-none d-flex align-items-center gap-2">
-                <span class="text-muted small" id="selectionLabelNotif">0 sélectionné(s)</span>
+                <span class="text-muted small" id="selectionLabelNotif">0 {{ __('pages.env_action_selected') }}</span>
                 <button class="btn btn-warning btn-sm" id="btnEnvoyerRappelSelection">
-                    <i class="bx bx-alarm me-1"></i>Rappel loyer (<span id="selectionCountNotif">0</span>)
+                    <i class="bx bx-alarm me-1"></i>{{ __('pages.env_notif_action_reminder') }} (<span id="selectionCountNotif">0</span>)
                 </button>
                 <button class="btn btn-danger btn-sm" id="btnEnvoyerPreavisSelection">
-                    <i class="bx bx-calendar-x me-1"></i>Préavis (<span id="selectionCountNotif2">0</span>)
+                    <i class="bx bx-calendar-x me-1"></i>{{ __('pages.env_notif_action_notice') }} (<span id="selectionCountNotif2">0</span>)
                 </button>
             </div>
         </div>
@@ -315,7 +315,7 @@
                             data-bs-toggle="tab" data-bs-target="#pane-rappel"
                             type="button" role="tab"
                             style="border:none;border-radius:9px;font-weight:500;padding:8px 20px;transition:all .22s ease;">
-                        <i class="bx bx-alarm me-1"></i>Rappel de loyer
+                        <i class="bx bx-alarm me-1"></i>{{ __('pages.env_notif_tab_reminder') }}
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -323,7 +323,7 @@
                             data-bs-toggle="tab" data-bs-target="#pane-preavis"
                             type="button" role="tab"
                             style="border:none;border-radius:9px;font-weight:500;padding:8px 20px;transition:all .22s ease;">
-                        <i class="bx bx-calendar-x me-1"></i>Préavis de fin de bail
+                        <i class="bx bx-calendar-x me-1"></i>{{ __('pages.env_notif_tab_notice') }}
                     </button>
                 </li>
             </ul>
@@ -362,21 +362,21 @@
                 <div class="tab-pane fade show active" id="pane-rappel">
                     <div class="mb-3">
                         <input type="text" id="searchRappel" class="form-control search-input"
-                               placeholder="Rechercher un locataire…">
+                               placeholder="{{ __('pages.env_ph_search_tenant') }}">
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover" id="tableRappel">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width:40px;">
-                                        <input type="checkbox" id="checkAllRappel" class="form-check-input" title="Tout sélectionner">
+                                        <input type="checkbox" id="checkAllRappel" class="form-check-input" title="{{ __('pages.env_select_all') }}">
                                     </th>
-                                    <th>Nom</th>
-                                    <th>Logement</th>
-                                    <th>Loyer/mois</th>
-                                    <th>Téléphone</th>
-                                    <th>Email</th>
-                                    <th>Action</th>
+                                    <th>{{ __('pages.env_th_name') }}</th>
+                                    <th>{{ __('pages.env_th_housing_short') }}</th>
+                                    <th>{{ __('pages.env_th_monthly_rent') }}</th>
+                                    <th>{{ __('pages.env_th_phone') }}</th>
+                                    <th>{{ __('pages.env_th_email') }}</th>
+                                    <th>{{ __('pages.env_th_action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -409,12 +409,12 @@
                                                     data-email="{{ $loc->email ?? '' }}"
                                                     data-prix="{{ $loc->prix_mois ?? 0 }}"
                                                     data-logement="{{ $loc->nom_maison }} / {{ $loc->type_chambre }} N°{{ $loc->numero_chambre }}">
-                                                <i class="bx bx-alarm me-1"></i>Rappel
+                                                <i class="bx bx-alarm me-1"></i>{{ __('pages.env_btn_reminder') }}
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="7" class="text-center text-muted">Aucun locataire actif trouvé.</td></tr>
+                                    <tr><td colspan="7" class="text-center text-muted">{{ __('pages.env_empty_no_tenants') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -425,21 +425,21 @@
                 <div class="tab-pane fade" id="pane-preavis">
                     <div class="mb-3">
                         <input type="text" id="searchPreavis" class="form-control search-input"
-                               placeholder="Rechercher un locataire…">
+                               placeholder="{{ __('pages.env_ph_search_tenant') }}">
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover" id="tablePreavis">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width:40px;">
-                                        <input type="checkbox" id="checkAllPreavis" class="form-check-input" title="Tout sélectionner">
+                                        <input type="checkbox" id="checkAllPreavis" class="form-check-input" title="{{ __('pages.env_select_all') }}">
                                     </th>
-                                    <th>Nom</th>
-                                    <th>Logement</th>
-                                    <th>Entrée le</th>
-                                    <th>Téléphone</th>
-                                    <th>Email</th>
-                                    <th>Action</th>
+                                    <th>{{ __('pages.env_th_name') }}</th>
+                                    <th>{{ __('pages.env_th_housing_short') }}</th>
+                                    <th>{{ __('pages.env_th_entry_date') }}</th>
+                                    <th>{{ __('pages.env_th_phone') }}</th>
+                                    <th>{{ __('pages.env_th_email') }}</th>
+                                    <th>{{ __('pages.env_th_action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -468,12 +468,12 @@
                                                     data-email="{{ $loc->email ?? '' }}"
                                                     data-prix="{{ $loc->prix_mois ?? 0 }}"
                                                     data-logement="{{ $loc->nom_maison }} / {{ $loc->type_chambre }} N°{{ $loc->numero_chambre }}">
-                                                <i class="bx bx-calendar-x me-1"></i>Préavis
+                                                <i class="bx bx-calendar-x me-1"></i>{{ __('pages.env_btn_notice') }}
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="7" class="text-center text-muted">Aucun locataire actif trouvé.</td></tr>
+                                    <tr><td colspan="7" class="text-center text-muted">{{ __('pages.env_empty_no_tenants') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -487,10 +487,10 @@
     <div class="card mt-4">
         <div class="card-header">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <h5 class="mb-0"><i class="bx bx-history me-1"></i>Historique des envois récents</h5>
+                <h5 class="mb-0"><i class="bx bx-history me-1"></i>{{ __('pages.env_section_history') }}</h5>
                 <div class="d-flex align-items-center gap-2">
                     <span class="text-muted small" id="histoInfoCount"></span>
-                    <button class="btn btn-sm btn-outline-secondary" id="btnRefreshHistorique" title="Actualiser">
+                    <button class="btn btn-sm btn-outline-secondary" id="btnRefreshHistorique" title="{{ __('pages.env_btn_refresh') }}">
                         <i class="bx bx-refresh"></i>
                     </button>
                 </div>
@@ -499,38 +499,38 @@
             <div class="row g-2">
                 <div class="col-12 col-md-4">
                     <input type="text" id="histoFiltreNom" class="form-control form-control-sm"
-                           placeholder="Rechercher par nom ou contact…">
+                           placeholder="{{ __('pages.env_ph_search_history') }}">
                 </div>
                 <div class="col-6 col-md-2">
                     <select id="histoFiltreDoc" class="form-select form-select-sm">
-                        <option value="">Tous documents</option>
-                        <option value="contrat">Contrat</option>
-                        <option value="quittance_mensuelle">Quittance mensuelle</option>
-                        <option value="quittance_caution">Quittance caution</option>
-                        <option value="releve_proprietaire">Relevé propriétaire</option>
-                        <option value="releve_agence">Relevé agence</option>
-                        <option value="rappel_loyer">Rappel de loyer</option>
-                        <option value="preavis">Préavis</option>
+                        <option value="">{{ __('pages.env_filter_all_docs') }}</option>
+                        <option value="contrat">{{ __('pages.env_filter_contract') }}</option>
+                        <option value="quittance_mensuelle">{{ __('pages.env_filter_monthly') }}</option>
+                        <option value="quittance_caution">{{ __('pages.env_filter_deposit') }}</option>
+                        <option value="releve_proprietaire">{{ __('pages.env_filter_owner_stmt') }}</option>
+                        <option value="releve_agence">{{ __('pages.env_filter_agency_stmt') }}</option>
+                        <option value="rappel_loyer">{{ __('pages.env_filter_reminder') }}</option>
+                        <option value="preavis">{{ __('pages.env_filter_notice') }}</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
                     <select id="histoFiltreMethode" class="form-select form-select-sm">
-                        <option value="">Toutes méthodes</option>
-                        <option value="email">Email</option>
-                        <option value="whatsapp">WhatsApp</option>
-                        <option value="sms">SMS</option>
+                        <option value="">{{ __('pages.env_filter_all_methods') }}</option>
+                        <option value="email">{{ __('pages.env_method_email') }}</option>
+                        <option value="whatsapp">{{ __('pages.env_method_whatsapp') }}</option>
+                        <option value="sms">{{ __('pages.env_method_sms') }}</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
                     <select id="histoFiltreStatut" class="form-select form-select-sm">
-                        <option value="">Tous statuts</option>
-                        <option value="success">Succès</option>
-                        <option value="error">Échec</option>
+                        <option value="">{{ __('pages.env_filter_all_statuses') }}</option>
+                        <option value="success">{{ __('pages.env_filter_success') }}</option>
+                        <option value="error">{{ __('pages.env_filter_failure') }}</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
                     <button class="btn btn-sm btn-outline-secondary w-100" id="histoBtnReset">
-                        <i class="bx bx-x me-1"></i>Réinitialiser
+                        <i class="bx bx-x me-1"></i>{{ __('pages.env_btn_reset') }}
                     </button>
                 </div>
             </div>
@@ -540,16 +540,16 @@
                 <table class="table table-sm mb-0" id="tableHistorique">
                     <thead class="table-light">
                         <tr>
-                            <th>Date</th>
-                            <th>Destinataire</th>
-                            <th>Document</th>
-                            <th>Méthode</th>
-                            <th>Contact</th>
-                            <th>Statut</th>
+                            <th>{{ __('pages.env_th_date') }}</th>
+                            <th>{{ __('pages.env_th_recipient') }}</th>
+                            <th>{{ __('pages.env_th_document') }}</th>
+                            <th>{{ __('pages.env_th_method') }}</th>
+                            <th>{{ __('pages.env_th_contact') }}</th>
+                            <th>{{ __('pages.env_th_status') }}</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyHistorique">
-                        <tr><td colspan="6" class="text-center text-muted py-3">Chargement…</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-3">{{ __('pages.env_loading') }}</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -568,21 +568,21 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bx bx-send me-1"></i>Envoyer des documents</h5>
+                <h5 class="modal-title"><i class="bx bx-send me-1"></i>{{ __('pages.env_modal_send_title') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
 
                 {{-- Section 1 — Méthode d'envoi --}}
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Méthode d'envoi</label>
+                    <label class="form-label fw-semibold">{{ __('pages.env_label_send_method') }}</label>
                     <div class="d-flex gap-3">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="methode_envoi"
                                    id="methodeEmail" value="email"
                                    {{ (!$parametre || !$parametre->email_envoi) ? 'disabled' : '' }} checked>
                             <label class="form-check-label" for="methodeEmail">
-                                <i class="bx bx-envelope me-1"></i>Email
+                                <i class="bx bx-envelope me-1"></i>{{ __('pages.env_method_email') }}
                             </label>
                         </div>
                         <div class="form-check">
@@ -590,19 +590,19 @@
                                    id="methodeWhatsApp" value="whatsapp"
                                    {{ $waConnecte ? '' : 'disabled' }}>
                             <label class="form-check-label" for="methodeWhatsApp">
-                                <i class="bx bxl-whatsapp me-1 text-success"></i>WhatsApp
-                                <span id="wa-envoi-badge" class="badge ms-1 {{ $waConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $waConnecte ? 'Configuré' : 'Non configuré' }}</span>
+                                <i class="bx bxl-whatsapp me-1 text-success"></i>{{ __('pages.env_method_whatsapp') }}
+                                <span id="wa-envoi-badge" class="badge ms-1 {{ $waConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $waConnecte ? __('pages.env_configured') : __('pages.env_not_configured') }}</span>
                             </label>
                         </div>
                     </div>
                     {{-- Info expéditeur --}}
                     <div id="infoExpediteurEmail" class="mt-2" style="font-size:.85rem;">
                         <i class="bx bx-envelope text-primary me-1"></i>
-                        Expéditeur : <strong>{{ $parametre?->email_envoi ?: 'Non configuré (voir Paramétrage)' }}</strong>
+                        {{ __('pages.env_sender_prefix') }} <strong>{{ $parametre?->email_envoi ?: __('pages.env_sender_not_configured') }}</strong>
                     </div>
                     <div id="infoExpediteurWA" class="mt-2 d-none" style="font-size:.85rem;">
                         <i class="bx bxl-whatsapp text-success me-1"></i>
-                        Expéditeur AT : <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: 'Non configuré (voir Paramétrage)') }}</strong>
+                        {{ __('pages.env_sender_at_prefix') }} <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: __('pages.env_sender_not_configured')) }}</strong>
                     </div>
 
                     {{-- Paiement requis pour WhatsApp (envoi documents) --}}
@@ -610,22 +610,22 @@
                         <div class="card border-warning">
                             <div class="card-body py-3">
                                 <h6 class="fw-bold text-warning mb-3">
-                                    <i class="bx bx-credit-card me-1"></i>Paiement requis (pay-per-use)
+                                    <i class="bx bx-credit-card me-1"></i>{{ __('pages.env_payment_title') }}
                                 </h6>
                                 <div class="row g-2 align-items-end">
                                     <div class="col-md-5">
-                                        <label class="form-label small fw-semibold">Pays des destinataires</label>
+                                        <label class="form-label small fw-semibold">{{ __('pages.env_payment_country') }}</label>
                                         <select class="form-select form-select-sm" id="paymentCountryDoc">
                                             <option value="BJ">Bénin</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Destinataires</label>
+                                        <label class="form-label small fw-semibold">{{ __('pages.env_payment_recipients') }}</label>
                                         <input type="text" class="form-control form-control-sm" id="paymentRecipientCountDoc" readonly value="0">
                                     </div>
                                     <div class="col-md-4">
                                         <button type="button" class="btn btn-outline-warning btn-sm w-100" id="btnCalculateCostDoc">
-                                            <i class="bx bx-calculator me-1"></i>Calculer le coût
+                                            <i class="bx bx-calculator me-1"></i>{{ __('pages.env_btn_calculate') }}
                                         </button>
                                     </div>
                                 </div>
@@ -634,10 +634,10 @@
                                         <strong id="costDisplayDoc"></strong>
                                     </div>
                                     <button type="button" class="btn btn-warning btn-sm" id="btnPayNowDoc">
-                                        <i class="bx bx-wallet me-1"></i>Payer maintenant
+                                        <i class="bx bx-wallet me-1"></i>{{ __('pages.env_btn_pay') }}
                                     </button>
                                     <span id="paymentSuccessDoc" class="d-none ms-2 text-success fw-bold">
-                                        <i class="bx bx-check-circle me-1"></i>Paiement effectué
+                                        <i class="bx bx-check-circle me-1"></i>{{ __('pages.env_payment_done') }}
                                     </span>
                                 </div>
                                 <input type="hidden" id="paymentTransactionIdDoc" value="">
@@ -651,29 +651,29 @@
 
                 {{-- Section 2 — Documents à envoyer --}}
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Documents à envoyer</label>
+                    <label class="form-label fw-semibold">{{ __('pages.env_label_docs_to_send') }}</label>
                     <div id="blocDocsLocataire">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input check-doc" type="checkbox" id="docContrat" value="contrat">
-                            <label class="form-check-label" for="docContrat">Contrat de location</label>
+                            <label class="form-check-label" for="docContrat">{{ __('pages.env_doc_contract') }}</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input check-doc" type="checkbox" id="docCaution" value="quittance_caution">
-                            <label class="form-check-label" for="docCaution">Quittance de caution</label>
+                            <label class="form-check-label" for="docCaution">{{ __('pages.env_doc_deposit') }}</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input check-doc" type="checkbox" id="docMensuelle" value="quittance_mensuelle">
-                            <label class="form-check-label" for="docMensuelle">Quittance mensuelle</label>
+                            <label class="form-check-label" for="docMensuelle">{{ __('pages.env_doc_monthly') }}</label>
                         </div>
                     </div>
                     <div id="blocDocsProprio" class="d-none">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input check-doc" type="checkbox" id="docReleveP" value="releve_proprietaire">
-                            <label class="form-check-label" for="docReleveP">Relevé propriétaire</label>
+                            <label class="form-check-label" for="docReleveP">{{ __('pages.env_doc_owner_stmt') }}</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input check-doc" type="checkbox" id="docReleveA" value="releve_agence">
-                            <label class="form-check-label" for="docReleveA">Relevé agence</label>
+                            <label class="form-check-label" for="docReleveA">{{ __('pages.env_doc_agency_stmt') }}</label>
                         </div>
                     </div>
 
@@ -681,15 +681,15 @@
                     <div id="blocReleve" class="mt-3 d-none p-3 rounded" style="background:rgba(255,193,7,.07);border:1px solid rgba(255,193,7,.3);">
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small" for="dateDebut">Date début</label>
+                                <label class="form-label fw-semibold small" for="dateDebut">{{ __('pages.env_label_start_date') }}</label>
                                 <input type="date" class="form-control form-control-sm" id="dateDebut">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small" for="dateFin">Date fin</label>
+                                <label class="form-label fw-semibold small" for="dateFin">{{ __('pages.env_label_end_date') }}</label>
                                 <input type="date" class="form-control form-control-sm" id="dateFin">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small" for="pourcentage">Pourcentage (%)</label>
+                                <label class="form-label fw-semibold small" for="pourcentage">{{ __('pages.env_label_pct') }}</label>
                                 <input type="number" class="form-control form-control-sm" id="pourcentage"
                                        value="10" min="0" max="100" step="0.5">
                             </div>
@@ -701,9 +701,9 @@
 
                 {{-- Section 3 — Destinataires sélectionnés --}}
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Destinataires sélectionnés</label>
+                    <label class="form-label fw-semibold">{{ __('pages.env_label_recipients') }}</label>
                     <div id="listeDestinataires" class="border rounded p-2">
-                        <p class="text-muted text-center small mb-0">Aucun destinataire sélectionné</p>
+                        <p class="text-muted text-center small mb-0">{{ __('pages.env_no_recipient') }}</p>
                     </div>
                 </div>
 
@@ -711,16 +711,16 @@
 
                 {{-- Section 4 — Message personnalisé --}}
                 <div class="mb-2">
-                    <label class="form-label fw-semibold" for="messagePerso">Message personnalisé <small class="text-muted fw-normal">(optionnel)</small></label>
+                    <label class="form-label fw-semibold" for="messagePerso">{{ __('pages.env_label_custom_msg') }} <small class="text-muted fw-normal">{{ __('pages.env_optional') }}</small></label>
                     <textarea class="form-control" id="messagePerso" rows="2" maxlength="1000"
-                              placeholder="Ajoutez un message personnalisé…"></textarea>
+                              placeholder="{{ __('pages.env_ph_custom_msg') }}"></textarea>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.env_btn_cancel') }}</button>
                 <button type="button" class="btn btn-primary" id="btnSubmitEnvoi">
-                    <i class="bx bx-send me-1"></i>Envoyer
+                    <i class="bx bx-send me-1"></i>{{ __('pages.env_btn_submit_send') }}
                 </button>
             </div>
         </div>
@@ -732,21 +732,21 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header" id="notifModalHeader">
-                <h5 class="modal-title" id="notifModalTitle"><i class="bx bx-bell me-1"></i>Notification</h5>
+                <h5 class="modal-title" id="notifModalTitle"><i class="bx bx-bell me-1"></i>{{ __('pages.env_modal_notif_title') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
 
                 {{-- Méthode d'envoi --}}
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Méthode d'envoi</label>
+                    <label class="form-label fw-semibold">{{ __('pages.env_label_send_method') }}</label>
                     <div class="d-flex gap-3">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="notif_methode_envoi"
                                    id="notifMethodeEmail" value="email"
                                    {{ (!$parametre || !$parametre->email_envoi) ? 'disabled' : '' }} checked>
                             <label class="form-check-label" for="notifMethodeEmail">
-                                <i class="bx bx-envelope me-1"></i>Email
+                                <i class="bx bx-envelope me-1"></i>{{ __('pages.env_method_email') }}
                             </label>
                         </div>
                         <div class="form-check">
@@ -754,8 +754,8 @@
                                    id="notifMethodeWhatsApp" value="whatsapp"
                                    {{ $waConnecte ? '' : 'disabled' }}>
                             <label class="form-check-label" for="notifMethodeWhatsApp">
-                                <i class="bx bxl-whatsapp me-1 text-success"></i>WhatsApp
-                                <span id="wa-notif-badge" class="badge ms-1 {{ $waConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $waConnecte ? 'Configuré' : 'Non configuré' }}</span>
+                                <i class="bx bxl-whatsapp me-1 text-success"></i>{{ __('pages.env_method_whatsapp') }}
+                                <span id="wa-notif-badge" class="badge ms-1 {{ $waConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $waConnecte ? __('pages.env_configured') : __('pages.env_not_configured') }}</span>
                             </label>
                         </div>
                         <div class="form-check">
@@ -763,22 +763,22 @@
                                    id="notifMethodeSMS" value="sms"
                                    {{ $atConnecte ? '' : 'disabled' }}>
                             <label class="form-check-label" for="notifMethodeSMS">
-                                <i class="bx bx-message-detail me-1 text-warning"></i>SMS
-                                <span id="sms-notif-badge" class="badge ms-1 {{ $atConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $atConnecte ? 'Configuré' : 'Non configuré' }}</span>
+                                <i class="bx bx-message-detail me-1 text-warning"></i>{{ __('pages.env_method_sms') }}
+                                <span id="sms-notif-badge" class="badge ms-1 {{ $atConnecte ? 'bg-success' : 'bg-danger' }}" style="font-size:.7rem;">{{ $atConnecte ? __('pages.env_configured') : __('pages.env_not_configured') }}</span>
                             </label>
                         </div>
                     </div>
                     <div id="notifInfoEmail" class="mt-2" style="font-size:.85rem;">
                         <i class="bx bx-envelope text-primary me-1"></i>
-                        Expéditeur : <strong>{{ $parametre?->email_envoi ?: 'Non configuré (voir Paramétrage)' }}</strong>
+                        {{ __('pages.env_sender_prefix') }} <strong>{{ $parametre?->email_envoi ?: __('pages.env_sender_not_configured') }}</strong>
                     </div>
                     <div id="notifInfoWA" class="mt-2 d-none" style="font-size:.85rem;">
                         <i class="bx bxl-whatsapp text-success me-1"></i>
-                        Expéditeur AT : <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: 'Non configuré (voir Paramétrage)') }}</strong>
+                        {{ __('pages.env_sender_at_prefix') }} <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: __('pages.env_sender_not_configured')) }}</strong>
                     </div>
                     <div id="notifInfoSMS" class="mt-2 d-none" style="font-size:.85rem;">
                         <i class="bx bx-message-detail text-warning me-1"></i>
-                        Sender ID : <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: 'Non configuré (voir Paramétrage)') }}</strong>
+                        {{ __('pages.env_sender_id_prefix') }} <strong>{{ $parametre?->at_sender_id ?: ($parametre?->at_username ?: __('pages.env_sender_not_configured')) }}</strong>
                     </div>
 
                     {{-- Paiement requis pour SMS/WhatsApp (notifications) --}}
@@ -786,22 +786,22 @@
                         <div class="card border-warning">
                             <div class="card-body py-3">
                                 <h6 class="fw-bold text-warning mb-3">
-                                    <i class="bx bx-credit-card me-1"></i>Paiement requis (pay-per-use)
+                                    <i class="bx bx-credit-card me-1"></i>{{ __('pages.env_payment_title') }}
                                 </h6>
                                 <div class="row g-2 align-items-end">
                                     <div class="col-md-5">
-                                        <label class="form-label small fw-semibold">Pays des destinataires</label>
+                                        <label class="form-label small fw-semibold">{{ __('pages.env_payment_country') }}</label>
                                         <select class="form-select form-select-sm" id="paymentCountryNotif">
                                             <option value="BJ">Bénin</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Destinataires</label>
+                                        <label class="form-label small fw-semibold">{{ __('pages.env_payment_recipients') }}</label>
                                         <input type="text" class="form-control form-control-sm" id="paymentRecipientCountNotif" readonly value="0">
                                     </div>
                                     <div class="col-md-4">
                                         <button type="button" class="btn btn-outline-warning btn-sm w-100" id="btnCalculateCostNotif">
-                                            <i class="bx bx-calculator me-1"></i>Calculer le coût
+                                            <i class="bx bx-calculator me-1"></i>{{ __('pages.env_btn_calculate') }}
                                         </button>
                                     </div>
                                 </div>
@@ -810,10 +810,10 @@
                                         <strong id="costDisplayNotif"></strong>
                                     </div>
                                     <button type="button" class="btn btn-warning btn-sm" id="btnPayNowNotif">
-                                        <i class="bx bx-wallet me-1"></i>Payer maintenant
+                                        <i class="bx bx-wallet me-1"></i>{{ __('pages.env_btn_pay') }}
                                     </button>
                                     <span id="paymentSuccessNotif" class="d-none ms-2 text-success fw-bold">
-                                        <i class="bx bx-check-circle me-1"></i>Paiement effectué
+                                        <i class="bx bx-check-circle me-1"></i>{{ __('pages.env_payment_done') }}
                                     </span>
                                 </div>
                                 <input type="hidden" id="paymentTransactionIdNotif" value="">
@@ -828,19 +828,19 @@
                 {{-- Champ date fin de bail (Préavis uniquement) --}}
                 <div id="blocDateFinBail" class="mb-4 d-none">
                     <label class="form-label fw-semibold" for="dateFinBail">
-                        <i class="bx bx-calendar-x text-danger me-1"></i>Date de fin de bail <span class="text-danger">*</span>
+                        <i class="bx bx-calendar-x text-danger me-1"></i>{{ __('pages.env_label_lease_end_date') }} <span class="text-danger">*</span>
                     </label>
                     <input type="date" class="form-control" id="dateFinBail" style="max-width:240px;">
-                    <div class="form-text">Date à laquelle le locataire devra libérer le logement.</div>
+                    <div class="form-text">{{ __('pages.env_hint_lease_end_date') }}</div>
                 </div>
 
                 <hr class="my-3 d-none" id="hrDateFin">
 
                 {{-- Destinataires --}}
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Destinataires sélectionnés</label>
+                    <label class="form-label fw-semibold">{{ __('pages.env_label_recipients') }}</label>
                     <div id="listeDestinatairesNotif" class="border rounded p-2" style="max-height:280px;overflow-y:auto;">
-                        <p class="text-muted text-center small mb-0">Aucun destinataire sélectionné</p>
+                        <p class="text-muted text-center small mb-0">{{ __('pages.env_no_recipient') }}</p>
                     </div>
                 </div>
 
@@ -849,17 +849,17 @@
                 {{-- Message personnalisé --}}
                 <div class="mb-2">
                     <label class="form-label fw-semibold" for="notifMessagePerso">
-                        Message complémentaire <small class="text-muted fw-normal">(optionnel)</small>
+                        {{ __('pages.env_label_add_msg') }} <small class="text-muted fw-normal">{{ __('pages.env_optional') }}</small>
                     </label>
                     <textarea class="form-control" id="notifMessagePerso" rows="3" maxlength="2000"
-                              placeholder="Ajoutez des informations supplémentaires…"></textarea>
+                              placeholder="{{ __('pages.env_ph_add_msg') }}"></textarea>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.env_btn_cancel') }}</button>
                 <button type="button" class="btn btn-warning" id="btnSubmitNotif">
-                    <i class="bx bx-send me-1"></i>Envoyer la notification
+                    <i class="bx bx-send me-1"></i>{{ __('pages.env_btn_send_notif') }}
                 </button>
             </div>
         </div>
@@ -878,6 +878,59 @@
     const ROUTE_ENVOYER    = '{{ route("envoi_document.envoyer") }}';
     const ROUTE_HISTORIQUE = '{{ route("envoi_document.historique") }}';
 
+    var ENV_I18N = {
+        selected:         '{{ __('pages.env_action_selected') }}',
+        noRecipient:      '{{ __('pages.env_js_no_recipient') }}',
+        emailRequired:    '{{ __('pages.env_js_email_required') }}',
+        monthsLabel:      '{{ __('pages.env_js_months_label') }}',
+        noInvoice:        '{{ __('pages.env_js_no_invoice') }}',
+        warning:          '{{ __('pages.env_js_warning') }}',
+        selectRecipients: '{{ __('pages.env_js_select_recipients') }}',
+        error:            '{{ __('pages.env_js_error') }}',
+        btnOpening:       '<span class="spinner-border spinner-border-sm me-1"></span>{{ __('pages.env_js_btn_opening') }}',
+        noProvider:       '{{ __('pages.env_js_no_provider') }}',
+        btnPay:           '<i class="bx bx-wallet me-1"></i>{{ __('pages.env_js_btn_pay') }}',
+        kkiapayError:     '{{ __('pages.env_js_kkiapay_error') }}',
+        paymentFailed:    '{{ __('pages.env_js_payment_failed') }}',
+        kkiapayFailed:    '{{ __('pages.env_js_kkiapay_failed') }}',
+        waDesc:           '{{ __('pages.env_js_wa_desc') }}',
+        fedapayFailed:    '{{ __('pages.env_js_fedapay_failed') }}',
+        chooseMethod:     '{{ __('pages.env_js_choose_method') }}',
+        selectDoc:        '{{ __('pages.env_js_select_doc') }}',
+        noRecipientDot:   '{{ __('pages.env_js_no_recipient_dot') }}',
+        paymentRequired:  '{{ __('pages.env_js_payment_required') }}',
+        paymentReqWa:     '{{ __('pages.env_js_payment_req_wa') }}',
+        btnSending:       '<span class="spinner-border spinner-border-sm me-1"></span>{{ __('pages.env_js_btn_sending') }}',
+        result:           '{{ __('pages.env_js_result') }}',
+        ok:               '{{ __('pages.env_js_ok') }}',
+        btnSend:          '<i class="bx bx-send me-1"></i>{{ __('pages.env_btn_submit_send') }}',
+        histResults:      '{{ __('pages.env_js_history_results') }}',
+        histTotal:        '{{ __('pages.env_js_history_total') }}',
+        histNoResults:    '{{ __('pages.env_js_history_no_results') }}',
+        histLoadError:    '{{ __('pages.env_js_history_load_error') }}',
+        histSuccess:      '{{ __('pages.env_js_success') }}',
+        docContract:      '{{ __('pages.env_js_doc_contract') }}',
+        docMonthly:       '{{ __('pages.env_js_doc_monthly') }}',
+        docDeposit:       '{{ __('pages.env_js_doc_deposit') }}',
+        docOwnerStmt:     '{{ __('pages.env_js_doc_owner_stmt') }}',
+        docAgencyStmt:    '{{ __('pages.env_js_doc_agency_stmt') }}',
+        docReminder:      '{{ __('pages.env_js_doc_reminder') }}',
+        docNotice:        '{{ __('pages.env_js_doc_notice') }}',
+        notifTitleNotice: '<i class="bx bx-calendar-x me-1"></i>{{ __('pages.env_js_notif_title_notice') }}',
+        btnSendNotice:    '<i class="bx bx-send me-1"></i>{{ __('pages.env_js_btn_send_notice') }}',
+        notifTitleRemind: '<i class="bx bx-alarm me-1"></i>{{ __('pages.env_js_notif_title_reminder') }}',
+        btnSendRemind:    '<i class="bx bx-send me-1"></i>{{ __('pages.env_js_btn_send_reminder') }}',
+        specifyLeaseEnd:  '{{ __('pages.env_js_specify_lease_end') }}',
+        notifPayReqWa:    '{{ __('pages.env_js_notif_pay_req_wa') }}',
+        notifPayReqSms:   '{{ __('pages.env_js_notif_pay_req_sms') }}',
+        totalToPay:       '{{ __('pages.env_js_total_to_pay') }}',
+        waMessages:       '{{ __('pages.env_js_wa_messages') }}',
+        smsMessages:      '{{ __('pages.env_js_sms_messages') }}',
+        failure:          '{{ __('pages.env_js_failure') }}',
+        contactEmpty:     '{{ __('pages.env_js_contact_empty') }}',
+        fieldPhone:       '{{ __('pages.env_js_field_phone') }}',
+    };
+
     // ── État global ─────────────────────────────────────────────
     let selectedDestinataires = [];
     // Dernier type ouvert dans le modal ('locataire' | 'proprietaire')
@@ -887,7 +940,7 @@
     function updateActionBar() {
         const count = selectedDestinataires.length;
         document.getElementById('selectionCount').textContent = count;
-        document.getElementById('selectionLabel').textContent = count + ' sélectionné(s)';
+        document.getElementById('selectionLabel').textContent = count + ' ' + ENV_I18N.selected;
         document.getElementById('actionBar').classList.toggle('d-none', count === 0);
     }
 
@@ -1005,7 +1058,7 @@
         const container = document.getElementById('listeDestinataires');
 
         if (selectedDestinataires.length === 0) {
-            container.innerHTML = '<p class="text-muted text-center small mb-0">Aucun destinataire sélectionné</p>';
+            container.innerHTML = '<p class="text-muted text-center small mb-0">' + ENV_I18N.noRecipient + '</p>';
             return;
         }
 
@@ -1015,7 +1068,7 @@
         selectedDestinataires.forEach(function(dest, idx) {
             const emailEmpty = !dest.email;
             const emailClass = emailEmpty ? 'border-warning' : '';
-            const emailPlaceholder = emailEmpty ? 'Email requis' : '';
+            const emailPlaceholder = emailEmpty ? ENV_I18N.emailRequired : '';
 
             html += `<div class="dest-row" data-idx="${idx}" data-id="${dest.id}" data-type="${dest.type}">`;
             html += `<div class="row g-1 align-items-center">`;
@@ -1044,7 +1097,7 @@
             // Colonne factures (checkboxes multi-mois, visible seulement si quittance_mensuelle cochée)
             html += `<div class="col-12 col-facture ${avecColonneFacture ? '' : 'd-none'}">`;
             if (dest.type === 'locataire' && dest.factures.length > 0) {
-                html += `<label class="form-label small fw-semibold mb-1">Mois à envoyer :</label>`;
+                html += `<label class="form-label small fw-semibold mb-1">${ENV_I18N.monthsLabel}</label>`;
                 html += `<div class="border rounded p-2" style="max-height:100px;overflow-y:auto;background:#f8f9fa;">`;
                 dest.factures.forEach(function(f) {
                     html += `<div class="form-check form-check-sm mb-1">
@@ -1057,7 +1110,7 @@
                 });
                 html += `</div>`;
             } else if (dest.type === 'locataire') {
-                html += `<small class="text-muted fst-italic">Aucune facture disponible</small>`;
+                html += `<small class="text-muted fst-italic">${ENV_I18N.noInvoice}</small>`;
             }
             html += `</div>`;
 
@@ -1116,7 +1169,7 @@
         var country = document.getElementById('paymentCountryDoc').value;
 
         if (count === 0) {
-            Swal.fire('Attention', 'Veuillez d\'abord sélectionner des destinataires.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.selectRecipients, 'warning');
             return;
         }
 
@@ -1124,11 +1177,11 @@
             if (data.status) {
                 document.getElementById('paymentCountryCodeDoc').value = country;
                 document.getElementById('costDisplayDoc').textContent =
-                    'Total à payer : ' + data.total.toLocaleString('fr-FR') + ' ' + data.currency +
-                    ' (' + count + ' messages WhatsApp × ' + data.unit_cost + ' ' + data.currency + ')';
+                    ENV_I18N.totalToPay + ' ' + data.total.toLocaleString('fr-FR') + ' ' + data.currency +
+                    ' (' + count + ' ' + ENV_I18N.waMessages + ' ' + data.unit_cost + ' ' + data.currency + ')';
                 document.getElementById('costResultDoc').classList.remove('d-none');
             } else {
-                Swal.fire('Erreur', data.message, 'error');
+                Swal.fire(ENV_I18N.error, data.message, 'error');
             }
         });
     });
@@ -1136,18 +1189,18 @@
     document.getElementById('btnPayNowDoc').addEventListener('click', function() {
         var btn = this;
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Ouverture...';
+        btn.innerHTML = ENV_I18N.btnOpening;
 
         $.get('/platform/kkiapay-public', function(cfg) {
             if (!cfg.payment_enabled) {
-                Swal.fire('Erreur', 'Aucun prestataire de paiement configuré.', 'error');
+                Swal.fire(ENV_I18N.error, ENV_I18N.noProvider, 'error');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+                btn.innerHTML = ENV_I18N.btnPay;
                 return;
             }
             var amount = 0;
             var txt = document.getElementById('costDisplayDoc').textContent;
-            var m = txt.match(/Total à payer : ([\d\s,]+)/);
+            var m = txt.match(/[\d\s,]+/);
             if (m) amount = parseInt(m[1].replace(/[\s,]/g, '')) || 0;
 
             function onDocPaySuccess(txnId) {
@@ -1159,12 +1212,12 @@
             }
             function onDocPayFail() {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+                btn.innerHTML = ENV_I18N.btnPay;
             }
 
             if (cfg.payment_provider === 'kkiapay') {
                 if (typeof openKkiapayWidget !== 'function') {
-                    Swal.fire('Erreur', 'Widget KKiaPay non chargé. Vérifiez votre connexion.', 'error');
+                    Swal.fire(ENV_I18N.error, ENV_I18N.kkiapayError, 'error');
                     onDocPayFail(); return;
                 }
                 var kkDone = false, kkSeen = false, kkPoll = null;
@@ -1193,19 +1246,19 @@
                 addFailedListener(function() {
                     if (kkDone) return;
                     kkDone = true; clearInterval(kkPoll);
-                    Swal.fire('Paiement échoué', 'Le paiement KKiaPay n\'a pas abouti.', 'error');
+                    Swal.fire(ENV_I18N.paymentFailed, ENV_I18N.kkiapayFailed, 'error');
                     onDocPayFail();
                 });
             } else if (cfg.payment_provider === 'fedapay') {
                 FedaPay.init({
                     public_key:  cfg.payment_public_key,
-                    transaction: { amount: amount, description: 'Envoi WhatsApp' },
+                    transaction: { amount: amount, description: ENV_I18N.waDesc },
                     onComplete: function(resp) {
                         if (resp.reason === FedaPay.DIALOG_DISMISSED) { onDocPayFail(); return; }
                         if (resp.transaction && resp.transaction.status === 'approved') {
                             onDocPaySuccess(resp.transaction.id.toString());
                         } else {
-                            Swal.fire('Paiement échoué', 'Le paiement FedaPay n\'a pas abouti.', 'error');
+                            Swal.fire(ENV_I18N.paymentFailed, ENV_I18N.fedapayFailed, 'error');
                             onDocPayFail();
                         }
                     }
@@ -1213,7 +1266,7 @@
             }
         }).fail(function() {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+            btn.innerHTML = ENV_I18N.btnPay;
         });
     });
 
@@ -1243,7 +1296,7 @@
     document.getElementById('btnSubmitEnvoi').addEventListener('click', async function() {
         const methodeEl = document.querySelector('input[name="methode_envoi"]:checked');
         if (!methodeEl) {
-            Swal.fire('Attention', 'Veuillez choisir une méthode d\'envoi.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.chooseMethod, 'warning');
             return;
         }
         const methode = methodeEl.value;
@@ -1254,12 +1307,12 @@
             typeDocuments.push(cb.value);
         });
         if (typeDocuments.length === 0) {
-            Swal.fire('Attention', 'Veuillez sélectionner au moins un document à envoyer.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.selectDoc, 'warning');
             return;
         }
 
         if (selectedDestinataires.length === 0) {
-            Swal.fire('Attention', 'Aucun destinataire sélectionné.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.noRecipientDot, 'warning');
             return;
         }
 
@@ -1282,8 +1335,9 @@
             const contact   = methode === 'email' ? email : telephone;
 
             if (!contact) {
-                const champ = methode === 'email' ? 'email' : 'téléphone';
-                Swal.fire('Attention', `Le ${champ} de "${selectedDestinataires[idx]?.nom || 'destinataire #' + idx}" est vide.`, 'warning');
+                const champ = methode === 'email' ? 'email' : ENV_I18N.fieldPhone;
+                const nom   = selectedDestinataires[idx]?.nom || ('#' + idx);
+                Swal.fire(ENV_I18N.warning, ENV_I18N.contactEmpty.replace('%s', champ).replace('%s', nom), 'warning');
                 erreurContact = true;
                 return;
             }
@@ -1308,7 +1362,7 @@
 
         // Vérifier paiement si WhatsApp
         if (methode === 'whatsapp' && !docPaymentDone) {
-            Swal.fire('Paiement requis', 'Veuillez procéder au paiement avant d\'envoyer via WhatsApp.', 'warning');
+            Swal.fire(ENV_I18N.paymentRequired, ENV_I18N.paymentReqWa, 'warning');
             return;
         }
 
@@ -1326,7 +1380,7 @@
 
         const btn = this;
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Envoi en cours…';
+        btn.innerHTML = ENV_I18N.btnSending;
 
         try {
             const res  = await fetch(ROUTE_ENVOYER, {
@@ -1349,7 +1403,7 @@
                     if (errors.length > 0) {
                         details = '<ul class="text-start mt-2 mb-0" style="font-size:.85rem;">';
                         errors.forEach(function(d) {
-                            details += `<li class="text-danger">${escHtml(d.destinataire)} — ${escHtml(d.document)} : ${escHtml(d.erreur || 'Échec')}</li>`;
+                            details += `<li class="text-danger">${escHtml(d.destinataire)} — ${escHtml(d.document)} : ${escHtml(d.erreur || ENV_I18N.failure)}</li>`;
                         });
                         details += '</ul>';
                     }
@@ -1357,9 +1411,9 @@
 
                 Swal.fire({
                     icon: errors.length > 0 ? 'warning' : 'success',
-                    title: 'Résultat',
+                    title: ENV_I18N.result,
                     html:  json.message + details,
-                    confirmButtonText: 'OK',
+                    confirmButtonText: ENV_I18N.ok,
                 });
 
                 // Fermer modal et rafraîchir
@@ -1374,13 +1428,13 @@
                 updateActionBar();
 
             } else {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: json.message });
+                Swal.fire({ icon: 'error', title: ENV_I18N.error, text: json.message });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Erreur réseau', text: err.message });
+            Swal.fire({ icon: 'error', title: ENV_I18N.error, text: err.message });
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-send me-1"></i>Envoyer';
+            btn.innerHTML = ENV_I18N.btnSend;
         }
     });
 
@@ -1398,13 +1452,13 @@
 
     // ── Historique ───────────────────────────────────────────────
     const labels = {
-        contrat:             'Contrat',
-        quittance_mensuelle: 'Quittance mensuelle',
-        quittance_caution:   'Quittance caution',
-        releve_proprietaire: 'Relevé propriétaire',
-        releve_agence:       'Relevé agence',
-        rappel_loyer:        'Rappel de loyer',
-        preavis:             'Préavis',
+        contrat:             ENV_I18N.docContract,
+        quittance_mensuelle: ENV_I18N.docMonthly,
+        quittance_caution:   ENV_I18N.docDeposit,
+        releve_proprietaire: ENV_I18N.docOwnerStmt,
+        releve_agence:       ENV_I18N.docAgencyStmt,
+        rappel_loyer:        ENV_I18N.docReminder,
+        preavis:             ENV_I18N.docNotice,
     };
 
     const HISTO_PAGE_SIZE = 10;
@@ -1443,12 +1497,12 @@
         if (infoEl) {
             const filtreActif = q || doc || methode || statut;
             infoEl.textContent = filtreActif
-                ? `${total} résultat(s) sur ${allHistoriqueData.length}`
-                : `${allHistoriqueData.length} envoi(s) au total`;
+                ? `${total} ${ENV_I18N.histResults} ${allHistoriqueData.length}`
+                : `${allHistoriqueData.length} ${ENV_I18N.histTotal}`;
         }
 
         if (total === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Aucun résultat.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">' + ENV_I18N.histNoResults + '</td></tr>';
             document.getElementById('histoPagination').style.display = 'none';
             return;
         }
@@ -1465,8 +1519,8 @@
                     ? '<span class="badge bg-warning text-dark"><i class="bx bx-message-detail me-1"></i>SMS</span>'
                     : '<span class="badge bg-success"><i class="bx bxl-whatsapp me-1"></i>WhatsApp</span>';
             const statBadge = e.statut === 'success'
-                ? '<span class="badge bg-label-success">Succès</span>'
-                : `<span class="badge bg-label-danger" title="${escHtml(e.message_erreur || '')}">Échec</span>`;
+                ? '<span class="badge bg-label-success">' + ENV_I18N.histSuccess + '</span>'
+                : `<span class="badge bg-label-danger" title="${escHtml(e.message_erreur || '')}">${ENV_I18N.failure}</span>`;
 
             return `<tr>
                 <td><small class="text-nowrap">${dateStr}</small></td>
@@ -1536,7 +1590,7 @@
             histoCurrentPage  = 1;
             rendreHistorique();
         } catch (err) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-3">Erreur de chargement.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-3">' + ENV_I18N.histLoadError + '</td></tr>';
         }
     }
 
@@ -1574,9 +1628,7 @@
     let selectedNotifDests = [];
     let currentNotifType   = 'rappel_loyer'; // 'rappel_loyer' | 'preavis'
 
-    // Labels historique enrichis
-    labels['rappel_loyer'] = 'Rappel de loyer';
-    labels['preavis']      = 'Préavis';
+    // Labels historique enrichis (déjà définis dans l'objet labels via ENV_I18N)
 
     // ── Helpers notif ────────────────────────────────────────────
     function destFromNotifCheckbox(cb) {
@@ -1594,7 +1646,7 @@
         const count = selectedNotifDests.length;
         document.getElementById('selectionCountNotif').textContent  = count;
         document.getElementById('selectionCountNotif2').textContent = count;
-        document.getElementById('selectionLabelNotif').textContent  = count + ' sélectionné(s)';
+        document.getElementById('selectionLabelNotif').textContent  = count + ' ' + ENV_I18N.selected;
         document.getElementById('actionBarNotif').classList.toggle('d-none', count === 0);
     }
 
@@ -1672,15 +1724,15 @@
         if (isPreavis) {
             header.style.background = '#ef4444';
             title.style.color = '#fff';
-            title.innerHTML  = '<i class="bx bx-calendar-x me-1"></i>Préavis de fin de bail';
+            title.innerHTML  = ENV_I18N.notifTitleNotice;
             btnSubmit.className = 'btn btn-danger';
-            btnSubmit.innerHTML = '<i class="bx bx-send me-1"></i>Envoyer le préavis';
+            btnSubmit.innerHTML = ENV_I18N.btnSendNotice;
         } else {
             header.style.background = '#f59e0b';
             title.style.color = '#fff';
-            title.innerHTML  = '<i class="bx bx-alarm me-1"></i>Rappel de paiement de loyer';
+            title.innerHTML  = ENV_I18N.notifTitleRemind;
             btnSubmit.className = 'btn btn-warning';
-            btnSubmit.innerHTML = '<i class="bx bx-send me-1"></i>Envoyer le rappel';
+            btnSubmit.innerHTML = ENV_I18N.btnSendRemind;
         }
 
         blocDate.classList.toggle('d-none', !isPreavis);
@@ -1748,7 +1800,7 @@
         var country = document.getElementById('paymentCountryNotif').value;
 
         if (count === 0) {
-            Swal.fire('Attention', 'Veuillez d\'abord sélectionner des destinataires.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.selectRecipients, 'warning');
             return;
         }
 
@@ -1756,12 +1808,12 @@
             if (data.status) {
                 document.getElementById('paymentCountryCodeNotif').value = country;
                 document.getElementById('costDisplayNotif').textContent =
-                    'Total à payer : ' + data.total.toLocaleString('fr-FR') + ' ' + data.currency +
-                    ' (' + count + ' ' + (channel === 'sms' ? 'SMS' : 'messages WhatsApp') +
-                    ' × ' + data.unit_cost + ' ' + data.currency + ')';
+                    ENV_I18N.totalToPay + ' ' + data.total.toLocaleString('fr-FR') + ' ' + data.currency +
+                    ' (' + count + ' ' + (channel === 'sms' ? ENV_I18N.smsMessages : ENV_I18N.waMessages) +
+                    ' ' + data.unit_cost + ' ' + data.currency + ')';
                 document.getElementById('costResultNotif').classList.remove('d-none');
             } else {
-                Swal.fire('Erreur', data.message, 'error');
+                Swal.fire(ENV_I18N.error, data.message, 'error');
             }
         });
     });
@@ -1769,18 +1821,18 @@
     document.getElementById('btnPayNowNotif').addEventListener('click', function() {
         var btn = this;
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Ouverture...';
+        btn.innerHTML = ENV_I18N.btnOpening;
 
         $.get('/platform/kkiapay-public', function(cfg) {
             if (!cfg.payment_enabled) {
-                Swal.fire('Erreur', 'Aucun prestataire de paiement configuré.', 'error');
+                Swal.fire(ENV_I18N.error, ENV_I18N.noProvider, 'error');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+                btn.innerHTML = ENV_I18N.btnPay;
                 return;
             }
             var amount = 0;
             var txt = document.getElementById('costDisplayNotif').textContent;
-            var m = txt.match(/Total à payer : ([\d\s,]+)/);
+            var m = txt.match(/[\d\s,]+/);
             if (m) amount = parseInt(m[1].replace(/[\s,]/g, '')) || 0;
 
             var channel = document.querySelector('input[name="notif_methode_envoi"]:checked')?.value || 'sms';
@@ -1794,12 +1846,12 @@
             }
             function onNotifPayFail() {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+                btn.innerHTML = ENV_I18N.btnPay;
             }
 
             if (cfg.payment_provider === 'kkiapay') {
                 if (typeof openKkiapayWidget !== 'function') {
-                    Swal.fire('Erreur', 'Widget KKiaPay non chargé. Vérifiez votre connexion.', 'error');
+                    Swal.fire(ENV_I18N.error, ENV_I18N.kkiapayError, 'error');
                     onNotifPayFail(); return;
                 }
                 var kkDone = false, kkSeen = false, kkPoll = null;
@@ -1828,19 +1880,19 @@
                 addFailedListener(function() {
                     if (kkDone) return;
                     kkDone = true; clearInterval(kkPoll);
-                    Swal.fire('Paiement échoué', 'Le paiement KKiaPay n\'a pas abouti.', 'error');
+                    Swal.fire(ENV_I18N.paymentFailed, ENV_I18N.kkiapayFailed, 'error');
                     onNotifPayFail();
                 });
             } else if (cfg.payment_provider === 'fedapay') {
                 FedaPay.init({
                     public_key:  cfg.payment_public_key,
-                    transaction: { amount: amount, description: 'Envoi ' + channel.toUpperCase() },
+                    transaction: { amount: amount, description: ENV_I18N.sendPrefix + ' ' + channel.toUpperCase() },
                     onComplete: function(resp) {
                         if (resp.reason === FedaPay.DIALOG_DISMISSED) { onNotifPayFail(); return; }
                         if (resp.transaction && resp.transaction.status === 'approved') {
                             onNotifPaySuccess(resp.transaction.id.toString());
                         } else {
-                            Swal.fire('Paiement échoué', 'Le paiement FedaPay n\'a pas abouti.', 'error');
+                            Swal.fire(ENV_I18N.paymentFailed, ENV_I18N.fedapayFailed, 'error');
                             onNotifPayFail();
                         }
                     }
@@ -1848,7 +1900,7 @@
             }
         }).fail(function() {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-wallet me-1"></i>Payer maintenant';
+            btn.innerHTML = ENV_I18N.btnPay;
         });
     });
 
@@ -1857,7 +1909,7 @@
         const container = document.getElementById('listeDestinatairesNotif');
 
         if (selectedNotifDests.length === 0) {
-            container.innerHTML = '<p class="text-muted text-center small mb-0">Aucun destinataire sélectionné</p>';
+            container.innerHTML = '<p class="text-muted text-center small mb-0">' + ENV_I18N.noRecipient + '</p>';
             return;
         }
 
@@ -1898,7 +1950,7 @@
     document.getElementById('btnSubmitNotif').addEventListener('click', async function() {
         const methodeEl = document.querySelector('input[name="notif_methode_envoi"]:checked');
         if (!methodeEl) {
-            Swal.fire('Attention', 'Veuillez choisir une méthode d\'envoi.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.chooseMethod, 'warning');
             return;
         }
         const methode = methodeEl.value;
@@ -1907,13 +1959,13 @@
         if (currentNotifType === 'preavis') {
             const dateFinVal = document.getElementById('dateFinBail').value;
             if (!dateFinVal) {
-                Swal.fire('Attention', 'Veuillez indiquer la date de fin de bail.', 'warning');
+                Swal.fire(ENV_I18N.warning, ENV_I18N.specifyLeaseEnd, 'warning');
                 return;
             }
         }
 
         if (selectedNotifDests.length === 0) {
-            Swal.fire('Attention', 'Aucun destinataire sélectionné.', 'warning');
+            Swal.fire(ENV_I18N.warning, ENV_I18N.noRecipientDot, 'warning');
             return;
         }
 
@@ -1930,8 +1982,9 @@
             const contact = methode === 'email' ? email : tel;
 
             if (!contact) {
-                const champ = methode === 'email' ? 'email' : 'téléphone';
-                Swal.fire('Attention', `Le ${champ} de "${selectedNotifDests[idx]?.nom || '#' + idx}" est vide.`, 'warning');
+                const champ = methode === 'email' ? 'email' : ENV_I18N.fieldPhone;
+                const nom   = selectedNotifDests[idx]?.nom || ('#' + idx);
+                Swal.fire(ENV_I18N.warning, ENV_I18N.contactEmpty.replace('%s', champ).replace('%s', nom), 'warning');
                 erreurContact = true;
                 return;
             }
@@ -1943,8 +1996,8 @@
 
         // Vérifier paiement si SMS ou WhatsApp
         if ((methode === 'sms' || methode === 'whatsapp') && !notifPaymentDone) {
-            Swal.fire('Paiement requis',
-                'Veuillez procéder au paiement avant d\'envoyer via ' + methode.toUpperCase() + '.',
+            Swal.fire(ENV_I18N.paymentRequired,
+                methode === 'whatsapp' ? ENV_I18N.notifPayReqWa : ENV_I18N.notifPayReqSms,
                 'warning');
             return;
         }
@@ -1963,7 +2016,7 @@
         const btn = this;
         const originalHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Envoi en cours…';
+        btn.innerHTML = ENV_I18N.btnSending;
 
         try {
             const res  = await fetch(ROUTE_NOTIFICATION, {
@@ -1983,16 +2036,16 @@
                 if (errors.length > 0) {
                     details = '<ul class="text-start mt-2 mb-0" style="font-size:.85rem;">';
                     errors.forEach(function(d) {
-                        details += `<li class="text-danger">${escHtml(d.destinataire)} : ${escHtml(d.erreur || 'Échec')}</li>`;
+                        details += `<li class="text-danger">${escHtml(d.destinataire)} : ${escHtml(d.erreur || ENV_I18N.failure)}</li>`;
                     });
                     details += '</ul>';
                 }
 
                 Swal.fire({
                     icon: errors.length > 0 ? 'warning' : 'success',
-                    title: 'Résultat',
+                    title: ENV_I18N.result,
                     html:  json.message + details,
-                    confirmButtonText: 'OK',
+                    confirmButtonText: ENV_I18N.ok,
                 });
 
                 bootstrap.Modal.getInstance(document.getElementById('modalNotification')).hide();
@@ -2005,10 +2058,10 @@
                 updateActionBarNotif();
 
             } else {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: json.message });
+                Swal.fire({ icon: 'error', title: ENV_I18N.error, text: json.message });
             }
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Erreur réseau', text: err.message });
+            Swal.fire({ icon: 'error', title: ENV_I18N.error, text: err.message });
         } finally {
             btn.disabled = false;
             btn.innerHTML = originalHtml;

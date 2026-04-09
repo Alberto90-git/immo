@@ -615,16 +615,29 @@ class UtilisateurController extends SessionController
                         ]);
                     }
 
+                    // Vérifier si un compte existe déjà avec cet email (sans ce transaction_id)
+                    $anyExistingDir = Direction::where('email', $emailCheck)->first();
                     Log::error('saveAdminCompte: validation échouée après paiement', [
-                        'transaction_id' => $incomingTransactionId,
-                        'email'          => $emailCheck,
-                        'errors'         => $validator->errors()->toArray(),
+                        'transaction_id'    => $incomingTransactionId,
+                        'email'             => $emailCheck,
+                        'existing_account'  => $anyExistingDir ? $anyExistingDir->iddirection : null,
+                        'errors'            => $validator->errors()->toArray(),
                     ]);
+
+                    if ($anyExistingDir) {
+                        return response()->json([
+                            'status'          => false,
+                            'payment_pending' => true,
+                            'transaction_id'  => $incomingTransactionId,
+                            'message'         => 'Un compte existe déjà avec cette adresse email. Si c\'est votre compte, connectez-vous directement. Votre paiement (réf : ' . $incomingTransactionId . ') a bien été reçu — contactez le support pour le remboursement ou la migration.',
+                        ], 422);
+                    }
+
                     return response()->json([
                         'status'          => false,
                         'payment_pending' => true,
                         'transaction_id'  => $incomingTransactionId,
-                        'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais la création du compte a échoué : ' . $validator->errors()->first() . ' Contactez le support avec cette référence.',
+                        'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais la création du compte a échoué. Contactez le support avec cette référence.',
                         'error'           => $validator->errors(),
                     ], 422);
                 }
@@ -939,6 +952,22 @@ class UtilisateurController extends SessionController
                                 'status'  => true,
                                 'message' => 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.',
                             ]);
+                        }
+
+                        // Un compte existe avec cet email mais sans ce transaction_id
+                        $anyExistingDir = Direction::where('email', $emailCheck)->first();
+                        if ($anyExistingDir) {
+                            Log::error('saveAdminCompte: email déjà utilisé par un autre compte après paiement (DB exception)', [
+                                'transaction_id'   => $incomingTransactionId,
+                                'email'            => $emailCheck,
+                                'existing_dir_id'  => $anyExistingDir->iddirection,
+                            ]);
+                            return response()->json([
+                                'status'          => false,
+                                'payment_pending' => true,
+                                'transaction_id'  => $incomingTransactionId,
+                                'message'         => 'Un compte existe déjà avec cette adresse email. Si c\'est votre compte, connectez-vous directement. Votre paiement (réf : ' . $incomingTransactionId . ') a bien été reçu — contactez le support pour le remboursement ou la migration.',
+                            ], 422);
                         }
                     }
                 } elseif (str_contains($msg, 'users_email_unique') || str_contains($msg, '"users"')) {

@@ -1,14 +1,14 @@
 @extends('layouts.template')
 
 @section('title')
-  <title>Configuration Plateforme — Super Admin</title>
+  <title>{{ __('pages.cfg_title') }}</title>
 @endsection
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
 
     <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Super Admin /</span> Configuration plateforme
+        <span class="text-muted fw-light">Super Admin /</span> {{ __('pages.cfg_breadcrumb') }}
     </h4>
 
     <div class="row">
@@ -19,8 +19,8 @@
                     <div class="d-flex align-items-center gap-2">
                         <i class="bx bx-credit-card fs-4"></i>
                         <div>
-                            <h6 class="mb-0 fw-bold">Prestataire de paiement</h6>
-                            <small class="opacity-75">Choisissez et configurez la passerelle de paiement pour les abonnements</small>
+                            <h6 class="mb-0 fw-bold">{{ __('pages.cfg_payment_header') }}</h6>
+                            <small class="opacity-75">{{ __('pages.cfg_payment_subtitle') }}</small>
                         </div>
                     </div>
                     @php
@@ -29,9 +29,10 @@
                         $badgeClass = $apInit === 'kkiapay' ? 'badge bg-success fs-6 px-3 py-2'
                                     : ($apInit === 'fedapay' ? 'badge bg-warning text-dark fs-6 px-3 py-2'
                                     : 'badge bg-secondary fs-6 px-3 py-2');
-                        $badgeText  = $apInit === 'kkiapay' ? 'KKiaPay — ' . ($sbInit ? 'Sandbox' : 'Production')
-                                    : ($apInit === 'fedapay' ? 'FedaPay — ' . ($sbInit ? 'Sandbox' : 'Production')
-                                    : 'Paiement désactivé');
+                        $sandboxLabel = __('pages.cfg_sandbox');
+                        $badgeText  = $apInit === 'kkiapay' ? 'KKiaPay — ' . ($sbInit ? $sandboxLabel : __('pages.cfg_production'))
+                                    : ($apInit === 'fedapay' ? 'FedaPay — ' . ($sbInit ? $sandboxLabel : __('pages.cfg_production'))
+                                    : __('pages.cfg_payment_disabled'));
                     @endphp
                     <span id="payment-status-badge" class="{{ $badgeClass }}">
                         {{ $badgeText }}
@@ -41,9 +42,7 @@
                     <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
                         <i class="bx bx-info-circle me-2 fs-5"></i>
                         <div>
-                            Activez un prestataire pour que les plans payants requièrent un paiement lors de
-                            <strong>l'inscription</strong> et du <strong>changement de plan</strong>.
-                            Par défaut, aucun prestataire n'est actif.
+                            {!! __('pages.cfg_payment_info') !!}
                         </div>
                     </div>
 
@@ -53,7 +52,7 @@
                         {{-- Choix du prestataire actif --}}
                         <div class="mb-4">
                             <label class="form-label fw-bold fs-6">
-                                <i class="bx bx-list-check me-1 text-primary"></i>Prestataire actif
+                                <i class="bx bx-list-check me-1 text-primary"></i>{{ __('pages.cfg_provider_active') }}
                             </label>
                             @php $ap = $activePaymentProvider ?? 'none'; @endphp
                             <div class="d-flex flex-wrap gap-3">
@@ -61,7 +60,7 @@
                                     <input class="form-check-input" type="radio" name="active_payment_provider"
                                            id="provider_none" value="none" {{ $ap === 'none' ? 'checked' : '' }}>
                                     <label class="form-check-label fw-semibold" for="provider_none" style="cursor:pointer;">
-                                        <i class="bx bx-block me-1 text-secondary"></i> Aucun paiement
+                                        <i class="bx bx-block me-1 text-secondary"></i> {{ __('pages.cfg_provider_none') }}
                                     </label>
                                 </div>
                                 <div class="form-check border rounded p-3 pe-4 {{ $ap === 'kkiapay' ? 'border-primary' : '' }}" style="cursor:pointer;">
@@ -84,20 +83,20 @@
                         {{-- Section KKiaPay --}}
                         <div id="section-kkiapay" class="{{ ($activePaymentProvider ?? 'none') === 'kkiapay' ? '' : 'd-none' }}">
                             <hr class="my-3">
-                            <h6 class="fw-bold mb-3 text-primary"><i class="bx bx-credit-card me-1"></i>Configuration KKiaPay</h6>
+                            <h6 class="fw-bold mb-3 text-primary"><i class="bx bx-credit-card me-1"></i>{{ __('pages.cfg_kkia_config') }}</h6>
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-key me-1 text-warning"></i>Clé publique (Public Key) <span class="text-danger">*</span>
+                                        <i class="bx bx-key me-1 text-warning"></i>{{ __('pages.cfg_kkia_public_key') }} <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control" id="kkiapay_public_key"
                                            name="kkiapay_public_key" placeholder="Votre clé publique KKiaPay"
                                            value="{{ $paymentCfgData['kkiapay_public_key'] ?? '' }}">
-                                    <div class="form-text">Utilisée côté client pour ouvrir le widget de paiement.</div>
+                                    <div class="form-text">{{ __('pages.cfg_kkia_public_help') }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-lock me-1 text-danger"></i>Clé privée (Private Key) <span class="text-danger">*</span>
+                                        <i class="bx bx-lock me-1 text-danger"></i>{{ __('pages.cfg_kkia_private_key') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="kkiapay_private_key"
@@ -107,11 +106,11 @@
                                             <i class="bx bx-show"></i>
                                         </button>
                                     </div>
-                                    <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>Confidentielle.</div>
+                                    <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>{{ __('pages.cfg_key_confidential') }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-shield me-1 text-danger"></i>Clé secrète (Secret Key) <span class="text-danger">*</span>
+                                        <i class="bx bx-shield me-1 text-danger"></i>{{ __('pages.cfg_kkia_secret_key') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="kkiapay_secret_key"
@@ -121,15 +120,15 @@
                                             <i class="bx bx-show"></i>
                                         </button>
                                     </div>
-                                    <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>Vérification côté serveur.</div>
+                                    <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>{{ __('pages.cfg_server_verify') }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-test-tube me-1 text-info"></i>Environnement KKiaPay
+                                        <i class="bx bx-test-tube me-1 text-info"></i>{{ __('pages.cfg_kkia_env') }}
                                     </label>
                                     <select class="form-select" id="kkiapay_sandbox" name="kkiapay_sandbox">
-                                        <option value="1" {{ ($paymentCfgData['kkiapay_sandbox'] ?? true) ? 'selected' : '' }}>Sandbox (Mode test)</option>
-                                        <option value="0" {{ !($paymentCfgData['kkiapay_sandbox'] ?? true) ? 'selected' : '' }}>Production (Paiements réels)</option>
+                                        <option value="1" {{ ($paymentCfgData['kkiapay_sandbox'] ?? true) ? 'selected' : '' }}>{{ __('pages.cfg_sandbox') }}</option>
+                                        <option value="0" {{ !($paymentCfgData['kkiapay_sandbox'] ?? true) ? 'selected' : '' }}>{{ __('pages.cfg_production') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -138,20 +137,20 @@
                         {{-- Section FedaPay --}}
                         <div id="section-fedapay" class="{{ ($activePaymentProvider ?? 'none') === 'fedapay' ? '' : 'd-none' }}">
                             <hr class="my-3">
-                            <h6 class="fw-bold mb-3 text-warning"><i class="bx bx-credit-card-alt me-1"></i>Configuration FedaPay</h6>
+                            <h6 class="fw-bold mb-3 text-warning"><i class="bx bx-credit-card-alt me-1"></i>{{ __('pages.cfg_feda_config') }}</h6>
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-key me-1 text-warning"></i>Clé publique (Public Key) <span class="text-danger">*</span>
+                                        <i class="bx bx-key me-1 text-warning"></i>{{ __('pages.cfg_kkia_public_key') }} <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control" id="fedapay_public_key"
                                            name="fedapay_public_key" placeholder="pk_sandbox_... ou pk_live_..."
                                            value="{{ $paymentCfgData['fedapay_public_key'] ?? '' }}">
-                                    <div class="form-text">Utilisée côté client pour initialiser le widget FedaPay.</div>
+                                    <div class="form-text">{{ __('pages.cfg_feda_public_help') }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-shield me-1 text-danger"></i>Clé secrète (Secret Key) <span class="text-danger">*</span>
+                                        <i class="bx bx-shield me-1 text-danger"></i>{{ __('pages.cfg_kkia_secret_key') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
                                         <input type="password" class="form-control" id="fedapay_secret_key"
@@ -161,15 +160,15 @@
                                             <i class="bx bx-show"></i>
                                         </button>
                                     </div>
-                                    <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>Vérification côté serveur.</div>
+                                    <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>{{ __('pages.cfg_server_verify') }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">
-                                        <i class="bx bx-test-tube me-1 text-info"></i>Environnement FedaPay
+                                        <i class="bx bx-test-tube me-1 text-info"></i>{{ __('pages.cfg_feda_env') }}
                                     </label>
                                     <select class="form-select" id="fedapay_sandbox" name="fedapay_sandbox">
-                                        <option value="1" {{ ($paymentCfgData['fedapay_sandbox'] ?? true) ? 'selected' : '' }}>Sandbox (Mode test)</option>
-                                        <option value="0" {{ !($paymentCfgData['fedapay_sandbox'] ?? true) ? 'selected' : '' }}>Production (Paiements réels)</option>
+                                        <option value="1" {{ ($paymentCfgData['fedapay_sandbox'] ?? true) ? 'selected' : '' }}>{{ __('pages.cfg_sandbox') }}</option>
+                                        <option value="0" {{ !($paymentCfgData['fedapay_sandbox'] ?? true) ? 'selected' : '' }}>{{ __('pages.cfg_production') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -178,10 +177,10 @@
                         <hr class="my-4">
                         <div class="d-flex gap-2 flex-wrap">
                             <button type="submit" class="btn btn-primary px-4" id="btn-save-payment">
-                                <i class="bx bx-save me-1"></i> Enregistrer la configuration
+                                <i class="bx bx-save me-1"></i> {{ __('pages.cfg_btn_save_payment') }}
                             </button>
                             <button type="button" class="btn btn-outline-secondary" onclick="loadPaymentConfig()">
-                                <i class="bx bx-refresh me-1"></i> Recharger
+                                <i class="bx bx-refresh me-1"></i> {{ __('pages.cfg_btn_reload') }}
                             </button>
                         </div>
                     </form>
@@ -199,8 +198,8 @@
                     <div class="d-flex align-items-center gap-2">
                         <i class="bx bx-message-dots fs-4"></i>
                         <div>
-                            <h6 class="mb-0 fw-bold text-white">Africa's Talking — SMS &amp; WhatsApp</h6>
-                            <small class="opacity-75">Configuration unique partagée par toutes les entreprises de la plateforme</small>
+                            <h6 class="mb-0 fw-bold text-white">{{ __('pages.cfg_at_header') }}</h6>
+                            <small class="opacity-75">{{ __('pages.cfg_at_subtitle') }}</small>
                         </div>
                     </div>
                     @php
@@ -208,16 +207,14 @@
                         $waOk  = $atOk && !empty($atCfg['at_whatsapp_product_id']);
                     @endphp
                     <span class="badge {{ $atOk ? 'bg-light text-success' : 'bg-secondary' }} fs-6 px-3 py-2">
-                        {{ $atOk ? 'SMS actif' . ($waOk ? ' · WhatsApp actif' : '') : 'Non configuré' }}
+                        {{ $atOk ? __('pages.cfg_at_active') . ($waOk ? ' ' . __('pages.cfg_at_wa_active') : '') : __('pages.cfg_at_inactive') }}
                     </span>
                 </div>
                 <div class="card-body pt-4">
                     <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
                         <i class="bx bx-info-circle me-2 fs-5"></i>
                         <div>
-                            Ces identifiants sont utilisés pour <strong>tous les envois SMS et WhatsApp</strong> effectués par
-                            les entreprises inscrites sur la plateforme. Obtenez-les sur
-                            <strong>account.africastalking.com</strong>.
+                            {!! __('pages.cfg_at_info') !!}
                         </div>
                     </div>
 
@@ -229,7 +226,7 @@
                                 <input type="text" class="form-control" id="at_username" name="at_username"
                                        value="{{ $atCfg['at_username'] ?? '' }}"
                                        placeholder="ex: sandbox ou votre username AT" autocomplete="off">
-                                <div class="form-text">Utilisez <code>sandbox</code> pour les tests.</div>
+                                <div class="form-text">{!! __('pages.cfg_at_username_help') !!}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">API Key <span class="text-danger">*</span></label>
@@ -241,31 +238,31 @@
                                         <i class="bx bx-show"></i>
                                     </button>
                                 </div>
-                                <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>Confidentielle.</div>
+                                <div class="form-text text-danger fw-semibold"><i class="bx bx-error-circle me-1"></i>{{ __('pages.cfg_key_confidential') }}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">
-                                    Sender ID / Numéro expéditeur <small class="text-muted fw-normal">(optionnel)</small>
+                                    {{ __('pages.cfg_at_sender_label') }} <small class="text-muted fw-normal">(optionnel)</small>
                                 </label>
                                 <input type="text" class="form-control" id="at_sender_id" name="at_sender_id"
                                        value="{{ $atCfg['at_sender_id'] ?? '' }}"
-                                       placeholder="ex: LOKATIV ou +22960000000">
-                                <div class="form-text">Laisser vide pour le numéro par défaut AT.</div>
+                                       placeholder="{{ __('pages.cfg_at_sender_ph') }}">
+                                <div class="form-text">{{ __('pages.cfg_at_sender_help') }}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">
-                                    Product ID WhatsApp <small class="text-muted fw-normal">(optionnel — requis pour WhatsApp)</small>
+                                    {{ __('pages.cfg_at_wa_product_label') }} <small class="text-muted fw-normal">(optionnel — requis pour WhatsApp)</small>
                                 </label>
                                 <input type="text" class="form-control" id="at_whatsapp_product_id" name="at_whatsapp_product_id"
                                        value="{{ $atCfg['at_whatsapp_product_id'] ?? '' }}"
-                                       placeholder="ex: 12345" autocomplete="off">
-                                <div class="form-text">Identifiant du produit WhatsApp dans votre dashboard AT.</div>
+                                       placeholder="{{ __('pages.cfg_at_wa_product_ph') }}" autocomplete="off">
+                                <div class="form-text">{{ __('pages.cfg_at_wa_product_help') }}</div>
                             </div>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
                             <button type="submit" class="btn btn-success px-4" id="btn-save-at">
-                                <i class="bx bx-save me-1"></i> Enregistrer la configuration AT
+                                <i class="bx bx-save me-1"></i> {{ __('pages.cfg_at_btn_save') }}
                             </button>
                         </div>
                     </form>
@@ -276,8 +273,76 @@
 
 </div>
 
+{{-- ── Contact WhatsApp (compte bloqué) ──────────────────────────────────── --}}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header py-3 d-flex align-items-center gap-2"
+                 style="background:linear-gradient(135deg,#128c7e,#25d366);color:#fff;border-radius:8px 8px 0 0;">
+                <i class="bx bxl-whatsapp fs-4"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ __('pages.cfg_wa_blocage_header') }}</h6>
+                    <small class="opacity-75">{{ __('pages.cfg_wa_blocage_subtitle') }}</small>
+                </div>
+            </div>
+            <div class="card-body pt-4">
+                <form id="form-contact-blocage">
+                    @csrf
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bx bxl-whatsapp me-1 text-success"></i>{{ __('pages.cfg_wa_blocage_label') }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bx bxl-whatsapp text-success"></i></span>
+                                <input type="text" class="form-control" id="whatsapp_contact_blocage"
+                                       name="whatsapp_contact_blocage"
+                                       value="{{ $whatsappContactBlocage ?? '' }}"
+                                       placeholder="{{ __('pages.cfg_wa_blocage_ph') }}"
+                                       maxlength="30">
+                            </div>
+                            <div class="form-text">
+                                {!! __('pages.cfg_wa_blocage_help') !!}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-success w-100" id="btn-save-contact-blocage">
+                                <i class="bx bx-save me-1"></i> {{ __('common.btn_save') }}
+                            </button>
+                        </div>
+                        @if(!empty($whatsappContactBlocage))
+                        <div class="col-md-3">
+                            <a href="https://wa.me/{{ $whatsappContactBlocage }}" target="_blank"
+                               class="btn btn-outline-success w-100">
+                                <i class="bx bxl-whatsapp me-1"></i> {{ __('pages.cfg_wa_test_link') }}
+                            </a>
+                        </div>
+                        @endif
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+var CFG_I18N = {
+    sandbox:         '{{ __('pages.cfg_sandbox') }}',
+    production:      '{{ __('pages.cfg_production') }}',
+    paymentDisabled: '{{ __('pages.cfg_payment_disabled') }}',
+    saving:          '{{ __('pages.cfg_saving') }}',
+    btnSavePayment:  '<i class="bx bx-save me-1"></i> {{ __('pages.cfg_btn_save_payment') }}',
+    btnSaveAt:       '<i class="bx bx-save me-1"></i> {{ __('pages.cfg_at_btn_save') }}',
+    btnSave:         '<i class="bx bx-save me-1"></i> {{ __('common.btn_save') }}',
+    swalSuccess:     '{{ __('common.swal_success') }}',
+    swalError:       '{{ __('common.swal_error') }}',
+    keySetPh:        '{{ __('pages.cfg_key_set_placeholder') }}',
+    loadError:       '{{ __('pages.cfg_load_error') }}',
+    inProgress:      '{{ __('pages.cfg_in_progress') }}',
+    unexpectedError: '{{ __('pages.cfg_unexpected_error') }}',
+};
+
 function toggleFieldVisibility(fieldId) {
     var input = document.getElementById(fieldId);
     input.type = (input.type === 'password') ? 'text' : 'password';
@@ -287,13 +352,13 @@ function updatePaymentBadge(provider, sandbox) {
     var badge = document.getElementById('payment-status-badge');
     if (provider === 'kkiapay') {
         badge.className = 'badge bg-success fs-6 px-3 py-2';
-        badge.textContent = 'KKiaPay — ' + (sandbox ? 'Sandbox' : 'Production');
+        badge.textContent = 'KKiaPay — ' + (sandbox ? CFG_I18N.sandbox : CFG_I18N.production);
     } else if (provider === 'fedapay') {
         badge.className = 'badge bg-warning text-dark fs-6 px-3 py-2';
-        badge.textContent = 'FedaPay — ' + (sandbox ? 'Sandbox' : 'Production');
+        badge.textContent = 'FedaPay — ' + (sandbox ? CFG_I18N.sandbox : CFG_I18N.production);
     } else {
         badge.className = 'badge bg-secondary fs-6 px-3 py-2';
-        badge.textContent = 'Paiement désactivé';
+        badge.textContent = CFG_I18N.paymentDisabled;
     }
 }
 
@@ -317,23 +382,23 @@ function loadPaymentConfig() {
             $('#kkiapay_public_key').val(data.kkiapay_public_key || '');
             $('#kkiapay_sandbox').val(data.kkiapay_sandbox ? '1' : '0');
             if (data.has_kkiapay_private_key) {
-                $('#kkiapay_private_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                $('#kkiapay_private_key').attr('placeholder', CFG_I18N.keySetPh);
             }
             if (data.has_kkiapay_secret_key) {
-                $('#kkiapay_secret_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                $('#kkiapay_secret_key').attr('placeholder', CFG_I18N.keySetPh);
             }
 
             $('#fedapay_public_key').val(data.fedapay_public_key || '');
             $('#fedapay_sandbox').val(data.fedapay_sandbox ? '1' : '0');
             if (data.has_fedapay_secret_key) {
-                $('#fedapay_secret_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                $('#fedapay_secret_key').attr('placeholder', CFG_I18N.keySetPh);
             }
 
             var isSandbox = provider === 'kkiapay' ? data.kkiapay_sandbox : data.fedapay_sandbox;
             updatePaymentBadge(provider, isSandbox);
         },
         error: function() {
-            document.getElementById('payment-status-badge').textContent = 'Erreur de chargement';
+            document.getElementById('payment-status-badge').textContent = CFG_I18N.loadError;
         }
     });
 }
@@ -352,7 +417,7 @@ $('#payment-config-form').on('submit', function(e) {
 
     var btn = document.getElementById('btn-save-payment');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> Enregistrement...';
+    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> ' + CFG_I18N.saving;
 
     var payload = {
         active_payment_provider: $('input[name="active_payment_provider"]:checked').val(),
@@ -385,7 +450,7 @@ $('#payment-config-form').on('submit', function(e) {
                 $('#kkiapay_private_key, #kkiapay_secret_key, #fedapay_secret_key').val('');
 
                 Swal.fire({
-                    title: 'Succès',
+                    title: CFG_I18N.swalSuccess,
                     text:  data.message,
                     icon:  'success',
                     timer: 2500,
@@ -394,18 +459,18 @@ $('#payment-config-form').on('submit', function(e) {
 
                 refreshKeyFields();
             } else {
-                Swal.fire('Erreur', data.message || 'Une erreur est survenue.', 'error');
+                Swal.fire(CFG_I18N.swalError, data.message || CFG_I18N.unexpectedError, 'error');
             }
         },
         error: function(xhr) {
             var msg = xhr.responseJSON && xhr.responseJSON.message
                 ? xhr.responseJSON.message
-                : 'Une erreur est survenue.';
-            Swal.fire('Erreur', msg, 'error');
+                : CFG_I18N.unexpectedError;
+            Swal.fire(CFG_I18N.swalError, msg, 'error');
         },
         complete: function() {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-save me-1"></i> Enregistrer la configuration';
+            btn.innerHTML = CFG_I18N.btnSavePayment;
         }
     });
 });
@@ -415,7 +480,7 @@ $('#at-config-form').on('submit', function(e) {
     e.preventDefault();
     var btn = document.getElementById('btn-save-at');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> Enregistrement...';
+    btn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i> ' + CFG_I18N.saving;
 
     var payload = {
         at_username:            $('#at_username').val(),
@@ -432,20 +497,53 @@ $('#at-config-form').on('submit', function(e) {
         headers:     { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), 'Accept': 'application/json' },
         success: function(data) {
             if (data.status) {
-                $('#at_api_key').val('').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
-                Swal.fire({ title: 'Succès', text: data.message, icon: 'success', timer: 2500, showConfirmButton: false });
+                $('#at_api_key').val('').attr('placeholder', CFG_I18N.keySetPh);
+                Swal.fire({ title: CFG_I18N.swalSuccess, text: data.message, icon: 'success', timer: 2500, showConfirmButton: false });
             } else {
-                Swal.fire('Erreur', data.message || 'Une erreur est survenue.', 'error');
+                Swal.fire(CFG_I18N.swalError, data.message || CFG_I18N.unexpectedError, 'error');
             }
         },
         error: function(xhr) {
-            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Une erreur est survenue.';
-            Swal.fire('Erreur', msg, 'error');
+            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : CFG_I18N.unexpectedError;
+            Swal.fire(CFG_I18N.swalError, msg, 'error');
         },
         complete: function() {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bx bx-save me-1"></i> Enregistrer la configuration AT';
+            btn.innerHTML = CFG_I18N.btnSaveAt;
         }
+    });
+});
+
+// ---- Contact WhatsApp blocage ----
+document.getElementById('btn-save-contact-blocage').addEventListener('click', function () {
+    const btn = this;
+    const numero = document.getElementById('whatsapp_contact_blocage').value.trim();
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-pulse me-1"></i> ' + CFG_I18N.inProgress;
+
+    fetch('{{ route("platform.contact_blocage.update") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ whatsapp_contact_blocage: numero }),
+    })
+    .then(r => r.json())
+    .then(res => {
+        btn.disabled = false;
+        btn.innerHTML = CFG_I18N.btnSave;
+        if (res.status) {
+            Swal.fire({ icon: 'success', title: CFG_I18N.swalSuccess, text: res.message, timer: 2500, showConfirmButton: false });
+        } else {
+            Swal.fire({ icon: 'error', title: CFG_I18N.swalError, text: res.message });
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = CFG_I18N.btnSave;
+        Swal.fire({ icon: 'error', title: CFG_I18N.swalError, text: CFG_I18N.unexpectedError });
     });
 });
 
@@ -461,13 +559,13 @@ function refreshKeyFields() {
             $('#fedapay_public_key').val(data.fedapay_public_key || '');
             $('#fedapay_sandbox').val(data.fedapay_sandbox ? '1' : '0');
             if (data.has_kkiapay_private_key) {
-                $('#kkiapay_private_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                $('#kkiapay_private_key').attr('placeholder', CFG_I18N.keySetPh);
             }
             if (data.has_kkiapay_secret_key) {
-                $('#kkiapay_secret_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                $('#kkiapay_secret_key').attr('placeholder', CFG_I18N.keySetPh);
             }
             if (data.has_fedapay_secret_key) {
-                $('#fedapay_secret_key').attr('placeholder', '••••••••• (définie — laisser vide pour conserver)');
+                $('#fedapay_secret_key').attr('placeholder', CFG_I18N.keySetPh);
             }
         }
     });

@@ -43,16 +43,7 @@ class DocumentMail extends Mailable
         }
 
         if (!empty($pdfContent)) {
-            $mail->withSwiftMessage(function ($message) use ($pdfContent, $pdfFilename) {
-                $attachment = new \Swift_Attachment($pdfContent, $pdfFilename, 'application/pdf');
-                $message->attach($attachment);
-            });
-
-            Log::info('DocumentMail: PDF attaché via withSwiftMessage', [
-                'taille'  => strlen($pdfContent),
-                'fichier' => $pdfFilename,
-                'email'   => $this->data['destinataire_email'],
-            ]);
+            $mail->attachData($pdfContent, $pdfFilename, ['mime' => 'application/pdf']);
         }
 
         return $mail;

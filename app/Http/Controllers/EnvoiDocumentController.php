@@ -102,6 +102,8 @@ class EnvoiDocumentController extends Controller
             ]);
         }
 
+        set_time_limit(300);
+
         $methodeEnvoi   = $input['methode_envoi'];
         $typeDocuments  = $input['type_documents'];
         $destinatairesInput = $input['destinataires'];
@@ -171,9 +173,25 @@ class EnvoiDocumentController extends Controller
         $pdfService = new PdfGeneratorService();
         $whatsapp   = $methodeEnvoi === 'whatsapp' ? new WhatsAppService() : null;
 
+        // Pré-charger tous les destinataires en une seule requête
+        $locataireIds    = [];
+        $proprietaireIds = [];
+        foreach ($destinatairesInput as $d) {
+            if ($d['type'] === 'locataire') $locataireIds[]    = (int) $d['id'];
+            else                             $proprietaireIds[] = (int) $d['id'];
+        }
+        $locatairesMap    = !empty($locataireIds)
+            ? Locataire::whereIn('id', $locataireIds)->get()->keyBy('id')
+            : collect();
+        $proprietairesMap = !empty($proprietaireIds)
+            ? Proprietaire::whereIn('id', $proprietaireIds)->get()->keyBy('id')
+            : collect();
+
         $totalEnvois = 0;
         $reussis     = 0;
         $details     = [];
+        $logEntries  = [];
+        $now         = now();
 
         // Boucle : destinataire × document
         foreach ($destinatairesInput as $destInput) {
@@ -181,12 +199,10 @@ class EnvoiDocumentController extends Controller
             $destId   = (int) $destInput['id'];
             $contact  = trim($destInput['contact'] ?? '');
 
-            // Récupérer le modèle destinataire
-            if ($destType === 'locataire') {
-                $destinataire = Locataire::find($destId);
-            } else {
-                $destinataire = Proprietaire::find($destId);
-            }
+            // Récupérer le modèle depuis le cache en mémoire
+            $destinataire = $destType === 'locataire'
+                ? ($locatairesMap[$destId] ?? null)
+                : ($proprietairesMap[$destId] ?? null);
 
             if (!$destinataire) {
                 $details[] = [
@@ -227,7 +243,7 @@ class EnvoiDocumentController extends Controller
                             'statut'       => 'error',
                             'erreur'       => 'Aucun mois sélectionné.',
                         ];
-                        EnvoiDocument::create([
+                        $logEntries[] = [
                             'iddirection_ref'      => Auth::user()->iddirection_ref,
                             'destinataire_type'    => $destType,
                             'destinataire_id'      => $destId,
@@ -239,7 +255,9 @@ class EnvoiDocumentController extends Controller
                             'message_erreur'       => 'Aucun mois sélectionné.',
                             'message_personnalise' => $msgPerso ?: null,
                             'envoye_par'           => Auth::id(),
-                        ]);
+                            'created_at'           => $now,
+                            'updated_at'           => $now,
+                        ];
                         continue;
                     }
                     $iterIds = $factureIds;
@@ -289,8 +307,7 @@ class EnvoiDocumentController extends Controller
                     } catch (\Exception $e) {
                         $statut        = 'error';
                         $messageErreur = 'Génération PDF : ' . $e->getMessage();
-
-                        EnvoiDocument::create([
+                        $logEntries[]  = [
                             'iddirection_ref'      => Auth::user()->iddirection_ref,
                             'destinataire_type'    => $destType,
                             'destinataire_id'      => $destId,
@@ -304,8 +321,9 @@ class EnvoiDocumentController extends Controller
                             'pdf_temp_path'        => null,
                             'message_personnalise' => $msgPerso ?: null,
                             'envoye_par'           => Auth::id(),
-                        ]);
-
+                            'created_at'           => $now,
+                            'updated_at'           => $now,
+                        ];
                         $details[] = [
                             'destinataire' => $destinataireNom,
                             'document'     => $typeDoc,
@@ -346,8 +364,11 @@ class EnvoiDocumentController extends Controller
                         $tempPath = $result['temp_path'] ?? null;
                     }
 
-                    // Journaliser
-                    EnvoiDocument::create([
+                    if ($statut === 'success') {
+                        $reussis++;
+                    }
+
+                    $logEntries[] = [
                         'iddirection_ref'      => Auth::user()->iddirection_ref,
                         'destinataire_type'    => $destType,
                         'destinataire_id'      => $destId,
@@ -361,11 +382,9 @@ class EnvoiDocumentController extends Controller
                         'pdf_temp_path'        => $tempPath,
                         'message_personnalise' => $msgPerso ?: null,
                         'envoye_par'           => Auth::id(),
-                    ]);
-
-                    if ($statut === 'success') {
-                        $reussis++;
-                    }
+                        'created_at'           => $now,
+                        'updated_at'           => $now,
+                    ];
 
                     $details[] = [
                         'destinataire' => $destinataireNom,
@@ -375,6 +394,11 @@ class EnvoiDocumentController extends Controller
                     ];
                 } // fin foreach $iterIds
             }
+        }
+
+        // Journaliser tous les envois en une seule requête
+        if (!empty($logEntries)) {
+            \Illuminate\Support\Facades\DB::table('envois_documents')->insert($logEntries);
         }
 
         $echouees = $totalEnvois - $reussis;
@@ -561,37 +585,46 @@ class EnvoiDocumentController extends Controller
             ]);
         }
 
+        set_time_limit(300);
+
         $agence    = get_annexe_details_for_invoice(get_active_annexe_id());
         $agenceNom = $agence['designation'] ?? 'Agence Immobilière';
 
-        $whatsapp = $methodeEnvoi === 'whatsapp' ? new WhatsAppService() : null;
+        $whatsapp  = $methodeEnvoi === 'whatsapp' ? new WhatsAppService() : null;
         $atService = $methodeEnvoi === 'sms' ? new AfricasTalkingService() : null;
 
-        $moisCourant       = Carbon::now()->locale('fr')->isoFormat('MMMM YYYY');
-        $dateFinFormatted  = $dateFin ? Carbon::parse($dateFin)->locale('fr')->isoFormat('D MMMM YYYY') : null;
+        $moisCourant      = Carbon::now()->locale('fr')->isoFormat('MMMM YYYY');
+        $dateFinFormatted = $dateFin ? Carbon::parse($dateFin)->locale('fr')->isoFormat('D MMMM YYYY') : null;
+
+        // Pré-charger tous les locataires avec leurs jointures en une seule requête
+        $destIds      = array_column($destinatairesInput, 'id');
+        $locatairesMap = Locataire::join('maisons', 'locataires.maison_id', '=', 'maisons.id')
+            ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
+            ->whereIn('locataires.id', $destIds)
+            ->select(
+                'locataires.id',
+                'locataires.nom',
+                'locataires.prenom',
+                'locataires.prix_mois',
+                'maisons.nom_maison',
+                'chambres.numero_chambre',
+                'chambres.type_chambre'
+            )
+            ->get()
+            ->keyBy('id');
 
         $totalEnvois = 0;
         $reussis     = 0;
         $details     = [];
+        $logEntries  = [];
+        $now         = now();
 
         foreach ($destinatairesInput as $destInput) {
             $totalEnvois++;
             $destId  = (int) $destInput['id'];
             $contact = trim($destInput['contact'] ?? '');
 
-            $locataire = Locataire::join('maisons', 'locataires.maison_id', '=', 'maisons.id')
-                ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
-                ->where('locataires.id', $destId)
-                ->select(
-                    'locataires.id',
-                    'locataires.nom',
-                    'locataires.prenom',
-                    'locataires.prix_mois',
-                    'maisons.nom_maison',
-                    'chambres.numero_chambre',
-                    'chambres.type_chambre'
-                )
-                ->first();
+            $locataire = $locatairesMap[$destId] ?? null;
 
             if (!$locataire) {
                 $details[] = ['destinataire' => "#{$destId}", 'statut' => 'error', 'erreur' => 'Locataire introuvable.'];
@@ -605,7 +638,7 @@ class EnvoiDocumentController extends Controller
             if (empty($contact)) {
                 $champ = $methodeEnvoi === 'email' ? 'email' : 'téléphone';
                 $details[] = ['destinataire' => $destinataireNom, 'statut' => 'error', 'erreur' => "Le {$champ} est vide."];
-                EnvoiDocument::create([
+                $logEntries[] = [
                     'iddirection_ref'      => Auth::user()->iddirection_ref,
                     'destinataire_type'    => 'locataire',
                     'destinataire_id'      => $destId,
@@ -617,7 +650,9 @@ class EnvoiDocumentController extends Controller
                     'message_erreur'       => "Le {$champ} est vide.",
                     'message_personnalise' => $msgPerso ?: null,
                     'envoye_par'           => Auth::id(),
-                ]);
+                    'created_at'           => $now,
+                    'updated_at'           => $now,
+                ];
                 continue;
             }
 
@@ -675,7 +710,11 @@ class EnvoiDocumentController extends Controller
                 }
             }
 
-            EnvoiDocument::create([
+            if ($statut === 'success') {
+                $reussis++;
+            }
+
+            $logEntries[] = [
                 'iddirection_ref'      => Auth::user()->iddirection_ref,
                 'destinataire_type'    => 'locataire',
                 'destinataire_id'      => $destId,
@@ -687,17 +726,20 @@ class EnvoiDocumentController extends Controller
                 'message_erreur'       => $messageErreur,
                 'message_personnalise' => $msgPerso ?: null,
                 'envoye_par'           => Auth::id(),
-            ]);
-
-            if ($statut === 'success') {
-                $reussis++;
-            }
+                'created_at'           => $now,
+                'updated_at'           => $now,
+            ];
 
             $details[] = [
                 'destinataire' => $destinataireNom,
                 'statut'       => $statut,
                 'erreur'       => $messageErreur,
             ];
+        }
+
+        // Journaliser tous les envois en une seule requête
+        if (!empty($logEntries)) {
+            \Illuminate\Support\Facades\DB::table('envois_documents')->insert($logEntries);
         }
 
         $echouees = $totalEnvois - $reussis;

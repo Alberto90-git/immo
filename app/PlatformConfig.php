@@ -26,6 +26,8 @@ class PlatformConfig extends Model
         'at_api_key',
         'at_sender_id',
         'at_whatsapp_product_id',
+        // Contact WhatsApp affiché lors du blocage d'une entreprise
+        'whatsapp_contact_blocage',
     ];
 
     protected $casts = [

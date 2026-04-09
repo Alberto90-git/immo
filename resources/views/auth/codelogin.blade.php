@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
+<html lang="{{ app()->getLocale() }}" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
     data-assets-path="../assets/" data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Lokativ | Code de vérification</title>
+    <title>Lokativ | {{ __('pages.otp_title') }}</title>
     <meta name="description" content="Vérification OTP pour accéder à votre compte Lokativ" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('css_file')
@@ -282,8 +282,8 @@
                             <span class="auth-brand-name">Lokativ</span>
                         </div>
 
-                        <h4>Vérification 🔐</h4>
-                        <p class="auth-subtitle">Saisissez le code OTP envoyé à votre e-mail</p>
+                        <h4>{{ __('pages.otp_heading') }} 🔐</h4>
+                        <p class="auth-subtitle">{{ __('pages.otp_subtitle') }}</p>
 
                         @include('display_message')
 
@@ -293,13 +293,13 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;flex-shrink:0;">
                                     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                                 </svg>
-                                Envoi du code en cours…
+                                {{ __('pages.otp_sending') }}
                             </div>
                             <div id="otp-sent">
-                                <strong>✓</strong> Code envoyé à <span id="otp-email-display">votre e-mail</span>
+                                <strong>✓</strong> {{ __('pages.otp_sent_to') }} <span id="otp-email-display">{{ __('pages.otp_sent_default') }}</span>
                             </div>
                             <div id="otp-error">
-                                <span id="otp-error-msg">Erreur d'envoi.</span>
+                                <span id="otp-error-msg">{{ __('pages.otp_error_default') }}</span>
                             </div>
                         </div>
 
@@ -307,7 +307,7 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label for="code" class="form-label">Code de vérification</label>
+                                <label for="code" class="form-label">{{ __('pages.otp_label') }}</label>
 
                                 <div class="otp-container">
                                     <input type="text" class="otp-input" maxlength="1" data-index="0" inputmode="numeric">
@@ -324,15 +324,15 @@
                             </div>
 
                             <button class="btn btn-primary" type="submit" id="submitBtn">
-                                Valider le code
+                                {{ __('pages.otp_btn_validate') }}
                             </button>
                         </form>
 
                         <div class="resend-container">
-                            <p class="resend-hint">Vous n'avez pas reçu le code ?</p>
-                            <a href="#" class="resend-link" id="resendLink">Renvoyer le code</a>
+                            <p class="resend-hint">{{ __('pages.otp_resend_hint') }}</p>
+                            <a href="#" class="resend-link" id="resendLink">{{ __('pages.otp_resend_link') }}</a>
                             <div class="timer" id="timer" style="display:none;">
-                                Renvoi disponible dans <span id="countdown">60</span>s
+                                {{ __('pages.otp_timer_prefix') }} <span id="countdown">60</span>s
                             </div>
                         </div>
 
@@ -400,13 +400,18 @@
             if (!isFormComplete()) { e.preventDefault(); otpInputs[0].focus(); return; }
             submitBtn.classList.add('btn-loading');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Vérification…';
+            submitBtn.textContent = OTP_I18N.verifying;
         });
 
         // ── Envoi OTP via AJAX ────────────────────────────────────────
         const OTP_URL = "{{ route('send_login_otp') }}";
         const CSRF    = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                       || "{{ csrf_token() }}";
+
+        var OTP_I18N = {
+            verifying:    '{{ __('pages.otp_js_verifying') }}',
+            networkError: '{{ __('pages.otp_js_network_error') }}',
+        };
 
         function showOtpSending() {
             document.getElementById('otp-sending').style.display = 'flex';
@@ -435,14 +440,14 @@
                 });
                 const data = await res.json();
                 if (data.status) {
-                    showOtpSent(data.message.replace('Code envoyé à ', ''));
+                    showOtpSent(data.message.match(/\S+@\S+\.\S+/)?.[0] || '');
                     startResendCooldown(60);
                 } else {
                     showOtpError(data.message);
                     if (data.remaining) startResendCooldown(data.remaining);
                 }
             } catch (e) {
-                showOtpError('Erreur réseau. Veuillez réessayer.');
+                showOtpError(OTP_I18N.networkError);
             }
         }
 

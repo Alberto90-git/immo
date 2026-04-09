@@ -3,12 +3,12 @@
 @section('content')
 
     @section('title')
-    <title>Gestion reporting</title>
+    <title>{{ __('pages.fin_title') }}</title>
     @endsection
 
 
     <div class="container-xxl flex-grow-1 container-p-y">
-       <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Gestion statistique /</span> finance</h4>
+       <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('pages.fin_breadcrumb_parent') }} /</span> {{ __('pages.fin_breadcrumb') }}</h4>
       
         <div class="col-xl-12">
             <div class="nav-align-top mb-4">
@@ -24,7 +24,7 @@
                         aria-controls="navs-pills-justified-point_proprio"
                         aria-selected="true">
 
-                        <i class="tf-icons bx bx-home"></i> Point par propriétaire
+                        <i class="tf-icons bx bx-home"></i> {{ __('pages.fin_tab_point_proprio') }}
                         {{-- <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger">3</span> --}}
                     </button>
                     </li>
@@ -39,7 +39,7 @@
                         aria-controls="navs-pills-justified-benefice_proprio"
                         aria-selected="false"
                     >
-                        <i class="tf-icons bx bx-user"></i> Bénéfice de l'agence / propriétaire
+                        <i class="tf-icons bx bx-user"></i> {{ __('pages.fin_tab_benefice_proprio') }}
                     </button>
                     </li>
 
@@ -54,7 +54,7 @@
                             aria-controls="navs-pills-justified-benefice_general"
                             aria-selected="false"
                         >
-                            <i class="tf-icons bx bx-user"></i> Bénéfice général de l'agence
+                            <i class="tf-icons bx bx-user"></i> {{ __('pages.fin_tab_benefice_general') }}
                         </button>
                         </li>
                     
@@ -70,9 +70,9 @@
                                 <div class="row align-items-center">
                                     <!-- Propriétaire -->
                                     <div class="col-md-3">
-                                        <label>Propriétaire<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_owner') }}<span style="color: red;">*</span></label>
                                         <select class="form-select" name="proprietaire" id="proprietaire">
-                                            <option selected disabled>Choisir un propriétaire</option>
+                                            <option selected disabled>{{ __('pages.fin_ph_owner') }}</option>
                                             @if(isset($data))
                                             @foreach($data as $item)
                                             <option value="{{ $item->id }}">{{ $item->nom }} {{ $item->prenom }}</option>
@@ -83,9 +83,9 @@
                             
                                     <!-- Pourcentage -->
                                     <div class="col-md-3">
-                                        <label>Pourcentage de gestion<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_pct') }}<span style="color: red;">*</span></label>
                                         <select class="form-select" name="pourcentage" id="pourcentage">
-                                            <option selected disabled>Choisir un pourcentage</option>
+                                            <option selected disabled>{{ __('pages.fin_ph_pct') }}</option>
                                             @if(isset($pourcentages))
                                                 @foreach($pourcentages as $pct)
                                                     <option value="{{ $pct }}">{{ $pct }} %</option>
@@ -98,13 +98,13 @@
                             
                                     <!-- Date début -->
                                     <div class="col-md-3">
-                                        <label>Date début<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_date_start') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_debut" id="date_debut" class="form-control" required>
                                     </div>
-                            
+
                                     <!-- Date fin -->
                                     <div class="col-md-3">
-                                        <label>Date fin<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_date_end') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_fin" id="date_fin" class="form-control" required>
                                     </div>
                                 </div>
@@ -123,19 +123,19 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">Agence</th>
-                                    <th scope="col">Maison</th>
-                                    <th scope="col">Quartier</th>
-                                    <th scope="col">Type chambre(N°)</th>
-                                    <th scope="col">Prix</th>
-                                    <th scope="col">Montant propriétaire</th>
+                                    <th scope="col">{{ __('pages.fin_th_agency') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_house') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_district') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_price') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_owner_amount') }}</th>
                                   </tr>
                                 </thead>
                                 <tbody id="solde">
-                                  
+
                                 </tbody>
-                                
-                                <th colspan="5">Total à payer au propriétaire</th>
+
+                                <th colspan="5">{{ __('pages.fin_total_owner') }}</th>
                                   <td id="total"></td>
                         
                               </table>
@@ -153,9 +153,9 @@
                                 <div class="row align-items-center">
                                     <!-- Propriétaire -->
                                     <div class="col-md-3">
-                                        <label>Propriétaire<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_owner') }}<span style="color: red;">*</span></label>
                                         <select class="form-select" name="proprietaire2" id="proprietaire2">
-                                            <option selected disabled>Choisir un propriétaire</option>
+                                            <option selected disabled>{{ __('pages.fin_ph_owner') }}</option>
                                             @if(isset($data))
                                             @foreach($data as $item)
                                             <option value="{{ $item->id }}">{{ $item->nom }} {{ $item->prenom }}</option>
@@ -166,9 +166,9 @@
                             
                                     <!-- Pourcentage -->
                                     <div class="col-md-3">
-                                        <label>Pourcentage de gestion<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_pct') }}<span style="color: red;">*</span></label>
                                         <select class="form-select" name="pourcentage2" id="pourcentage2">
-                                            <option selected disabled>Choisir un pourcentage</option>
+                                            <option selected disabled>{{ __('pages.fin_ph_pct') }}</option>
                                             @if(isset($pourcentages))
                                                 @foreach($pourcentages as $pct)
                                                     <option value="{{ $pct }}">{{ $pct }} %</option>
@@ -181,13 +181,13 @@
                             
                                     <!-- Date début -->
                                     <div class="col-md-3">
-                                        <label>Date début<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_date_start') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_debut2" id="date_debut2" class="form-control" required>
                                     </div>
-                            
+
                                     <!-- Date fin -->
                                     <div class="col-md-3">
-                                        <label>Date fin<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_date_end') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_fin2" id="date_fin2" class="form-control" required>
                                     </div>
                                 </div>
@@ -204,19 +204,19 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">Agence</th>
-                                    <th scope="col">Maison</th>
-                                    <th scope="col">Quartier</th>
-                                    <th scope="col">Type chambre (N°)</th>
-                                    <th scope="col">Prix</th>
-                                    <th scope="col">Montant de l'agence</th>
+                                    <th scope="col">{{ __('pages.fin_th_agency') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_house') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_district') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_price') }}</th>
+                                    <th scope="col">{{ __('pages.fin_th_agency_amount') }}</th>
                                   </tr>
                                 </thead>
                                 <tbody id="solde2">
-                                  
+
                                 </tbody>
-                                
-                                <th colspan="5">Total à payer à l'agence</th>
+
+                                <th colspan="5">{{ __('pages.fin_total_agency') }}</th>
                                   <td id="total2"></td>
                               </table>
                             </div>
@@ -233,9 +233,9 @@
                                 <div class="row align-items-center">
                                     <!-- Pourcentage de gestion -->
                                     <div class="col-md-4">
-                                        <label>Pourcentage de gestion<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_pct') }}<span style="color: red;">*</span></label>
                                         <select class="form-select" name="pourcentage_general" id="pourcentage_general">
-                                            <option selected disabled>Choisir un pourcentage</option>
+                                            <option selected disabled>{{ __('pages.fin_ph_pct') }}</option>
                                             @if(isset($pourcentages))
                                                 @foreach($pourcentages as $pct)
                                                     <option value="{{ $pct }}">{{ $pct }} %</option>
@@ -248,13 +248,13 @@
                             
                                     <!-- Date début -->
                                     <div class="col-md-4">
-                                        <label>Date début<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_date_start') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_debut_general" id="date_debut_general" class="form-control" required>
                                     </div>
-                            
+
                                     <!-- Date fin -->
                                     <div class="col-md-4">
-                                        <label>Date fin<span style="color: red;">*</span></label>
+                                        <label>{{ __('pages.fin_label_date_end') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_fin_general" id="date_fin_general" class="form-control" required>
                                     </div>
                                 </div>
@@ -271,19 +271,19 @@
                             <table id="example" class="table table-bordered border-primary" style="width:100%" >
                               <thead>
                               <tr>
-                                <th scope="col">Agence</th>
-                                <th scope="col">Maison</th>
-                                <th scope="col">Quartier</th>
-                                <th scope="col">Type chambre (N°)</th>
-                                <th scope="col">Prix</th>
-                                <th scope="col">Montant de l'agence</th>
+                                <th scope="col">{{ __('pages.fin_th_agency') }}</th>
+                                <th scope="col">{{ __('pages.fin_th_house') }}</th>
+                                <th scope="col">{{ __('pages.fin_th_district') }}</th>
+                                <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
+                                <th scope="col">{{ __('pages.fin_th_price') }}</th>
+                                <th scope="col">{{ __('pages.fin_th_agency_amount') }}</th>
                               </tr>
                             </thead>
                             <tbody id="solde_general">
-                               
+
                             </tbody>
-                            
-                            <th colspan="5">Total</th>
+
+                            <th colspan="5">{{ __('pages.fin_total') }}</th>
                               <td id="total_general"></td>
                      
                           </table>
@@ -298,11 +298,15 @@
 
     <script>
 
+        var FIN_I18N = {
+            alertAllFields: '{{ __('pages.fin_alert_all_fields') }}',
+        };
+
         $.ajaxSetup({
           headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           }
-        });   
+        });
     
     
         // Auto-sélection du pourcentage quand un propriétaire est choisi
@@ -363,7 +367,7 @@
             if((proprietaire === null) || (pourcentage === null) || (date_debut === null) 
             || (date_fin === null) )
             {
-                alert('Merci de sélectionner toutes les options');
+                alert(FIN_I18N.alertAllFields);
                 return false;
             }
             else
@@ -410,7 +414,7 @@
             if((proprietaire2 === null) || (pourcentage2 === null) || (date_debut2 === null) 
             || (date_fin2 === null) )
             {
-                alert('Merci de sélectionner toutes les options');
+                alert(FIN_I18N.alertAllFields);
                 return false;
             }
             else
@@ -455,7 +459,7 @@
             if( (pourcentage_general === null) || (date_debut_general === null) 
             || (date_fin_general === null) )
             {
-                alert('Merci de sélectionner tous les champs');
+                alert(FIN_I18N.alertAllFields);
                 return false;
             }
             else

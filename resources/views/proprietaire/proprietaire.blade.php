@@ -1,7 +1,7 @@
 @extends('layouts.template')
 
 @section('title')
-    <title>Gestion propriétaire</title>
+    <title>{{ __('pages.owner_title') }}</title>
 @endsection
 
 
@@ -12,7 +12,7 @@
 
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion propriétaire</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.owner_breadcrumb') }}</h4>
     
     @can('ajoute-proprietaire')
         <div class="col-md-6">

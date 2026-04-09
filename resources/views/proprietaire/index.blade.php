@@ -1,7 +1,7 @@
 @extends('layouts.template')
 
 @section('title')
-    <title>Gestion propriétaire</title>
+    <title>{{ __('pages.owner_title') }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
     <style>
         .iti { width: 100%; }
@@ -23,7 +23,7 @@
 
     @include('notification.display_message')
 
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil /</span> Gestion propriétaire</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('pages.home') }} /</span> {{ __('pages.owner_breadcrumb') }}</h4>
 
     @can('ajoute-proprietaire')
         <div class="col-md-6 mb-3">
@@ -39,42 +39,42 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white">Ajouter un propriétaire</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    <h5 class="modal-title text-white">{{ __('pages.owner_add_modal') }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="formAjouter" class="row g-3">
                         @csrf
 
                         <div class="col-md-6">
-                            <label class="form-label">Nom <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nom" placeholder="Nom du propriétaire" required>
+                            <label class="form-label">{{ __('pages.owner_lastname') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="nom" placeholder="{{ __('pages.owner_lastname_ph') }}" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Prénom <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="prenom" placeholder="Prénom du propriétaire" required>
+                            <label class="form-label">{{ __('pages.owner_firstname') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="prenom" placeholder="{{ __('pages.owner_firstname_ph') }}" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('pages.owner_phone') }} <span class="text-danger">*</span></label>
                             <input type="tel" id="tel-ajouter" class="form-control" name="telephone" placeholder="XX XX XX XX" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Adresse <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="adresse" placeholder="Adresse complète" required>
+                            <label class="form-label">{{ __('pages.owner_address') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="adresse" placeholder="{{ __('pages.owner_address_ph') }}" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" placeholder="exemple@email.com">
+                            <label class="form-label">{{ __('pages.owner_email') }}</label>
+                            <input type="email" class="form-control" name="email" placeholder="{{ __('pages.owner_email_ph') }}">
                         </div>
 
                         <div class="modal-footer mt-3">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('pages.param_annexe_close') }}</button>
                             <button type="submit" class="btn btn-primary">
-                                <span class="bx bx-save me-1"></span> Enregistrer
+                                <span class="bx bx-save me-1"></span> {{ __('pages.param_btn_save') }}
                             </button>
                         </div>
                     </form>
@@ -86,7 +86,7 @@
     {{-- Liste des propriétaires --}}
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-center">
-            <h5 class="mb-0 text-white"><i class="bx bx-user me-1"></i> Liste des propriétaires</h5>
+            <h5 class="mb-0 text-white"><i class="bx bx-user me-1"></i> {{ __('pages.owner_list') }}</h5>
         </div>
 
         <div class="card-body">
@@ -94,11 +94,11 @@
                 <table id="example" class="table table-striped table-hover align-middle mb-0" style="width:100%">
                     <thead class="table-light">
                         <tr>
-                            <th>Nom & prénoms</th>
-                            <th>Téléphone</th>
-                            <th>Adresse</th>
-                            <th>Email</th>
-                            <th class="text-center">Actions</th>
+                            <th>{{ __('pages.owner_name_col') }}</th>
+                            <th>{{ __('pages.owner_phone') }}</th>
+                            <th>{{ __('pages.owner_address') }}</th>
+                            <th>{{ __('pages.owner_email') }}</th>
+                            <th class="text-center">{{ __('pages.param_th_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,7 +113,7 @@
                                         <td class="text-center">
                                             @can('modify-proprietaire')
                                                 <a class="btn btn-sm btn-primary me-1"
-                                                   title="Modifier"
+                                                   title="{{ __('pages.owner_edit_modal') }}"
                                                    data-bs-toggle="modal"
                                                    data-bs-target="#modifier{{ $item->id }}">
                                                     <i class="bx bx-edit-alt"></i>
@@ -123,7 +123,7 @@
                                             @can('delete-proprietaire')
                                                 <button type="button"
                                                         class="btn btn-sm btn-danger btn-supprimer"
-                                                        title="Supprimer"
+                                                        title="{{ __('pages.owner_delete_title') }}"
                                                         data-id="{{ $item->id }}"
                                                         data-nom="{{ $item->nom }} {{ $item->prenom }}">
                                                     <i class="bx bx-trash"></i>
@@ -147,8 +147,8 @@
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                         <div class="modal-header bg-primary">
-                            <h5 class="modal-title text-white">Modifier un propriétaire</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            <h5 class="modal-title text-white">{{ __('pages.owner_edit_modal') }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <form class="row g-3 form-modifier" data-id="{{ $item->id }}">
@@ -156,34 +156,34 @@
                                 <input type="hidden" name="id" value="{{ $item->id }}">
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Nom <span class="text-danger">*</span></label>
+                                    <label class="form-label">{{ __('pages.owner_lastname') }} <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="nom" value="{{ $item->nom }}" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                                    <label class="form-label">{{ __('pages.owner_firstname') }} <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="prenom" value="{{ $item->prenom }}" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                    <label class="form-label">{{ __('pages.owner_phone') }} <span class="text-danger">*</span></label>
                                     <input type="tel" id="tel-modifier-{{ $item->id }}" class="form-control tel-modifier" name="telephone" value="{{ $item->telephone }}" data-id="{{ $item->id }}" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                                    <label class="form-label">{{ __('pages.owner_address') }} <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="adresse" value="{{ $item->adresse }}" required>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" name="email" value="{{ $item->email }}" placeholder="exemple@email.com">
+                                    <label class="form-label">{{ __('pages.owner_email') }}</label>
+                                    <input type="email" class="form-control" name="email" value="{{ $item->email }}" placeholder="{{ __('pages.owner_email_ph') }}">
                                 </div>
 
                                 <div class="modal-footer mt-3">
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('pages.param_annexe_close') }}</button>
                                     <button type="submit" class="btn btn-primary">
-                                        <span class="bx bx-save me-1"></span> Enregistrer
+                                        <span class="bx bx-save me-1"></span> {{ __('pages.param_btn_save') }}
                                     </button>
                                 </div>
                             </form>
@@ -206,6 +206,28 @@ var URL_DESTROY = '{{ route("destroy_proprio") }}';
 var CAN_MODIFY  = {{ auth()->user()->can('modify-proprietaire') ? 'true' : 'false' }};
 var CAN_DELETE  = {{ auth()->user()->can('delete-proprietaire') ? 'true' : 'false' }};
 
+var PROPRIO_I18N = {
+    addModal:     '{{ __('pages.owner_add_modal') }}',
+    editModal:    '{{ __('pages.owner_edit_modal') }}',
+    lastname:     '{{ __('pages.owner_lastname') }}',
+    firstname:    '{{ __('pages.owner_firstname') }}',
+    phone:        '{{ __('pages.owner_phone') }}',
+    address:      '{{ __('pages.owner_address') }}',
+    email:        '{{ __('pages.owner_email') }}',
+    emailPh:      '{{ __('pages.owner_email_ph') }}',
+    close:        '{{ __('pages.param_annexe_close') }}',
+    save:         '{{ __('pages.param_btn_save') }}',
+    success:      '{{ __('pages.param_js_success') }}',
+    error:        '{{ __('pages.owner_js_error') }}',
+    updated:      '{{ __('pages.owner_js_updated') }}',
+    deleted:      '{{ __('pages.owner_js_deleted') }}',
+    unexpected:   '{{ __('pages.owner_js_unexpected') }}',
+    delTitle:     '{{ __('pages.owner_js_del_title') }}',
+    delText:      '{{ __('pages.owner_js_del_text') }}',
+    delYes:       '{{ __('pages.param_js_del_yes') }}',
+    cancel:       '{{ __('pages.param_btn_cancel') }}',
+};
+
 // ─── INTL-TEL-INPUT ───────────────────────────────────────────────────────────
 var UTILS_SCRIPT = 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js';
 
@@ -219,7 +241,6 @@ window._itiProprioAjouter = window.intlTelInput(document.getElementById('tel-ajo
 var itiAjouter = window._itiProprioAjouter;
 
 // Stocker les instances pour les modals modifier
-// Détruire les anciennes instances itiModifiers
 if (window._itiProprioModifiers) {
     Object.values(window._itiProprioModifiers).forEach(function(iti) { try { iti.destroy(); } catch(e) {} });
 }
@@ -246,37 +267,37 @@ function creerModalModifier(p) {
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white">Modifier un propriétaire</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    <h5 class="modal-title text-white">${PROPRIO_I18N.editModal}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form class="row g-3 form-modifier" data-id="${p.id}">
                         <input type="hidden" name="_token" value="${CSRF_TOKEN}">
                         <input type="hidden" name="id" value="${p.id}">
                         <div class="col-md-6">
-                            <label class="form-label">Nom <span class="text-danger">*</span></label>
+                            <label class="form-label">${PROPRIO_I18N.lastname} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="nom" value="${p.nom}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                            <label class="form-label">${PROPRIO_I18N.firstname} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="prenom" value="${p.prenom}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                            <label class="form-label">${PROPRIO_I18N.phone} <span class="text-danger">*</span></label>
                             <input type="tel" id="tel-modifier-${p.id}" class="form-control tel-modifier" name="telephone" value="${p.telephone}" data-id="${p.id}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                            <label class="form-label">${PROPRIO_I18N.address} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="adresse" value="${p.adresse}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" value="${p.email || ''}" placeholder="exemple@email.com">
+                            <label class="form-label">${PROPRIO_I18N.email}</label>
+                            <input type="email" class="form-control" name="email" value="${p.email || ''}" placeholder="${PROPRIO_I18N.emailPh}">
                         </div>
                         <div class="modal-footer mt-3">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">${PROPRIO_I18N.close}</button>
                             <button type="submit" class="btn btn-primary">
-                                <span class="bx bx-save me-1"></span> Enregistrer
+                                <span class="bx bx-save me-1"></span> ${PROPRIO_I18N.save}
                             </button>
                         </div>
                     </form>
@@ -322,10 +343,10 @@ $(document).on('submit.page', '#formAjouter', function(e) {
             // Boutons d'action
             let actions = '';
             if (CAN_MODIFY) {
-                actions += `<a class="btn btn-sm btn-primary me-1" title="Modifier" data-bs-toggle="modal" data-bs-target="#modifier${p.id}"><i class="bx bx-edit-alt"></i></a>`;
+                actions += `<a class="btn btn-sm btn-primary me-1" title="${PROPRIO_I18N.editModal}" data-bs-toggle="modal" data-bs-target="#modifier${p.id}"><i class="bx bx-edit-alt"></i></a>`;
             }
             if (CAN_DELETE) {
-                actions += `<button type="button" class="btn btn-sm btn-danger btn-supprimer" title="Supprimer" data-id="${p.id}" data-nom="${p.nom} ${p.prenom}"><i class="bx bx-trash"></i></button>`;
+                actions += `<button type="button" class="btn btn-sm btn-danger btn-supprimer" title="${PROPRIO_I18N.delTitle}" data-id="${p.id}" data-nom="${p.nom} ${p.prenom}"><i class="bx bx-trash"></i></button>`;
             }
 
             // Ajouter la ligne au tableau
@@ -348,12 +369,12 @@ $(document).on('submit.page', '#formAjouter', function(e) {
             form.reset();
             itiAjouter.setCountry('bj');
 
-            Swal.fire({ icon: 'success', title: 'Succès', text: res.message, timer: 2000, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: PROPRIO_I18N.success, text: res.message, timer: 2000, showConfirmButton: false });
         } else {
-            Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+            Swal.fire({ icon: 'error', title: PROPRIO_I18N.error, text: res.message });
         }
     })
-    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+    .catch(() => Swal.fire({ icon: 'error', title: PROPRIO_I18N.error, text: PROPRIO_I18N.unexpected }));
 });
 
 // ─── MODIFICATION (délégation — fonctionne après re-rendu DataTables) ─────────
@@ -380,7 +401,7 @@ $(document).on('submit.page', '.form-modifier', function(e) {
                 cells[3].innerHTML  = res.proprio.email || '—';
             }
 
-            Swal.fire({ icon: 'success', title: 'Mis à jour', text: res.message, timer: 2500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: PROPRIO_I18N.updated, text: res.message, timer: 2500, showConfirmButton: false });
             const modalEl = document.getElementById('modifier' + id);
             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
             modal.hide();
@@ -392,10 +413,10 @@ $(document).on('submit.page', '.form-modifier', function(e) {
                 modalEl.removeEventListener('hidden.bs.modal', handler);
             });
         } else {
-            Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+            Swal.fire({ icon: 'error', title: PROPRIO_I18N.error, text: res.message });
         }
     })
-    .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+    .catch(() => Swal.fire({ icon: 'error', title: PROPRIO_I18N.error, text: PROPRIO_I18N.unexpected }));
 });
 
 // ─── SUPPRESSION (délégation — fonctionne après re-rendu DataTables) ──────────
@@ -404,14 +425,14 @@ $(document).on('click.page', '.btn-supprimer', function() {
     const nom = this.dataset.nom;
 
     Swal.fire({
-        title: 'Supprimer ce propriétaire ?',
-        html: `<strong class="text-danger">${nom}</strong><br><small class="text-muted">Cette action supprimera également toutes les maisons, chambres et locataires associés.</small>`,
+        title: PROPRIO_I18N.delTitle,
+        html: `<strong class="text-danger">${nom}</strong><br><small class="text-muted">${PROPRIO_I18N.delText}</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler'
+        confirmButtonText: PROPRIO_I18N.delYes,
+        cancelButtonText: PROPRIO_I18N.cancel
     }).then(result => {
         if (!result.isConfirmed) return;
 
@@ -427,7 +448,7 @@ $(document).on('click.page', '.btn-supprimer', function() {
         .then(r => r.json())
         .then(res => {
             if (res.status) {
-                Swal.fire({ icon: 'success', title: 'Supprimé', text: res.message, timer: 2500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: PROPRIO_I18N.deleted, text: res.message, timer: 2500, showConfirmButton: false });
                 if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
                     $('#example').DataTable().row('#row-proprio-' + id).remove().draw(false);
                 } else {
@@ -435,10 +456,10 @@ $(document).on('click.page', '.btn-supprimer', function() {
                     if (row) row.remove();
                 }
             } else {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: res.message });
+                Swal.fire({ icon: 'error', title: PROPRIO_I18N.error, text: res.message });
             }
         })
-        .catch(() => Swal.fire({ icon: 'error', title: 'Erreur', text: 'Une erreur inattendue est survenue.' }));
+        .catch(() => Swal.fire({ icon: 'error', title: PROPRIO_I18N.error, text: PROPRIO_I18N.unexpected }));
     });
 });
 

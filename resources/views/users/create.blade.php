@@ -3,18 +3,18 @@
 
 @section('content')
     @section('title')
-    <title>Gestion utilisateur</title>
+    <title>{{ __('pages.user_create_title') }}</title>
     @endsection
 
     @include('notification.display_message')
 
-    
+
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Accueil/Gestion utilisateur/</span>Ajouter utilisateur </h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{ __('pages.user_create_breadcrumb') }}</span></h4>
 
         <div class="ms-3 demo-inline-spacing">
             <a href="{{ route('getUserView') }}" class="btn rounded-pill btn-primary">
-                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; Retour
+                <span class="tf-icons bx bx-arrow-back"></span>&nbsp; {{ __('common.btn_back') }}
             </a>
         </div> <br>
 
@@ -29,7 +29,7 @@
                     @csrf
 
                     <div class="row mb-3">
-                        <label for="nom" class="col-sm-2 col-form-label">Nom<span style="color: red;">*</span></label>
+                        <label for="nom" class="col-sm-2 col-form-label">{{ __('pages.user_label_name') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control  @error('nom') is-invalid @enderror" id="nom" name="nom" required>
                             <span class="text-danger error-text nom_err small mb-2"></span>
@@ -38,16 +38,16 @@
 
 
                     <div class="row mb-3">
-                        <label for="prenom" class="col-sm-2 col-form-label">Prénom<span style="color: red;">*</span></label>
+                        <label for="prenom" class="col-sm-2 col-form-label">{{ __('pages.user_label_firstname') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control  @error('prenom') is-invalid @enderror" id="prenom" name="prenom" required>
                             <span class="text-danger error-text prenom_err small mb-2"></span>
                         </div>
                     </div>
-                    
+
 
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Email<span style="color: red;">*</span></label>
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">{{ __('pages.user_label_email') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="email" class="form-control  @error('email') is-invalid @enderror" id="email" name="email" required>
                             <span class="text-danger error-text email_err small mb-2"></span>
@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label for="grade" class="col-sm-2 col-form-label">Grade<span style="color: red;">*</span></label>
+                        <label for="grade" class="col-sm-2 col-form-label">{{ __('pages.user_label_grade') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control  @error('grade') is-invalid @enderror" id="grade" name="grade" required>
                             <span class="text-danger error-text grade_err small mb-2"></span>
@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Fonctions<span style="color: red;">*</span></label>
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">{{ __('pages.user_label_roles') }}<span style="color: red;">*</span></label>
                         <div class="col-sm-6">
                             {!! Form::select('roles[]', $roles, [], ['class' => 'form-control', 'required']) !!}
                         </div>
@@ -72,7 +72,7 @@
 
                     <div class="mt-2 text-center">
                         <button class="btn btn-primary" id="valider" type="submit">
-                            <span id="s">Enregistrer</span>
+                            <span id="s">{{ __('common.btn_save') }}</span>
                         </button>
                     </div>
                 </form>
@@ -86,7 +86,11 @@
 
 
 <script type="text/javascript">
-
+var USER_SAVE_LBL     = '{{ __('common.btn_save') }}';
+var USER_IN_PROGRESS  = '{{ __('pages.owner_in_progress') }}';
+var USER_SUCCESS_LBL  = '{{ __('common.swal_success') }}';
+var USER_ERROR_LBL    = '{{ __('common.swal_error') }}';
+var USER_ERR_MSG      = '{{ __('common.swal_generic_error') }}';
 
     function printErrorMsg(msg) {
         var items = [];
@@ -111,7 +115,7 @@
             data: donnees,
             beforeSend: function () {
                 $("#valider").attr("disabled", true);
-                $("#s").html("<i class='spinner-border spinner-border-sm'></i> En cours...");
+                $("#s").html("<i class='spinner-border spinner-border-sm'></i> " + USER_IN_PROGRESS);
             },
             success: function (data) {
                 if (data.error && !$.isEmptyObject(data.error)) {
@@ -119,23 +123,22 @@
                     return;
                 }
                 if (data.status) {
-                    display_message("Succès !", data.message, "success", "btn btn-success");
+                    display_message(USER_SUCCESS_LBL + " !", data.message, "success", "btn btn-success");
                     $("#save_user")[0].reset();
                 } else {
-                    display_message("Erreur !", data.message, "warning", "btn btn-danger");
+                    display_message(USER_ERROR_LBL + " !", data.message, "warning", "btn btn-danger");
                 }
             },
             error: function (xhr) {
-                var msg = "Une erreur s'est produite";
+                var msg = USER_ERR_MSG;
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     msg = xhr.responseJSON.message;
                 }
-                display_message("Erreur !", msg, "error", "btn btn-danger");
+                display_message(USER_ERROR_LBL + " !", msg, "error", "btn btn-danger");
             },
             complete: function () {
-                // Toujours réactiver le bouton quoi qu'il arrive
                 $("#valider").attr("disabled", false);
-                $("#s").html("Enregistrer");
+                $("#s").html(USER_SAVE_LBL);
             }
         });
     }
