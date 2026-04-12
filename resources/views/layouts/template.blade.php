@@ -46,6 +46,7 @@
     
     <script src="{{ asset('assetsV2/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assetsV2/js/config.js') }}"></script>
+    @stack('styles')
   </head>
 
   <body>
@@ -303,23 +304,6 @@
       if (typeof NProgress !== 'undefined') NProgress.start();
     }, true);
 
-    // ── Auto-reload après retour d'onglet ≥ 30s ───────────────────────
-    // Recharge la page réelle pour avoir des données fraîches quand
-    // l'utilisateur revient après une longue absence.
-    var _hiddenAt = 0;
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) {
-        _hiddenAt = Date.now();
-      } else if (_hiddenAt > 0 && (Date.now() - _hiddenAt) >= 30000) {
-        _hiddenAt = 0;
-        // Ne pas recharger si un modal ou une alerte est ouvert
-        if (!document.querySelector('.modal.show, .swal2-container.swal2-backdrop-show')) {
-          window.location.reload();
-        }
-      } else {
-        _hiddenAt = 0;
-      }
-    });
 
   }());
   </script>

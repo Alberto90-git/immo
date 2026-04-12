@@ -120,6 +120,22 @@ class PermissionTableSeeder extends Seeder
             'envoi-document'    => ['label' => 'Envoyer des documents',           'group' => 'envoi'],
             'historique-envoi'  => ['label' => 'Historique des envois',           'group' => 'envoi'],
 
+            // ── État des lieux ────────────────────────────────────────────────
+            'gestion-etat-des-lieux'    => ['label' => 'Gestion états des lieux',      'group' => 'etat_des_lieux'],
+            'ajoute-etat-des-lieux'     => ['label' => 'Créer état des lieux',         'group' => 'etat_des_lieux'],
+            'Consulter-etat-des-lieux'  => ['label' => 'Consulter états des lieux',    'group' => 'etat_des_lieux'],
+            'modify-etat-des-lieux'     => ['label' => 'Modifier état des lieux',      'group' => 'etat_des_lieux'],
+            'delete-etat-des-lieux'     => ['label' => 'Supprimer état des lieux',     'group' => 'etat_des_lieux'],
+            'download-etat-des-lieux'   => ['label' => 'Télécharger PDF état des lieux','group' => 'etat_des_lieux'],
+
+            // ── Maintenance & Incidents ───────────────────────────────────────
+            'gestion-maintenance'   => ['label' => 'Gestion maintenance',         'group' => 'maintenance'],
+            'ajoute-maintenance'    => ['label' => 'Créer ticket maintenance',    'group' => 'maintenance'],
+            'Consulter-maintenance' => ['label' => 'Consulter tickets',           'group' => 'maintenance'],
+            'modify-maintenance'    => ['label' => 'Modifier / avancer ticket',   'group' => 'maintenance'],
+            'delete-maintenance'    => ['label' => 'Supprimer ticket',            'group' => 'maintenance'],
+            'gestion-prestataire'   => ['label' => 'Gérer les prestataires',      'group' => 'maintenance'],
+
         ];
 
         // ── Insertion idempotente ─────────────────────────────────────────────

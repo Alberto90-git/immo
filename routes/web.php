@@ -26,6 +26,9 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MessagingRateController;
 use App\Http\Controllers\TemoignageController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\EtatDesLieuxController;
+use App\Http\Controllers\TicketMaintenanceController;
+use App\Http\Controllers\PrestatireController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -491,6 +494,49 @@ Route::middleware('auth')->group(function () {
     Route::get('/qr-image',   [WhatsAppController::class, 'qrImage'])->name('whatsapp.qr_image');
     Route::post('/connect',   [WhatsAppController::class, 'connect'])->name('whatsapp.connect');
     Route::post('/disconnect',[WhatsAppController::class, 'disconnect'])->name('whatsapp.disconnect');
+  });
+
+  // ── État des lieux (routes authentifiées) ─────────────────────────────────
+  Route::middleware('auth')->prefix('etat-des-lieux')->group(function () {
+    Route::get('/',                  [EtatDesLieuxController::class, 'index'])->name('etat_des_lieux.index')->middleware('can:gestion-etat-des-lieux');
+    Route::get('/creer',             [EtatDesLieuxController::class, 'create'])->name('etat_des_lieux.create')->middleware('can:ajoute-etat-des-lieux');
+    Route::post('/store',            [EtatDesLieuxController::class, 'store'])->name('etat_des_lieux.store')->middleware('can:ajoute-etat-des-lieux');
+    Route::get('/voir/{id}',         [EtatDesLieuxController::class, 'show'])->name('etat_des_lieux.show')->middleware('can:Consulter-etat-des-lieux');
+    Route::get('/pdf/{id}',          [EtatDesLieuxController::class, 'telechargerPDF'])->name('etat_des_lieux.pdf')->middleware('can:download-etat-des-lieux');
+    Route::get('/preview/{id}',      [EtatDesLieuxController::class, 'previewPDF'])->name('etat_des_lieux.preview')->middleware('can:download-etat-des-lieux');
+    Route::post('/finaliser',        [EtatDesLieuxController::class, 'finaliser'])->name('etat_des_lieux.finaliser')->middleware('can:modify-etat-des-lieux');
+    Route::post('/signer-agent',     [EtatDesLieuxController::class, 'signerAgent'])->name('etat_des_lieux.signer_agent')->middleware('can:modify-etat-des-lieux');
+    Route::post('/envoyer-signature',[EtatDesLieuxController::class, 'envoyerSignature'])->name('etat_des_lieux.envoyer_signature')->middleware('can:modify-etat-des-lieux');
+    Route::post('/upload-photo',     [EtatDesLieuxController::class, 'uploadPhoto'])->name('etat_des_lieux.upload_photo')->middleware('can:modify-etat-des-lieux');
+    Route::post('/delete-photo',     [EtatDesLieuxController::class, 'deletePhoto'])->name('etat_des_lieux.delete_photo')->middleware('can:modify-etat-des-lieux');
+    Route::post('/entree-data',      [EtatDesLieuxController::class, 'getEntreeData'])->name('etat_des_lieux.entree_data');
+    Route::post('/destroy',          [EtatDesLieuxController::class, 'destroy'])->name('etat_des_lieux.destroy')->middleware('can:delete-etat-des-lieux');
+  });
+
+  // ── Signature publique (sans authentification) ────────────────────────────
+  Route::prefix('etat-des-lieux')->group(function () {
+    Route::get('/signer/{token}',            [EtatDesLieuxController::class, 'signer'])->name('etat_des_lieux.signer');
+    Route::post('/signer/{token}/confirmer', [EtatDesLieuxController::class, 'signerConfirmer'])->name('etat_des_lieux.signer_confirmer');
+  });
+
+  // ── Maintenance & Incidents ───────────────────────────────────────────────
+  Route::middleware('auth')->prefix('maintenance')->group(function () {
+    Route::get('/',                [TicketMaintenanceController::class, 'index'])->name('maintenance.index')->middleware('can:gestion-maintenance');
+    Route::post('/store',          [TicketMaintenanceController::class, 'store'])->name('maintenance.store')->middleware('can:ajoute-maintenance');
+    Route::post('/changer-statut', [TicketMaintenanceController::class, 'changerStatut'])->name('maintenance.changer_statut')->middleware('can:modify-maintenance');
+    Route::post('/affecter',       [TicketMaintenanceController::class, 'affecter'])->name('maintenance.affecter')->middleware('can:modify-maintenance');
+    Route::post('/destroy',        [TicketMaintenanceController::class, 'destroy'])->name('maintenance.destroy')->middleware('can:delete-maintenance');
+    Route::post('/chambres',       [TicketMaintenanceController::class, 'chambresParMaison'])->name('maintenance.chambres');
+    Route::post('/locataire',      [TicketMaintenanceController::class, 'locataireParChambre'])->name('maintenance.locataire');
+
+    // Prestataires — déclarées AVANT le wildcard /{id} pour éviter toute ambiguïté
+    Route::get('/prestataires',          [PrestatireController::class, 'index'])->name('maintenance.prestataires')->middleware('can:gestion-prestataire');
+    Route::post('/prestataires/store',   [PrestatireController::class, 'store'])->name('maintenance.prestataires.store')->middleware('can:gestion-prestataire');
+    Route::post('/prestataires/update',  [PrestatireController::class, 'update'])->name('maintenance.prestataires.update')->middleware('can:gestion-prestataire');
+    Route::post('/prestataires/destroy', [PrestatireController::class, 'destroy'])->name('maintenance.prestataires.destroy')->middleware('can:gestion-prestataire');
+
+    // Wildcard en dernier pour ne pas intercepter les routes nommées ci-dessus
+    Route::get('/{id}',            [TicketMaintenanceController::class, 'show'])->name('maintenance.show')->middleware('can:Consulter-maintenance');
   });
 
 

@@ -300,6 +300,52 @@
                         </tr>
 
                         <tr>
+                            <td class="text-nowrap">États des lieux</td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        <input type="checkbox" id="selectAllEtatDesLieux" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
+                                    </label>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    @foreach($permissionEtatDesLieux as $p)
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label text-dark">
+                                                <input type="checkbox" name="permission[]" value="{{ $p->id }}"
+                                                    class="form-check-input permission-etat-des-lieux"
+                                                    {{ in_array($p->id, $rolePermissions) ? 'checked' : '' }}>
+                                                {{ $p->label }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap">Maintenance</td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        <input type="checkbox" id="selectAllMaintenance" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
+                                    </label>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    @foreach($permissionMaintenance as $pM)
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label text-dark">
+                                                <input type="checkbox" name="permission[]" value="{{ $pM->id }}"
+                                                    class="form-check-input permission-maintenance"
+                                                    {{ in_array($pM->id, $rolePermissions) ? 'checked' : '' }}>
+                                                {{ $pM->label }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
                             <td class="text-nowrap">{{ __('pages.role_menu_comm') }}</td>
                             <td>
                                 <div class="form-check form-check-inline">
@@ -401,6 +447,8 @@
     setupSelectAll('selectAllDossier',      'permission-dossier');
     setupSelectAll('selectAllPub',          'permission-pub');
     setupSelectAll('selectAllAbonnement',   'permission-abonnement');
+    setupSelectAll('selectAllEtatDesLieux',  'permission-etat-des-lieux');
+    setupSelectAll('selectAllMaintenance',  'permission-maintenance');
     setupSelectAll('selectAllEnvoi',        'permission-envoi');
     setupSelectAll('selectAllUser',         'permission-user');
 

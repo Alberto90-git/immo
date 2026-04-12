@@ -194,6 +194,24 @@
         </li>
       @endcan
 
+      @can('gestion-etat-des-lieux')
+        <li class="menu-item {{ request()->is('etat-des-lieux*') ? 'active' : '' }}">
+          <a href="{{ route('etat_des_lieux.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-notepad"></i>
+            <div>États des lieux</div>
+          </a>
+        </li>
+      @endcan
+
+      @can('gestion-maintenance')
+        <li class="menu-item {{ request()->is('maintenance*') ? 'active' : '' }}">
+          <a href="{{ route('maintenance.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-wrench"></i>
+            <div>Maintenance</div>
+          </a>
+        </li>
+      @endcan
+
       @can('gestion-paiement')
         <li class="menu-item {{ request()->is('gerer-facture*') ? 'active' : '' }}">
           <a href="{{ route('get_factureView') }}" class="menu-link">

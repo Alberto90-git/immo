@@ -70,15 +70,18 @@ class RoleController extends Controller
         //$permissionMotPasse = Permission::where("group", "changePwd")->get();
         $permissionDossier = Permission::where("group", "dossiers")->get();
         $permissionPub   = Permission::where("group", "pubs")->get();
-        $abonnement      = Permission::where("group", "abonnement")->get();
-        $permissionEnvoi = Permission::where("group", "envoi")->get();
+        $abonnement               = Permission::where("group", "abonnement")->get();
+        $permissionEnvoi          = Permission::where("group", "envoi")->get();
+        $permissionEtatDesLieux   = Permission::where("group", "etat_des_lieux")->get();
+        $permissionMaintenance    = Permission::where("group", "maintenance")->get();
 
         return view('roles.create', compact(
             'permission', 'permissionParametrage',
             'permissionProprio', 'permissionMaison', 'permissionChambre',
             'permissionPrix', 'permissionLocataire', 'permissionPaiement',
             'permissionStatistique', 'permissionDossier', 'permissionPub',
-            'abonnement', 'permissionEnvoi'
+            'abonnement', 'permissionEnvoi', 'permissionEtatDesLieux',
+            'permissionMaintenance'
         ));
     }
 
@@ -173,8 +176,10 @@ class RoleController extends Controller
         //$permissionMotPasse = Permission::where("group", "changePwd")->get();
         $permissionDossier = Permission::where("group", "dossiers")->get();
         $permissionPub   = Permission::where("group", "pubs")->get();
-        $abonnement      = Permission::where("group", "abonnement")->get();
-        $permissionEnvoi = Permission::where("group", "envoi")->get();
+        $abonnement               = Permission::where("group", "abonnement")->get();
+        $permissionEnvoi          = Permission::where("group", "envoi")->get();
+        $permissionEtatDesLieux   = Permission::where("group", "etat_des_lieux")->get();
+        $permissionMaintenance    = Permission::where("group", "maintenance")->get();
 
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
             ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
@@ -185,7 +190,8 @@ class RoleController extends Controller
             'permissionProprio', 'permissionMaison', 'permissionChambre',
             'permissionPrix', 'permissionLocataire', 'permissionPaiement',
             'permissionStatistique', 'permissionDossier', 'permissionPub',
-            'abonnement', 'permissionEnvoi'
+            'abonnement', 'permissionEnvoi', 'permissionEtatDesLieux',
+            'permissionMaintenance'
         ));
     }
 

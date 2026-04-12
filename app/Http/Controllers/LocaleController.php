@@ -12,7 +12,7 @@ class LocaleController extends Controller
             $locale = 'fr';
         }
         session(['locale' => $locale]);
-        return response()->json(['locale' => $locale])
+        return redirect()->back()
             ->cookie('lokativ_locale', $locale, 60 * 24 * 365, '/');
     }
 }
