@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Code de vérification – Lokativ</title>
+  <title>{{ __('mail.code_email.subject') }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -122,49 +122,56 @@
       color: #1a56db;
       text-decoration: none;
     }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 24px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .body h2 { font-size: 18px !important; }
+    .otp-code { font-size: 34px !important; letter-spacing: 6px !important; }
+    .warning-box { display: block !important; }
+    .warning-box .icon { display: block; margin-bottom: 8px; }
+  }
   </style>
 </head>
 <body>
   <div class="wrapper">
     <div class="header">
       <div class="brand">Loka<span>tiv</span></div>
-      <p>Plateforme de gestion immobilière</p>
+      <p>{{ __('mail.code_email.subtitle') }}</p>
     </div>
 
     <div class="body">
-      <h2>Vérification de votre identité</h2>
-      <p>Bonjour,</p>
-      <p>
-        Une tentative de connexion a été détectée sur votre compte. Pour confirmer que c'est bien vous, veuillez utiliser le code de vérification ci-dessous.
-      </p>
+      <h2>{{ __('mail.code_email.title') }}</h2>
+      <p>{{ __('mail.code_email.greeting') }}</p>
+      <p>{{ __('mail.code_email.intro') }}</p>
 
       <div class="otp-box">
-        <div class="label">Votre code de connexion</div>
+        <div class="label">{{ __('mail.code_email.code_label') }}</div>
         <div class="otp-code">{{ $userinfo['code_login'] }}</div>
-        <div class="expiry">Ce code expire dans <strong>10 minutes</strong></div>
+        <div class="expiry">{!! __('mail.code_email.expiry') !!}</div>
       </div>
 
-      <p>Saisissez ce code dans la fenêtre de connexion pour accéder à votre espace Lokativ.</p>
+      <p>{{ __('mail.code_email.instructions') }}</p>
 
       <div class="warning-box">
         <div class="icon">⚠️</div>
-        <p>
-          <strong>Attention :</strong> Ne partagez jamais ce code avec qui que ce soit, y compris notre équipe support. Lokativ ne vous demandera jamais votre code de vérification.
-          Si vous n'avez pas initié cette connexion, ignorez cet email et sécurisez votre compte.
-        </p>
+        <p>{!! __('mail.code_email.warning') !!}</p>
       </div>
 
       <hr class="divider">
       <p style="font-size:13px; color:#94a3b8;">
-        Si vous avez des questions, contactez notre support à
+        {{ __('mail.code_email.contact_note') }}
         <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
       </p>
     </div>
 
     <div class="footer">
       <p>
-        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
-        <a href="#">Politique de confidentialité</a> &nbsp;|&nbsp; <a href="#">Aide</a>
+        {{ __('mail.footer_rights', ['year' => date('Y')]) }}<br>
+        <a href="#">{{ __('mail.code_email.privacy') }}</a> &nbsp;|&nbsp; <a href="#">{{ __('mail.code_email.help') }}</a>
       </p>
     </div>
   </div>

@@ -166,7 +166,7 @@
                     <td>{{ $items->quartier }}</td>
                     <td>N {{ $items->numero_chambre }}</td>
                     <td>{{ $items->type_chambre }}</td>
-                    <td class="amount">{{ number_format($items->prix, 0, ',', '.') }} XOF</td>
+                    <td class="amount">{{ format_price($items->prix) }}</td>
                 </tr>
             @endforeach
         @else

@@ -1,52 +1,88 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
-  .container { max-width: 600px; margin: 30px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
-  .header { background: linear-gradient(135deg, #696cff, #5a5fba); color: white; padding: 30px 24px; text-align: center; }
-  .header h2 { margin: 0 0 6px; font-size: 20px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2ff; margin: 0; padding: 30px 10px; color: #333; }
+  .wrapper { max-width: 580px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #696cff, #5a5fba); color: white; padding: 30px 24px; text-align: center; border-radius: 12px 12px 0 0; }
+  .header h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
   .header p { margin: 0; opacity: .85; font-size: 13px; }
-  .body { padding: 24px; color: #333; }
-  .body p { font-size: 14px; line-height: 1.6; }
-  .btn-sign { display: block; width: fit-content; margin: 24px auto; background: #696cff; color: white; text-decoration: none; padding: 14px 36px; border-radius: 30px; font-size: 15px; font-weight: bold; }
-  .info-box { background: #f8f9fa; border-left: 4px solid #696cff; padding: 12px 16px; border-radius: 4px; margin: 16px 0; font-size: 13px; }
-  .footer { background: #f8f9fa; padding: 16px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #eee; }
-  .warning { font-size: 11px; color: #999; margin-top: 12px; }
+  .body { background: #fff; padding: 32px 28px; color: #333; }
+  .body p { font-size: 14px; line-height: 1.7; margin-bottom: 12px; color: #475569; }
+  .btn-sign {
+    display: block;
+    margin: 24px auto;
+    background: linear-gradient(135deg, #696cff, #5a5fba);
+    color: white !important;
+    text-decoration: none;
+    padding: 14px 36px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 280px;
+  }
+  .info-box {
+    background: #f8f9ff;
+    border-left: 4px solid #696cff;
+    padding: 14px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.7;
+  }
+  .warning {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 16px;
+    line-height: 1.6;
+    word-break: break-all;
+  }
+  .warning a { color: #696cff; }
+  .footer { background: #f8faff; padding: 16px 24px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; border-radius: 0 0 12px 12px; }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 20px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .btn-sign { max-width: 100% !important; width: 100% !important; }
+  }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrapper">
   <div class="header">
     <h2>{{ $agence }}</h2>
-    <p>État des lieux – Demande de signature</p>
+    <p>{{ __('mail.signature_edl.subtitle') }}</p>
   </div>
   <div class="body">
-    <p>Bonjour <strong>{{ $nom }}</strong>,</p>
-    <p>
-      Votre agence vous invite à signer votre <strong>{{ $typeLabel }}</strong>
-      établi le <strong>{{ $dateEtat }}</strong>.
-    </p>
+    <p>{{ __('mail.greeting', ['name' => $nom]) }}</p>
+    <p>{!! __('mail.signature_edl.intro', ['typeLabel' => $typeLabel, 'date' => $dateEtat]) !!}</p>
 
     <div class="info-box">
-      <strong>Document :</strong> {{ $typeLabel }}<br>
-      <strong>Date :</strong> {{ $dateEtat }}<br>
-      <strong>Agence :</strong> {{ $agence }}
+      <strong>{{ __('mail.signature_edl.doc_label') }}</strong> {{ $typeLabel }}<br>
+      <strong>{{ __('mail.signature_edl.date_label') }}</strong> {{ $dateEtat }}<br>
+      <strong>{{ __('mail.signature_edl.agency_label') }}</strong> {{ $agence }}
     </div>
 
-    <p>Cliquez sur le bouton ci-dessous pour consulter l'état des lieux et apposer votre signature électronique :</p>
+    <p>{{ __('mail.signature_edl.cta_text') }}</p>
 
-    <a href="{{ $lien }}" class="btn-sign">Consulter et signer →</a>
+    <a href="{{ $lien }}" class="btn-sign">{{ __('mail.signature_edl.btn_text') }}</a>
 
     <p class="warning">
-      Si vous ne parvenez pas à cliquer sur le bouton, copiez ce lien dans votre navigateur :<br>
-      <a href="{{ $lien }}" style="color:#696cff; word-break:break-all;">{{ $lien }}</a>
+      {{ __('mail.signature_edl.fallback') }}<br>
+      <a href="{{ $lien }}">{{ $lien }}</a>
     </p>
   </div>
   <div class="footer">
-    Ce message a été envoyé par {{ $agence }}.<br>
-    Si vous n'êtes pas concerné par ce document, ignorez cet email.
+    {{ __('mail.signature_edl.footer_sent', ['agence' => $agence]) }}<br>
+    {{ __('mail.signature_edl.footer_ignore') }}
   </div>
 </div>
 </body>

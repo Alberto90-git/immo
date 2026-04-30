@@ -28,7 +28,10 @@ use App\Http\Controllers\TemoignageController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\EtatDesLieuxController;
 use App\Http\Controllers\TicketMaintenanceController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\PrestatireController;
+use App\Http\Controllers\DepenseController;
+use App\Http\Controllers\SignatureElectroniqueController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +65,14 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 // Témoignages — public
 Route::post('/temoignages', [TemoignageController::class, 'store'])->name('temoignages.store');
 
+// Marketplace public (sans auth)
+Route::prefix('marketplace')->group(function () {
+    Route::get('/', [MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('/annonce/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+    Route::post('/annonce/{slug}/contact', [MarketplaceController::class, 'contact'])->name('marketplace.contact');
+    Route::get('/map-data', [MarketplaceController::class, 'mapData'])->name('marketplace.map_data');
+});
+
 // Pages légales (publiques)
 Route::prefix('legal')->name('legal.')->group(function () {
     Route::get('conditions-utilisation', fn() => view('legal.cgu'))->name('cgu');
@@ -82,6 +93,7 @@ Route::get('connexion', function () {
 Auth::routes();
 
 Route::post('pre-validate-inscription', [UtilisateurController::class, 'preValidateInscription'])->name('pre_validate_inscription');
+Route::post('check-email-available', [UtilisateurController::class, 'checkEmailAvailable'])->name('check_email_available');
 Route::post('creation-compte', [UtilisateurController::class, 'saveAdminCompte'])->name('creation_compte');
 
 Route::post('login-check', [UtilisateurController::class, 'HandleLogin'])->name('login_check');
@@ -120,8 +132,9 @@ Route::middleware('auth')->group(function () {
     Route::get('messaging/quote', [MessagingRateController::class, 'quote'])->name('messaging.quote');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/analytics-data', [HomeController::class, 'analyticsData'])->name('analytics.data');
    //aax
-   Route::get('listeLocataire', [HomeController::class, 'getLocataire']); 
+   Route::get('listeLocataire', [HomeController::class, 'getLocataire']);
 
 
     Route::get('/historique', [HomeController::class, 'historique'])->name('historique');
@@ -336,6 +349,11 @@ Route::middleware('auth')->prefix('gerer-facture')->group(function () {
     #FACTURE DE CHAQUE MOIS
     Route::get('/telecharge2/{id}',[FactureController::class, 'factureParMois'])->name('telecharge2');
 
+    # NOUVEAUX DOCUMENTS F5
+    Route::get('/releve-locataire/{id}',      [FactureController::class, 'releveLocataire'])->name('releve_locataire')->middleware('can:download-recu-location');
+    Route::get('/attestation-residence/{id}', [FactureController::class, 'attestationResidence'])->name('attestation_residence')->middleware('can:download-recu-location');
+    Route::get('/attestation-paiement/{id}',  [FactureController::class, 'attestationPaiement'])->name('attestation_paiement')->middleware('can:download-recu-location');
+
 
     # AJAX
     Route::get('numero_chambre', [FactureController::class, 'getNumeroChambre']);
@@ -468,8 +486,10 @@ Route::middleware('auth')->group(function () {
     Route::post('destroy', [PubliciteController::class, 'destroy'])->name('destroy_pub');
     Route::post('add-image', [PubliciteController::class, 'addImage'])->name('pub_add_image');
     Route::post('remove-image', [PubliciteController::class, 'removeImage'])->name('pub_remove_image');
+    Route::post('sponsoriser', [PubliciteController::class, 'sponsoriser'])->name('pub_sponsoriser');
 
   });
+
 
 
   Route::middleware('auth')->prefix('notifications')->group(function () {
@@ -487,6 +507,7 @@ Route::middleware('auth')->group(function () {
   });
 
   Route::middleware('auth')->post('comm-config', [ParametreController::class, 'storeCommConfig'])->name('store_comm_config');
+  Route::middleware('auth')->post('devise-config', [ParametreController::class, 'storeDeviseConfig'])->name('store_devise_config');
 
   Route::middleware('auth')->prefix('whatsapp')->group(function () {
     Route::get('/status',     [WhatsAppController::class, 'status'])->name('whatsapp.status');
@@ -519,6 +540,35 @@ Route::middleware('auth')->group(function () {
     Route::post('/signer/{token}/confirmer', [EtatDesLieuxController::class, 'signerConfirmer'])->name('etat_des_lieux.signer_confirmer');
   });
 
+  // ── Automatisation & Rappels ─────────────────────────────────────────────
+  Route::middleware('auth')->prefix('automatisation')->group(function () {
+    Route::get('/',               [\App\Http\Controllers\AutomationController::class, 'index'])->name('automation.index')->middleware('can:gestion-automation');
+    Route::post('/store',         [\App\Http\Controllers\AutomationController::class, 'store'])->name('automation.store')->middleware('can:ajoute-automation');
+    Route::post('/toggle-actif',  [\App\Http\Controllers\AutomationController::class, 'toggleActif'])->name('automation.toggle_actif')->middleware('can:toggle-automation');
+    Route::post('/destroy',       [\App\Http\Controllers\AutomationController::class, 'destroy'])->name('automation.destroy')->middleware('can:delete-automation');
+    Route::get('/logs',           [\App\Http\Controllers\AutomationController::class, 'logs'])->name('automation.logs')->middleware('can:voir-historique-automation');
+    Route::post('/opt-out',       [\App\Http\Controllers\AutomationController::class, 'toggleOptOut'])->name('automation.opt_out')->middleware('can:toggle-optout-automation');
+    Route::get('/locataires',     [\App\Http\Controllers\AutomationController::class, 'locataires'])->name('automation.locataires')->middleware('can:voir-locataires-automation');
+    Route::get('/count-actifs',   [\App\Http\Controllers\AutomationController::class, 'countActifs'])->name('automation.count_actifs')->middleware('can:ajoute-automation');
+  });
+
+  // ── Recouvrement ─────────────────────────────────────────────────────────
+  Route::middleware('auth')->prefix('recouvrement')->group(function () {
+    Route::get('/',                        [\App\Http\Controllers\RecouvrementController::class, 'index'])->name('recouvrement.index')->middleware('can:gestion-recouvrement');
+    Route::post('/creer-dossier',          [\App\Http\Controllers\RecouvrementController::class, 'creerDossier'])->name('recouvrement.creer_dossier')->middleware('can:ajoute-recouvrement');
+    Route::get('/{id}',                    [\App\Http\Controllers\RecouvrementController::class, 'show'])->name('recouvrement.show')->middleware('can:Consulter-recouvrement');
+    Route::post('/{id}/relancer',          [\App\Http\Controllers\RecouvrementController::class, 'relancer'])->name('recouvrement.relancer')->middleware('can:modify-recouvrement');
+    Route::get('/{id}/relances-data',      [\App\Http\Controllers\RecouvrementController::class, 'relancesData'])->name('recouvrement.relances_data')->middleware('can:modify-recouvrement');
+    Route::get('/{id}/mise-en-demeure',        [\App\Http\Controllers\RecouvrementController::class, 'misEnDemeurePdf'])->name('recouvrement.mise_en_demeure')->middleware('can:download-recouvrement');
+    Route::get('/{id}/mise-en-demeure/preview', [\App\Http\Controllers\RecouvrementController::class, 'previewMisEnDemeure'])->name('recouvrement.mise_en_demeure_preview')->middleware('can:download-recouvrement');
+    Route::post('/{id}/signer-document',         [\App\Http\Controllers\RecouvrementController::class, 'signerDocument'])->name('recouvrement.signer_document')->middleware('can:download-recouvrement');
+    Route::post('/{id}/plan-apurement',    [\App\Http\Controllers\RecouvrementController::class, 'creerPlanApurement'])->name('recouvrement.plan_apurement')->middleware('can:modify-recouvrement');
+    Route::post('/echeance/{id}/payer',    [\App\Http\Controllers\RecouvrementController::class, 'marquerEcheancePaye'])->name('recouvrement.echeance_payer')->middleware('can:modify-recouvrement');
+    Route::post('/{id}/contentieux',       [\App\Http\Controllers\RecouvrementController::class, 'escaladerContentieux'])->name('recouvrement.contentieux')->middleware('can:modify-recouvrement');
+    Route::post('/{id}/update',            [\App\Http\Controllers\RecouvrementController::class, 'update'])->name('recouvrement.update')->middleware('can:modify-recouvrement');
+    Route::post('/{id}/cloturer',          [\App\Http\Controllers\RecouvrementController::class, 'cloturer'])->name('recouvrement.cloturer')->middleware('can:delete-recouvrement');
+  });
+
   // ── Maintenance & Incidents ───────────────────────────────────────────────
   Route::middleware('auth')->prefix('maintenance')->group(function () {
     Route::get('/',                [TicketMaintenanceController::class, 'index'])->name('maintenance.index')->middleware('can:gestion-maintenance');
@@ -539,7 +589,36 @@ Route::middleware('auth')->group(function () {
     Route::get('/{id}',            [TicketMaintenanceController::class, 'show'])->name('maintenance.show')->middleware('can:Consulter-maintenance');
   });
 
+  // ── Signature électronique ───────────────────────────────────────────────
+  Route::middleware('auth')->prefix('signature')->group(function () {
+    Route::get('/',           [SignatureElectroniqueController::class, 'index'])->name('signature.index')->middleware('can:gestion-signature');
+    Route::post('/store',     [SignatureElectroniqueController::class, 'store'])->name('signature.store')->middleware('can:ajoute-signature');
+    Route::post('/renvoyer',  [SignatureElectroniqueController::class, 'renvoyer'])->name('signature.renvoyer')->middleware('can:ajoute-signature');
+    Route::post('/annuler',   [SignatureElectroniqueController::class, 'annuler'])->name('signature.annuler')->middleware('can:delete-signature');
+    Route::get('/{id}/certificat', [SignatureElectroniqueController::class, 'certificat'])->name('signature.certificat')->middleware('can:download-signature');
+  });
 
-  
+  // ── Signature électronique — pages publiques (sans auth) ─────────────────
+  Route::prefix('signer')->group(function () {
+    Route::get('/{token}',            [SignatureElectroniqueController::class, 'signer'])->name('signature.signer');
+    Route::post('/{token}/confirmer', [SignatureElectroniqueController::class, 'confirmerSignature'])->name('signature.confirmer');
+    Route::get('/{token}/confirme',   [SignatureElectroniqueController::class, 'pageConfirme'])->name('signature.confirme');
+  });
+
+  // ── Dépenses & Comptabilité ───────────────────────────────────────────────
+  Route::middleware('auth')->prefix('depenses')->group(function () {
+    Route::get('/',                    [DepenseController::class, 'index'])->name('depenses.index')->middleware('can:gestion-depenses');
+    Route::post('/store',              [DepenseController::class, 'store'])->name('depenses.store')->middleware('can:ajoute-depense');
+    Route::post('/update',             [DepenseController::class, 'update'])->name('depenses.update')->middleware('can:modify-depense');
+    Route::post('/destroy',            [DepenseController::class, 'destroy'])->name('depenses.destroy')->middleware('can:delete-depense');
+    Route::get('/bilan',               [DepenseController::class, 'bilan'])->name('depenses.bilan');
+    Route::get('/export-csv',          [DepenseController::class, 'exportCsv'])->name('depenses.export_csv')->middleware('can:gestion-depenses');
+    Route::post('/categorie/store',    [DepenseController::class, 'storeCategorie'])->name('depenses.categorie_store')->middleware('can:modify-depense');
+    Route::post('/categorie/update',   [DepenseController::class, 'updateCategorie'])->name('depenses.categorie_update')->middleware('can:modify-depense');
+    Route::post('/categorie/destroy',  [DepenseController::class, 'destroyCategorie'])->name('depenses.categorie_destroy')->middleware('can:delete-depense');
+  });
+
+
+
 
 

@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\Commands\CheckSubscriptionExpiration;
+use App\Console\Commands\ProcessAutomationRules;
 use App\Services\WhatsAppService;
 
 class Kernel extends ConsoleKernel
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         CheckSubscriptionExpiration::class,
+        ProcessAutomationRules::class,
     ];
 
     /**
@@ -27,6 +29,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('subscription:check-expiration')->dailyAt('08:00');
+
+        // Automation : exécuté toutes les heures pour respecter l'heure configurée par règle
+        $schedule->command('automation:process')->everyMinute()->withoutOverlapping();
 
         $schedule->call(function () {
             (new WhatsAppService())->nettoyerFichiersTemp();

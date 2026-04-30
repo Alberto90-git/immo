@@ -16,22 +16,22 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <h4 class="fw-bold mb-0">
-        <span class="text-muted fw-light">Accueil /</span> États des lieux
+        <span class="text-muted fw-light">{{ __('ui.common.home') }} /</span> {{ __('ui.edl.title') }}
       </h4>
       @can('ajoute-etat-des-lieux')
         <button type="button" class="btn btn-primary" id="btnNouvelEtat">
-          <i class="bx bx-plus me-1"></i> Nouvel état des lieux
+          <i class="bx bx-plus me-1"></i> {{ __('ui.edl.new') }}
         </button>
       @endcan
     </div>
 
     {{-- Filtres rapides --}}
     <div class="mb-3 d-flex gap-2 flex-wrap">
-      <button class="btn btn-sm btn-outline-secondary filtre-type active" data-type="tous">Tous</button>
-      <button class="btn btn-sm btn-outline-primary filtre-type" data-type="entree">Entrées</button>
-      <button class="btn btn-sm btn-outline-warning filtre-type" data-type="sortie">Sorties</button>
-      <button class="btn btn-sm btn-outline-success filtre-type" data-type="signe">Signés</button>
-      <button class="btn btn-sm btn-outline-danger filtre-type" data-type="degradation">Avec dégradations</button>
+      <button class="btn btn-sm btn-outline-secondary filtre-type active" data-type="tous">{{ __('ui.edl.filter_all') }}</button>
+      <button class="btn btn-sm btn-outline-primary filtre-type" data-type="entree">{{ __('ui.edl.filter_entries') }}</button>
+      <button class="btn btn-sm btn-outline-warning filtre-type" data-type="sortie">{{ __('ui.edl.filter_exits') }}</button>
+      <button class="btn btn-sm btn-outline-success filtre-type" data-type="signe">{{ __('ui.edl.filter_signed') }}</button>
+      <button class="btn btn-sm btn-outline-danger filtre-type" data-type="degradation">{{ __('ui.edl.filter_damage') }}</button>
     </div>
 
     <div class="card shadow-sm">
@@ -40,14 +40,14 @@
           <table class="table table-hover mb-0" id="tableEtats">
             <thead class="table-light">
               <tr>
-                <th>Locataire</th>
-                <th>Logement</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Statut</th>
-                <th>Dégradations</th>
-                <th>Retenue</th>
-                <th class="text-center">Actions</th>
+                <th>{{ __('ui.edl.col_tenant') }}</th>
+                <th>{{ __('ui.edl.col_property') }}</th>
+                <th>{{ __('ui.edl.col_type') }}</th>
+                <th>{{ __('ui.edl.col_date') }}</th>
+                <th>{{ __('ui.edl.col_status') }}</th>
+                <th>{{ __('ui.edl.col_damages') }}</th>
+                <th>{{ __('ui.edl.col_deposit') }}</th>
+                <th class="text-center">{{ __('ui.edl.col_actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -68,9 +68,9 @@
                   </td>
                   <td>
                     @if($etat->type === 'entree')
-                      <span class="badge bg-label-primary">Entrée</span>
+                      <span class="badge bg-label-primary">{{ __('ui.edl.type_entry') }}</span>
                     @else
-                      <span class="badge bg-label-warning">Sortie</span>
+                      <span class="badge bg-label-warning">{{ __('ui.edl.type_exit') }}</span>
                     @endif
                   </td>
                   <td>{{ $etat->date_etat->format('d/m/Y') }}</td>
@@ -92,10 +92,10 @@
                   <td class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       @can('Consulter-etat-des-lieux')
-                        <a href="{{ route('etat_des_lieux.show', $etat->id) }}"
-                           class="btn btn-sm btn-icon btn-outline-info" title="Voir">
+                        <button type="button" class="btn btn-sm btn-icon btn-outline-info btn-voir-etat"
+                                data-href="{{ route('etat_des_lieux.show', $etat->id) }}" title="Voir">
                           <i class="bx bx-show"></i>
-                        </a>
+                        </button>
                       @endcan
                       @can('download-etat-des-lieux')
                         <a href="{{ route('etat_des_lieux.pdf', $etat->id) }}"
@@ -104,12 +104,14 @@
                         </a>
                       @endcan
                       @can('delete-etat-des-lieux')
-                        <button type="button" class="btn btn-sm btn-icon btn-outline-danger btn-supprimer"
-                                data-id="{{ $etat->id }}"
-                                data-nom="{{ $etat->locataire->nom ?? '' }} ({{ $etat->type_label }})"
-                                title="Supprimer">
-                          <i class="bx bx-trash"></i>
-                        </button>
+                        @if($etat->statut !== 'signe')
+                          <button type="button" class="btn btn-sm btn-icon btn-outline-danger btn-supprimer"
+                                  data-id="{{ $etat->id }}"
+                                  data-nom="{{ $etat->locataire->nom ?? '' }} ({{ $etat->type_label }})"
+                                  title="Supprimer">
+                            <i class="bx bx-trash"></i>
+                          </button>
+                        @endif
                       @endcan
                     </div>
                   </td>
@@ -118,7 +120,7 @@
                 <tr id="ligneVide">
                   <td colspan="8" class="text-center text-muted py-5">
                     <i class="bx bx-clipboard fs-3 d-block mb-2"></i>
-                    Aucun état des lieux enregistré.
+                    {{ __('ui.edl.empty') }}
                   </td>
                 </tr>
               @endforelse
@@ -137,23 +139,23 @@
   @can('ajoute-etat-des-lieux')
   <div id="viewCreate" style="display:none;">
 
-    <div class="d-flex align-items-center mb-4 gap-2">
-      <button type="button" class="btn btn-icon btn-outline-secondary" id="btnRetourListe" title="Retour à la liste">
-        <i class="bx bx-arrow-back"></i>
-      </button>
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <h4 class="fw-bold mb-0">
-        <span class="text-muted fw-light">États des lieux /</span> Nouveau
+        <span class="text-muted fw-light">{{ __('ui.edl.title') }} /</span> {{ __('ui.edl.new') }}
       </h4>
+      <button type="button" class="btn btn-outline-secondary" id="btnRetourListe">
+        <i class="bx bx-arrow-back me-1"></i> {{ __('ui.common.back') }}
+      </button>
     </div>
 
     @include('etat_des_lieux._create_form')
 
     <div class="d-flex gap-2 justify-content-end mb-5">
-      <button type="button" class="btn btn-outline-secondary" id="btnAnnulerCreate">Annuler</button>
+      <button type="button" class="btn btn-outline-secondary" id="btnAnnulerCreate">{{ __('ui.common.cancel') }}</button>
       <button type="button" class="btn btn-primary px-4" id="btnSaveEtat">
-        <span id="btnSaveText"><i class="bx bx-save me-1"></i> Enregistrer</span>
+        <span id="btnSaveText"><i class="bx bx-save me-1"></i> {{ __('ui.common.save') }}</span>
         <span id="btnSaveSpinner" class="d-none">
-          <span class="spinner-border spinner-border-sm me-1"></span> En cours...
+          <span class="spinner-border spinner-border-sm me-1"></span> {{ __('ui.common.saving') }}
         </span>
       </button>
     </div>
@@ -161,52 +163,119 @@
   </div>
   @endcan
 
+  {{-- ══════════════════════════════════════════════════════════════════════════
+       VUE DÉTAIL (masquée par défaut, chargée par fetch)
+  ══════════════════════════════════════════════════════════════════════════ --}}
+  <div id="viewShow" style="display:none;">
+    <div id="viewShowContent"></div>
+  </div>
+
 </div>{{-- fin .container-xxl --}}
 
 @push('scripts')
 <script>
-// ── Basculer liste ↔ formulaire ───────────────────────────────────────────────
-function afficherFormulaire() {
-    document.getElementById('viewListe').style.display  = 'none';
-    document.getElementById('viewCreate').style.display = '';
+// ── Navigation entre vues ─────────────────────────────────────────────────────
+const VIEWS_ETAT = ['viewListe', 'viewCreate', 'viewShow'];
+
+function afficherVueEtat(id) {
+    VIEWS_ETAT.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.style.display = (v === id) ? '' : 'none';
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function afficherListe() {
-    document.getElementById('viewCreate').style.display = 'none';
-    document.getElementById('viewListe').style.display  = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function retourListeEtat() {
+    afficherVueEtat('viewListe');
     if (typeof window.__resetCreateForm === 'function') window.__resetCreateForm();
 }
 
-document.getElementById('btnNouvelEtat')?.addEventListener('click', afficherFormulaire);
-document.getElementById('btnRetourListe')?.addEventListener('click', afficherListe);
-document.getElementById('btnAnnulerCreate')?.addEventListener('click', afficherListe);
+document.getElementById('btnNouvelEtat')?.addEventListener('click',    () => afficherVueEtat('viewCreate'));
+document.getElementById('btnRetourListe')?.addEventListener('click',   retourListeEtat);
+document.getElementById('btnAnnulerCreate')?.addEventListener('click', retourListeEtat);
 
-// ── Callback succès création → redirection vers la page détail ───────────────
+// ── Chargement page détail sans rechargement ──────────────────────────────────
+let _currentEtatUrl = null;
+
+function __refreshShowEtatView() {
+    if (_currentEtatUrl) afficherDetailEtat(_currentEtatUrl);
+}
+
+async function afficherDetailEtat(url) {
+    _currentEtatUrl = url;
+    afficherVueEtat('viewShow');
+
+    const content = document.getElementById('viewShowContent');
+    content.innerHTML = '<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+    try {
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const html = await resp.text();
+        const doc  = new DOMParser().parseFromString(html, 'text/html');
+        const main = doc.getElementById('main-content-wrapper');
+        if (!main) throw new Error('Contenu non trouvé');
+
+        main.querySelector('.content-backdrop')?.remove();
+        content.innerHTML = main.innerHTML;
+
+        // Remplacer history.back() → retourListeEtat()
+        content.querySelectorAll('[onclick]').forEach(el => {
+            const oc = el.getAttribute('onclick');
+            if (oc && (oc.includes('history.back') || oc.includes('history.go'))) {
+                el.setAttribute('onclick', 'retourListeEtat()');
+            }
+        });
+
+        // Exécuter les scripts inline de la page détail
+        const SKIP = ['NProgress', 'display_sweet_alerte2', 'Sepatateur_Milliers', 'display_message(', 'validateAndFormatPhone'];
+        doc.querySelectorAll('body script:not([src])').forEach(s => {
+            const txt = s.textContent.trim();
+            if (!txt || SKIP.some(p => txt.includes(p))) return;
+            const ns = document.createElement('script');
+            // Encapsuler dans un IIFE pour éviter les conflits de redéclaration const/let
+            ns.textContent = '(function(){\n' + txt
+                .replace(/location\.reload\(\)/g, '__refreshShowEtatView()')
+                .replace(/history\.back\(\)/g, 'retourListeEtat()') + '\n})();';
+            document.body.appendChild(ns);
+            document.body.removeChild(ns);
+        });
+    } catch (e) {
+        content.innerHTML = `
+            <div class="container-p-y">
+                <div class="alert alert-warning">Impossible de charger en mode SPA.
+                    <a href="${url}" class="alert-link ms-1">Ouvrir en pleine page</a>
+                </div>
+                <button class="btn btn-outline-secondary mt-2" onclick="retourListeEtat()">
+                    <i class="bx bx-arrow-back me-1"></i> Retour à la liste
+                </button>
+            </div>`;
+    }
+}
+
+// ── Après création → charger le détail en SPA ─────────────────────────────────
 window.__createFormSuccessOverride = function (data) {
-    Swal.fire({ icon: 'success', title: 'Enregistré !', text: data.message, timer: 1200, showConfirmButton: false })
-        .then(() => { window.location.href = data.redirect; });
+    Swal.fire({ icon: 'success', title: '{{ __("ui.common.saved") }}', text: data.message, timer: 1200, showConfirmButton: false })
+        .then(() => afficherDetailEtat(data.redirect));
 };
 
 // ── Injection d'une nouvelle ligne dans le tableau ────────────────────────────
 function injecterLigneEtat(row) {
     const tbody = document.querySelector('#tableEtats tbody');
-
     const ligneVide = document.getElementById('ligneVide');
     if (ligneVide) ligneVide.remove();
 
     const typeBadge = row.type === 'entree'
-        ? '<span class="badge bg-label-primary">Entrée</span>'
-        : '<span class="badge bg-label-warning">Sortie</span>';
+        ? '<span class="badge bg-label-primary">{{ __("ui.edl.type_entry") }}</span>'
+        : '<span class="badge bg-label-warning">{{ __("ui.edl.type_exit") }}</span>';
 
     const showBtn = row.can_show
-        ? `<a href="${row.show_url}" class="btn btn-sm btn-icon btn-outline-info" title="Voir"><i class="bx bx-show"></i></a>`
+        ? `<button type="button" class="btn btn-sm btn-icon btn-outline-info btn-voir-etat" data-href="${row.show_url}" title="Voir"><i class="bx bx-show"></i></button>`
         : '';
     const pdfBtn = row.can_pdf
-        ? `<a href="${row.pdf_url}" class="btn btn-sm btn-icon btn-outline-dark" title="PDF" target="_blank"><i class="bx bx-file-pdf"></i></a>`
+        ? `<a href="${row.pdf_url}" class="btn btn-sm btn-icon btn-outline-dark" title="PDF" target="_blank"><i class="bx bx-file"></i></a>`
         : '';
-    const delBtn = row.can_delete
+    const delBtn = row.can_delete && row.statut !== 'signe'
         ? `<button type="button" class="btn btn-sm btn-icon btn-outline-danger btn-supprimer" data-id="${row.id}" data-nom="${row.locataire} (${row.type_label})" title="Supprimer"><i class="bx bx-trash"></i></button>`
         : '';
 
@@ -246,43 +315,46 @@ document.querySelectorAll('.filtre-type').forEach(btn => {
     });
 });
 
-// ── Suppression (délégation → fonctionne aussi sur les lignes injectées) ───────
+// ── Clics sur le tableau (Voir + Supprimer) ───────────────────────────────────
 document.getElementById('tableEtats').addEventListener('click', function (e) {
+    const btnVoir = e.target.closest('.btn-voir-etat');
+    if (btnVoir) {
+        e.preventDefault();
+        e.stopPropagation();
+        afficherDetailEtat(btnVoir.dataset.href);
+        return;
+    }
+
     const btn = e.target.closest('.btn-supprimer');
     if (!btn) return;
-    const id  = btn.dataset.id;
-    const nom = btn.dataset.nom;
     Swal.fire({
-        title: 'Supprimer ?',
-        text: `Voulez-vous supprimer l'état des lieux de : ${nom} ?`,
+        title: '{{ __("ui.edl.delete_confirm") }}',
+        text: `{{ __("ui.edl.delete_text", ["nom" => ""]) }}`.replace('', btn.dataset.nom),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Supprimer',
-        cancelButtonText: 'Annuler',
+        confirmButtonText: '{{ __("ui.common.delete") }}',
+        cancelButtonText: '{{ __("ui.common.cancel") }}',
     }).then(result => {
         if (!result.isConfirmed) return;
         fetch('{{ route("etat_des_lieux.destroy") }}', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-            body: JSON.stringify({ id }),
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            body: JSON.stringify({ id: btn.dataset.id }),
         })
         .then(r => r.json())
         .then(data => {
             if (data.status) {
                 btn.closest('tr').remove();
-                Swal.fire({ icon: 'success', title: 'Supprimé !', text: data.message, timer: 1500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: '{{ __("ui.common.deleted") }}', text: data.message, timer: 1500, showConfirmButton: false });
                 if (!document.querySelector('#tableEtats .ligne-etat')) {
                     document.querySelector('#tableEtats tbody').innerHTML =
                         '<tr id="ligneVide"><td colspan="8" class="text-center text-muted py-5">' +
-                        '<i class="bx bx-clipboard fs-3 d-block mb-2"></i>Aucun état des lieux enregistré.</td></tr>';
+                        '<i class="bx bx-clipboard fs-3 d-block mb-2"></i>{{ __("ui.edl.empty") }}</td></tr>';
                 }
             } else {
-                Swal.fire('Erreur', data.message, 'error');
+                Swal.fire('{{ __("ui.common.error") }}', data.message, 'error');
             }
         });
     });

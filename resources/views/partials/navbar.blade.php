@@ -107,6 +107,14 @@
             </li>
             <!--/ Notifications Bell -->
 
+            <!-- Toggle dark/light mode -->
+            <li class="nav-item me-2">
+                <button id="btnThemeToggle" class="btn-theme-toggle" title="{{ __('ui.common.dark_mode') }}">
+                    <i class="bx bx-moon"></i>
+                </button>
+            </li>
+            <!--/ Toggle dark/light mode -->
+
             <!-- Sélecteur de langue -->
             <li class="nav-item dropdown me-2">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" title="{{ __('dashboard.language') }}">
@@ -222,7 +230,7 @@
 
                     <!-- Aperçu du locataire -->
                     <div id="contrat-preview" class="d-none">
-                        <div class="card border-0" style="background:#f8f9fa;">
+                        <div class="card border-0 bg-body-tertiary">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-2" style="color:#012970;">
                                     <i class="bx bx-user me-1"></i>{{ __('layout.tenant_info') }}

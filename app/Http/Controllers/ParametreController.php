@@ -30,13 +30,23 @@ use Illuminate\Support\Facades\Cache;
 
 class ParametreController extends SessionController
 {
-    public function  welcome_page()
+    public function  welcome_page(Request $request)
     {
         $publicites = Publicite::notDeleted()
-                        ->notExpired()
+                        ->whereNotNull('published_at')
                         ->whereNotNull('image_url')
+                        ->orderByRaw("CASE WHEN is_sponsored = true AND sponsored_until >= NOW() THEN 0 ELSE 1 END")
                         ->orderBy('published_at', 'desc')
+                        ->limit(12)
                         ->get();
+
+        // Villes distinctes pour autocomplétion
+        $villesMarketplace = Publicite::notDeleted()
+            ->whereNotNull('ville')
+            ->distinct()
+            ->pluck('ville')
+            ->sort()
+            ->values();
 
         $paymentConfig    = PlatformConfig::getConfig();
         $paymentEnabled   = $paymentConfig->isOperational();
@@ -90,7 +100,8 @@ class ParametreController extends SessionController
                 'id'                  => $plan->code,
                 'nom'                 => $plan->nom,
                 'prix'                => (float) $plan->prix_annuel,
-                'periode'             => $plan->prix_annuel == 0 ? '14 jours' : 'an',
+                'prix_mensuel'        => (float) $plan->prix_mensuel,
+                'periode'             => $plan->prix_mensuel == 0 ? '14 jours' : 'mois',
                 'max_maisons'         => $plan->max_maisons,
                 'max_annexes'         => $plan->max_annexes,
                 'max_envois_email'    => $plan->max_envois_email,
@@ -104,7 +115,7 @@ class ParametreController extends SessionController
         $temoignagesDb = Temoignage::latest()->get();
 
         return view('/welcome', compact(
-            'publicites',
+            'publicites', 'villesMarketplace',
             'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox',
             'plansActifs', 'plansJs',
             'temoignagesDb'
@@ -142,7 +153,16 @@ class ParametreController extends SessionController
 
             $contratConfig = ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
 
-            return view('parametre', compact('param', 'liste_annexe', 'pourcentageGeneral', 'pourcentageGroupes', 'proprietaires_list', 'contratConfig'));
+            // Devise & Région
+            $deviseParamtre = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+            $devisesList    = Parametre::devises();
+            $paysList       = Parametre::paysList();
+
+            return view('parametre', compact(
+                'param', 'liste_annexe', 'pourcentageGeneral', 'pourcentageGroupes',
+                'proprietaires_list', 'contratConfig',
+                'deviseParamtre', 'devisesList', 'paysList'
+            ));
 
        } catch (QueryException $e) {
             return redirect()->back()->with('error','Échec, veuillez vérifier les données');
@@ -965,8 +985,10 @@ class ParametreController extends SessionController
         try {
             $validator = Validator::make($request->all(), [
                 'email_envoi' => 'nullable|email|max:255',
+                'timezone'    => 'nullable|timezone',
             ], [
                 'email_envoi.email' => 'L\'adresse email d\'envoi est invalide.',
+                'timezone.timezone' => 'Le fuseau horaire sélectionné est invalide.',
             ]);
 
             if ($validator->fails()) {
@@ -980,6 +1002,7 @@ class ParametreController extends SessionController
                 ['iddirection_ref' => Auth::user()->iddirection_ref],
                 [
                     'email_envoi' => $request->email_envoi,
+                    'timezone'    => $request->timezone ?? 'Africa/Porto-Novo',
                 ]
             );
 
@@ -990,6 +1013,100 @@ class ParametreController extends SessionController
             return response()->json([
                 'status'  => true,
                 'message' => 'Configuration communication enregistrée avec succès.',
+            ]);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Échec lors de l\'enregistrement. Veuillez réessayer.',
+            ]);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Devise & Région
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function storeDeviseConfig(Request $request)
+    {
+        try {
+            $devisesValides = array_column(Parametre::devises(), 'code');
+            $paysValides    = array_keys(Parametre::paysList());
+
+            $validator = Validator::make($request->all(), [
+                'pays'            => ['nullable', 'string', 'size:2', \Illuminate\Validation\Rule::in($paysValides)],
+                'devise'          => ['nullable', 'string', 'size:3', \Illuminate\Validation\Rule::in($devisesValides)],
+                'indicatif_tel'   => 'nullable|string|max:6',
+                'format_date'     => ['nullable', \Illuminate\Validation\Rule::in(['d/m/Y', 'm/d/Y', 'Y-m-d'])],
+                // Taux de change : {"EUR":"655.957","USD":"600",...}
+                'taux_change'     => 'nullable|array',
+                'taux_change.*'   => 'nullable|numeric|min:0',
+                // Taxes
+                'tva'             => 'nullable|numeric|min:0|max:100',
+                'tva_applicable'  => 'nullable|boolean',
+                'nom_taxe'        => 'nullable|string|max:30',
+            ], [
+                'pays.in'    => 'Pays non supporté.',
+                'devise.in'  => 'Devise non supportée.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => implode(' ', $validator->errors()->all()),
+                ]);
+            }
+
+            // Construire le JSON des taux de change
+            $tauxChange = null;
+            if ($request->filled('taux_change') && is_array($request->taux_change)) {
+                $tauxChange = [];
+                foreach ($request->taux_change as $code => $taux) {
+                    if (in_array($code, $devisesValides) && is_numeric($taux) && (float)$taux > 0) {
+                        $tauxChange[$code] = (float) $taux;
+                    }
+                }
+                if (empty($tauxChange)) {
+                    $tauxChange = null;
+                }
+            }
+
+            // Construire le JSON des taxes
+            $taxes = null;
+            if ($request->has('tva')) {
+                $taxes = [
+                    'tva'             => (float) ($request->tva ?? 0),
+                    'tva_applicable'  => (bool)  ($request->tva_applicable ?? false),
+                    'nom_taxe'        => $request->nom_taxe ?? 'TVA',
+                ];
+            }
+
+            $updateData = array_filter([
+                'pays'          => $request->pays,
+                'devise'        => $request->devise,
+                'indicatif_tel' => $request->indicatif_tel,
+                'format_date'   => $request->format_date,
+            ], fn($v) => $v !== null);
+
+            if ($tauxChange !== null) {
+                $updateData['taux_change'] = $tauxChange;
+            }
+            if ($taxes !== null) {
+                $updateData['taxes'] = $taxes;
+            }
+
+            Parametre::updateOrCreate(
+                ['iddirection_ref' => Auth::user()->iddirection_ref],
+                $updateData
+            );
+
+            activity()->performedOn(new Parametre())
+                ->causedBy(Auth::user())
+                ->log('Modification de la configuration devise/pays par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Configuration devise & région enregistrée avec succès.',
             ]);
 
         } catch (QueryException $e) {

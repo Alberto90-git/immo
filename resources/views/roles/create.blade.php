@@ -350,7 +350,7 @@
                 </tr>
 
                 <tr>
-                    <td class="text-nowrap">Maintenance</td>
+                    <td class="text-nowrap">Interventions</td>
                     <td>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label text-dark">
@@ -364,6 +364,72 @@
                                     <label class="form-check-label text-dark">
                                         {{ Form::checkbox('permission[]', $pM->id, false, ['class' => 'form-check-input permission-maintenance']) }}
                                         {{ $pM->label }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-nowrap">Automatisation</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label text-dark">
+                                <input type="checkbox" id="selectAllAutomation" class="form-check-input select-all">
+                                {{ __('pages.role_perm_all') }}
+                            </label>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            @foreach($permissionAutomation as $pAuto)
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        {{ Form::checkbox('permission[]', $pAuto->id, false, ['class' => 'form-check-input permission-automation']) }}
+                                        {{ $pAuto->label }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-nowrap">Recouvrement</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label text-dark">
+                                <input type="checkbox" id="selectAllRecouvrement" class="form-check-input select-all">
+                                {{ __('pages.role_perm_all') }}
+                            </label>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            @foreach($permissionRecouvrement as $pRec)
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        {{ Form::checkbox('permission[]', $pRec->id, false, ['class' => 'form-check-input permission-recouvrement']) }}
+                                        {{ $pRec->label }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="text-nowrap">Signature électronique</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label text-dark">
+                                <input type="checkbox" id="selectAllSignature" class="form-check-input select-all">
+                                {{ __('pages.role_perm_all') }}
+                            </label>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            @foreach($permissionSignature as $pSig)
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        {{ Form::checkbox('permission[]', $pSig->id, false, ['class' => 'form-check-input permission-signature']) }}
+                                        {{ $pSig->label }}
                                     </label>
                                 </div>
                             @endforeach
@@ -463,8 +529,11 @@
     setupSelectAll('selectAllPub',          'permission-pub');
     setupSelectAll('selectAllEtatDesLieux',  'permission-etat-des-lieux');
     setupSelectAll('selectAllMaintenance',  'permission-maintenance');
-    setupSelectAll('selectAllEnvoi',        'permission-envoi');
-    setupSelectAll('selectAllUser',         'permission-user');
+    setupSelectAll('selectAllAutomation',   'permission-automation');
+    setupSelectAll('selectAllEnvoi',         'permission-envoi');
+    setupSelectAll('selectAllRecouvrement',  'permission-recouvrement');
+    setupSelectAll('selectAllSignature',     'permission-signature');
+    setupSelectAll('selectAllUser',          'permission-user');
 
     /* ── Soumission AJAX ── */
     function save_role() {
@@ -491,19 +560,19 @@
                     }
                     if (data.error.permission) {
                         var msg = Array.isArray(data.error.permission) ? data.error.permission[0] : data.error.permission;
-                        display_message('Attention', msg, 'warning', 'btn btn-warning');
+                        display_message('{{ __("common.swal_warning") }}', msg, 'warning', 'btn btn-warning');
                     }
                     return;
                 }
-                display_message('Succès !', data.message, 'success', 'btn btn-primary');
+                display_message('{{ __("common.swal_success") }}', data.message, 'success', 'btn btn-primary');
                 $('#formRole')[0].reset();
                 // Décocher toutes les cases
                 $('#formRole input[type="checkbox"]').prop('checked', false);
             },
             error: function (xhr) {
-                var msg = 'Une erreur s\'est produite.';
+                var msg = '{{ __("common.swal_generic_error") }}';
                 if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                display_message('Erreur', msg, 'error', 'btn btn-danger');
+                display_message('{{ __("common.swal_error") }}', msg, 'error', 'btn btn-danger');
             },
             complete: function () {
                 $('#btnSaveRole').prop('disabled', false);

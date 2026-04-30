@@ -123,7 +123,7 @@
                     <th scope="row">{{ $item->nom_maison }}</th>
                     <td>{{ $item->numero_chambre }}</td>
                     <td>{{ $item->type_chambre }}</td>
-                    <td>{{ number_format($item->prix ,"0",",",".") }} XOF</td>
+                    <td>{{ format_price($item->prix) }}</td>
                     <td>
                     @can('modify-prix')
                       <a class="btn sbg1" 

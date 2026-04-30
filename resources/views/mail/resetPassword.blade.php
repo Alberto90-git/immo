@@ -144,6 +144,24 @@
       color: #1a56db;
       text-decoration: none;
     }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 24px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .body h2 { font-size: 18px !important; }
+    .reset-box { padding: 24px 14px !important; }
+    .reset-btn {
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      text-align: center;
+    }
+    .warning-box { display: block !important; }
+    .warning-box .icon { display: block; margin-bottom: 8px; }
+  }
   </style>
 </head>
 <body>

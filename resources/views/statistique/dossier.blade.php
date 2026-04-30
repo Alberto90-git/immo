@@ -78,7 +78,6 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">{{ __('pages.dos_th_agency') }}</th>
                                     <th scope="col">{{ __('pages.dos_th_client_name') }}</th>
                                     <th scope="col">{{ __('pages.dos_th_phone') }}</th>
                                     <th scope="col">{{ __('pages.dos_th_zone') }}</th>
@@ -127,7 +126,6 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                               <tr>
-                                <th scope="col">{{ __('pages.dos_th_agency') }}</th>
                                 <th scope="col">{{ __('pages.dos_th_seller_name') }}</th>
                                 <th scope="col">{{ __('pages.dos_th_phone') }}</th>
                                 <th scope="col">{{ __('pages.dos_th_district') }}</th>

@@ -5,145 +5,210 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notification d'expiration d'abonnement</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 30px 10px;
+      color: #333;
       line-height: 1.6;
     }
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+    .wrapper { max-width: 580px; margin: 0 auto; }
     .header {
+      background: linear-gradient(135deg, #1a56db 0%, #0e3a9c 100%);
+      border-radius: 12px 12px 0 0;
+      padding: 32px 24px;
       text-align: center;
-      background-color: #1e40af;
-      padding: 15px;
-      border-radius: 8px 8px 0 0;
-      color: #fff;
     }
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-    .content {
-      padding: 20px;
-      color: #333;
-    }
-    .content p {
-      margin: 15px 0;
-    }
-    .alert-box {
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 0 8px 8px 0;
-    }
-    .alert-box h3 {
-      margin: 0 0 10px 0;
-    }
-    .alert-box p {
-      margin: 5px 0;
-    }
-    .alert-warning {
-      background-color: #fef3c7;
-      border-left: 4px solid #f59e0b;
-    }
-    .alert-warning h3 { color: #b45309; }
-    .alert-orange {
-      background-color: #fff7ed;
-      border-left: 4px solid #f97316;
-    }
-    .alert-orange h3 { color: #c2410c; }
-    .alert-danger {
-      background-color: #fef2f2;
-      border-left: 4px solid #ef4444;
-    }
-    .alert-danger h3 { color: #dc2626; }
-    .btn {
+    .header .brand { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+    .header .brand span { color: #93c5fd; }
+    .header .subtitle { color: #bfdbfe; margin-top: 4px; font-size: 13px; }
+    .header .badge {
       display: inline-block;
-      background-color: #1e40af;
-      color: #fff;
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 4px;
-      margin-top: 15px;
-      font-weight: bold;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: #fde68a;
+      margin-top: 12px;
     }
+    .body { background: #ffffff; padding: 36px 32px; }
+    .body h2 { font-size: 20px; color: #1e293b; margin-bottom: 16px; }
+    .body p { font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 12px; }
+
+    /* Alerte expiration */
+    .expiry-card {
+      border-radius: 12px;
+      padding: 22px 20px;
+      margin: 20px 0;
+    }
+    .expiry-card.warning  { background: #fef3c7; border: 2px solid #f59e0b; }
+    .expiry-card.orange   { background: #fff7ed; border: 2px solid #f97316; }
+    .expiry-card.danger   { background: #fef2f2; border: 2px solid #ef4444; }
+    .expiry-card .ec-icon { font-size: 32px; text-align: center; margin-bottom: 10px; }
+    .expiry-card .ec-title {
+      font-size: 15px; font-weight: 700; text-align: center; margin-bottom: 6px;
+    }
+    .expiry-card.warning  .ec-title { color: #92400e; }
+    .expiry-card.orange   .ec-title { color: #c2410c; }
+    .expiry-card.danger   .ec-title { color: #dc2626; }
+
+    /* Info card */
+    .info-card { margin: 20px 0; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .info-card .card-header {
+      background: #f1f5f9; padding: 12px 18px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1.5px; color: #64748b; border-bottom: 1px solid #e2e8f0;
+    }
+    .info-row {
+      display: flex; align-items: center;
+      padding: 12px 18px; border-bottom: 1px solid #f1f5f9; gap: 12px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .ir-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: #f1f5f9; display: flex; align-items: center;
+      justify-content: center; font-size: 17px; flex-shrink: 0;
+    }
+    .info-row .ir-label { font-size: 12px; color: #94a3b8; margin-bottom: 2px; }
+    .info-row .ir-value { font-size: 14px; color: #1e293b; font-weight: 600; }
+
+    /* Bouton */
+    .btn-wrap { text-align: center; margin: 24px 0; }
+    .btn-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, #1a56db 0%, #0e3a9c 100%);
+      color: #fff !important; text-decoration: none;
+      padding: 14px 36px; border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+    }
+
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 24px 0; }
     .footer {
-      text-align: center;
-      color: #777;
-      padding: 10px;
-      font-size: 14px;
+      background: #f8faff; border-radius: 0 0 12px 12px;
+      padding: 20px 24px; text-align: center;
     }
-    .footer a {
-      color: #1e40af;
-      text-decoration: none;
+    .footer p { font-size: 12px; color: #94a3b8; line-height: 1.8; }
+    .footer a { color: #1a56db; text-decoration: none; }
+
+    @media only screen and (max-width: 600px) {
+      body { padding: 0 !important; }
+      .wrapper { width: 100% !important; }
+      .header { border-radius: 0 !important; padding: 24px 16px !important; }
+      .body { padding: 24px 16px !important; }
+      .footer { border-radius: 0 !important; }
+      .body h2 { font-size: 18px !important; }
+      .info-row { display: block !important; padding: 12px 14px !important; }
+      .info-row .ir-icon { margin-bottom: 8px; }
+      .btn-primary { display: block !important; width: 100% !important; text-align: center; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  @php
+    $days = $notificationData['jours_restants'];
+    $nom  = $notificationData['destinataire_nom'] ?? $notificationData['entreprise'];
+
+    if ($days < 0) {
+        $cardClass = 'danger';
+        $icon      = '🔴';
+        $title     = 'Abonnement expiré';
+        $alertMsg  = 'Votre abonnement a expiré depuis ' . abs($days) . ' jour(s). Vos accès seront limités tant que vous n\'aurez pas renouvelé.';
+    } elseif ($days == 0) {
+        $cardClass = 'danger';
+        $icon      = '🚨';
+        $title     = 'Expiration aujourd\'hui';
+        $alertMsg  = 'Votre abonnement expire aujourd\'hui. Renouvelez-le maintenant pour éviter toute interruption.';
+    } elseif ($days == 1) {
+        $cardClass = 'danger';
+        $icon      = '⚠️';
+        $title     = 'Expiration demain';
+        $alertMsg  = 'Votre abonnement expire demain. Pensez à le renouveler dès maintenant.';
+    } elseif ($days <= 3) {
+        $cardClass = 'orange';
+        $icon      = '⏰';
+        $title     = 'Expiration dans ' . $days . ' jours';
+        $alertMsg  = 'Votre abonnement expire dans ' . $days . ' jours. Pensez au renouvellement.';
+    } else {
+        $cardClass = 'warning';
+        $icon      = '📅';
+        $title     = 'Expiration dans ' . $days . ' jours';
+        $alertMsg  = 'Votre abonnement expire dans ' . $days . ' jours. Anticipez le renouvellement.';
+    }
+  @endphp
+
+  <div class="wrapper">
+
     <div class="header">
-      <h1>Lokativ - Abonnement</h1>
+      <div class="brand">Loka<span>tiv</span></div>
+      <div class="subtitle">Plateforme de gestion immobilière</div>
+      <div class="badge">🔔 Abonnement</div>
     </div>
-    <div class="content">
-      @php
-        $days = $notificationData['jours_restants'];
-        $nom = $notificationData['destinataire_nom'] ?? $notificationData['entreprise'];
 
-        if ($days < 0) {
-            $alertClass = 'alert-danger';
-            $alertTitle = 'Abonnement expiré';
-            $alertMessage = 'Votre abonnement a expiré depuis ' . abs($days) . ' jour(s). Vos accès seront limités tant que vous n\'aurez pas renouvelé votre abonnement.';
-        } elseif ($days == 0) {
-            $alertClass = 'alert-danger';
-            $alertTitle = 'Expiration aujourd\'hui';
-            $alertMessage = 'Votre abonnement expire aujourd\'hui. Renouvelez-le maintenant pour éviter toute interruption de service.';
-        } elseif ($days == 1) {
-            $alertClass = 'alert-danger';
-            $alertTitle = 'Expiration demain';
-            $alertMessage = 'Votre abonnement expire demain. Pensez à le renouveler pour maintenir l\'accès à toutes les fonctionnalités.';
-        } elseif ($days <= 3) {
-            $alertClass = 'alert-orange';
-            $alertTitle = 'Expiration dans ' . $days . ' jours';
-            $alertMessage = 'Votre abonnement expire dans ' . $days . ' jours. Il est temps de penser au renouvellement.';
-        } else {
-            $alertClass = 'alert-warning';
-            $alertTitle = 'Expiration dans ' . $days . ' jours';
-            $alertMessage = 'Votre abonnement expire dans ' . $days . ' jours. Anticipez le renouvellement pour éviter toute interruption.';
-        }
-      @endphp
+    <div class="body">
+      <h2>Bonjour {{ $nom }},</h2>
+      <p>{{ $alertMsg }}</p>
 
-      <p>Bonjour <strong>{{ $nom }}</strong>,</p>
-
-      <p>{{ $alertMessage }}</p>
-
-      <div class="alert-box {{ $alertClass }}">
-        <h3>{{ $alertTitle }}</h3>
-        <p><strong>Entreprise :</strong> {{ $notificationData['entreprise'] }}</p>
-        <p><strong>Plan actuel :</strong> {{ $notificationData['plan_nom'] }}</p>
-        <p><strong>Date d'expiration :</strong> {{ $notificationData['date_expiration'] }}</p>
-        @if($days >= 0)
-          <p><strong>Jours restants :</strong> {{ $days }} jour(s)</p>
-        @else
-          <p><strong>Expiré depuis :</strong> {{ abs($days) }} jour(s)</p>
-        @endif
+      <div class="expiry-card {{ $cardClass }}">
+        <div class="ec-icon">{{ $icon }}</div>
+        <div class="ec-title">{{ $title }}</div>
       </div>
 
-      <p style="text-align: center;">
-        <a href="{{ config('app.url') }}/login" class="btn">Renouveler mon abonnement</a>
-      </p>
+      <div class="info-card">
+        <div class="card-header">Détails de l'abonnement</div>
+        <div class="info-row">
+          <div class="ir-icon">🏢</div>
+          <div>
+            <div class="ir-label">Entreprise</div>
+            <div class="ir-value">{{ $notificationData['entreprise'] }}</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="ir-icon">📦</div>
+          <div>
+            <div class="ir-label">Plan actuel</div>
+            <div class="ir-value">{{ $notificationData['plan_nom'] }}</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="ir-icon">📆</div>
+          <div>
+            <div class="ir-label">Date d'expiration</div>
+            <div class="ir-value">{{ $notificationData['date_expiration'] }}</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="ir-icon">⏳</div>
+          <div>
+            @if($days >= 0)
+              <div class="ir-label">Jours restants</div>
+              <div class="ir-value">{{ $days }} jour(s)</div>
+            @else
+              <div class="ir-label">Expiré depuis</div>
+              <div class="ir-value">{{ abs($days) }} jour(s)</div>
+            @endif
+          </div>
+        </div>
+      </div>
 
-      <p>Si vous avez des questions ou besoin d'assistance pour le renouvellement, n'hésitez pas à nous contacter.</p>
+      <div class="btn-wrap">
+        <a href="{{ config('app.url') }}/login" class="btn-primary">Renouveler mon abonnement</a>
+      </div>
+
+      <hr class="divider">
+      <p style="font-size:13px; color:#94a3b8;">
+        Pour toute question ou assistance, contactez notre support à
+        <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
+      </p>
     </div>
+
     <div class="footer">
-      <p>&copy; {{ date('Y') }} Lokativ. Tous droits réservés.</p>
+      <p>
+        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
+        Ce message a été envoyé automatiquement — merci de ne pas y répondre directement.
+      </p>
     </div>
+
   </div>
 </body>
 </html>

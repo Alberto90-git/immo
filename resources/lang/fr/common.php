@@ -103,4 +103,13 @@ return [
     // ── Swal bouton fermer ─────────────────────────────────────────────
     'swal_close'         => 'Fermer',
     'swal_ok'            => 'OK',
+
+    // ── Swal messages réseau / serveur ─────────────────────────────
+    'swal_network_error'  => 'Erreur réseau',
+    'swal_network_msg'    => 'La requête a échoué. Vérifiez votre connexion.',
+    'swal_server_error'   => 'Erreur serveur',
+    'swal_cannot_reach'   => 'Impossible de joindre le serveur.',
+
+    // ── Libellés d'état génériques ─────────────────────────────────
+    'processing'          => 'En cours...',
 ];

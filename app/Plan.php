@@ -26,6 +26,7 @@ class Plan extends Model
         'sms_enabled',
         'whatsapp_enabled',
         'prix_annuel',
+        'prix_mensuel',
         'is_active',
         'delete_at'
     ];
@@ -39,6 +40,7 @@ class Plan extends Model
         'max_preavis'         => 'integer',
         'max_publicites'      => 'integer',
         'prix_annuel'         => 'decimal:2',
+        'prix_mensuel'        => 'decimal:2',
         'is_active'           => 'boolean',
         'sms_enabled'         => 'boolean',
         'whatsapp_enabled'    => 'boolean',

@@ -90,7 +90,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title">
+            <h5 class="modal-title text-white">
               <i class="bx bx-user-circle me-2"></i>
               <span id="d-client-nom"></span>
             </h5>
@@ -130,7 +130,7 @@
                   <div class="card-body text-center py-3">
                     <i class="bx bx-money fs-4 text-warning mb-1"></i>
                     <div class="small text-muted">{{ __('pages.client_budget') }}</div>
-                    <div class="fw-semibold"><span id="d-client-budget">—</span> XOF</div>
+                    <div class="fw-semibold"><span id="d-client-budget">—</span> {{ get_symbole_devise() }}</div>
                   </div>
                 </div>
               </div>

@@ -166,10 +166,51 @@
                    <input type="tel" name="telephone" class="form-control" id="telephone" required="">
                    <span class="invalid-feedback telephone_err" role="alert"></span>
                  </div>
+
+                 <!-- Marketplace fields -->
+                 <div class="col-4">
+                   <label class="form-label">Type de bien</label>
+                   <select name="type_bien" id="type_bien" class="form-select">
+                     <option value="">-- Choisir --</option>
+                     <option value="appartement">Appartement</option>
+                     <option value="maison">Maison</option>
+                     <option value="villa">Villa</option>
+                     <option value="terrain">Terrain</option>
+                     <option value="bureau">Bureau</option>
+                     <option value="commerce">Local commercial</option>
+                     <option value="chambre">Chambre</option>
+                     <option value="studio">Studio</option>
+                   </select>
+                 </div>
+                 <div class="col-4">
+                   <label class="form-label">Ville</label>
+                   <input type="text" name="ville" id="ville" class="form-control" placeholder="Ex: Cotonou">
+                 </div>
+                 <div class="col-4">
+                   <label class="form-label">Quartier</label>
+                   <input type="text" name="quartier" id="quartier" class="form-control" placeholder="Ex: Fidjrossè">
+                 </div>
+                 <div class="col-6">
+                   <label class="form-label">Latitude <small class="text-muted">(optionnel)</small></label>
+                   <input type="number" step="any" name="lat" id="lat" class="form-control" placeholder="6.3703">
+                 </div>
+                 <div class="col-6">
+                   <label class="form-label">Longitude <small class="text-muted">(optionnel)</small></label>
+                   <input type="number" step="any" name="lng" id="lng" class="form-control" placeholder="2.3912">
+                 </div>
+                 <div class="col-12">
+                   <label class="form-label">URL Vidéo <small class="text-muted">(YouTube, MP4…)</small></label>
+                   <input type="url" name="video_url" id="video_url" class="form-control" placeholder="https://...">
+                 </div>
+
                  <div class="col-12">
                    <label class="form-label">{{ __('pages.pub_label_description') }}<span style="color: red;">*</span></label>
                    <textarea class="form-control" name="description" id="description" rows="4" required></textarea>
                    <span class="invalid-feedback description_err" role="alert"></span>
+                 </div>
+                 <div class="col-12">
+                   <label class="form-label">Meta description SEO <small class="text-muted">(160 caractères max)</small></label>
+                   <input type="text" name="meta_description" id="meta_description" class="form-control" maxlength="160" placeholder="Résumé pour les moteurs de recherche">
                  </div>
 
                  <!-- Zone d'upload multi-images (4 slots fixes) -->
@@ -241,7 +282,7 @@
                 <td>{{ $item->localisation }}</td>
                 <td>{{ $item->Superficie }} m²</td>
                 <td>{{ $item->telephone }}</td>
-                <td>{{ number_format($item->price ,"0",",",".") }} XOF</td>
+                <td>{{ format_price($item->price) }}</td>
                 <td>
                     <span class="badge bg-info" id="img-count-{{ $item->id }}">{{ $item->image_count }} / 4</span>
                     @can('ajouter-image')
@@ -271,10 +312,18 @@
                    @endcan
 
                     @can('voir-detail-publicite')
-                        <button type="button" class="btn rounded-pill btn-primary" onclick="openDetailModal({{ $item->id }})">
+                        <button type="button" class="btn rounded-pill btn-primary me-1" onclick="openDetailModal({{ $item->id }})">
                             <i class="bx bx-zoom-in me-1"></i>
                         </button>
                     @endcan
+                    @if($item->slug)
+                    <a href="{{ route('marketplace.show', $item->slug) }}" target="_blank" class="btn rounded-pill btn-outline-info me-1" title="Voir sur le Marketplace">
+                        <i class="bx bx-globe"></i>
+                    </a>
+                    @endif
+                    <button type="button" class="btn rounded-pill btn-outline-warning" title="Sponsoriser" onclick="openSponsorModal({{ $item->id }})">
+                        <i class="bx bxs-star"></i>
+                    </button>
                 </td>
               </tr>
 
@@ -341,9 +390,42 @@
                 <label class="form-label">{{ __('pages.pub_label_phone') }}<span style="color: red;">*</span></label>
                 <input type="tel" name="telephone" id="gedit-telephone" class="form-control" required>
               </div>
+              <div class="col-4">
+                <label class="form-label">Type de bien</label>
+                <select name="type_bien" id="gedit-type_bien" class="form-select">
+                  <option value="">-- Choisir --</option>
+                  @foreach(['appartement'=>'Appartement','maison'=>'Maison','villa'=>'Villa','terrain'=>'Terrain','bureau'=>'Bureau','commerce'=>'Local commercial','chambre'=>'Chambre','studio'=>'Studio'] as $v=>$l)
+                  <option value="{{ $v }}">{{ $l }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="form-label">Ville</label>
+                <input type="text" name="ville" id="gedit-ville" class="form-control" placeholder="Cotonou">
+              </div>
+              <div class="col-4">
+                <label class="form-label">Quartier</label>
+                <input type="text" name="quartier" id="gedit-quartier" class="form-control" placeholder="Fidjrossè">
+              </div>
+              <div class="col-4">
+                <label class="form-label">Latitude</label>
+                <input type="number" step="any" name="lat" id="gedit-lat" class="form-control" placeholder="6.3703">
+              </div>
+              <div class="col-4">
+                <label class="form-label">Longitude</label>
+                <input type="number" step="any" name="lng" id="gedit-lng" class="form-control" placeholder="2.3912">
+              </div>
+              <div class="col-4">
+                <label class="form-label">URL Vidéo</label>
+                <input type="url" name="video_url" id="gedit-video_url" class="form-control" placeholder="https://...">
+              </div>
               <div class="col-12">
                 <label class="form-label">{{ __('pages.pub_label_description') }}<span style="color: red;">*</span></label>
                 <textarea class="form-control" name="description" id="gedit-description-input" rows="4" required></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Meta description SEO</label>
+                <input type="text" name="meta_description" id="gedit-meta_description" class="form-control" maxlength="160" placeholder="Résumé SEO...">
               </div>
               <div class="col-12">
                 <label class="form-label">{{ __('pages.pub_edit_images_label') }}</label>
@@ -379,6 +461,42 @@
                 @endcan
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Sponsoriser -->
+    <div class="modal fade" id="sponsorModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bx bxs-star text-warning me-2"></i>Sponsoriser l'annonce</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="sponsor-pub-id">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Durée de mise en avant</label>
+              <select class="form-select" id="sponsor-duree">
+                <option value="7">7 jours</option>
+                <option value="14" selected>14 jours</option>
+                <option value="30">30 jours</option>
+                <option value="60">60 jours</option>
+                <option value="90">90 jours</option>
+              </select>
+            </div>
+            <div id="sponsor-payment-block" class="d-none">
+              <p class="small text-muted">Un paiement est requis pour sponsoriser cette annonce.</p>
+              <button class="btn btn-warning w-100" id="btnPaySponsor" onclick="paySponsor()">
+                <i class="bx bx-credit-card me-2"></i>Payer et sponsoriser
+              </button>
+            </div>
+            <div id="sponsor-free-block">
+              <button class="btn btn-warning w-100" id="btnSponsorFree" onclick="submitSponsor('')">
+                <i class="bx bxs-star me-2"></i>Sponsoriser (sans paiement)
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -444,9 +562,11 @@
 
         $(document).off('.page');
         var CSRF_TOKEN   = '{{ csrf_token() }}';
-        var URL_STORE    = '{{ route("store_pub") }}';
-        var URL_UPDATE   = '{{ route("update_pub") }}';
-        var URL_DESTROY  = '{{ route("destroy_pub") }}';
+        var URL_STORE       = '{{ route("store_pub") }}';
+        var URL_UPDATE      = '{{ route("update_pub") }}';
+        var URL_DESTROY     = '{{ route("destroy_pub") }}';
+        var URL_SPONSORISER = '{{ route("pub_sponsoriser") }}';
+        var URL_MARKETPLACE = '{{ route("marketplace.index") }}';
         var CAN_MODIFIER = {{ auth()->user()->can('modifier-publicite')     ? 'true' : 'false' }};
         var CAN_SUPPR    = {{ auth()->user()->can('supprimer-publicite')    ? 'true' : 'false' }};
         var CAN_DETAIL   = {{ auth()->user()->can('voir-detail-publicite')  ? 'true' : 'false' }};
@@ -609,8 +729,14 @@
                 actions += `<button class="btn rounded-pill btn-danger btn-supprimer-pub me-1" title="${PUB_I18N.titleDelete}" data-id="${d.id}" data-localisation="${esc(d.localisation || '')}"><i class="bx bx-trash me-1"></i></button>`;
             }
             if (CAN_DETAIL) {
-                actions += `<button class="btn rounded-pill btn-primary" onclick="openDetailModal(${d.id})"><i class="bx bx-zoom-in me-1"></i></button>`;
+                actions += `<button class="btn rounded-pill btn-primary me-1" onclick="openDetailModal(${d.id})"><i class="bx bx-zoom-in me-1"></i></button>`;
             }
+            // Marketplace link
+            if (d.slug) {
+                actions += `<a href="${URL_MARKETPLACE}annonce/${d.slug}" target="_blank" class="btn rounded-pill btn-outline-info me-1" title="Voir sur le Marketplace"><i class="bx bx-globe"></i></a>`;
+            }
+            // Sponsoriser
+            actions += `<button class="btn rounded-pill btn-outline-warning" title="Sponsoriser" onclick="openSponsorModal(${d.id})"><i class="bx bxs-star"></i></button>`;
 
             const tr = document.createElement('tr');
             tr.id = 'row-pub-' + d.id;
@@ -647,6 +773,13 @@
             $('#gedit-prix').val(pub.price);
             $('#gedit-telephone').val(pub.telephone);
             $('#gedit-description-input').val(pub.description);
+            $('#gedit-type_bien').val(pub.type_bien || '');
+            $('#gedit-ville').val(pub.ville || '');
+            $('#gedit-quartier').val(pub.quartier || '');
+            $('#gedit-lat').val(pub.lat || '');
+            $('#gedit-lng').val(pub.lng || '');
+            $('#gedit-video_url').val(pub.video_url || '');
+            $('#gedit-meta_description').val(pub.meta_description || '');
 
             for (var i = 1; i <= 4; i++) {
                 var imgUrl  = pub[imgFields[i - 1]];
@@ -966,6 +1099,90 @@
         $(':input').on('input', function() { var id = $(this).attr("id"); if (id) $('.' + id + '_err').hide(); });
         $(':input').on('change', function() { var id = $(this).attr("id"); if (id) $('.' + id + '_err').hide(); });
         $('select').on('change', function() { var id = $(this).attr("id"); if (id) $('.' + id + '_err').hide(); });
+
+        // ============================================
+        // SPONSORING
+        // ============================================
+        @php
+            $cfg = \App\PlatformConfig::getConfig();
+            $payEnabled = $cfg && in_array($cfg->active_payment_provider, ['kkiapay','fedapay']);
+            $payProvider = $cfg ? $cfg->active_payment_provider : 'none';
+            $payKey      = $cfg ? $cfg->getActivePublicKey() : '';
+            $paySandbox  = $cfg ? (bool)$cfg->getActiveSandbox() : true;
+        @endphp
+        var SPONSOR_PAY_ENABLED  = {{ $payEnabled ? 'true' : 'false' }};
+        var SPONSOR_PAY_PROVIDER = '{{ $payProvider }}';
+        var SPONSOR_PAY_KEY      = '{{ $payKey }}';
+        var SPONSOR_PAY_SANDBOX  = {{ $paySandbox ? 'true' : 'false' }};
+        var sponsorTransactionId = '';
+
+        function openSponsorModal(id) {
+            document.getElementById('sponsor-pub-id').value = id;
+            sponsorTransactionId = '';
+            if (SPONSOR_PAY_ENABLED) {
+                document.getElementById('sponsor-payment-block').classList.remove('d-none');
+                document.getElementById('sponsor-free-block').classList.add('d-none');
+            } else {
+                document.getElementById('sponsor-payment-block').classList.add('d-none');
+                document.getElementById('sponsor-free-block').classList.remove('d-none');
+            }
+            new bootstrap.Modal(document.getElementById('sponsorModal')).show();
+        }
+
+        function paySponsor() {
+            const btn = document.getElementById('btnPaySponsor');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Paiement...';
+            const amount = 5000; // Prix fixe sponsoring (à adapter)
+            if (SPONSOR_PAY_PROVIDER === 'kkiapay') {
+                openKkiapayWidget({
+                    amount: amount,
+                    key: SPONSOR_PAY_KEY,
+                    sandbox: SPONSOR_PAY_SANDBOX,
+                    callback: function(resp) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bx bx-credit-card me-2"></i>Payer et sponsoriser';
+                        if (resp && resp.transactionId) {
+                            submitSponsor(resp.transactionId);
+                        }
+                    }
+                });
+            } else if (SPONSOR_PAY_PROVIDER === 'fedapay') {
+                FedaPay.init({
+                    public_key: SPONSOR_PAY_KEY,
+                    transaction: { amount: amount, description: 'Sponsoring annonce' },
+                    onComplete: function(resp) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bx bx-credit-card me-2"></i>Payer et sponsoriser';
+                        if (resp.reason !== FedaPay.DIALOG_DISMISSED && resp.transaction && resp.transaction.status === 'approved') {
+                            submitSponsor(resp.transaction.id);
+                        }
+                    }
+                }).open();
+            }
+        }
+
+        function submitSponsor(txId) {
+            const id    = document.getElementById('sponsor-pub-id').value;
+            const duree = document.getElementById('sponsor-duree').value;
+            const fd = new FormData();
+            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('id', id);
+            fd.append('duree_jours', duree);
+            fd.append('transaction_id', txId || 'admin-gratuit');
+
+            fetch(URL_SPONSORISER, { method: 'POST', body: fd })
+              .then(r => r.json())
+              .then(data => {
+                bootstrap.Modal.getInstance(document.getElementById('sponsorModal')).hide();
+                if (data.status) {
+                    Swal.fire({ icon: 'success', title: '{{ __("common.swal_success") }}', text: data.message, timer: 2500, showConfirmButton: false });
+                } else {
+                    Swal.fire({ icon: 'error', title: '{{ __("common.swal_error") }}', text: data.message });
+                }
+              })
+              .catch(() => Swal.fire({ icon: 'error', title: '{{ __("common.swal_error") }}', text: '{{ __("common.swal_unexpected_error") }}' }));
+        }
 
         // ============================================
         // DATATABLES INIT

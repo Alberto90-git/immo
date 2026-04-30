@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Publicite;
 use App\Direction;
+use App\PlatformConfig;
+use App\Services\KkiapayService;
+use App\Services\FedapayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -11,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PubliciteController extends Controller
 {
@@ -124,6 +128,13 @@ class PubliciteController extends Controller
                     'description' => $request->description,
                     'telephone' => $request->telephone,
                     'published_at' => Carbon::now(),
+                    'ville' => $request->ville ?? null,
+                    'quartier' => $request->quartier ?? null,
+                    'type_bien' => $request->type_bien ?? null,
+                    'video_url' => $request->video_url ?? null,
+                    'lat' => $request->lat ?? null,
+                    'lng' => $request->lng ?? null,
+                    'meta_description' => $request->meta_description ?? null,
                 ];
 
                 if ($image_link) $pubData['image_url'] = $image_link;
@@ -134,6 +145,9 @@ class PubliciteController extends Controller
                 $pub = Publicite::create($pubData);
 
                 if ($pub) {
+                    // Générer le slug après création
+                    $pub->slug = Publicite::generateSlug($request->adresse, $pub->id);
+                    $pub->save();
 
                     activity()->performedOn(new Publicite())
                             ->causedBy(Auth::user()->id)
@@ -211,6 +225,14 @@ class PubliciteController extends Controller
                     'price' => $request->prix_vente,
                     'description' => $request->description,
                     'telephone' => $request->telephone,
+                    'ville' => $request->ville ?? null,
+                    'quartier' => $request->quartier ?? null,
+                    'type_bien' => $request->type_bien ?? null,
+                    'video_url' => $request->video_url ?? null,
+                    'lat' => $request->lat ?? null,
+                    'lng' => $request->lng ?? null,
+                    'meta_description' => $request->meta_description ?? null,
+                    'slug' => Publicite::generateSlug($request->adresse, $request->id),
                 ];
 
                 // Gérer chaque image individuellement
@@ -377,6 +399,55 @@ class PubliciteController extends Controller
                 'status' => false,
                 'message' => 'Erreur, essayez encore'
             ]);
+        }
+    }
+
+
+    public function sponsoriser(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id'             => 'required',
+                'duree_jours'    => 'required|integer|min:1|max:365',
+                'transaction_id' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }
+
+            // Vérifier paiement
+            $cfg = PlatformConfig::getConfig();
+            $verified = false;
+            if ($cfg && $cfg->active_payment_provider === 'kkiapay') {
+                $svc = new KkiapayService($cfg->kkiapay_public_key, $cfg->kkiapay_private_key, $cfg->kkiapay_secret_key, (bool)$cfg->kkiapay_sandbox);
+                $verified = $svc->verifyTransaction($request->transaction_id);
+            } elseif ($cfg && $cfg->active_payment_provider === 'fedapay') {
+                $svc = new FedapayService($cfg->fedapay_secret_key, (bool)$cfg->fedapay_sandbox);
+                $verified = $svc->verifyTransaction($request->transaction_id);
+            } else {
+                // Pas de paiement configuré — autoriser quand même (admin)
+                $verified = true;
+            }
+
+            if (!$verified) {
+                return response()->json(['status' => false, 'message' => 'Transaction invalide ou non vérifiée.']);
+            }
+
+            $pub = Publicite::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->firstOrFail();
+
+            $pub->is_sponsored         = true;
+            $pub->sponsored_until      = now()->addDays((int)$request->duree_jours);
+            $pub->transaction_sponsoring = $request->transaction_id;
+            $pub->save();
+
+            return response()->json([
+                'status'  => true,
+                'message' => "Annonce sponsorisée jusqu'au " . $pub->sponsored_until->format('d/m/Y') . '.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Erreur lors de la mise en avant.']);
         }
     }
 

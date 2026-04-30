@@ -131,7 +131,7 @@
                   <div class="card-body text-center py-3">
                     <i class="bx bx-money fs-4 text-warning mb-1"></i>
                     <div class="small text-muted">{{ __('pages.par_detail_price') }}</div>
-                    <div class="fw-semibold"><span id="d-parcelle-prix">—</span> XOF</div>
+                    <div class="fw-semibold"><span id="d-parcelle-prix">—</span> {{ get_symbole_devise() }}</div>
                   </div>
                 </div>
               </div>

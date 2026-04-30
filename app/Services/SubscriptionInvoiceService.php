@@ -124,7 +124,9 @@ class SubscriptionInvoiceService
         $fpdf->SetTextColor(0, 0, 0);
         $fpdf->SetFont('Arial', '', 9);
 
-        $maxMaisons = $data['plan']['max_maisons'] == 0 ? utf8_decode('Illimité') : $data['plan']['max_maisons'];
+        $maxMaisons  = $data['plan']['max_maisons'] == 0 ? utf8_decode('Illimité') : $data['plan']['max_maisons'];
+        $nbMois      = (!empty($data['nb_mois']) && is_numeric($data['nb_mois'])) ? (int) $data['nb_mois'] : null;
+        $dureeLabel  = $nbMois ? ($nbMois . ' mois') : utf8_decode('14 jours (essai)');
 
         $tableRows = [
             ['Plan', utf8_decode($data['plan']['nom'])],
@@ -132,7 +134,7 @@ class SubscriptionInvoiceService
             ['Maisons max.', $maxMaisons],
             ['Annexes max.', $data['plan']['max_annexes']],
             [utf8_decode('Période'), Carbon::parse($data['direction']['abonnement_debut'])->format('d/m/Y') . ' - ' . Carbon::parse($data['direction']['abonnement_fin'])->format('d/m/Y')],
-            [utf8_decode('Durée'), '12 mois'],
+            [utf8_decode('Durée'), $dureeLabel],
         ];
 
         foreach ($tableRows as $row) {
@@ -157,7 +159,7 @@ class SubscriptionInvoiceService
         $fpdf->SetXY(15, $y);
         $fpdf->Cell($colDesc, 8, 'TOTAL:', 0, 0, 'R');
 
-        $prix = floatval($data['plan']['prix_annuel']);
+        $prix = isset($data['plan']['prix_total']) ? floatval($data['plan']['prix_total']) : floatval($data['plan']['prix_annuel']);
         $fpdf->SetFont('Arial', 'B', 14);
         $fpdf->SetTextColor($successR, $successG, $successB);
         $fpdf->Cell($colValue, 8, number_format($prix, 0, ',', '.') . ' XOF', 0, 1, 'C');

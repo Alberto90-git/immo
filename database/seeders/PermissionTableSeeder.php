@@ -128,13 +128,36 @@ class PermissionTableSeeder extends Seeder
             'delete-etat-des-lieux'     => ['label' => 'Supprimer état des lieux',     'group' => 'etat_des_lieux'],
             'download-etat-des-lieux'   => ['label' => 'Télécharger PDF état des lieux','group' => 'etat_des_lieux'],
 
-            // ── Maintenance & Incidents ───────────────────────────────────────
-            'gestion-maintenance'   => ['label' => 'Gestion maintenance',         'group' => 'maintenance'],
-            'ajoute-maintenance'    => ['label' => 'Créer ticket maintenance',    'group' => 'maintenance'],
-            'Consulter-maintenance' => ['label' => 'Consulter tickets',           'group' => 'maintenance'],
-            'modify-maintenance'    => ['label' => 'Modifier / avancer ticket',   'group' => 'maintenance'],
-            'delete-maintenance'    => ['label' => 'Supprimer ticket',            'group' => 'maintenance'],
-            'gestion-prestataire'   => ['label' => 'Gérer les prestataires',      'group' => 'maintenance'],
+            // ── Automatisation & Rappels ──────────────────────────────────────
+            'gestion-automation'         => ['label' => 'Accès Automatisation & Rappels',  'group' => 'automation'],
+            'ajoute-automation'          => ['label' => 'Ajouter une règle',               'group' => 'automation'],
+            'toggle-automation'          => ['label' => 'Activer / Désactiver une règle',  'group' => 'automation'],
+            'delete-automation'          => ['label' => 'Supprimer une règle',             'group' => 'automation'],
+            'voir-historique-automation' => ['label' => 'Voir l\'onglet Historique',       'group' => 'automation'],
+            'voir-locataires-automation' => ['label' => 'Voir Locataires non notifiés',    'group' => 'automation'],
+            'toggle-optout-automation'   => ['label' => 'Exclure / Inclure un locataire', 'group' => 'automation'],
+
+            // ── Recouvrement ──────────────────────────────────────────────────
+            'gestion-recouvrement'   => ['label' => 'Accès Recouvrement',              'group' => 'recouvrement'],
+            'ajoute-recouvrement'    => ['label' => 'Ouvrir un dossier',               'group' => 'recouvrement'],
+            'Consulter-recouvrement' => ['label' => 'Consulter les dossiers',          'group' => 'recouvrement'],
+            'modify-recouvrement'    => ['label' => 'Relancer / Plan apurement',       'group' => 'recouvrement'],
+            'delete-recouvrement'    => ['label' => 'Clôturer un dossier',             'group' => 'recouvrement'],
+            'download-recouvrement'  => ['label' => 'Télécharger mise en demeure PDF', 'group' => 'recouvrement'],
+
+            // ── Signature électronique ────────────────────────────────────────
+            'gestion-signature'  => ['label' => 'Accès Signature électronique',    'group' => 'signature'],
+            'ajoute-signature'   => ['label' => 'Créer une demande de signature',  'group' => 'signature'],
+            'delete-signature'   => ['label' => 'Annuler une demande',             'group' => 'signature'],
+            'download-signature' => ['label' => 'Télécharger le certificat PDF',   'group' => 'signature'],
+
+            // ── Interventions ─────────────────────────────────────────────────
+            'gestion-maintenance'   => ['label' => 'Gestion interventions',        'group' => 'maintenance'],
+            'ajoute-maintenance'    => ['label' => 'Créer ticket intervention',    'group' => 'maintenance'],
+            'Consulter-maintenance' => ['label' => 'Consulter tickets',            'group' => 'maintenance'],
+            'modify-maintenance'    => ['label' => 'Modifier / avancer ticket',    'group' => 'maintenance'],
+            'delete-maintenance'    => ['label' => 'Supprimer ticket',             'group' => 'maintenance'],
+            'gestion-prestataire'   => ['label' => 'Gérer les prestataires',       'group' => 'maintenance'],
 
         ];
 

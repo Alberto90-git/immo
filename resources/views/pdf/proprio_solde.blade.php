@@ -191,8 +191,8 @@
                     <td>{{ $items->quartier }}</td>
                     <td>N {{ $items->numero_chambre }}</td>
                     <td>{{ $items->type_chambre }}</td>
-                    <td class="amount">{{ number_format($items->montant, 0, ',', '.') }} XOF</td>
-                    <td class="amount" style="color: #27ae60;">{{ number_format(($items->montant * (100 - $element2['pourcentage'])) / 100, 0, ',', '.') }} XOF</td>
+                    <td class="amount">{{ format_price($items->montant) }}</td>
+                    <td class="amount" style="color: #27ae60;">{{ format_price(($items->montant * (100 - $element2['pourcentage'])) / 100) }}</td>
                 </tr>
             @endforeach
         @else
@@ -202,7 +202,7 @@
         @endif
         <tr class="total-row">
             <td colspan="6" style="text-align: right;">TOTAL A PAYER AU PROPRIETAIRE:</td>
-            <td class="amount">{{ number_format($element2['garde'], 0, ',', '.') }} XOF</td>
+            <td class="amount">{{ format_price($element2['garde']) }}</td>
         </tr>
     </tbody>
 </table>
@@ -210,7 +210,7 @@
 <div class="summary-box">
     <h3>RESUME DU PAIEMENT</h3>
     <p>Montant total a verser au proprietaire <strong>{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</strong></p>
-    <p class="total">{{ number_format($element2['garde'], 0, ',', '.') }} XOF</p>
+    <p class="total">{{ format_price($element2['garde']) }}</p>
 </div>
 
 

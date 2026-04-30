@@ -31,8 +31,7 @@ class SendCodemail extends Mailable
      */
     public function build()
     {
-        // return $this->view('view.name');
-        return $this->subject('Verification de conexion')
-        ->view('mail.codeEmail');
+        return $this->subject(__('mail.code_email.subject'))
+                    ->view('mail.codeEmail');
     }
 }

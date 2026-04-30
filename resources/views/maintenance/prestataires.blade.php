@@ -16,7 +16,7 @@
       <a href="{{ route('maintenance.index') }}" class="btn btn-icon btn-outline-secondary">
         <i class="bx bx-arrow-back"></i>
       </a>
-      <h4 class="fw-bold mb-0"><span class="text-muted fw-light">Maintenance /</span> Prestataires</h4>
+      <h4 class="fw-bold mb-0"><span class="text-muted fw-light">Interventions /</span> Prestataires</h4>
     </div>
     <button type="button" class="btn btn-primary" id="btnNouveauPrestataire">
       <i class="bx bx-plus me-1"></i> Nouveau prestataire
@@ -224,17 +224,18 @@ document.getElementById('tablePrestataires').addEventListener('click', function 
     const btnDel = e.target.closest('.btn-supprimer');
     if (btnDel) {
         Swal.fire({
-            title: 'Supprimer ?', text: `Supprimer ${btnDel.dataset.nom} ?`,
+            title: '{{ __("ui.maintenance.prest_delete_confirm") }}',
+            text: '{{ __("ui.maintenance.prest_delete_text") }}'.replace(':nom', btnDel.dataset.nom),
             icon: 'warning', showCancelButton: true,
-            confirmButtonColor: '#d33', confirmButtonText: 'Supprimer', cancelButtonText: 'Annuler',
+            confirmButtonColor: '#d33', confirmButtonText: '{{ __("common.btn_delete") }}', cancelButtonText: '{{ __("common.btn_cancel") }}',
         }).then(r => {
             if (!r.isConfirmed) return;
             ajaxPost('{{ route("maintenance.prestataires.destroy") }}', { id: btnDel.dataset.id })
             .then(data => {
                 if (data.status) {
                     btnDel.closest('tr').remove();
-                    Swal.fire({ icon: 'success', timer: 1200, showConfirmButton: false, title: 'Supprimé !' });
-                } else { Swal.fire('Erreur', data.message, 'error'); }
+                    Swal.fire({ icon: 'success', timer: 1200, showConfirmButton: false, title: '{{ __("common.swal_deleted") }}' });
+                } else { Swal.fire('{{ __("common.swal_error") }}', data.message, 'error'); }
             });
         });
     }
@@ -255,7 +256,7 @@ document.getElementById('btnSavePrestataire').addEventListener('click', function
     };
 
     if (!payload.nom || !payload.specialite) {
-        Swal.fire('Champs manquants', 'Nom et spécialité sont obligatoires.', 'warning');
+        Swal.fire('{{ __("ui.maintenance.missing_fields") }}', '{{ __("ui.maintenance.missing_fields_text") }}', 'warning');
         return;
     }
 
@@ -264,7 +265,7 @@ document.getElementById('btnSavePrestataire').addEventListener('click', function
     ajaxPost(url, payload).then(data => {
         if (data.status) {
             fermerModal();
-            Swal.fire({ icon: 'success', title: isEdit ? 'Modifié !' : 'Ajouté !', text: data.message, timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: isEdit ? '{{ __("ui.maintenance.modified") }}' : '{{ __("ui.maintenance.added") }}', text: data.message, timer: 1500, showConfirmButton: false });
 
             const tbody = document.getElementById('tbodyPrestataires');
             const ligneVide = document.getElementById('ligneVide');
@@ -280,8 +281,8 @@ document.getElementById('btnSavePrestataire').addEventListener('click', function
                     tr.querySelector('td:nth-child(4)').textContent = p.email;
                     tr.querySelector('td:nth-child(5)').textContent = p.adresse;
                     tr.querySelector('td:nth-child(7)').innerHTML = p.actif
-                        ? '<span class="badge bg-label-success">Actif</span>'
-                        : '<span class="badge bg-label-secondary">Inactif</span>';
+                        ? '<span class="badge bg-label-success">{{ __("ui.maintenance.prest_active") }}</span>'
+                        : '<span class="badge bg-label-secondary">{{ __("ui.maintenance.prest_inactive") }}</span>';
                     // Mettre à jour data-* pour la prochaine édition
                     const btnE = tr.querySelector('.btn-modifier');
                     if (btnE) {
@@ -303,16 +304,16 @@ document.getElementById('btnSavePrestataire').addEventListener('click', function
                     <td class="small">${p.email}</td>
                     <td class="small text-muted">${p.adresse}</td>
                     <td class="text-center"><span class="text-muted small">0</span></td>
-                    <td><span class="badge bg-label-success">Actif</span></td>
+                    <td><span class="badge bg-label-success">{{ __("ui.maintenance.prest_active") }}</span></td>
                     <td class="text-center">
                         <div class="d-flex gap-1 justify-content-center">
                             <button type="button" class="btn btn-sm btn-icon btn-outline-primary btn-modifier"
                                 data-id="${p.id}" data-nom="${p.nom}" data-specialite="${p.specialite}"
-                                data-telephone="${p.telephone}" data-email="${p.email}" data-adresse="${p.adresse}" data-actif="1" title="Modifier">
+                                data-telephone="${p.telephone}" data-email="${p.email}" data-adresse="${p.adresse}" data-actif="1" title="{{ __('common.title_edit') }}">
                                 <i class="bx bx-edit"></i>
                             </button>
                             <button type="button" class="btn btn-sm btn-icon btn-outline-danger btn-supprimer"
-                                data-id="${p.id}" data-nom="${p.nom}" title="Supprimer">
+                                data-id="${p.id}" data-nom="${p.nom}" title="{{ __('common.title_delete') }}">
                                 <i class="bx bx-trash"></i>
                             </button>
                         </div>
@@ -320,11 +321,11 @@ document.getElementById('btnSavePrestataire').addEventListener('click', function
                 tbody.insertBefore(tr, tbody.firstChild);
             }
         } else {
-            const msgs = data.errors ? Object.values(data.errors).flat() : [data.message || 'Erreur.'];
-            Swal.fire('Erreur', msgs.join('\n'), 'error');
+            const msgs = data.errors ? Object.values(data.errors).flat() : [data.message || '{{ __("common.swal_generic_error") }}'];
+            Swal.fire('{{ __("common.swal_error") }}', msgs.join('\n'), 'error');
         }
     }).catch(() => {
-        Swal.fire('Erreur réseau', 'La requête a échoué. Vérifiez votre connexion.', 'error');
+        Swal.fire('{{ __("common.swal_network_error") }}', '{{ __("common.swal_network_msg") }}', 'error');
     });
 });
 </script>

@@ -12,19 +12,19 @@
   <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
     <div class="flex-grow-1">
       <h4 class="fw-bold mb-0">
-        <span class="text-muted fw-light">États des lieux /</span>
+        <span class="text-muted fw-light">{{ __('ui.edl.title') }} /</span>
         {{ $etat->type_label }}
         @if($etat->type === 'entree')
-          <span class="badge bg-primary ms-1">Entrée</span>
+          <span class="badge bg-primary ms-1">{{ __('ui.edl.type_entry') }}</span>
         @else
-          <span class="badge bg-warning text-dark ms-1">Sortie</span>
+          <span class="badge bg-warning text-dark ms-1">{{ __('ui.edl.type_exit') }}</span>
         @endif
         <span id="statutBadge">{!! $etat->statut_badge !!}</span>
       </h4>
     </div>
-    <a href="{{ route('etat_des_lieux.index') }}" class="btn btn-icon btn-outline-secondary" title="Retour">
-      <i class="bx bx-arrow-back"></i>
-    </a>
+    <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+      <i class="bx bx-arrow-back me-1"></i> {{ __('ui.common.back') }}
+    </button>
     <div class="d-flex gap-2 flex-wrap">
       @can('download-etat-des-lieux')
         <button type="button" class="btn btn-outline-secondary" id="btnPreviewPdf" data-id="{{ $etat->id }}">
@@ -38,7 +38,10 @@
         </button>
         <button type="button" class="btn btn-success" id="btnEnvoyerSignature" data-id="{{ $etat->id }}"
                 style="{{ (!in_array($etat->statut, ['finalise','signe']) || $etat->signe_locataire) ? 'display:none' : '' }}">
-          <i class="bx bx-send me-1"></i> Envoyer pour signature
+          <span id="btnEnvoyerSignatureText"><i class="bx bx-send me-1"></i> {{ __('ui.edl.send_for_signature') }}</span>
+          <span id="btnEnvoyerSignatureSpinner" class="d-none">
+            <span class="spinner-border spinner-border-sm me-1"></span> {{ __('ui.edl.sending') }}
+          </span>
         </button>
       @endcan
     </div>
@@ -49,34 +52,34 @@
     <div class="col-md-7">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <h6 class="text-muted text-uppercase small mb-3">Locataire & logement</h6>
+          <h6 class="text-muted text-uppercase small mb-3">{{ __('ui.edl.tenant_property') }}</h6>
           <div class="row g-2">
             <div class="col-6">
-              <div class="text-muted small">Locataire</div>
+              <div class="text-muted small">{{ __('ui.edl.tenant') }}</div>
               <div class="fw-semibold">{{ $etat->locataire->nom ?? '–' }} {{ $etat->locataire->prenom ?? '' }}</div>
             </div>
             <div class="col-6">
-              <div class="text-muted small">Téléphone</div>
+              <div class="text-muted small">{{ __('ui.edl.phone') }}</div>
               <div>{{ $etat->locataire->telephone ?? '–' }}</div>
             </div>
             <div class="col-6">
-              <div class="text-muted small">Maison</div>
+              <div class="text-muted small">{{ __('ui.edl.property') }}</div>
               <div>{{ $etat->maison->nom_maison ?? '–' }}</div>
             </div>
             <div class="col-6">
-              <div class="text-muted small">Chambre</div>
-              <div>N° {{ $etat->chambre->numero_chambre ?? '–' }}</div>
+              <div class="text-muted small">{{ __('ui.edl.room') }}</div>
+              <div>{{ __('ui.edl.room_prefix') }} {{ $etat->chambre->numero_chambre ?? '–' }}</div>
             </div>
             <div class="col-6">
-              <div class="text-muted small">Date de l'état</div>
+              <div class="text-muted small">{{ __('ui.edl.state_date') }}</div>
               <div class="fw-semibold">{{ $etat->date_etat->format('d/m/Y') }}</div>
             </div>
             @if($etat->type === 'sortie' && $etat->etatEntree)
               <div class="col-6">
-                <div class="text-muted small">Référence entrée</div>
+                <div class="text-muted small">{{ __('ui.edl.entry_ref') }}</div>
                 <div>
                   <a href="{{ route('etat_des_lieux.show', $etat->etatEntree->id) }}" class="text-primary">
-                    Entrée du {{ $etat->etatEntree->date_etat->format('d/m/Y') }}
+                    {{ __('ui.edl.entry_on') }} {{ $etat->etatEntree->date_etat->format('d/m/Y') }}
                   </a>
                 </div>
               </div>
@@ -90,17 +93,17 @@
     <div class="col-md-5">
       <div class="card h-100 shadow-sm">
         <div class="card-body">
-          <h6 class="text-muted text-uppercase small mb-3">Signatures & Retenue</h6>
+          <h6 class="text-muted text-uppercase small mb-3">{{ __('ui.edl.sigs_deposit') }}</h6>
           <div class="d-flex align-items-center gap-2 mb-2">
             @if($etat->signe_locataire)
               <i class="bx bx-check-circle text-success fs-5"></i>
               <div>
-                <div class="fw-semibold small">Locataire</div>
-                <div class="text-muted small">Signé le {{ \Carbon\Carbon::parse($etat->signe_locataire_at)->format('d/m/Y à H:i') }}</div>
+                <div class="fw-semibold small">{{ __('ui.edl.tenant') }}</div>
+                <div class="text-muted small">{{ __('ui.edl.signed_on') }} {{ \Carbon\Carbon::parse($etat->signe_locataire_at)->format('d/m/Y à H:i') }}</div>
               </div>
             @else
               <i class="bx bx-time text-warning fs-5"></i>
-              <div class="small text-muted">En attente de signature locataire</div>
+              <div class="small text-muted">{{ __('ui.edl.awaiting_tenant') }}</div>
             @endif
           </div>
           <div class="d-flex align-items-center gap-2 mb-3">
@@ -108,13 +111,13 @@
             <span id="sigAgentBrouillon" class="d-flex align-items-center gap-2"
                   style="{{ ($etat->statut !== 'brouillon' || $etat->signe_agent) ? 'display:none !important' : '' }}">
               <i class="bx bx-minus-circle text-secondary fs-5"></i>
-              <span class="small text-muted">Signature après finalisation</span>
+              <span class="small text-muted">{{ __('ui.edl.after_finalize') }}</span>
             </span>
             {{-- État : finalisé, pas encore signé par l'agent --}}
             @can('modify-etat-des-lieux')
               <button type="button" class="btn btn-sm btn-outline-primary" id="btnSignerAgent" data-id="{{ $etat->id }}"
                       style="{{ ($etat->signe_agent || $etat->statut === 'brouillon') ? 'display:none' : '' }}">
-                <i class="bx bx-pen me-1"></i> Signer en tant qu'agent
+                <i class="bx bx-pen me-1"></i> {{ __('ui.edl.sign_as_agent') }}
               </button>
             @endcan
             {{-- État : signé --}}
@@ -122,9 +125,9 @@
                   style="{{ !$etat->signe_agent ? 'display:none !important' : '' }}">
               <i class="bx bx-check-circle text-success fs-5"></i>
               <span>
-                <div class="fw-semibold small">Agent</div>
+                <div class="fw-semibold small">{{ __('ui.edl.agent_label') }}</div>
                 <div class="text-muted small" id="sigAgentDate">
-                  Signé le {{ $etat->signe_agent ? \Carbon\Carbon::parse($etat->signe_agent_at)->format('d/m/Y à H:i') : '' }}
+                  {{ __('ui.edl.signed_on') }} {{ $etat->signe_agent ? \Carbon\Carbon::parse($etat->signe_agent_at)->format('d/m/Y à H:i') : '' }}
                 </div>
               </span>
             </span>
@@ -133,9 +136,9 @@
           @if($etat->type === 'sortie')
             <hr class="my-2">
             <div class="d-flex justify-content-between align-items-center">
-              <span class="text-muted small">Retenue sur caution</span>
+              <span class="text-muted small">{{ __('ui.edl.deposit_label') }}</span>
               <span class="fw-bold {{ $etat->retenue_caution > 0 ? 'text-danger' : 'text-success' }} fs-6">
-                {{ number_format($etat->retenue_caution, 0, ',', ' ') }} FCFA
+                {{ format_price($etat->retenue_caution) }}
               </span>
             </div>
             @if($etat->retenue_caution > 0)
@@ -157,7 +160,7 @@
   {{-- ── Notes générales --}}
   @if($etat->notes_generales)
     <div class="alert alert-light border mb-4">
-      <strong><i class="bx bx-note me-1"></i>Notes générales :</strong>
+      <strong><i class="bx bx-note me-1"></i>{{ __('ui.edl.general_notes') }}</strong>
       {{ $etat->notes_generales }}
     </div>
   @endif
@@ -197,15 +200,15 @@
           <table class="table table-bordered mb-0 align-middle">
             <thead class="table-light text-center small">
               <tr>
-                <th class="text-start ps-3" style="width:20%">Élément</th>
+                <th class="text-start ps-3" style="width:20%">{{ __('ui.edl.element') }}</th>
                 @if($etat->type === 'sortie' && $etat->etatEntree)
-                  <th style="width:14%">Entrée</th>
+                  <th style="width:14%">{{ __('ui.edl.entry_state_col') }}</th>
                 @endif
-                <th style="width:14%">État</th>
+                <th style="width:14%">{{ __('ui.edl.state_col') }}</th>
                 <th class="text-start">Observations</th>
                 @if($etat->type === 'sortie')
-                  <th style="width:12%">Dégradation</th>
-                  <th style="width:13%">Retenue</th>
+                  <th style="width:12%">{{ __('ui.edl.damage_col') }}</th>
+                  <th style="width:13%">{{ __('ui.edl.deposit_col') }}</th>
                 @endif
               </tr>
             </thead>
@@ -230,9 +233,9 @@
                   @if($etat->type === 'sortie')
                     <td class="text-center">
                       @if($element->degradation_detectee)
-                        <span class="badge bg-danger"><i class="bx bx-error-circle me-1"></i>Oui</span>
+                        <span class="badge bg-danger"><i class="bx bx-error-circle me-1"></i>{{ __('ui.edl.damage_yes') }}</span>
                       @else
-                        <span class="badge bg-success">Non</span>
+                        <span class="badge bg-success">{{ __('ui.edl.damage_no') }}</span>
                       @endif
                     </td>
                     <td class="text-center fw-semibold {{ $element->montant_retenue > 0 ? 'text-danger' : '' }}">
@@ -281,12 +284,12 @@
   @if($etat->type === 'sortie' && $etat->retenue_caution > 0)
     <div class="card border-danger mb-4">
       <div class="card-header bg-danger text-white">
-        <h6 class="mb-0"><i class="bx bx-money me-2"></i>Récapitulatif des retenues sur caution</h6>
+        <h6 class="mb-0"><i class="bx bx-money me-2"></i>{{ __('ui.edl.deposit_recap') }}</h6>
       </div>
       <div class="card-body p-0">
         <table class="table mb-0">
           <thead class="table-light">
-            <tr><th>Pièce</th><th>Élément</th><th>Dégradation</th><th class="text-end">Montant retenu</th></tr>
+            <tr><th>{{ __('ui.edl.recap_room') }}</th><th>{{ __('ui.edl.recap_element') }}</th><th>{{ __('ui.edl.recap_damage') }}</th><th class="text-end">{{ __('ui.edl.recap_amount') }}</th></tr>
           </thead>
           <tbody>
             @foreach($etat->pieces as $piece)
@@ -295,15 +298,15 @@
                   <td>{{ $piece->nom_piece }}</td>
                   <td>{{ $el->element }}</td>
                   <td>{{ $el->description ?: '–' }}</td>
-                  <td class="text-end text-danger fw-semibold">{{ number_format($el->montant_retenue, 0, ',', ' ') }} FCFA</td>
+                  <td class="text-end text-danger fw-semibold">{{ format_price($el->montant_retenue) }}</td>
                 </tr>
               @endforeach
             @endforeach
           </tbody>
           <tfoot class="table-danger">
             <tr>
-              <td colspan="3" class="fw-bold text-end">Total retenu</td>
-              <td class="text-end fw-bold text-danger">{{ number_format($etat->retenue_caution, 0, ',', ' ') }} FCFA</td>
+              <td colspan="3" class="fw-bold text-end">{{ __('ui.edl.recap_total') }}</td>
+              <td class="text-end fw-bold text-danger">{{ format_price($etat->retenue_caution) }}</td>
             </tr>
           </tfoot>
         </table>
@@ -318,7 +321,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalUploadTitre">Ajouter des photos</h5>
+        <h5 class="modal-title" id="modalUploadTitre">{{ __('ui.edl.add_photos') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -328,12 +331,12 @@
         <ul class="nav nav-tabs mb-3" id="uploadTabs">
           <li class="nav-item">
             <button class="nav-link active" id="tab-fichier-btn" data-bs-toggle="tab" data-bs-target="#tab-fichier" type="button">
-              <i class="bx bx-upload me-1"></i> Fichier
+              <i class="bx bx-upload me-1"></i> {{ __('ui.edl.file_tab') }}
             </button>
           </li>
           <li class="nav-item">
             <button class="nav-link" id="tab-camera-btn" data-bs-toggle="tab" data-bs-target="#tab-camera" type="button">
-              <i class="bx bx-camera me-1"></i> Caméra
+              <i class="bx bx-camera me-1"></i> {{ __('ui.edl.camera_tab') }}
             </button>
           </li>
         </ul>
@@ -342,7 +345,7 @@
           {{-- Onglet fichier --}}
           <div class="tab-pane fade show active" id="tab-fichier">
             <input type="file" id="inputPhotos" class="form-control" multiple accept="image/jpeg,image/jpg,image/png,image/webp">
-            <div class="form-text">Formats : jpeg, jpg, png, webp – max 5 Mo par photo</div>
+            <div class="form-text">{{ __('ui.edl.photo_formats') }}</div>
           </div>
 
           {{-- Onglet caméra --}}
@@ -355,16 +358,16 @@
               <div id="cameraError" class="text-danger small mt-2" style="display:none;"></div>
               <div class="d-flex gap-2 justify-content-center mt-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="btnDemarrerCamera">
-                  <i class="bx bx-camera me-1"></i> Activer la caméra
+                  <i class="bx bx-camera me-1"></i> {{ __('ui.edl.start_camera') }}
                 </button>
                 <button type="button" class="btn btn-sm btn-primary" id="btnCapture" style="display:none;">
-                  <i class="bx bx-camera-plus me-1"></i> Capturer
+                  <i class="bx bx-camera-plus me-1"></i> {{ __('ui.edl.capture') }}
                 </button>
                 <button type="button" class="btn btn-sm btn-outline-danger" id="btnArreterCamera" style="display:none;">
-                  <i class="bx bx-stop me-1"></i> Arrêter
+                  <i class="bx bx-stop me-1"></i> {{ __('ui.edl.stop_camera') }}
                 </button>
               </div>
-              <div class="form-text mt-1">Les captures seront envoyées lors du clic sur "Envoyer"</div>
+              <div class="form-text mt-1">{{ __('ui.edl.capture_note') }}</div>
             </div>
           </div>
         </div>
@@ -376,9 +379,9 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnAnnulerUpload">Annuler</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnAnnulerUpload">{{ __('ui.common.cancel') }}</button>
         <button type="button" class="btn btn-primary" id="btnConfirmUpload">
-          <i class="bx bx-upload me-1"></i> Envoyer
+          <i class="bx bx-upload me-1"></i> {{ __('ui.common.send') }}
         </button>
       </div>
     </div>
@@ -390,10 +393,10 @@
   <div class="modal-dialog modal-dialog-centered" style="max-width:90vw;">
     <div class="modal-content" style="height:90vh;">
       <div class="modal-header py-2">
-        <h6 class="modal-title mb-0"><i class="bx bx-file-pdf me-2 text-danger"></i>Aperçu PDF – État des lieux</h6>
+        <h6 class="modal-title mb-0"><i class="bx bx-file-pdf me-2 text-danger"></i>{{ __('ui.edl.pdf_preview') }}</h6>
         <div class="ms-auto d-flex gap-2 align-items-center">
           <a href="{{ route('etat_des_lieux.pdf', $etat->id) }}" class="btn btn-sm btn-primary" download>
-            <i class="bx bx-download me-1"></i> Télécharger
+            <i class="bx bx-download me-1"></i> {{ __('ui.common.download') }}
           </a>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
@@ -419,23 +422,25 @@ function ajaxPost(url, payload) {
 }
 
 // ── Prévisualisation PDF ──────────────────────────────────────────────────────
-const modalPdf   = new bootstrap.Modal(document.getElementById('modalPdfPreview'));
+const _elPdf   = document.getElementById('modalPdfPreview');
+const modalPdf = _elPdf ? bootstrap.Modal.getOrCreateInstance(_elPdf) : null;
 const btnPreview = document.getElementById('btnPreviewPdf');
-if (btnPreview) {
+if (btnPreview && modalPdf) {
     btnPreview.addEventListener('click', function () {
         const url = '{{ route("etat_des_lieux.preview", $etat->id) }}';
         document.getElementById('pdfIframe').src = url;
         modalPdf.show();
     });
     // Stopper le flux PDF quand on ferme le modal
-    document.getElementById('modalPdfPreview').addEventListener('hidden.bs.modal', function () {
+    _elPdf.addEventListener('hidden.bs.modal', function () {
         document.getElementById('pdfIframe').src = '';
     });
 }
 
 // ── Upload photos ────────────────────────────────────────────────────────────
-const modalUpload   = new bootstrap.Modal(document.getElementById('modalUploadPhotos'));
-let cameraStream    = null;
+const _elUpload   = document.getElementById('modalUploadPhotos');
+const modalUpload = _elUpload ? bootstrap.Modal.getOrCreateInstance(_elUpload) : null;
+let cameraStream  = null;
 let capturedBlobs   = [];  // blobs pris par la caméra
 
 function stopCamera() {
@@ -449,7 +454,7 @@ function stopCamera() {
     document.getElementById('btnDemarrerCamera').style.display = '';
 }
 
-document.getElementById('modalUploadPhotos').addEventListener('hidden.bs.modal', function () {
+_elUpload?.addEventListener('hidden.bs.modal', function () {
     stopCamera();
     capturedBlobs = [];
     document.getElementById('cameraPreview').innerHTML = '';
@@ -479,7 +484,7 @@ document.querySelectorAll('.btn-ajout-photos').forEach(btn => {
         capturedBlobs = [];
         document.getElementById('cameraPreview').innerHTML = '';
         document.getElementById('inputPhotos').value = '';
-        modalUpload.show();
+        modalUpload?.show();
     });
 });
 
@@ -509,7 +514,7 @@ document.getElementById('btnCapture').addEventListener('click', function () {
     const nbPhotos = parseInt(document.querySelector('.btn-ajout-photos[data-piece-id="' + document.getElementById('uploadPieceId').value + '"]')?.dataset.nbPhotos || 0);
     const totalPrev = nbPhotos + capturedBlobs.length;
     if (totalPrev >= 2) {
-        Swal.fire('Limite atteinte', 'Maximum 2 photos par pièce.', 'warning');
+        Swal.fire('{{ __("ui.edl.limit_title") }}', '{{ __("ui.edl.limit_msg") }}', 'warning');
         return;
     }
 
@@ -554,10 +559,10 @@ document.getElementById('btnConfirmUpload').addEventListener('click', function (
 
     if (activeTab === 'tab-fichier-btn') {
         const files = document.getElementById('inputPhotos').files;
-        if (!files.length) { Swal.fire('Attention', 'Sélectionnez au moins une photo.', 'warning'); return; }
+        if (!files.length) { Swal.fire('{{ __("ui.common.error") }}', '{{ __("ui.edl.select_photo") }}', 'warning'); return; }
         Array.from(files).forEach(f => formData.append('photos[]', f));
     } else {
-        if (!capturedBlobs.length) { Swal.fire('Attention', 'Capturez au moins une photo.', 'warning'); return; }
+        if (!capturedBlobs.length) { Swal.fire('{{ __("ui.common.error") }}', '{{ __("ui.edl.capture_photo") }}', 'warning'); return; }
         capturedBlobs.forEach((blob, i) => formData.append('photos[]', blob, 'capture_' + (i+1) + '.jpg'));
     }
 
@@ -602,16 +607,16 @@ document.getElementById('btnConfirmUpload').addEventListener('click', function (
                 }
             }
 
-            modalUpload.hide();
-            Swal.fire({ icon: 'success', title: 'Succès', text: data.message, timer: 1500, showConfirmButton: false });
+            modalUpload?.hide();
+            Swal.fire({ icon: 'success', title: '{{ __("ui.common.success") }}', text: data.message, timer: 1500, showConfirmButton: false });
         } else {
-            Swal.fire('Erreur', data.message, 'error');
+            Swal.fire('{{ __("ui.common.error") }}', data.message, 'error');
         }
     })
     .catch(() => {
         document.getElementById('uploadProgress').style.display = 'none';
         this.disabled = false;
-        Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error');
+        Swal.fire('{{ __("ui.common.error") }}', '{{ __("ui.common.network_error") }}', 'error');
     });
 });
 
@@ -620,12 +625,12 @@ function supprimerPhoto() {
     const photoId = this.dataset.photoId;
     const pieceId = this.dataset.pieceId;
     Swal.fire({
-        title: 'Supprimer cette photo ?',
+        title: '{{ __("ui.edl.delete_photo") }}',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonText: 'Annuler',
-        confirmButtonText: 'Supprimer',
+        cancelButtonText: '{{ __("ui.common.cancel") }}',
+        confirmButtonText: '{{ __("ui.common.delete") }}',
     }).then(r => {
         if (!r.isConfirmed) return;
         ajaxPost('{{ route("etat_des_lieux.delete_photo") }}', { photo_id: photoId })
@@ -645,7 +650,7 @@ function supprimerPhoto() {
                     }
                 }
             } else {
-                Swal.fire('Erreur', data.message, 'error');
+                Swal.fire('{{ __("ui.common.error") }}', data.message, 'error');
             }
         });
     });
@@ -664,12 +669,12 @@ const btnFinaliser = document.getElementById('btnFinaliser');
 if (btnFinaliser) {
     btnFinaliser.addEventListener('click', function () {
         Swal.fire({
-            title: 'Finaliser l\'état des lieux ?',
-            text: 'Il ne sera plus modifiable une fois finalisé.',
+            title: '{{ __("ui.edl.finalize_confirm") }}',
+            text: '{{ __("ui.edl.finalize_warn") }}',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Finaliser',
-            cancelButtonText: 'Annuler',
+            confirmButtonText: '{{ __("ui.edl.finalize") }}',
+            cancelButtonText: '{{ __("ui.common.cancel") }}',
         }).then(r => {
             if (!r.isConfirmed) return;
             ajaxPost('{{ route("etat_des_lieux.finaliser") }}', { id: this.dataset.id })
@@ -690,9 +695,9 @@ if (btnFinaliser) {
                     document.querySelectorAll('.btn-ajout-photos').forEach(b => b.remove());
                     document.querySelectorAll('.btn-suppr-photo').forEach(b => b.remove());
 
-                    Swal.fire({ icon: 'success', title: 'Finalisé !', text: data.message, timer: 1800, showConfirmButton: false });
+                    Swal.fire({ icon: 'success', title: '{{ __("ui.edl.finalized") }}', text: data.message, timer: 1800, showConfirmButton: false });
                 } else {
-                    Swal.fire('Erreur', data.message, 'error');
+                    Swal.fire('{{ __("ui.common.error") }}', data.message, 'error');
                 }
             });
         });
@@ -704,12 +709,12 @@ const btnSignerAgent = document.getElementById('btnSignerAgent');
 if (btnSignerAgent) {
     btnSignerAgent.addEventListener('click', function () {
         Swal.fire({
-            title: 'Signer en tant qu\'agent ?',
-            text: 'Vous confirmez avoir réalisé cet état des lieux.',
+            title: '{{ __("ui.edl.sign_agent_confirm") }}',
+            text: '{{ __("ui.edl.sign_agent_text") }}',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Signer',
-            cancelButtonText: 'Annuler',
+            confirmButtonText: '{{ __("ui.edl.sign_as_agent") }}',
+            cancelButtonText: '{{ __("ui.common.cancel") }}',
         }).then(r => {
             if (!r.isConfirmed) return;
             ajaxPost('{{ route("etat_des_lieux.signer_agent") }}', { id: this.dataset.id })
@@ -720,12 +725,12 @@ if (btnSignerAgent) {
                     // Afficher bloc "signé"
                     const now = new Date();
                     const fmt = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-                    document.getElementById('sigAgentDate').textContent = 'Signé le ' + fmt;
+                    document.getElementById('sigAgentDate').textContent = '{{ __("ui.edl.signed_on_js") }} ' + fmt;
                     document.getElementById('sigAgentOk').style.setProperty('display', 'flex', 'important');
 
-                    Swal.fire({ icon: 'success', title: 'Signé !', text: data.message, timer: 1800, showConfirmButton: false });
+                    Swal.fire({ icon: 'success', title: '{{ __("ui.edl.signed_success") }}', text: data.message, timer: 1800, showConfirmButton: false });
                 } else {
-                    Swal.fire('Erreur', data.message, 'error');
+                    Swal.fire('{{ __("ui.common.error") }}', data.message, 'error');
                 }
             });
         });
@@ -737,26 +742,40 @@ const btnEnvoyerSignature = document.getElementById('btnEnvoyerSignature');
 if (btnEnvoyerSignature) {
     btnEnvoyerSignature.addEventListener('click', function () {
         Swal.fire({
-            title: 'Envoyer le lien de signature ?',
-            text: 'Un lien sera envoyé au locataire par email/SMS.',
+            title: '{{ __("ui.edl.send_confirm") }}',
+            text: '{{ __("ui.edl.send_confirm_text") }}',
             icon: 'info',
             showCancelButton: true,
-            confirmButtonText: 'Envoyer',
-            cancelButtonText: 'Annuler',
+            confirmButtonText: '{{ __("ui.common.send") }}',
+            cancelButtonText: '{{ __("ui.common.cancel") }}',
         }).then(r => {
             if (!r.isConfirmed) return;
+            const btn = document.getElementById('btnEnvoyerSignature');
+            const btnText    = document.getElementById('btnEnvoyerSignatureText');
+            const btnSpinner = document.getElementById('btnEnvoyerSignatureSpinner');
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnSpinner.classList.remove('d-none');
             ajaxPost('{{ route("etat_des_lieux.envoyer_signature") }}', { id: this.dataset.id })
             .then(data => {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnSpinner.classList.add('d-none');
                 if (data.status) {
                     if (data.lien) {
                         document.getElementById('lienSignature').value = data.lien;
                     }
                     let html = data.message;
                     if (data.lien) html += `<br><small class="text-muted">Lien : <a href="${data.lien}" target="_blank">${data.lien}</a></small>`;
-                    Swal.fire({ icon: 'success', title: 'Envoyé !', html });
+                    Swal.fire({ icon: 'success', title: '{{ __("ui.edl.sent") }}', html });
                 } else {
-                    Swal.fire('Erreur', data.message, 'error');
+                    Swal.fire('{{ __("common.swal_error") }}', data.message, 'error');
                 }
+            })
+            .catch(() => {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnSpinner.classList.add('d-none');
             });
         });
     });

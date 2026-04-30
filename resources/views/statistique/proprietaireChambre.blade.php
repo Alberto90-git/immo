@@ -64,7 +64,7 @@
 
                     <div class="tab-pane fade show active" id="navs-pills-justified-house_proprio" role="tabpanel">
                             <div class="col-12">
-                            <a href="{{ route('getPdf') }}" class="btn btn-success rounded-pill ri-arrow-down-circle-fill shadow">{{ __('pages.pc_btn_download') }}
+                            <a href="{{ route('getPdf') }}" class="btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow">{{ __('pages.pc_btn_download') }}
                             </a> <br/>
 
                             <h5 class="card-title text-center">{{ __('pages.pc_list_owners_houses') }}</h5>
@@ -73,7 +73,6 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">{{ __('pages.pc_th_agency') }}</th>
                                     <th scope="col">{{ __('pages.pc_th_name') }}</th>
                                     <th scope="col">{{ __('pages.pc_th_phone') }}</th>
                                     <th scope="col">{{ __('pages.pc_th_address') }}</th>
@@ -85,7 +84,6 @@
                                   @if(isset($data['proprioMaison']))
                                   @foreach($data['proprioMaison'] as $items)
                                     <tr>
-                                      <td>{{ $items->designation }}</td>
                                       <td>{{ $items->nom }}  {{ $items->prenom }}</td>
                                       <td>{{ $items->telephone }}</td>
                                       <td>{{ $items->adresse }}</td>
@@ -126,7 +124,6 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">{{ __('pages.pc_th_agency') }}</th>
                                     <th scope="col">{{ __('pages.pc_th_house') }}</th>
                                     <th scope="col">{{ __('pages.pc_th_district') }}</th>
                                     <th scope="col">{{ __('pages.pc_th_room_no') }}</th>
@@ -169,7 +166,6 @@
                             <table id="example" class="table table-bordered border-primary" style="width:100%" >
                               <thead>
                                 <tr>
-                                  <th scope="col">{{ __('pages.pc_th_agency') }}</th>
                                   <th scope="col">{{ __('pages.pc_th_room_no') }}</th>
                                   <th scope="col">{{ __('pages.pc_th_room_type') }}</th>
                                   <th scope="col">{{ __('pages.pc_th_tenant') }}</th>

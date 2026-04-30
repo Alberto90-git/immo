@@ -84,7 +84,14 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">
-                                    <i class="bx bx-money me-1 text-success"></i>{{ __('pages.cp_label_annual_price') }}
+                                    <i class="bx bx-money me-1 text-success"></i>Prix mensuel (XOF)
+                                </label>
+                                <input type="number" class="form-control" name="prix_mensuel"
+                                       value="{{ (int) $plan->prix_mensuel }}" min="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    <i class="bx bx-money me-1 text-secondary"></i>{{ __('pages.cp_label_annual_price') }}
                                 </label>
                                 <input type="number" class="form-control" name="prix_annuel"
                                        value="{{ (int) $plan->prix_annuel }}" min="0" required>
@@ -289,6 +296,7 @@
                         {{ __('pages.cp_footer_reminders') }} <strong>{{ $plan->max_rappels_loyer ?? '∞' }}</strong> &nbsp;|&nbsp;
                         {{ __('pages.cp_footer_notice') }} <strong>{{ $plan->max_preavis ?? '∞' }}</strong> &nbsp;|&nbsp;
                         {{ __('pages.cp_footer_ads') }} <strong>{{ $plan->max_publicites ?? '∞' }}</strong> &nbsp;|&nbsp;
+                        Prix mensuel : <strong>{{ number_format($plan->prix_mensuel, 0, ',', ' ') }} XOF/mois</strong> &nbsp;|&nbsp;
                         {{ __('pages.cp_footer_price') }} <strong>{{ number_format($plan->prix_annuel, 0, ',', ' ') }} XOF/an</strong>
                     </small>
                 </div>
@@ -324,6 +332,10 @@
                             <label class="form-label fw-semibold">{{ __('pages.cp_label_description') }}</label>
                             <textarea class="form-control" name="description" rows="2"
                                       placeholder="Description du plan..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Prix mensuel (XOF) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="prix_mensuel" min="0" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">{{ __('pages.cp_label_annual_price') }} <span class="text-danger">*</span></label>
@@ -449,6 +461,7 @@ function savePlan(idplan) {
         idplan:               idplan,
         nom:                  fdata.get('nom'),
         description:          fdata.get('description'),
+        prix_mensuel:         parseFloat(fdata.get('prix_mensuel')) || 0,
         prix_annuel:          parseFloat(fdata.get('prix_annuel')) || 0,
         max_maisons:          nullableInt(fdata.get('max_maisons')),
         max_annexes:          nullableInt(fdata.get('max_annexes')),
@@ -513,6 +526,7 @@ function createPlan() {
         nom:                  fdata.get('nom'),
         code:                 fdata.get('code'),
         description:          fdata.get('description'),
+        prix_mensuel:         parseFloat(fdata.get('prix_mensuel')) || 0,
         prix_annuel:          parseFloat(fdata.get('prix_annuel')) || 0,
         max_maisons:          nullableInt(fdata.get('max_maisons')),
         max_annexes:          nullableInt(fdata.get('max_annexes')),

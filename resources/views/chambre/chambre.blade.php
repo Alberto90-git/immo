@@ -108,7 +108,7 @@
                             <td>{{ $item->nom_maison }}</td>
                             <td>{{ $item->numero_chambre }}</td>
                             <td>{{ $item->type_chambre }}</td>
-                            <td>{{ number_format($item->prix_chambre, 0, ',', '.') }} XOF</td>
+                            <td>{{ format_price($item->prix_chambre) }}</td>
                             <td>
                                 @if($item->etat == true)
                                     <span class="badge rounded-pill bg-danger">{{ __('common.badge_occupied') }}</span>

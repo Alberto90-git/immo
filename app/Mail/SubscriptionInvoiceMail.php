@@ -20,7 +20,7 @@ class SubscriptionInvoiceMail extends Mailable
 
     public function build()
     {
-        $mail = $this->subject("Lokativ - Facture d'abonnement")
+        $mail = $this->subject(__('mail.subscription_invoice.subject'))
                     ->view('mail.subscriptionInvoice');
 
         // Vérifier que le contenu PDF existe et n'est pas vide

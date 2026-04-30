@@ -154,7 +154,7 @@
                       }, 1000)
                   } else {
                      // $("div#afficher").html(data.message)
-                      swal('Erreur !!',data.message,'warning');
+                      swal('{{ __("common.swal_error") }}',data.message,'warning');
 
                   }
 

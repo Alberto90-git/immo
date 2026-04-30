@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Votre compte Lokativ a été créé</title>
+  <title>{{ __('mail.verify_email.title') }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -171,59 +171,59 @@
   <div class="wrapper">
     <div class="header">
       <div class="brand">Loka<span>tiv</span></div>
-      <p>Plateforme de gestion immobilière</p>
-      <div class="badge-success">✔ Compte créé avec succès</div>
+      <p>{{ __('mail.verify_email.platform') }}</p>
+      <div class="badge-success">{{ __('mail.verify_email.badge') }}</div>
     </div>
 
     <div class="body">
-      <h2>Bienvenue sur Lokativ, {{ $newuser['prenom'] }} !</h2>
+      <h2>{{ __('mail.verify_email.welcome', ['prenom' => $newuser['prenom']]) }}</h2>
       <p>
-        Bonjour <strong>{{ $newuser['nom'] }} {{ $newuser['prenom'] }}</strong>,
+        {{ __('mail.verify_email.greeting', ['nom' => $newuser['nom'], 'prenom' => $newuser['prenom']]) }}
       </p>
       <p>
-        Votre compte a bien été créé sur la plateforme Lokativ. Vous trouverez ci-dessous vos identifiants de connexion.
+        {{ __('mail.verify_email.created') }}
       </p>
 
       <div class="credentials-box">
-        <div class="box-header">Vos identifiants de connexion</div>
+        <div class="box-header">{{ __('mail.verify_email.credentials_header') }}</div>
         <div class="credential-row">
           <div class="cr-icon">✉️</div>
           <div>
-            <div class="cr-label">Adresse e-mail</div>
+            <div class="cr-label">{{ __('mail.verify_email.email_label') }}</div>
             <div class="cr-value">{{ $newuser['email'] }}</div>
           </div>
         </div>
         <div class="credential-row">
           <div class="cr-icon">🔑</div>
           <div>
-            <div class="cr-label">Mot de passe temporaire</div>
+            <div class="cr-label">{{ __('mail.verify_email.password_label') }}</div>
             <div class="cr-value">{{ $newuser['password'] }}</div>
           </div>
         </div>
       </div>
 
       <a href="{{ request()->getSchemeAndHttpHost() . '/login/' }}" class="btn-connect">
-        Accéder à mon espace →
+        {{ __('mail.verify_email.btn_text') }}
       </a>
 
       <div class="info-box">
         <div class="icon">💡</div>
-        <p>
-          Pour votre sécurité, nous vous recommandons de <strong>changer votre mot de passe</strong> dès votre première connexion depuis les paramètres de votre profil.
-        </p>
+        <p>{!! __('mail.verify_email.security_note') !!}</p>
       </div>
 
       <hr class="divider">
       <p style="font-size:13px; color:#94a3b8;">
-        Des questions ? Contactez notre support à
+        {{ __('mail.verify_email.contact_note') }}
         <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
       </p>
     </div>
 
     <div class="footer">
       <p>
-        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
-        <a href="#">Politique de confidentialité</a> &nbsp;|&nbsp; <a href="#">Aide</a>
+        {!! __('mail.footer_rights', ['year' => date('Y')]) !!}<br>
+        <a href="#">{{ __('mail.verify_email.footer_privacy') }}</a>
+        &nbsp;|&nbsp;
+        <a href="#">{{ __('mail.verify_email.footer_help') }}</a>
       </p>
     </div>
   </div>

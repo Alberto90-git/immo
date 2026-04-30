@@ -455,6 +455,16 @@
                   <i class="bx bx-download"></i>
                 </a>
                 @endcan
+                @can('download-recu-location')
+                <a class="btn btn-sm btn-outline-primary me-1" title="Relevé de compte"
+                  href="{{ route('releve_locataire', ['id' => $item->id]) }}">
+                  <i class="bx bx-file"></i>
+                </a>
+                <a class="btn btn-sm btn-outline-secondary me-1" title="Attestation de résidence"
+                  href="{{ route('attestation_residence', ['id' => $item->id]) }}">
+                  <i class="bx bx-home-check"></i>
+                </a>
+                @endcan
                 <button type="button" class="btn btn-sm btn-primary btn-details-loc">
                   <i class="bx bx-zoom-in"></i>
                 </button>
@@ -481,6 +491,7 @@ $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('cont
 var canModifyLocataire   = @json(Auth::user()->can('modify-locataire'));
 var canDeleteLocataire   = @json(Auth::user()->can('delete-locataire'));
 var canDownloadLocataire = @json(Auth::user()->can('download-recu-avance'));
+var canDownloadReleve    = @json(Auth::user()->can('download-recu-location'));
 
 var I18N_LOC = {
     titleEdit:    '{{ __('common.title_edit') }}',
@@ -645,6 +656,8 @@ function save_locataire(e) {
                 if (canModifyLocataire)  btns += '<a class="btn btn-sm btn-primary me-1 btn-modif-loc" title="' + I18N_LOC.titleEdit + '" href="#"><i class="bx bx-edit-alt"></i></a>';
                 if (canDeleteLocataire)  btns += '<a class="btn btn-sm btn-danger me-1 btn-supp-loc" title="' + I18N_LOC.titleRemove + '" href="#"><i class="bx bx-trash"></i></a>';
                 if (canDownloadLocataire) btns += '<a class="btn btn-sm btn-success me-1" href="{{ route('telecharge', ['id' => 'LOCID']) }}'.replace('LOCID', l.id) + '"><i class="bx bx-download"></i></a>';
+                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-primary me-1" title="Releve" href="{{ route('releve_locataire', ['id' => 'LOCID']) }}'.replace('LOCID', l.id) + '"><i class="bx bx-file"></i></a>';
+                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-secondary me-1" title="Attestation residence" href="{{ route('attestation_residence', ['id' => 'LOCID']) }}'.replace('LOCID', l.id) + '"><i class="bx bx-home-check"></i></a>';
                 btns += '<button type="button" class="btn btn-sm btn-primary btn-details-loc"><i class="bx bx-zoom-in"></i></button>';
 
                 var newRow = $('<tr id="row-' + l.id + '"></tr>')
@@ -686,7 +699,7 @@ function save_locataire(e) {
         },
         error: function() {
             btn.prop('disabled', false).html('<span class="bx bx-save me-1"></span> ' + I18N_LOC.btnSave);
-            toastLoc("Une erreur est survenue", 'error');
+            toastLoc(I18N_LOC.errOccurred, 'error');
         }
     });
 }
@@ -736,7 +749,7 @@ function updateLocataire(e) {
         },
         error: function() {
             btn.prop('disabled', false).html('<span class="bx bx-save me-1"></span> ' + I18N_LOC.btnSave);
-            toastLoc("Une erreur est survenue", 'error');
+            toastLoc(I18N_LOC.errOccurred, 'error');
         }
     });
 }

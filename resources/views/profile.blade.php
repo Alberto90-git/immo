@@ -83,7 +83,7 @@
                       value="{{ Auth::user()->email }}"
                       readonly
                       disabled
-                      style="background-color: #f5f5f9;"
+                      class="bg-body-secondary"
                     />
                     <small class="text-muted">{{ __('pages.profile_email_readonly') }}</small>
                   </div>

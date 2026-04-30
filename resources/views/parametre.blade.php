@@ -128,6 +128,45 @@
         color: #999;
         font-size: 13px;
     }
+
+    /* ── Dark mode overrides (parametre) ── */
+    html.dark-style .ms-tags {
+        background: #373852 !important;
+        border-color: #444564 !important;
+        color: #a3a4cc !important;
+    }
+    html.dark-style .ms-dropdown {
+        background: #2f3049 !important;
+        border-color: #444564 !important;
+    }
+    html.dark-style .ms-dropdown .ms-search {
+        background: #373852 !important;
+        border-color: #444564 !important;
+    }
+    html.dark-style .ms-dropdown .ms-search input {
+        background: #2b2c40 !important;
+        border-color: #444564 !important;
+        color: #a3a4cc !important;
+    }
+    html.dark-style .ms-dropdown .ms-option {
+        color: #a3a4cc !important;
+    }
+    html.dark-style .ms-dropdown .ms-option:hover { background: rgba(105,108,255,0.1) !important; }
+    html.dark-style .ms-dropdown .ms-option.selected { background: rgba(105,108,255,0.15) !important; }
+    html.dark-style .ms-placeholder { color: #6e7191 !important; }
+    html.dark-style .ms-dropdown .ms-empty { color: #7f7f9d !important; }
+
+    /* Séparateur d'onglets */
+    .param-tab-sep-badge {
+        color: #697a8d;
+        background: #fff;
+        border: 1px solid #dee2e6;
+    }
+    html.dark-style .param-tab-sep-badge {
+        color: #a3a4cc !important;
+        background: #373852 !important;
+        border-color: #444564 !important;
+    }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -171,10 +210,9 @@
                 {{-- ══ SÉPARATEUR CATÉGORIEL ══ --}}
                 <div class="d-flex align-items-center gap-3 my-2">
                     <hr class="flex-grow-1 my-0" style="border-top:1.5px solid #dee2e6;">
-                    <span style="white-space:nowrap;color:#697a8d;font-size:.7rem;font-weight:700;
+                    <span class="param-tab-sep-badge" style="white-space:nowrap;font-size:.7rem;font-weight:700;
                                  text-transform:uppercase;letter-spacing:.1em;
-                                 background:#fff;padding:3px 14px;
-                                 border:1px solid #dee2e6;border-radius:20px;">
+                                 padding:3px 14px;border-radius:20px;">
                         <i class="bx bx-cog" style="vertical-align:-1px;margin-right:4px;"></i>{{ __('pages.param_tab_sep') }}
                     </span>
                     <hr class="flex-grow-1 my-0" style="border-top:1.5px solid #dee2e6;">
@@ -195,6 +233,13 @@
                                 data-bs-target="#navs-pills-justified-communication" aria-controls="navs-pills-justified-communication"
                                 aria-selected="false" id="tab-btn-communication">
                                 <i class="tf-icons bx bx-message-rounded-dots"></i> {{ __('pages.param_tab_comm') }}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
+                                data-bs-target="#navs-pills-justified-devise" aria-controls="navs-pills-justified-devise"
+                                aria-selected="false" id="tab-btn-devise">
+                                <i class="tf-icons bx bx-world"></i> Devise &amp; Région
                             </button>
                         </li>
                     </ul>
@@ -505,13 +550,18 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <label for="inputPassword4" class="form-label">{{ __('pages.param_lbl_phone') }}<span
-                                                                        style="color: red;">*</span></label>
-                                                                        <input type="text" name="telephone" class="form-control"
+                                                                <label for="telephone{{ $loop->iteration }}" class="form-label d-block">{{ __('pages.param_lbl_phone') }}<span style="color:red;">*</span></label>
+                                                                <div style="width:100%;display:block;">
+                                                                    <input type="text" name="telephone" class="form-control"
                                                                         id="telephone{{ $loop->iteration }}"
-                                                                        required value="{{ $items->telephone }}">
-                                                                <span class="invalid-feedback telephone_err" role="alert">
-                                                                </span>
+                                                                        required value="{{ $items->telephone }}"
+                                                                        style="width:100%;">
+                                                                </div>
+                                                                <style>
+                                                                    #telephone{{ $loop->iteration }}~.iti,
+                                                                    .iti:has(#telephone{{ $loop->iteration }}) { width: 100% !important; }
+                                                                </style>
+                                                                <span class="invalid-feedback telephone_err" role="alert"></span>
                                                             </div>
 
 
@@ -523,43 +573,6 @@
                                                                 <span class="invalid-feedback email_err" role="alert">
                                                                 </span>
                                                             </div>
-
-                                                            <hr class="my-3">
-                                                            <h6 class="text-primary">{{ __('pages.param_logo_info_section') }}</h6>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">{{ __('pages.param_lbl_agency_logo') }}</label>
-                                                                <input class="form-control" type="file" name="logo" accept="image/*">
-                                                                <small class="text-muted">{{ __('pages.param_logo_formats_sm') }}</small>
-                                                                @if($items->logo)
-                                                                    <div class="mt-2">
-                                                                        <img src="{{ asset('storage/' . $items->logo) }}"
-                                                                            alt="Logo actuel" class="img-thumbnail"
-                                                                            style="max-width: 100px; max-height: 100px;">
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">{{ __('pages.param_lbl_cash_info') }}</label>
-                                                                <textarea class="form-control" name="cash_electronique" rows="3"
-                                                                    placeholder="Ex: MTN MoMo: 97000000&#10;Moov Money: 96000000">{{ $items->cash_electronique }}</textarea>
-                                                                <small class="text-muted">{{ __('pages.param_cash_hint') }}</small>
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">{{ __('pages.param_lbl_signature') }}</label>
-                                                                <input class="form-control" type="file" name="signature" accept="image/*">
-                                                                <small class="text-muted">{{ __('pages.param_sig_hint') }}</small>
-                                                                @if($items->signature)
-                                                                    <div class="mt-2">
-                                                                        <img src="{{ asset('storage/' . $items->signature) }}"
-                                                                            alt="Signature actuelle" class="img-thumbnail"
-                                                                            style="max-width: 150px; max-height: 80px;">
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-
 
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.param_annexe_close') }}</button>
@@ -576,8 +589,9 @@
                                                 const input = document.querySelector("#telephone{{ $loop->iteration }}");
                                                 if (input) {
                                                     window.intlTelInput(input, {
-                                                    preferredCountries: ["bj", "fr", "ci"],
-                                                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                                                        preferredCountries: ["bj", "fr", "ci"],
+                                                        containerClass: "w-100",
+                                                        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                                                     });
                                                 }
                                                 });
@@ -983,6 +997,49 @@
                                                 {!! __('pages.param_comm_at_alert') !!}
                                             </div>
 
+                                            <hr class="my-4">
+
+                                            {{-- ── Fuseau horaire ── --}}
+                                            <h6 class="mb-3 text-primary"><i class="bx bx-time me-1"></i>Fuseau horaire</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold" for="timezoneSelect">Fuseau horaire de l'agence</label>
+                                                <select class="form-select" id="timezoneSelect" name="timezone">
+                                                    @php
+                                                        $currentTz = $param->first()?->timezone ?? 'Africa/Porto-Novo';
+                                                        $timezones = [
+                                                            'Africa/Porto-Novo'   => '🇧🇯 Bénin — Africa/Porto-Novo (UTC+1)',
+                                                            'Africa/Lagos'        => '🇳🇬 Nigeria — Africa/Lagos (UTC+1)',
+                                                            'Africa/Niamey'       => '🇳🇪 Niger — Africa/Niamey (UTC+1)',
+                                                            'Africa/Ndjamena'     => '🇹🇩 Tchad — Africa/Ndjamena (UTC+1)',
+                                                            'Africa/Douala'       => '🇨🇲 Cameroun — Africa/Douala (UTC+1)',
+                                                            'Africa/Libreville'   => '🇬🇦 Gabon — Africa/Libreville (UTC+1)',
+                                                            'Africa/Brazzaville'  => '🇨🇬 Congo — Africa/Brazzaville (UTC+1)',
+                                                            'Africa/Kinshasa'     => '🇨🇩 RDC — Africa/Kinshasa (UTC+1)',
+                                                            'Africa/Abidjan'      => '🇨🇮 Côte d\'Ivoire — Africa/Abidjan (UTC+0)',
+                                                            'Africa/Dakar'        => '🇸🇳 Sénégal — Africa/Dakar (UTC+0)',
+                                                            'Africa/Bamako'       => '🇲🇱 Mali — Africa/Bamako (UTC+0)',
+                                                            'Africa/Ouagadougou'  => '🇧🇫 Burkina Faso — Africa/Ouagadougou (UTC+0)',
+                                                            'Africa/Lome'         => '🇹🇬 Togo — Africa/Lome (UTC+0)',
+                                                            'Africa/Accra'        => '🇬🇭 Ghana — Africa/Accra (UTC+0)',
+                                                            'Africa/Conakry'      => '🇬🇳 Guinée — Africa/Conakry (UTC+0)',
+                                                            'Africa/Bissau'       => '🇬🇼 Guinée-Bissau — Africa/Bissau (UTC+0)',
+                                                            'Africa/Freetown'     => '🇸🇱 Sierra Leone — Africa/Freetown (UTC+0)',
+                                                            'Africa/Monrovia'     => '🇱🇷 Liberia — Africa/Monrovia (UTC+0)',
+                                                            'Africa/Nairobi'      => '🇰🇪 Kenya — Africa/Nairobi (UTC+3)',
+                                                            'Africa/Johannesburg' => '🇿🇦 Afrique du Sud — Africa/Johannesburg (UTC+2)',
+                                                            'Europe/Paris'        => '🇫🇷 France — Europe/Paris (UTC+1/+2)',
+                                                            'UTC'                 => '🌍 UTC (UTC+0)',
+                                                        ];
+                                                    @endphp
+                                                    @foreach($timezones as $tz => $label)
+                                                        <option value="{{ $tz }}" {{ $currentTz === $tz ? 'selected' : '' }}>
+                                                            {{ $label }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <small class="text-muted">Ce fuseau horaire est utilisé pour les envois automatiques de rappels.</small>
+                                            </div>
+
                                             <div class="d-flex gap-2 mt-3">
                                                 <button type="button" class="btn btn-primary" id="btnSaveCommConfig">
                                                     <i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save_comm') }}
@@ -994,6 +1051,175 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- ═══════════════════════════════════════════════════════════
+                         ONGLET 6 — DEVISE & RÉGION
+                    ═══════════════════════════════════════════════════════════ --}}
+                    <div class="tab-pane fade" id="navs-pills-justified-devise" role="tabpanel">
+                        <div class="px-2 py-3">
+
+                            @php
+                                $dp        = $deviseParamtre;
+                                $paysActuel   = $dp->pays    ?? 'BJ';
+                                $deviseActuel = $dp->devise  ?? 'XOF';
+                                $indicatif    = $dp->indicatif_tel ?? '';
+                                $formatDate   = $dp->format_date   ?? 'd/m/Y';
+                                $tauxChange   = $dp->taux_change   ?? [];
+                                $taxes        = $dp->taxes         ?? [];
+                                $paysJs       = json_encode($paysList);
+                            @endphp
+
+                            <form id="formDeviseConfig">
+                                @csrf
+
+                                {{-- Section : Localisation --}}
+                                <div class="card mb-4 border-0 shadow-sm">
+                                    <div class="card-header bg-white border-bottom">
+                                        <h6 class="mb-0 fw-bold"><i class="bx bx-map me-2 text-primary"></i>Localisation</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            {{-- Pays --}}
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Pays <span class="text-danger">*</span></label>
+                                                <select name="pays" id="devise-pays" class="form-select" onchange="onPaysChange(this.value)">
+                                                    @foreach($paysList as $code => $p)
+                                                    <option value="{{ $code }}" {{ $paysActuel === $code ? 'selected' : '' }}>
+                                                        {{ $p['drapeau'] }} {{ $p['nom'] }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="form-text">Détermine les valeurs par défaut (devise, indicatif, format date).</div>
+                                            </div>
+
+                                            {{-- Devise --}}
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold">Devise <span class="text-danger">*</span></label>
+                                                <select name="devise" id="devise-devise" class="form-select" onchange="onDeviseChange(this.value)">
+                                                    @foreach($devisesList as $d)
+                                                    <option value="{{ $d['code'] }}" {{ $deviseActuel === $d['code'] ? 'selected' : '' }}>
+                                                        {{ $d['code'] }} — {{ $d['label'] }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            {{-- Indicatif téléphonique --}}
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Indicatif téléphonique</label>
+                                                <input type="text" name="indicatif_tel" id="devise-indicatif"
+                                                       class="form-control" value="{{ $indicatif }}" placeholder="+229" maxlength="6">
+                                            </div>
+
+                                            {{-- Format date --}}
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Format de date</label>
+                                                <select name="format_date" id="devise-format-date" class="form-select">
+                                                    <option value="d/m/Y" {{ $formatDate==='d/m/Y' ?'selected':'' }}>JJ/MM/AAAA (ex: 19/04/2026)</option>
+                                                    <option value="m/d/Y" {{ $formatDate==='m/d/Y' ?'selected':'' }}>MM/JJ/AAAA (ex: 04/19/2026)</option>
+                                                    <option value="Y-m-d" {{ $formatDate==='Y-m-d' ?'selected':'' }}>AAAA-MM-JJ (ex: 2026-04-19)</option>
+                                                </select>
+                                            </div>
+
+                                            {{-- Aperçu --}}
+                                            <div class="col-md-4 d-flex align-items-end">
+                                                <div class="bg-light rounded p-3 w-100 text-center">
+                                                    <small class="text-muted d-block mb-1">Aperçu format montant</small>
+                                                    <strong id="devise-apercu" class="fs-5 text-primary">—</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Section : Taux de change --}}
+                                <div class="card mb-4 border-0 shadow-sm">
+                                    <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
+                                        <h6 class="mb-0 fw-bold"><i class="bx bx-transfer me-2 text-success"></i>Taux de change</h6>
+                                        <small class="text-muted">1 unité de devise étrangère = X {{ $deviseActuel }}</small>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-muted small mb-3">
+                                            Configurez combien d'unités de votre devise (<strong id="devise-base-label">{{ $deviseActuel }}</strong>)
+                                            correspondent à 1 unité de chaque devise étrangère.
+                                            Ces taux permettent d'afficher des conversions dans les rapports.
+                                        </p>
+                                        <div class="row g-3" id="taux-change-container">
+                                            @foreach($devisesList as $d)
+                                                @if($d['code'] !== $deviseActuel)
+                                                <div class="col-md-4 taux-row" data-devise="{{ $d['code'] }}">
+                                                    <label class="form-label fw-semibold small">
+                                                        1 {{ $d['code'] }} =
+                                                        <span class="text-primary">X {{ $deviseActuel }}</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <input type="number" step="0.0001" min="0"
+                                                               name="taux_change[{{ $d['code'] }}]"
+                                                               class="form-control"
+                                                               placeholder="ex: 655.957"
+                                                               value="{{ $tauxChange[$d['code']] ?? '' }}">
+                                                        <span class="input-group-text">{{ $deviseActuel }}</span>
+                                                    </div>
+                                                    <div class="form-text">{{ $d['label'] }}</div>
+                                                </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                        <div class="mt-3">
+                                            <div class="alert alert-info py-2 small mb-0">
+                                                <i class="bx bx-info-circle me-1"></i>
+                                                <strong>Taux de référence indicatifs (avril 2026) :</strong>
+                                                XOF/EUR ≈ 655,96 | XOF/USD ≈ 600 | XOF/GHS ≈ 45 | XOF/NGN ≈ 0,40 | XOF/XAF = 1
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Section : Taxes --}}
+                                <div class="card mb-4 border-0 shadow-sm">
+                                    <div class="card-header bg-white border-bottom">
+                                        <h6 class="mb-0 fw-bold"><i class="bx bx-receipt me-2 text-warning"></i>Taxes locales</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Nom de la taxe</label>
+                                                <input type="text" name="nom_taxe" class="form-control"
+                                                       value="{{ $taxes['nom_taxe'] ?? 'TVA' }}" placeholder="TVA, TPS...">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-semibold">Taux (%)</label>
+                                                <div class="input-group">
+                                                    <input type="number" step="0.01" min="0" max="100"
+                                                           name="tva" class="form-control"
+                                                           value="{{ $taxes['tva'] ?? 0 }}" placeholder="18">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5 d-flex align-items-end">
+                                                <div class="form-check form-switch mt-2">
+                                                    <input class="form-check-input" type="checkbox" role="switch"
+                                                           name="tva_applicable" id="tva-applicable" value="1"
+                                                           {{ !empty($taxes['tva_applicable']) ? 'checked' : '' }}>
+                                                    <label class="form-check-label fw-semibold" for="tva-applicable">
+                                                        Appliquer la taxe sur les loyers/factures
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Bouton sauvegarde --}}
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary px-5" id="btnSaveDevise" onclick="saveDeviseConfig()">
+                                        <i class="bx bx-save me-2"></i>Enregistrer la configuration
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>{{-- /tab-pane devise --}}
 
                 </div>{{-- /tab-content --}}
 
@@ -1960,20 +2186,20 @@
                     // Service en cours de démarrage : patienter puis relancer connect
                     if (btnCon) { btnCon.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Démarrage…'; }
                     var sub = document.getElementById('wa-status-sub');
-                    if (sub) sub.textContent = 'Démarrage du service WhatsApp, veuillez patienter…';
+                    if (sub) sub.textContent = '{{ __("pages.param_wa_starting") }}';
                     WA._waitAndConnect(0);
                 } else if (data.status) {
                     WA.setUI('waiting_qr');
                     if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
                     setTimeout(function() { WA.openQrModal(); }, 1000);
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Erreur', text: data.message });
-                    if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
+                    Swal.fire({ icon: 'error', title: '{{ __("common.swal_error") }}', text: data.message });
+                    if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '{{ __("pages.param_wa_btn_connect") }}'; }
                 }
             })
             .catch(function() {
-                Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de joindre le serveur.' });
-                if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
+                Swal.fire({ icon: 'error', title: '{{ __("common.swal_error") }}', text: '{{ __("common.swal_cannot_reach") }}' });
+                if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '{{ __("pages.param_wa_btn_connect") }}'; }
             });
         },
 
@@ -1984,20 +2210,20 @@
             var sub    = document.getElementById('wa-status-sub');
 
             if (attempt >= maxAttempts) {
-                if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '<i class="bx bx-qr-scan me-1"></i>Connecter'; }
-                if (sub) sub.textContent = 'Service non démarré. Cliquez pour réessayer.';
+                if (btnCon) { btnCon.disabled = false; btnCon.innerHTML = '{{ __("pages.param_wa_btn_connect") }}'; }
+                if (sub) sub.textContent = '{{ __("pages.param_wa_not_started") }}';
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Démarrage lent',
-                    text: 'Le service WhatsApp prend plus de temps que prévu. Cliquez sur "Connecter" dans quelques secondes pour réessayer.',
-                    confirmButtonText: 'OK'
+                    title: '{{ __("pages.param_wa_slow_title") }}',
+                    text: '{{ __("pages.param_wa_slow_text") }}',
+                    confirmButtonText: '{{ __("common.swal_ok") }}'
                 });
                 return;
             }
 
             var remaining = Math.round((maxAttempts - attempt) * 3);
             if (btnCon) btnCon.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Démarrage (' + remaining + 's)…';
-            if (sub) sub.textContent = 'Démarrage du service WhatsApp en cours, veuillez patienter…';
+            if (sub) sub.textContent = '{{ __("pages.param_wa_starting_wait") }}';
 
             setTimeout(function() {
                 fetch('{{ route("whatsapp.status") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
@@ -2098,6 +2324,115 @@
     };
 
     WA.init();
+})();
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════
+// ONGLET DEVISE & RÉGION
+// ══════════════════════════════════════════════════════
+(function() {
+    var URL_DEVISE = '{{ route("store_devise_config") }}';
+    var CSRF       = '{{ csrf_token() }}';
+
+    var PAYS_DATA   = @json($paysList);
+    var DEVISE_DATA = @json($devisesList);
+
+    var DEVISE_CONFIGS = {
+        'XOF': { decimales: 0, sep_decimal: ',', sep_milliers: ' ', symbole: 'FCFA', avant: false },
+        'XAF': { decimales: 0, sep_decimal: ',', sep_milliers: ' ', symbole: 'FCFA', avant: false },
+        'GHS': { decimales: 2, sep_decimal: '.', sep_milliers: ',', symbole: 'GH₵',  avant: true  },
+        'NGN': { decimales: 2, sep_decimal: '.', sep_milliers: ',', symbole: '₦',    avant: true  },
+        'EUR': { decimales: 2, sep_decimal: ',', sep_milliers: ' ', symbole: '€',    avant: false },
+        'USD': { decimales: 2, sep_decimal: '.', sep_milliers: ',', symbole: '$',    avant: true  },
+    };
+
+    function formatSample(code) {
+        var cfg = DEVISE_CONFIGS[code];
+        if (!cfg) return '—';
+        var n = 150000;
+        var parts = n.toFixed(cfg.decimales).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, cfg.sep_milliers);
+        var formatted = parts.join(cfg.sep_decimal);
+        return cfg.avant ? cfg.symbole + ' ' + formatted : formatted + ' ' + cfg.symbole;
+    }
+
+    function updateApercu(code) {
+        var el = document.getElementById('devise-apercu');
+        if (el) el.textContent = formatSample(code || document.getElementById('devise-devise').value);
+    }
+
+    window.onPaysChange = function(code) {
+        var pays = PAYS_DATA[code];
+        if (!pays) return;
+        document.getElementById('devise-devise').value      = pays.devise;
+        document.getElementById('devise-indicatif').value   = pays.indicatif;
+        document.getElementById('devise-format-date').value = pays.format_date;
+        updateApercu(pays.devise);
+        updateTauxLabels(pays.devise);
+    };
+
+    window.onDeviseChange = function(code) {
+        updateApercu(code);
+        updateTauxLabels(code);
+    };
+
+    function updateTauxLabels(deviseBase) {
+        document.querySelectorAll('#taux-change-container .taux-row').forEach(function(row) {
+            var codeEtr = row.dataset.devise;
+            if (codeEtr === deviseBase) {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+                var lbl = row.querySelector('label');
+                if (lbl) lbl.innerHTML = '1 ' + codeEtr + ' = <span class="text-primary">X ' + deviseBase + '</span>';
+                var span = row.querySelector('.input-group-text');
+                if (span) span.textContent = deviseBase;
+            }
+        });
+        var baseLabel = document.getElementById('devise-base-label');
+        if (baseLabel) baseLabel.textContent = deviseBase;
+    }
+
+    window.saveDeviseConfig = function() {
+        var btn = document.getElementById('btnSaveDevise');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enregistrement...';
+
+        var fd = new FormData(document.getElementById('formDeviseConfig'));
+        // Checkbox
+        var tvaCheck = document.getElementById('tva-applicable');
+        if (tvaCheck && !tvaCheck.checked) {
+            fd.set('tva_applicable', '0');
+        }
+
+        fetch(URL_DEVISE, {
+            method: 'POST',
+            body: fd,
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            btn.disabled = false;
+            btn.innerHTML = '{{ __("pages.param_js_btn_save_comm") }}';
+            if (data.status) {
+                Swal.fire({ icon: 'success', title: '{{ __("common.swal_success") }}', text: data.message, timer: 2500, showConfirmButton: false });
+            } else {
+                Swal.fire({ icon: 'error', title: '{{ __("common.swal_error") }}', text: data.message });
+            }
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.innerHTML = '{{ __("pages.param_js_btn_save_comm") }}';
+            Swal.fire({ icon: 'error', title: '{{ __("common.swal_error") }}', text: '{{ __("common.swal_unexpected_error") }}' });
+        });
+    };
+
+    // Init aperçu au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        var deviseEl = document.getElementById('devise-devise');
+        if (deviseEl) updateApercu(deviseEl.value);
+    });
 })();
 </script>
 
@@ -2217,4 +2552,5 @@
         </div>
     </div>
 </div>
+
 @endsection

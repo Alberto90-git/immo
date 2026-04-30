@@ -642,16 +642,216 @@ if (!function_exists("get_all_plans")) {
     }
 }
 
-if (!function_exists("format_price")) {
+// ═══════════════════════════════════════════════════════════════════════════
+// MULTI-DEVISE — helpers de formatage & configuration
+// ═══════════════════════════════════════════════════════════════════════════
+
+if (!function_exists('get_direction_parametre')) {
     /**
-     * Formate un prix en XOF
+     * Retourne le Parametre de la direction indiquée (ou de l'utilisateur connecté).
+     * Memoïsé pour éviter les requêtes répétées dans la même requête HTTP.
      *
-     * @param float $price
+     * @param int|null $directionId
+     * @return \App\Parametre|null
+     */
+    function get_direction_parametre(?int $directionId = null): ?\App\Parametre
+    {
+        static $cache = [];
+
+        if ($directionId === null) {
+            if (!\Illuminate\Support\Facades\Auth::check()) {
+                return null;
+            }
+            $directionId = \Illuminate\Support\Facades\Auth::user()->iddirection_ref;
+        }
+
+        if (!array_key_exists($directionId, $cache)) {
+            try {
+                $cache[$directionId] = \App\Parametre::where('iddirection_ref', $directionId)->first();
+            } catch (\Exception $e) {
+                $cache[$directionId] = null;
+            }
+        }
+
+        return $cache[$directionId];
+    }
+}
+
+if (!function_exists('get_devise_config')) {
+    /**
+     * Retourne la config d'une devise (symbole, séparateurs, décimales).
+     * Si $code est null, utilise la devise de l'utilisateur connecté.
+     *
+     * @param string|null $code  Code ISO 4217 (XOF, XAF, GHS, NGN, EUR, USD)
+     * @return array
+     */
+    function get_devise_config(?string $code = null): array
+    {
+        if ($code === null) {
+            $param = get_direction_parametre();
+            $code  = $param->devise ?? 'XOF';
+        }
+        return \App\Parametre::deviseConfig($code);
+    }
+}
+
+if (!function_exists('get_devise_courante')) {
+    /**
+     * Retourne le code devise de l'utilisateur connecté (ex: 'XOF').
+     *
+     * @param int|null $directionId
      * @return string
      */
-    function format_price($price)
+    function get_devise_courante(?int $directionId = null): string
     {
-        return number_format($price, 0, ',', ' ') . ' XOF';
+        $param = get_direction_parametre($directionId);
+        return $param->devise ?? 'XOF';
+    }
+}
+
+if (!function_exists('get_symbole_devise')) {
+    /**
+     * Retourne le symbole affiché (ex: 'FCFA', '₦', '$').
+     *
+     * @param string|null $code
+     * @return string
+     */
+    function get_symbole_devise(?string $code = null): string
+    {
+        return get_devise_config($code)['symbole'];
+    }
+}
+
+if (!function_exists("format_price")) {
+    /**
+     * Formate un montant avec la devise de l'utilisateur connecté (ou d'une direction précise).
+     *
+     * Exemples :
+     *   format_price(150000)               → "150 000 FCFA"  (XOF)
+     *   format_price(1200.50, null, 'GHS') → "GH₵ 1,200.50" (GHS)
+     *   format_price(99.99, null, 'USD')   → "$ 99.99"       (USD)
+     *
+     * @param float      $price
+     * @param int|null   $directionId  Direction à utiliser (null = utilisateur connecté)
+     * @param string|null $forceDevise Code devise explicite (prioritaire sur directionId)
+     * @return string
+     */
+    function format_price($price, ?int $directionId = null, ?string $forceDevise = null): string
+    {
+        $cfg = $forceDevise
+            ? \App\Parametre::deviseConfig($forceDevise)
+            : get_devise_config(get_devise_courante($directionId));
+
+        $formatted = number_format((float) $price, $cfg['decimales'], $cfg['sep_decimal'], $cfg['sep_milliers']);
+
+        return $cfg['symbole_avant']
+            ? $cfg['symbole'] . ' ' . $formatted
+            : $formatted . ' ' . $cfg['symbole'];
+    }
+}
+
+if (!function_exists('format_price_for')) {
+    /**
+     * Raccourci : format_price avec une direction explicite.
+     * Pratique dans les boucles (notifications, PDF, etc.)
+     *
+     * @param float  $price
+     * @param int    $directionId
+     * @return string
+     */
+    function format_price_for(float $price, int $directionId): string
+    {
+        return format_price($price, $directionId);
+    }
+}
+
+if (!function_exists('convertir_devise')) {
+    /**
+     * Convertit un montant d'une devise vers une autre en utilisant
+     * les taux configurés sur la direction.
+     *
+     * @param float    $montant
+     * @param string   $deviseSource
+     * @param string   $deviseCible
+     * @param int|null $directionId
+     * @return float
+     */
+    function convertir_devise(float $montant, string $deviseSource, string $deviseCible, ?int $directionId = null): float
+    {
+        if ($deviseSource === $deviseCible) {
+            return $montant;
+        }
+
+        $param = get_direction_parametre($directionId);
+        $taux  = $param->taux_change ?? [];
+
+        // taux_change stocke : 1 unité de devise cible = X unités devise locale
+        // devise locale = devise configurée dans le parametre
+        $deviseLocale = $param->devise ?? 'XOF';
+
+        if ($deviseSource === $deviseLocale && isset($taux[$deviseCible])) {
+            return $montant / (float) $taux[$deviseCible];
+        }
+
+        if ($deviseCible === $deviseLocale && isset($taux[$deviseSource])) {
+            return $montant * (float) $taux[$deviseSource];
+        }
+
+        // Conversion indirecte via devise locale
+        if (isset($taux[$deviseSource]) && isset($taux[$deviseCible])) {
+            $montantLocal = $montant * (float) $taux[$deviseSource];
+            return $montantLocal / (float) $taux[$deviseCible];
+        }
+
+        return $montant; // fallback sans conversion
+    }
+}
+
+if (!function_exists('get_direction_locale')) {
+    /**
+     * Retourne la locale ('fr'|'en') configurée pour une direction.
+     * Utile hors-session HTTP (cron, queue) pour envoyer les emails dans la bonne langue.
+     *
+     * @param int|null $directionId
+     * @return string
+     */
+    function get_direction_locale(?int $directionId = null): string
+    {
+        $param = get_direction_parametre($directionId);
+        $locale = $param->locale ?? 'fr';
+        return in_array($locale, ['fr', 'en']) ? $locale : 'fr';
+    }
+}
+
+if (!function_exists('get_taux_change')) {
+    /**
+     * Retourne le taux de change de 1 unité de $deviseSource en $deviseCible
+     * selon les taux configurés pour la direction.
+     *
+     * @param string   $deviseSource
+     * @param string   $deviseCible
+     * @param int|null $directionId
+     * @return float|null  null si taux inconnu
+     */
+    function get_taux_change(string $deviseSource, string $deviseCible, ?int $directionId = null): ?float
+    {
+        if ($deviseSource === $deviseCible) {
+            return 1.0;
+        }
+
+        $param = get_direction_parametre($directionId);
+        $taux  = $param->taux_change ?? [];
+        $base  = $param->devise ?? 'XOF';
+
+        if ($deviseSource === $base && isset($taux[$deviseCible])) {
+            return 1.0 / (float) $taux[$deviseCible];
+        }
+
+        if ($deviseCible === $base && isset($taux[$deviseSource])) {
+            return (float) $taux[$deviseSource];
+        }
+
+        return null;
     }
 }
 

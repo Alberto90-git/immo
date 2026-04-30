@@ -22,34 +22,34 @@
 {{-- ── Informations générales ──────────────────────────────────────────────── --}}
 <div class="card mb-4 shadow-sm">
   <div class="card-header bg-primary">
-    <h6 class="mb-0 text-white"><i class="bx bx-info-circle me-2"></i>Informations générales</h6>
+    <h6 class="mb-0 text-white"><i class="bx bx-info-circle me-2"></i>{{ __('ui.edl.form_info') }}</h6>
   </div>
   <div class="card-body">
     <div class="row g-3">
       <div class="col-md-5">
-        <label class="form-label fw-semibold">Locataire <span class="text-danger">*</span></label>
+        <label class="form-label fw-semibold">{{ __('ui.edl.form_tenant') }} <span class="text-danger">*</span></label>
         <select name="locataire_id" id="selectLocataire" class="form-select" required>
-          <option value="">— Choisir —</option>
+          <option value="">{{ __('ui.common.choose') }}</option>
           @foreach($locataires as $loc)
             <option value="{{ $loc->id }}">{{ $loc->nom }} {{ $loc->prenom }}</option>
           @endforeach
         </select>
       </div>
       <div class="col-md-4">
-        <label class="form-label fw-semibold">Type d'état des lieux <span class="text-danger">*</span></label>
+        <label class="form-label fw-semibold">{{ __('ui.edl.form_type') }} <span class="text-danger">*</span></label>
         <div class="d-flex gap-3 mt-2">
           <div class="form-check">
             <input class="form-check-input" type="radio" name="type" id="typeEntree" value="entree" checked required>
-            <label class="form-check-label" for="typeEntree"><span class="badge bg-primary">Entrée</span></label>
+            <label class="form-check-label" for="typeEntree"><span class="badge bg-primary">{{ __('ui.edl.type_entry') }}</span></label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="type" id="typeSortie" value="sortie">
-            <label class="form-check-label" for="typeSortie"><span class="badge bg-warning text-dark">Sortie</span></label>
+            <label class="form-check-label" for="typeSortie"><span class="badge bg-warning text-dark">{{ __('ui.edl.type_exit') }}</span></label>
           </div>
         </div>
       </div>
       <div class="col-md-3">
-        <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+        <label class="form-label fw-semibold">{{ __('ui.edl.form_date') }} <span class="text-danger">*</span></label>
         <input type="date" name="date_etat" class="form-control" value="{{ date('Y-m-d') }}" required>
       </div>
     </div>
@@ -58,15 +58,15 @@
     <div id="alerteEntree" class="mt-3" style="display:none;">
       <div id="entreeOk" class="alert alert-success d-none mb-0 py-2">
         <i class="bx bx-check-circle me-1"></i>
-        État d'entrée du <strong id="dateEntreeLabel"></strong> chargé pour comparaison.
+        {!! __('ui.edl.entry_loaded', ['date' => '<strong id="dateEntreeLabel"></strong>']) !!}
         <input type="hidden" name="etat_entree_id" id="etatEntreeId">
       </div>
       <div id="entreeKo" class="alert alert-warning d-none mb-0 py-2">
         <i class="bx bx-error-circle me-1"></i>
-        Aucun état d'entrée trouvé pour ce locataire.
+        {{ __('ui.edl.entry_not_found') }}
       </div>
       <div id="entreeLoading" class="text-muted d-none py-2">
-        <div class="spinner-border spinner-border-sm me-1"></div> Chargement de l'état d'entrée…
+        <div class="spinner-border spinner-border-sm me-1"></div> {{ __('ui.edl.entry_loading') }}
       </div>
     </div>
   </div>
@@ -75,9 +75,9 @@
 {{-- ── Pièces & observations ────────────────────────────────────────────────── --}}
 <div class="card mb-4 shadow-sm">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h6 class="mb-0"><i class="bx bx-home-circle me-2"></i>Pièces & observations</h6>
+    <h6 class="mb-0"><i class="bx bx-home-circle me-2"></i>{{ __('ui.edl.form_pieces') }}</h6>
     <button type="button" class="btn btn-sm btn-outline-primary" id="btnAjouterPiece">
-      <i class="bx bx-plus me-1"></i> Ajouter une pièce
+      <i class="bx bx-plus me-1"></i> {{ __('ui.edl.form_add_piece') }}
     </button>
   </div>
   <div class="card-body p-0">
@@ -104,12 +104,12 @@
               <table class="table table-bordered mb-0 align-middle">
                 <thead class="table-light text-center small">
                   <tr>
-                    <th style="width:18%">Élément</th>
-                    <th id="colEntree{{ $idx }}" style="display:none; width:14%">État entrée</th>
-                    <th style="width:16%">État <span class="text-danger">*</span></th>
-                    <th>Observations</th>
-                    <th id="colRetenue{{ $idx }}" style="display:none; width:14%">Retenue (F)</th>
-                    <th id="colDegra{{ $idx }}" style="display:none; width:12%">Dégradation</th>
+                    <th style="width:18%">{{ __('ui.edl.element') }}</th>
+                    <th id="colEntree{{ $idx }}" style="display:none; width:14%">{{ __('ui.edl.entry_col') }}</th>
+                    <th style="width:16%">{{ __('ui.edl.state_col') }} <span class="text-danger">*</span></th>
+                    <th>{{ __('ui.edl.col_obs') }}</th>
+                    <th id="colRetenue{{ $idx }}" style="display:none; width:14%">{{ __('ui.edl.retenue_col') }} ({{ get_symbole_devise() }})</th>
+                    <th id="colDegra{{ $idx }}" style="display:none; width:12%">{{ __('ui.edl.degra_col') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -124,16 +124,16 @@
                       <select name="pieces[{{ $idx }}][elements][{{ $element }}][etat]"
                               class="form-select form-select-sm select-etat"
                               data-piece-idx="{{ $idx }}" data-element="{{ $element }}">
-                        <option value="tres_bon">Très bon</option>
-                        <option value="bon" selected>Bon</option>
-                        <option value="moyen">Moyen</option>
-                        <option value="mauvais">Mauvais</option>
-                        <option value="hors_service">Hors service</option>
+                        <option value="tres_bon">{{ __('ui.edl.state_tres_bon') }}</option>
+                        <option value="bon" selected>{{ __('ui.edl.state_bon') }}</option>
+                        <option value="moyen">{{ __('ui.edl.state_moyen') }}</option>
+                        <option value="mauvais">{{ __('ui.edl.state_mauvais') }}</option>
+                        <option value="hors_service">{{ __('ui.edl.state_hors_service') }}</option>
                       </select>
                     </td>
                     <td>
                       <input type="text" name="pieces[{{ $idx }}][elements][{{ $element }}][description]"
-                             class="form-control form-control-sm" placeholder="Détails…">
+                             class="form-control form-control-sm" placeholder="{{ __('ui.common.details_ph') }}">
                     </td>
                     <td class="col-retenue-{{ $idx }}" style="display:none;">
                       <input type="number" name="pieces[{{ $idx }}][elements][{{ $element }}][montant_retenue]"
@@ -159,11 +159,11 @@
 {{-- ── Notes générales ──────────────────────────────────────────────────────── --}}
 <div class="card mb-4 shadow-sm">
   <div class="card-header">
-    <h6 class="mb-0"><i class="bx bx-note me-2"></i>Notes générales</h6>
+    <h6 class="mb-0"><i class="bx bx-note me-2"></i>{{ __('ui.edl.form_notes') }}</h6>
   </div>
   <div class="card-body">
     <textarea name="notes_generales" class="form-control" rows="3"
-              placeholder="Observations générales, état global du logement…"></textarea>
+              placeholder="{{ __('ui.edl.form_notes_ph') }}"></textarea>
   </div>
 </div>
 
@@ -174,16 +174,16 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Ajouter une pièce</h5>
+        <h5 class="modal-title">{{ __('ui.edl.modal_new_piece') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <label class="form-label">Nom de la pièce</label>
-        <input type="text" id="inputNouveauPiece" class="form-control" placeholder="ex : Cave, Garage, Bureau…">
+        <label class="form-label">{{ __('ui.edl.piece_name') }}</label>
+        <input type="text" id="inputNouveauPiece" class="form-control" placeholder="{{ __('ui.edl.piece_name_ph') }}">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-primary" id="btnConfirmNouveauPiece">Ajouter</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('ui.common.cancel') }}</button>
+        <button type="button" class="btn btn-primary" id="btnConfirmNouveauPiece">{{ __('ui.edl.form_add') }}</button>
       </div>
     </div>
   </div>
@@ -194,7 +194,7 @@
 (function () { // IIFE — évite les conflits de variables si inclus 2×
 
 const QUALITE     = { tres_bon: 5, bon: 4, moyen: 3, mauvais: 2, hors_service: 1 };
-const ETAT_LABELS = { tres_bon: 'Très bon', bon: 'Bon', moyen: 'Moyen', mauvais: 'Mauvais', hors_service: 'Hors service' };
+const ETAT_LABELS = { tres_bon: '{{ __("ui.edl.state_tres_bon") }}', bon: '{{ __("ui.edl.state_bon") }}', moyen: '{{ __("ui.edl.state_moyen") }}', mauvais: '{{ __("ui.edl.state_mauvais") }}', hors_service: '{{ __("ui.edl.state_hors_service") }}' };
 const ETAT_CLASSES= { tres_bon: 'bg-success', bon: 'bg-info', moyen: 'bg-warning text-dark', mauvais: 'bg-danger', hors_service: 'bg-dark' };
 
 let entreeData = null;
@@ -203,7 +203,7 @@ let isSortie   = false;
 
 // ── Tom Select : recherche locataire ─────────────────────────────────────────
 const tsLocataire = new TomSelect('#selectLocataire', {
-    placeholder: '— Chercher un locataire —',
+    placeholder: '{{ __("ui.edl.form_tenant_ph") }}',
     allowEmptyOption: true,
     sortField: { field: 'text', direction: 'asc' },
     onChange: function () {
@@ -316,12 +316,12 @@ function calculerDegradation(select, row, nomPiece, pieceIdx) {
     const retenue   = row.querySelector('.input-retenue');
     if (!pieceE || !pieceE[element]) { if (degraSpan) degraSpan.textContent = '–'; return; }
     const degra = (QUALITE[select.value] || 4) < (QUALITE[pieceE[element].etat] || 4);
-    if (degraSpan) { degraSpan.textContent = degra ? 'Oui' : 'Non'; degraSpan.className = 'badge degra-flag ' + (degra ? 'bg-danger' : 'bg-success'); }
+    if (degraSpan) { degraSpan.textContent = degra ? '{{ __("ui.edl.damage_yes") }}' : '{{ __("ui.edl.damage_no") }}'; degraSpan.className = 'badge degra-flag ' + (degra ? 'bg-danger' : 'bg-success'); }
     if (retenue) retenue.readOnly = !degra;
     const pieceBadge = document.querySelector(`.degra-badge-${pieceIdx}`);
     if (pieceBadge) {
         const n = document.querySelectorAll(`.piece-block[data-index="${pieceIdx}"] .degra-flag.bg-danger`).length;
-        pieceBadge.textContent = n > 0 ? `${n} dégradation(s)` : '';
+        pieceBadge.textContent = n > 0 ? `${n}{{ __("ui.edl.damage_badge", ["n" => ""]) }}` : '';
         pieceBadge.style.display = n > 0 ? '' : 'none';
     }
 }
@@ -354,7 +354,7 @@ document.getElementById('btnSaveEtat').addEventListener('click', function () {
             if (typeof window.__createFormSuccessOverride === 'function') {
                 window.__createFormSuccessOverride(data);
             } else {
-                Swal.fire({ icon: 'success', title: 'Enregistré !', text: data.message, timer: 1500, showConfirmButton: false })
+                Swal.fire({ icon: 'success', title: '{{ __("ui.common.saved") }}', text: data.message, timer: 1500, showConfirmButton: false })
                     .then(() => { window.location.href = data.redirect; });
             }
         } else {
@@ -362,7 +362,7 @@ document.getElementById('btnSaveEtat').addEventListener('click', function () {
                 const msgs = Object.values(data.errors).flat();
                 errDiv.innerHTML = '<ul class="mb-0">' + msgs.map(m => `<li>${m}</li>`).join('') + '</ul>';
             } else {
-                errDiv.innerHTML = data.message || 'Une erreur est survenue.';
+                errDiv.innerHTML = data.message || '{{ __("ui.common.error") }}';
             }
             errDiv.style.display = '';
             errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -372,7 +372,7 @@ document.getElementById('btnSaveEtat').addEventListener('click', function () {
         this.disabled = false;
         btnText.classList.remove('d-none');
         btnSpin.classList.add('d-none');
-        Swal.fire('Erreur', 'Une erreur réseau est survenue.', 'error');
+        Swal.fire('{{ __("ui.common.error") }}', '{{ __("ui.common.network_error") }}', 'error');
     });
 });
 
@@ -396,11 +396,11 @@ function ajouterPieceAccordion(nomPiece) {
         <td class="fw-semibold small ps-3">${el}</td>
         ${isSortie ? `<td class="text-center col-entree-${idx}"><span class="badge bg-secondary etat-entree-badge">–</span><input type="hidden" class="val-entree" data-element="${el}" value=""></td>` : ''}
         <td><select name="pieces[${idx}][elements][${el}][etat]" class="form-select form-select-sm select-etat" data-piece-idx="${idx}" data-element="${el}">
-          <option value="tres_bon">Très bon</option><option value="bon" selected>Bon</option>
-          <option value="moyen">Moyen</option><option value="mauvais">Mauvais</option>
-          <option value="hors_service">Hors service</option>
+          <option value="tres_bon">{{ __("ui.edl.state_tres_bon") }}</option><option value="bon" selected>{{ __("ui.edl.state_bon") }}</option>
+          <option value="moyen">{{ __("ui.edl.state_moyen") }}</option><option value="mauvais">{{ __("ui.edl.state_mauvais") }}</option>
+          <option value="hors_service">{{ __("ui.edl.state_hors_service") }}</option>
         </select></td>
-        <td><input type="text" name="pieces[${idx}][elements][${el}][description]" class="form-control form-control-sm" placeholder="Détails…"></td>
+        <td><input type="text" name="pieces[${idx}][elements][${el}][description]" class="form-control form-control-sm" placeholder="{{ __("ui.common.details_ph") }}"></td>
         ${isSortie ? `<td class="col-retenue-${idx}"><input type="number" name="pieces[${idx}][elements][${el}][montant_retenue]" class="form-control form-control-sm input-retenue" min="0" value="0" step="100"></td>` : ''}
         ${isSortie ? `<td class="text-center col-degra-${idx}"><span class="badge degra-flag bg-secondary">–</span></td>` : ''}
       </tr>`).join('');
@@ -423,10 +423,10 @@ function ajouterPieceAccordion(nomPiece) {
             <table class="table table-bordered mb-0 align-middle">
               <thead class="table-light text-center small">
                 <tr>
-                  <th style="width:18%">Élément</th>
-                  ${isSortie ? `<th id="colEntree${idx}" style="width:14%">État entrée</th>` : ''}
-                  <th style="width:16%">État *</th><th>Observations</th>
-                  ${isSortie ? `<th id="colRetenue${idx}" style="width:14%">Retenue (F)</th><th id="colDegra${idx}" style="width:12%">Dégradation</th>` : ''}
+                  <th style="width:18%">{{ __("ui.edl.element") }}</th>
+                  ${isSortie ? `<th id="colEntree${idx}" style="width:14%">{{ __("ui.edl.entry_col") }}</th>` : ''}
+                  <th style="width:16%">{{ __("ui.edl.state_col") }} *</th><th>{{ __("ui.edl.col_obs") }}</th>
+                  ${isSortie ? `<th id="colRetenue${idx}" style="width:14%">{{ __("ui.edl.retenue_col") }} ({{ get_symbole_devise() }})</th><th id="colDegra${idx}" style="width:12%">{{ __("ui.edl.degra_col") }}</th>` : ''}
                 </tr>
               </thead>
               <tbody>${rowsHtml}</tbody>

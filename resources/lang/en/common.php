@@ -103,4 +103,13 @@ return [
     // ── Swal buttons ───────────────────────────────────────────────────
     'swal_close'         => 'Close',
     'swal_ok'            => 'OK',
+
+    // ── Swal network / server messages ─────────────────────────────────
+    'swal_network_error'  => 'Network error',
+    'swal_network_msg'    => 'Request failed. Check your connection.',
+    'swal_server_error'   => 'Server error',
+    'swal_cannot_reach'   => 'Unable to reach the server.',
+
+    // ── Generic state labels ───────────────────────────────────────
+    'processing'          => 'Processing...',
 ];

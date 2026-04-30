@@ -28,6 +28,7 @@ use App\PlatformConfig;
 use App\Services\KkiapayService;
 use App\Services\FedapayService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\QueryException;
 
 
@@ -457,21 +458,68 @@ class UtilisateurController extends SessionController
      * Valide les données d'inscription sans créer de compte ni déclencher de paiement.
      * Appelé côté JS avant d'ouvrir le widget de paiement.
      */
+    /**
+     * Vérifie uniquement si l'email est disponible (avant d'ouvrir le widget de paiement).
+     * Utilise DB::table() pour bypasser tout scope Eloquent.
+     */
+    public function checkEmailAvailable(Request $request)
+    {
+        $emails = array_values(array_filter(array_unique([
+            strtolower(trim((string) $request->input('email_entreprise', ''))),
+            strtolower(trim((string) $request->input('email', ''))),
+        ])));
+
+        if (empty($emails)) {
+            return response()->json(['available' => true]);
+        }
+
+        foreach ($emails as $e) {
+            if (DB::table('directions')->whereRaw('lower(email) = ?', [$e])->exists() ||
+                DB::table('users')->whereRaw('lower(email) = ?', [$e])->exists()) {
+                return response()->json(['available' => false]);
+            }
+        }
+
+        return response()->json(['available' => true]);
+    }
+
     public function preValidateInscription(Request $request)
     {
+        // Vérifie directement en DB (bypass tout scope Eloquent + case-insensitive PostgreSQL)
+        $emailsToCheck = array_values(array_filter(array_unique([
+            strtolower(trim((string) $request->input('email_entreprise', ''))),
+            strtolower(trim((string) $request->input('email', ''))),
+        ])));
+
+        foreach ($emailsToCheck as $e) {
+            $inDir   = DB::table('directions')->whereRaw('lower(email) = ?', [$e])->exists();
+            $inUsers = DB::table('users')->whereRaw('lower(email) = ?', [$e])->exists();
+            if ($inDir || $inUsers) {
+                return response()->json([
+                    'status'      => false,
+                    'email_taken' => true,
+                    'message'     => __('pages.reg_email_already_taken'),
+                    'errors'      => [
+                        'email_entreprise' => [__('pages.reg_email_already_taken')],
+                        'email'            => [__('pages.reg_email_already_taken')],
+                    ],
+                ], 422);
+            }
+        }
+
         if ($request->type_compte === 'Particulier') {
             $validator = Validator::make(
                 $request->all(),
                 [
                     'nom'         => ['required', 'string', 'min:2'],
                     'prenom'      => ['required', 'string', 'min:2'],
-                    'email'       => ['required','string','email','max:255', Rule::unique(User::class), Rule::unique('directions', 'email')],
+                    'email'       => ['required','string','email','max:255', Rule::unique('users', 'email'), Rule::unique('directions', 'email')],
                     'telephone'   => ['required'],
                     'type_compte' => ['required', 'string'],
                 ],
                 [
                     '*.required'   => 'Ce champ est obligatoire.',
-                    'email.unique' => 'Cette adresse email est déjà associée à un compte existant.',
+                    'email.unique' => __('pages.reg_email_already_taken'),
                     '*.min'        => 'Le :attribute doit avoir au moins :min caractères.',
                 ]
             );
@@ -481,7 +529,7 @@ class UtilisateurController extends SessionController
                 [
                     'nom'              => ['required', 'string', 'min:2'],
                     'prenom'           => ['required', 'string', 'min:2'],
-                    'email'            => ['required','string','email','max:255', Rule::unique(User::class)],
+                    'email'            => ['required','string','email','max:255', Rule::unique('users', 'email')],
                     'telephone'        => ['required'],
                     'type_compte'      => ['required', 'string'],
                     'designation'      => ['required', 'string'],
@@ -490,8 +538,8 @@ class UtilisateurController extends SessionController
                 ],
                 [
                     '*.required'              => 'Ce champ est obligatoire.',
-                    'email.unique'            => 'Cette adresse email personnelle est déjà utilisée.',
-                    'email_entreprise.unique' => 'Cette adresse email d\'entreprise est déjà associée à un compte existant.',
+                    'email.unique'            => __('pages.reg_email_already_taken'),
+                    'email_entreprise.unique' => __('pages.reg_email_already_taken'),
                     '*.min'                   => 'Le :attribute doit avoir au moins :min caractères.',
                 ]
             );
@@ -521,10 +569,54 @@ class UtilisateurController extends SessionController
         // Récupérer le transaction_id au plus tôt pour l'inclure dans les erreurs si paiement déjà fait
         $incomingTransactionId = $request->input('transaction_id');
 
+        // ── Vérification précoce de l'email (avant tout traitement) ─────────────
+        $emailEarlyCheck = $request->input('email_entreprise') ?: $request->input('email');
+        if (!empty($emailEarlyCheck)) {
+            if (!empty($incomingTransactionId)) {
+                $alreadyCreated = DB::table('directions')
+                    ->where('email', $emailEarlyCheck)
+                    ->where(function ($q) use ($incomingTransactionId) {
+                        $q->where('kkiapay_transaction_id', $incomingTransactionId)
+                          ->orWhere('fedapay_transaction_id', $incomingTransactionId);
+                    })->exists();
+                if ($alreadyCreated) {
+                    Log::info('saveAdminCompte: idempotence (early check)', [
+                        'transaction_id' => $incomingTransactionId,
+                    ]);
+                    return response()->json([
+                        'status'  => true,
+                        'message' => __('pages.reg_success'),
+                    ]);
+                }
+            }
+            if (DB::table('directions')->where('email', $emailEarlyCheck)->exists()) {
+                Log::warning('saveAdminCompte: email déjà utilisé (early check)', [
+                    'email'          => $emailEarlyCheck,
+                    'transaction_id' => $incomingTransactionId,
+                ]);
+                if (!empty($incomingTransactionId)) {
+                    return response()->json([
+                        'status'          => false,
+                        'payment_pending' => true,
+                        'transaction_id'  => $incomingTransactionId,
+                        'message'         => __('pages.reg_email_taken_with_payment', ['ref' => $incomingTransactionId]),
+                        'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                        'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                        'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
+                    ], 422);
+                }
+                return response()->json([
+                    'status'  => false,
+                    'message' => __('pages.reg_email_already_taken'),
+                ], 422);
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────────
+
         // ── Vérification du token d'autorisation pour les plans payants ──────────
         $planCodeAuth  = $request->input('plan_code', 'essai');
         $planAuth      = Plan::where('code', $planCodeAuth)->first();
-        $isPaidPlanReq = $planAuth && floatval($planAuth->prix_annuel) > 0;
+        $isPaidPlanReq = $planAuth && floatval($planAuth->prix_mensuel) > 0;
 
         if ($isPaidPlanReq) {
             $providedToken = $request->input('payment_auth_token');
@@ -538,7 +630,7 @@ class UtilisateurController extends SessionController
                 ]);
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Autorisation invalide. Veuillez recommencer le formulaire depuis le début.',
+                    'message' => __('pages.reg_invalid_token'),
                 ], 422);
             }
 
@@ -598,7 +690,8 @@ class UtilisateurController extends SessionController
                     // Vérification d'idempotence : si la direction avec cet email a déjà
                     // ce transaction_id, le compte a été créé lors d'une requête précédente.
                     $emailCheck = $request->input('email_entreprise') ?: $request->input('email');
-                    $existingDir = Direction::where('email', $emailCheck)
+                    $existingDir = DB::table('directions')
+                        ->where('email', $emailCheck)
                         ->where(function ($q) use ($incomingTransactionId) {
                             $q->where('kkiapay_transaction_id', $incomingTransactionId)
                               ->orWhere('fedapay_transaction_id', $incomingTransactionId);
@@ -611,12 +704,12 @@ class UtilisateurController extends SessionController
                         ]);
                         return response()->json([
                             'status'  => true,
-                            'message' => 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.',
+                            'message' => __('pages.reg_success'),
                         ]);
                     }
 
                     // Vérifier si un compte existe déjà avec cet email (sans ce transaction_id)
-                    $anyExistingDir = Direction::where('email', $emailCheck)->first();
+                    $anyExistingDir = DB::table('directions')->where('email', $emailCheck)->first();
                     Log::error('saveAdminCompte: validation échouée après paiement', [
                         'transaction_id'    => $incomingTransactionId,
                         'email'             => $emailCheck,
@@ -629,7 +722,10 @@ class UtilisateurController extends SessionController
                             'status'          => false,
                             'payment_pending' => true,
                             'transaction_id'  => $incomingTransactionId,
-                            'message'         => 'Un compte existe déjà avec cette adresse email. Si c\'est votre compte, connectez-vous directement. Votre paiement (réf : ' . $incomingTransactionId . ') a bien été reçu — contactez le support pour le remboursement ou la migration.',
+                            'message'         => __('pages.reg_email_taken_with_payment', ['ref' => $incomingTransactionId]),
+                            'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                            'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                            'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
                         ], 422);
                     }
 
@@ -637,14 +733,17 @@ class UtilisateurController extends SessionController
                         'status'          => false,
                         'payment_pending' => true,
                         'transaction_id'  => $incomingTransactionId,
-                        'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais la création du compte a échoué. Contactez le support avec cette référence.',
+                        'message'         => __('pages.reg_payment_account_failed', ['ref' => $incomingTransactionId, 'detail' => $validator->errors()->first()]),
+                        'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                        'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                        'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
                         'error'           => $validator->errors(),
                     ], 422);
                 }
 
                 return response()->json([
                     'status'  => false,
-                    'message' => 'Veuillez vérifier les informations saisies',
+                    'message' => __('pages.reg_validation_failed'),
                     'error'   => $validator->errors()
                 ], 422);
             }
@@ -660,7 +759,7 @@ class UtilisateurController extends SessionController
             // Déterminer le plan pour vérifier si paiement requis
             $planCodeTemp = $request->plan_code ?? 'essai';
             $planTemp     = Plan::where('code', $planCodeTemp)->first() ?? Plan::essai();
-            $isPlanGratuitTemp = $planTemp && floatval($planTemp->prix_annuel) == 0;
+            $isPlanGratuitTemp = $planTemp && floatval($planTemp->prix_mensuel) == 0;
 
             // Vérification du paiement si plan payant et prestataire activé
             $paymentConfig        = PlatformConfig::getConfig();
@@ -674,7 +773,7 @@ class UtilisateurController extends SessionController
                     DB::rollBack();
                     return response()->json([
                         'status'  => false,
-                        'message' => 'Un paiement est requis pour ce plan. Veuillez effectuer le paiement.',
+                        'message' => __('pages.reg_payment_required'),
                     ], 422);
                 }
 
@@ -690,7 +789,7 @@ class UtilisateurController extends SessionController
                         DB::rollBack();
                         return response()->json([
                             'status'  => false,
-                            'message' => 'Paiement KKiaPay invalide ou non confirmé. Veuillez réessayer.',
+                            'message' => __('pages.reg_kkiapay_invalid'),
                         ], 422);
                     }
                     $kkiapayTransactionId = $transactionId;
@@ -704,7 +803,7 @@ class UtilisateurController extends SessionController
                         DB::rollBack();
                         return response()->json([
                             'status'  => false,
-                            'message' => 'Paiement FedaPay invalide ou non confirmé. Veuillez réessayer.',
+                            'message' => __('pages.reg_fedapay_invalid'),
                         ], 422);
                     }
                     $fedapayTransactionId = $transactionId;
@@ -733,11 +832,12 @@ class UtilisateurController extends SessionController
             }
             $planId = $planSelectionne ? $planSelectionne->idplan : null;
 
-            // Durée : 14 jours pour essai (gratuit), 12 mois pour plans payants
-            $isPlanGratuit = $planSelectionne && floatval($planSelectionne->prix_annuel) == 0;
+            // Durée : 14 jours pour essai (gratuit), nb_mois pour plans payants
+            $nbMoisInscription = max(1, min(24, (int) $request->input('nb_mois', 1)));
+            $isPlanGratuit = $planSelectionne && floatval($planSelectionne->prix_mensuel) == 0;
             $abonnementFin = $isPlanGratuit
                 ? Carbon::now()->addDays(14)
-                : Carbon::now()->addYear();
+                : Carbon::now()->addMonths($nbMoisInscription);
 
             // Création de la direction avec le plan sélectionné
             $direction_id = Direction::insertGetId([
@@ -844,18 +944,23 @@ class UtilisateurController extends SessionController
             }
 
             // Préparer les données pour la facture d'abonnement
+            $prixMensuelInscription = $planSelectionne ? floatval($planSelectionne->prix_mensuel) : 0;
             $planData = $planSelectionne ? [
-                'nom' => $planSelectionne->nom,
-                'code' => $planSelectionne->code,
-                'prix_annuel' => $planSelectionne->prix_annuel,
-                'max_maisons' => $planSelectionne->max_maisons,
-                'max_annexes' => $planSelectionne->max_annexes,
+                'nom'          => $planSelectionne->nom,
+                'code'         => $planSelectionne->code,
+                'prix_annuel'  => $planSelectionne->prix_annuel,
+                'prix_mensuel' => $planSelectionne->prix_mensuel,
+                'prix_total'   => $prixMensuelInscription * $nbMoisInscription,
+                'max_maisons'  => $planSelectionne->max_maisons,
+                'max_annexes'  => $planSelectionne->max_annexes,
             ] : [
-                'nom' => 'Essai',
-                'code' => 'essai',
-                'prix_annuel' => 0,
-                'max_maisons' => 2,
-                'max_annexes' => 0,
+                'nom'          => 'Essai',
+                'code'         => 'essai',
+                'prix_annuel'  => 0,
+                'prix_mensuel' => 0,
+                'prix_total'   => 0,
+                'max_maisons'  => 2,
+                'max_annexes'  => 0,
             ];
 
             $invoiceData = [
@@ -865,7 +970,8 @@ class UtilisateurController extends SessionController
                     'email' => $email,
                     'telephone' => $telepone_entreprise,
                 ],
-                'plan' => $planData,
+                'plan'      => $planData,
+                'nb_mois'   => $isPlanGratuit ? null : $nbMoisInscription,
                 'direction' => [
                     'designation' => $designation,
                     'abonnement_debut' => Carbon::now()->toDateString(),
@@ -907,7 +1013,7 @@ class UtilisateurController extends SessionController
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Votre compte a été créé avec succès! Un email de confirmation vous a été envoyé.'
+                    'message' => __('pages.reg_success_email_sent'),
                 ]);
 
             } catch (\Exception $mailException) {
@@ -917,7 +1023,7 @@ class UtilisateurController extends SessionController
                 // Le compte est créé même si l'email échoue
                 return response()->json([
                     'status' => true,
-                    'message' => 'Votre compte a été créé avec succès! Cependant, l\'email de confirmation n\'a pas pu être envoyé. Veuillez contacter le support.'
+                    'message' => __('pages.reg_success_email_failed'),
                 ]);
             }
             
@@ -932,12 +1038,13 @@ class UtilisateurController extends SessionController
             if ($sqlState === '23505' || $e->getCode() == 1062) {
                 $msg = $e->getMessage();
                 if (str_contains($msg, 'directions_email_unique') || str_contains($msg, '"directions"')) {
-                    $detail = 'Cette adresse email d\'entreprise est déjà associée à un compte existant.';
+                    $detail = __('pages.reg_email_already_taken');
 
                     // Vérification d'idempotence : même transaction = compte déjà créé
                     if (!empty($incomingTransactionId)) {
                         $emailCheck  = $request->input('email_entreprise') ?: $request->input('email');
-                        $existingDir = Direction::where('email', $emailCheck)
+                        $existingDir = DB::table('directions')
+                            ->where('email', $emailCheck)
                             ->where(function ($q) use ($incomingTransactionId) {
                                 $q->where('kkiapay_transaction_id', $incomingTransactionId)
                                   ->orWhere('fedapay_transaction_id', $incomingTransactionId);
@@ -950,12 +1057,12 @@ class UtilisateurController extends SessionController
                             ]);
                             return response()->json([
                                 'status'  => true,
-                                'message' => 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.',
+                                'message' => __('pages.reg_success'),
                             ]);
                         }
 
                         // Un compte existe avec cet email mais sans ce transaction_id
-                        $anyExistingDir = Direction::where('email', $emailCheck)->first();
+                        $anyExistingDir = DB::table('directions')->where('email', $emailCheck)->first();
                         if ($anyExistingDir) {
                             Log::error('saveAdminCompte: email déjà utilisé par un autre compte après paiement (DB exception)', [
                                 'transaction_id'   => $incomingTransactionId,
@@ -966,14 +1073,17 @@ class UtilisateurController extends SessionController
                                 'status'          => false,
                                 'payment_pending' => true,
                                 'transaction_id'  => $incomingTransactionId,
-                                'message'         => 'Un compte existe déjà avec cette adresse email. Si c\'est votre compte, connectez-vous directement. Votre paiement (réf : ' . $incomingTransactionId . ') a bien été reçu — contactez le support pour le remboursement ou la migration.',
+                                'message'         => __('pages.reg_email_taken_with_payment', ['ref' => $incomingTransactionId]),
+                                'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                                'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                                'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
                             ], 422);
                         }
                     }
                 } elseif (str_contains($msg, 'users_email_unique') || str_contains($msg, '"users"')) {
-                    $detail = 'Cette adresse email personnelle est déjà utilisée.';
+                    $detail = __('pages.reg_email_already_taken');
                 } else {
-                    $detail = 'Une valeur saisie est déjà utilisée par un autre compte.';
+                    $detail = __('pages.reg_email_already_taken');
                 }
 
                 if (!empty($incomingTransactionId)) {
@@ -981,7 +1091,10 @@ class UtilisateurController extends SessionController
                         'status'          => false,
                         'payment_pending' => true,
                         'transaction_id'  => $incomingTransactionId,
-                        'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais la création du compte a échoué : ' . $detail . ' Contactez le support avec cette référence.',
+                        'message'         => __('pages.reg_payment_account_failed', ['ref' => $incomingTransactionId, 'detail' => $detail]),
+                        'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                        'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                        'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
                     ], 422);
                 }
 
@@ -996,13 +1109,16 @@ class UtilisateurController extends SessionController
                     'status'          => false,
                     'payment_pending' => true,
                     'transaction_id'  => $incomingTransactionId,
-                    'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais une erreur technique a empêché la création du compte. Contactez le support avec cette référence.',
+                    'message'         => __('pages.reg_unexpected_error_payment', ['ref' => $incomingTransactionId]),
+                    'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                    'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                    'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
                 ], 500);
             }
 
             return response()->json([
                 'status'  => false,
-                'message' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.',
+                'message' => __('pages.reg_validation_failed'),
             ], 500);
 
         } catch (\Exception $e) {
@@ -1016,13 +1132,16 @@ class UtilisateurController extends SessionController
                     'status'          => false,
                     'payment_pending' => true,
                     'transaction_id'  => $incomingTransactionId,
-                    'message'         => 'Votre paiement a été reçu (réf : ' . $incomingTransactionId . ') mais une erreur inattendue a empêché la création du compte. Contactez le support avec cette référence.',
+                    'message'         => __('pages.reg_unexpected_error_payment', ['ref' => $incomingTransactionId]),
+                    'alert_title'     => __('pages.reg_js_payment_pending_title'),
+                    'alert_note'      => __('pages.reg_js_payment_pending_note'),
+                    'alert_btn'       => __('pages.reg_js_payment_pending_btn'),
                 ], 500);
             }
 
             return response()->json([
                 'status'  => false,
-                'message' => 'Une erreur inattendue est survenue. Veuillez réessayer.',
+                'message' => __('pages.reg_unexpected_error'),
             ], 500);
         }
     }

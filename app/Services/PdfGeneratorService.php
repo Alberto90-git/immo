@@ -236,7 +236,7 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 11);
         $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
         $fpdf->SetX(10 + $colDesc);
-        $fpdf->Cell($colValue, 6, number_format($prix_mois, 0, ",", ".") . ' XOF', 0, 1, 'C');
+        $fpdf->Cell($colValue, 6, number_format($prix_mois, 0, ",", ".") . ' ' . get_devise_courante(), 0, 1, 'C');
         $y += 10;
 
         if ($y < 140) {
@@ -500,11 +500,11 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 11);
         $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
         $fpdf->SetX(10 + $colDesc + $colQte);
-        $fpdf->Cell($colMontant, 6, number_format($total, 0, ",", ".") . ' XOF', 0, 1, 'C');
+        $fpdf->Cell($colMontant, 6, number_format($total, 0, ",", ".") . ' ' . get_devise_courante(), 0, 1, 'C');
         $y += 12;
 
         if ($y < 140) {
-            $montantLettres = ucfirst(nombreEnLettres($total)) . ' XOF';
+            $montantLettres = ucfirst(nombreEnLettres($total)) . ' ' . get_devise_courante();
             $fpdf->SetFont('Arial', 'B', 10);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetX(10);
@@ -621,6 +621,131 @@ class PdfGeneratorService
         $content  = $pdf->output();
         $filename = 'Releve_Agence_' . str_replace(' ', '_', $proprio->nom) . '_' . date('Ymd') . '.pdf';
         $label    = 'Relevé agence chez ' . trim($proprio->nom . ' ' . $proprio->prenom) . ' du ' . $debut . ' au ' . $fin;
+
+        return compact('content', 'filename', 'label');
+    }
+
+    /**
+     * Génère le relevé de compte complet d'un locataire.
+     */
+    public function genererReleveLocataire(int $locataireId): array
+    {
+        $locataire = Locataire::where('locataires.id', $locataireId)
+            ->whereNull('locataires.delete_at')
+            ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
+            ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
+            ->select(
+                'locataires.*',
+                'maisons.nom_maison',
+                'maisons.quartier as quartier_maison',
+                'chambres.numero_chambre',
+                'chambres.type_chambre'
+            )
+            ->first();
+
+        if (!$locataire) {
+            throw new \Exception('Locataire introuvable');
+        }
+
+        $factures  = \App\Facture::where('locataire_id', $locataireId)
+            ->whereNull('delete_at')
+            ->orderBy('created_at')
+            ->get();
+
+        $totalPaye   = $factures->sum('montant');
+        $moisOccupes = $factures->count();
+
+        $idannexe_ref = $locataire->idannexe_ref ?? get_active_annexe_id();
+        $agence       = get_annexe_details_for_invoice($idannexe_ref);
+
+        $pdf = PDF::loadView('pdf.releve_locataire', compact('locataire', 'factures', 'totalPaye', 'moisOccupes', 'agence'))
+                  ->setPaper('a4')
+                  ->setOptions(['defaultFont' => 'DejaVu Sans', 'isRemoteEnabled' => true]);
+
+        $content  = $pdf->output();
+        $filename = 'Releve_Locataire_' . str_replace(' ', '_', $locataire->nom) . '_' . date('Ymd') . '.pdf';
+        $label    = 'Relevé locataire ' . trim($locataire->nom . ' ' . $locataire->prenom);
+
+        return compact('content', 'filename', 'label');
+    }
+
+    /**
+     * Génère l'attestation de résidence d'un locataire.
+     */
+    public function genererAttestationResidence(int $locataireId): array
+    {
+        $locataire = Locataire::where('locataires.id', $locataireId)
+            ->whereNull('locataires.delete_at')
+            ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
+            ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
+            ->select(
+                'locataires.*',
+                'maisons.nom_maison',
+                'maisons.quartier as quartier_maison',
+                'chambres.numero_chambre',
+                'chambres.type_chambre'
+            )
+            ->first();
+
+        if (!$locataire) {
+            throw new \Exception('Locataire introuvable');
+        }
+
+        $idannexe_ref = $locataire->idannexe_ref ?? get_active_annexe_id();
+        $agence       = get_annexe_details_for_invoice($idannexe_ref);
+        $user         = Auth::user();
+        $dateEmission = Carbon::now();
+
+        $pdf = PDF::loadView('pdf.attestation_residence', compact('locataire', 'agence', 'user', 'dateEmission'))
+                  ->setPaper('a4')
+                  ->setOptions(['defaultFont' => 'DejaVu Sans', 'isRemoteEnabled' => true]);
+
+        $content  = $pdf->output();
+        $filename = 'Attestation_Residence_' . str_replace(' ', '_', $locataire->nom) . '_' . date('Ymd') . '.pdf';
+        $label    = 'Attestation de résidence de ' . trim($locataire->nom . ' ' . $locataire->prenom);
+
+        return compact('content', 'filename', 'label');
+    }
+
+    /**
+     * Génère l'attestation de paiement d'une facture.
+     */
+    public function genererAttestationPaiement(int $factureId): array
+    {
+        $facture = \App\Facture::where('factures.id', $factureId)
+            ->whereNull('factures.delete_at')
+            ->join('maisons', 'factures.maison_id', '=', 'maisons.id')
+            ->join('chambres', 'factures.chambre_id', '=', 'chambres.id')
+            ->join('locataires', 'factures.locataire_id', '=', 'locataires.id')
+            ->whereNull('maisons.delete_at')
+            ->whereNull('chambres.delete_at')
+            ->select(
+                'factures.*',
+                'maisons.nom_maison',
+                'chambres.numero_chambre as ch_numero',
+                'chambres.type_chambre as ch_type',
+                'locataires.nom',
+                'locataires.prenom',
+                'locataires.profession'
+            )
+            ->first();
+
+        if (!$facture) {
+            throw new \Exception('Facture introuvable');
+        }
+
+        $idannexe_ref = $facture->idannexe_ref ?? get_active_annexe_id();
+        $agence       = get_annexe_details_for_invoice($idannexe_ref);
+        $user         = Auth::user();
+        $dateEmission = Carbon::now();
+
+        $pdf = PDF::loadView('pdf.attestation_paiement', compact('facture', 'agence', 'user', 'dateEmission'))
+                  ->setPaper('a4')
+                  ->setOptions(['defaultFont' => 'DejaVu Sans', 'isRemoteEnabled' => true]);
+
+        $content  = $pdf->output();
+        $filename = 'Attestation_Paiement_' . str_replace(' ', '_', $facture->nom) . '_' . date('Ymd') . '.pdf';
+        $label    = 'Attestation de paiement de ' . trim($facture->nom . ' ' . $facture->prenom) . ' — ' . $facture->mois;
 
         return compact('content', 'filename', 'label');
     }

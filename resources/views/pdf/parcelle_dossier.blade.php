@@ -146,7 +146,7 @@
                     <td>{{ $items->telephone }}</td>
                     <td>{{ $items->quartier }}</td>
                     <td>{{ $items->superficie }} m2</td>
-                    <td class="amount">{{ number_format($items->prix, 0, ',', '.') }} XOF</td>
+                    <td class="amount">{{ format_price($items->prix) }}</td>
                     <td>{{ $items->nomCli }} {{ $items->prenomCli }}</td>
                     <td>{{ Carbon\Carbon::parse($items->status)->format('d/m/Y') }}</td>
                 </tr>

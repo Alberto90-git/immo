@@ -16,7 +16,7 @@
             <span class="text-muted fw-light">{{ __('common.home_breadcrumb') }}</span> {{ __('pages.role_title') }} / {{ __('pages.role_list_title') }}
         </h4>
         @can('ajouter-role')
-            <a href="{{ route('roles.create') }}" class="btn btn-success rounded-pill">
+            <a href="{{ route('roles.create') }}" class="btn btn-primary rounded-pill">
                 <i class="bx bx-plus me-1"></i> {{ __('pages.role_btn_new') }}
             </a>
         @endcan

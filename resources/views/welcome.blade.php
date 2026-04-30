@@ -22,14 +22,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Lokativ">
-    <link rel="apple-touch-icon" sizes="180x180" href="/logo/LOGO.jpg">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
     <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-    <!-- iOS splash screens -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- MS Tiles -->
     <meta name="msapplication-TileColor" content="#1e40af">
-    <meta name="msapplication-TileImage" content="/logo/LOGO.jpg">
+    <meta name="msapplication-TileImage" content="/logo/LOGO-VARIANTE-16267d.png">
     <meta name="application-name" content="Lokativ">
     
     <!-- Chargement optimisé des ressources -->
@@ -1319,6 +1316,21 @@
         html[data-theme="dark"] #biens .text-gray-600 { color: #94a3b8 !important; }
         html[data-theme="dark"] #biens .text-gray-800 { color: #f1f5f9 !important; }
 
+        /* ── Biens — filtres (inputs/selects) ── */
+        html[data-theme="dark"] #biens input[type="text"],
+        html[data-theme="dark"] #biens input[type="number"],
+        html[data-theme="dark"] #biens select {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] #biens input::placeholder { color: #475569 !important; }
+        html[data-theme="dark"] #biens input:focus,
+        html[data-theme="dark"] #biens select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.2) !important;
+        }
+
         /* ── Témoignages cards ── */
         html[data-theme="dark"] .testi-card {
             background: #1e293b !important;
@@ -1467,6 +1479,22 @@
             border-color: #334155 !important;
             color: #f1f5f9 !important;
         }
+
+        /* Sélecteur de durée d'abonnement */
+        html[data-theme="dark"] #nb-mois-container {
+            background: #0f172a !important;
+            border-color: #1e40af !important;
+        }
+        html[data-theme="dark"] #nb-mois-container label { color: #93c5fd !important; }
+        html[data-theme="dark"] #nb-mois-container span  { color: #94a3b8 !important; }
+        html[data-theme="dark"] #nb-mois-container #nb_mois_reg {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] #nb-mois-container #total-preview-reg { color: #93c5fd !important; }
+        html[data-theme="dark"] #nb-mois-container p { color: #94a3b8 !important; }
+        html[data-theme="dark"] #nb-mois-container strong { color: #f1f5f9 !important; }
         html[data-theme="dark"] .reg-field .form-control::placeholder { color: #475569 !important; }
         html[data-theme="dark"] .reg-field .form-control:focus {
             border-color: #3b82f6 !important;
@@ -1597,6 +1625,123 @@
             background: #e2e8f0 !important;
             color: #475569 !important;
         }
+
+        /* ── Header nav-scrolled en mode sombre ── */
+        html[data-theme="dark"] .nav-scrolled {
+            background: rgba(15,23,42,0.97) !important;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.07), 0 8px 30px rgba(0,0,0,0.45) !important;
+        }
+        html[data-theme="dark"] .nav-scrolled .nav-link { color: #cbd5e1 !important; }
+        html[data-theme="dark"] .nav-scrolled .nav-link:hover { color: #93c5fd !important; }
+        html[data-theme="dark"] .nav-scrolled .nav-link::after { background: #60a5fa !important; }
+        html[data-theme="dark"] .nav-scrolled .logo-text { color: #93c5fd !important; -webkit-text-fill-color: #93c5fd !important; }
+        html[data-theme="dark"] .nav-scrolled .logo-icon { background: linear-gradient(135deg,#1e40af,#3b82f6) !important; }
+        html[data-theme="dark"] .nav-scrolled .hamburger span { background-color: #93c5fd !important; }
+        html[data-theme="dark"] .nav-scrolled .header-btn-login { color: #93c5fd !important; background: rgba(37,99,235,0.15) !important; border-color: rgba(96,165,250,0.35) !important; }
+        html[data-theme="dark"] .nav-scrolled .header-btn-register { background: linear-gradient(135deg,#1d4ed8,#2563eb) !important; color: #fff !important; box-shadow: 0 4px 14px rgba(37,99,235,0.4) !important; }
+        html[data-theme="dark"] .nav-scrolled .theme-toggle-btn { background: rgba(37,99,235,0.2) !important; border-color: rgba(96,165,250,0.35) !important; color: #93c5fd !important; }
+        html[data-theme="dark"] .nav-scrolled .lang-switcher { background: rgba(37,99,235,0.15) !important; border-color: rgba(96,165,250,0.3) !important; }
+        html[data-theme="dark"] .nav-scrolled .lang-btn { color: #64748b !important; }
+        html[data-theme="dark"] .nav-scrolled .lang-btn.active { background: #2563eb !important; color: #fff !important; }
+
+        /* ── Aperçu plateforme — tabs ── */
+        html[data-theme="dark"] .ap-tab {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.1) !important;
+            color: #94a3b8 !important;
+        }
+        html[data-theme="dark"] .ap-tab:hover { border-color: #60a5fa !important; color: #93c5fd !important; background: rgba(37,99,235,0.15) !important; }
+        html[data-theme="dark"] .ap-tab.active { background: #2563eb !important; color: #fff !important; border-color: #2563eb !important; }
+
+        /* ── Aperçu plateforme — mockup wrapper ── */
+        html[data-theme="dark"] .ap-screen-wrap {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.09) !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+        }
+        html[data-theme="dark"] .ap-browser-bar {
+            background: #162032 !important;
+            border-bottom-color: rgba(255,255,255,0.07) !important;
+        }
+        html[data-theme="dark"] .ap-browser-url {
+            background: #0f172a !important;
+            border-color: rgba(255,255,255,0.1) !important;
+            color: #64748b !important;
+        }
+        html[data-theme="dark"] .ap-screen-inner { background: #1e293b !important; }
+
+        /* ── Aperçu plateforme — mock UI elements ── */
+        html[data-theme="dark"] .mock-card {
+            background: #273549 !important;
+            border-color: rgba(255,255,255,0.08) !important;
+        }
+        html[data-theme="dark"] .mock-card .mc-value { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .mock-title { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .mock-list-item {
+            background: #273549 !important;
+            border-color: rgba(255,255,255,0.06) !important;
+        }
+        html[data-theme="dark"] .mock-list-text .t1 { color: #e2e8f0 !important; }
+        html[data-theme="dark"] .mock-progress { background: #334155 !important; }
+
+        /* ── Contact form — inputs ── */
+        html[data-theme="dark"] .contact-field {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] .contact-field:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+        }
+        html[data-theme="dark"] .contact-field::placeholder { color: #475569 !important; }
+        html[data-theme="dark"] .contact-label { color: #cbd5e1 !important; }
+
+        /* ── Select option (global) ── */
+        html[data-theme="dark"] select option {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        /* ── Bouton "Partager votre avis" ── */
+        html[data-theme="dark"] #openTestiModal {
+            background: #1e293b !important;
+            border-color: #3b82f6 !important;
+            color: #60a5fa !important;
+        }
+        html[data-theme="dark"] #openTestiModal:hover {
+            background: rgba(37,99,235,0.2) !important;
+            color: #93c5fd !important;
+        }
+
+        /* ── Modal témoignage ── */
+        html[data-theme="dark"] .testi-modal {
+            background: #1e293b !important;
+            color: #e2e8f0 !important;
+        }
+        html[data-theme="dark"] .testi-modal h3 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .testi-modal .modal-sub { color: #94a3b8 !important; }
+        html[data-theme="dark"] .testi-modal-close { color: #64748b !important; }
+        html[data-theme="dark"] .testi-modal-close:hover { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .testi-form-label { color: #cbd5e1 !important; }
+        html[data-theme="dark"] .testi-form-input,
+        html[data-theme="dark"] .testi-form-textarea {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        html[data-theme="dark"] .testi-form-input:focus,
+        html[data-theme="dark"] .testi-form-textarea:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+            background: #162032 !important;
+        }
+        html[data-theme="dark"] .testi-form-input::placeholder,
+        html[data-theme="dark"] .testi-form-textarea::placeholder { color: #475569 !important; }
+        html[data-theme="dark"] .testi-star-btn { color: #334155 !important; }
+        html[data-theme="dark"] .testi-star-btn.active,
+        html[data-theme="dark"] .testi-star-btn.hover { color: #f59e0b !important; }
+        html[data-theme="dark"] .testi-char-count { color: #64748b !important; }
 
         /* Mode sombre */
         @media (prefers-color-scheme: dark) {
@@ -1871,6 +2016,7 @@
                 <div class="items-center hidden gap-7 md:flex">
                     <a href="#accueil" class="text-white nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.home">Accueil</a>
                     <a href="#fonctionnalites" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.features">Fonctionnalités</a>
+                    <a href="#biens" class="nav-link" style="color:rgba(255,255,255,0.88);">Annonces</a>
                     <a href="#portfolio" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.preview">Aperçu</a>
                     <a href="#tarifs" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.pricing">Tarifs</a>
                     <a href="#contact" class="nav-link" style="color:rgba(255,255,255,0.88);" data-i18n="nav.contact">Contact</a>
@@ -1925,6 +2071,7 @@
         <div style="flex:1;padding:8px 0;">
             <a href="#accueil" class="mob-nav-link"><i class="fas fa-home"></i> <span data-i18n="nav.home">Accueil</span></a>
             <a href="#fonctionnalites" class="mob-nav-link"><i class="fas fa-bolt"></i> <span data-i18n="nav.features">Fonctionnalités</span></a>
+            <a href="#biens" class="mob-nav-link"><i class="fas fa-building"></i> <span>Annonces</span></a>
             <a href="#portfolio" class="mob-nav-link"><i class="fas fa-desktop"></i> <span data-i18n="nav.preview">Aperçu</span></a>
             <a href="#tarifs" class="mob-nav-link"><i class="fas fa-tags"></i> <span data-i18n="nav.pricing">Tarifs</span></a>
             <a href="#contact" class="mob-nav-link"><i class="fas fa-envelope"></i> <span data-i18n="nav.contact">Contact</span></a>
@@ -2121,7 +2268,7 @@
                                         @foreach([
                                             ['Villa Cocotiers','Cotonou · 4 pièces','#4ade80','Loué','phone.status.rented','fa-home'],
                                             ['Appt Studio B12','Abomey-Calavi','#60a5fa','Disponible','phone.status.avail','fa-building'],
-                                            ['Maison Tokpa','Cotonou · 3 pièces','#fbbf24','Maintenance','phone.status.maint','fa-tools'],
+                                            ['Maison Tokpa','Cotonou · 3 pièces','#fbbf24','Intervention','phone.status.maint','fa-tools'],
                                             ['Chambre 5, Lot 8','Porto-Novo','#a78bfa','Loué','phone.status.rented','fa-door-open'],
                                         ] as $bp)
                                         <div class="phone-card" style="border-radius:10px;padding:7px 9px;display:flex;align-items:center;gap:7px;">
@@ -2461,169 +2608,363 @@
         </style>
     </section>
 
-    <!-- Section Biens Immobiliers / Publicités -->
-    @if(isset($publicites) && $publicites->count() > 0)
-    <section id="biens" class="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-blue-50 to-white">
+    <!-- ══════════════════════════════════════════════════════════════════
+         Section Marketplace — Recherche + Grille + Carte
+    ══════════════════════════════════════════════════════════════════ -->
+    <section id="biens" class="py-12 sm:py-16 lg:py-20" style="background:linear-gradient(180deg,#eff6ff 0%,#fff 100%)">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="mb-12 text-center lg:mb-16">
-                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full" data-i18n="biens.badge">
-                    Nos offres du moment
+
+            <!-- En-tête -->
+            <div class="mb-10 text-center">
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
+                    Marketplace
                 </span>
-                <h2 class="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl lg:text-5xl">
-                    <span data-i18n="biens.h2a">Biens</span> <span class="text-blue-600" data-i18n="biens.h2b">Immobiliers</span> <span data-i18n="biens.h2c">Disponibles</span>
+                <h2 class="mb-3 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl">
+                    Biens <span class="text-blue-600">Immobiliers</span> Disponibles
                 </h2>
-                <p class="max-w-3xl mx-auto text-base text-gray-600 sm:text-lg" data-i18n="biens.sub">
-                    Découvrez nos dernières offres immobilières disponibles
+                <p class="max-w-2xl mx-auto text-base text-gray-500">
+                    Trouvez appartements, maisons, terrains et locaux — recherchez et filtrez en temps réel
                 </p>
             </div>
 
-            <div style="position:relative;overflow:hidden;
-                        -webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-                        mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);">
-                <div id="biens-track" style="display:flex;gap:1.5rem;width:max-content;will-change:transform;">
-                @foreach($publicites as $pub)
-                <div class="overflow-hidden transition-all duration-300 bg-white shadow-lg group rounded-2xl hover:shadow-2xl hover:-translate-y-1"
-                     style="min-width:340px;max-width:340px;flex-shrink:0;">
-                    <!-- Image / Carrousel -->
-                    <div class="relative overflow-hidden" style="height: 220px;">
-                        @php $pubImages = $pub->images; @endphp
-                        @if(count($pubImages) > 1)
-                            <!-- Carrousel -->
-                            <div class="pub-carousel" data-pub-id="{{ $pub->id }}" style="height:100%; position:relative;">
-                                @foreach($pubImages as $idx => $img)
-                                <div class="pub-slide" style="position:absolute; inset:0; transition:opacity 0.5s; opacity:{{ $idx === 0 ? '1' : '0' }};">
-                                    <img src="{{ asset('storage/'.$img) }}" alt="{{ $pub->localisation }}"
-                                         class="object-cover w-full h-full">
-                                </div>
-                                @endforeach
-                                <!-- Indicateurs -->
-                                <div class="absolute flex space-x-1 transform -translate-x-1/2 bottom-3 left-1/2">
-                                    @foreach($pubImages as $idx => $img)
-                                    <button class="pub-dot w-2 h-2 rounded-full transition-all {{ $idx === 0 ? 'bg-white scale-125' : 'bg-white/50' }}"
-                                            onclick="goToSlide({{ $pub->id }}, {{ $idx }})"></button>
-                                    @endforeach
-                                </div>
-                                <!-- Flèches -->
-                                <button class="absolute p-1 text-white transform -translate-y-1/2 rounded-full left-2 top-1/2 bg-black/30 hover:bg-black/50" onclick="prevSlide({{ $pub->id }})">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                                </button>
-                                <button class="absolute p-1 text-white transform -translate-y-1/2 rounded-full right-2 top-1/2 bg-black/30 hover:bg-black/50" onclick="nextSlide({{ $pub->id }})">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </button>
-                            </div>
-                        @elseif(count($pubImages) === 1)
-                            <img src="{{ asset('storage/'.$pubImages[0]) }}" alt="{{ $pub->localisation }}"
-                                 class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110">
-                        @endif
-
-                        <!-- Badge Nouveau -->
-                        @if($pub->published_at && $pub->published_at->diffInDays(now()) < 3)
-                        <div class="absolute top-3 left-3">
-                            <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full shadow-lg">
-                                Nouveau
+            <!-- ── Filtres JS (pas de soumission) ── -->
+            <div class="p-4 mb-8 bg-white shadow-md rounded-2xl sm:p-6" style="border:1px solid #e2e8f0">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+                    <!-- Recherche libre -->
+                    <div class="col-span-2 sm:col-span-4 lg:col-span-2">
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Recherche</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
                             </span>
+                            <input type="text" id="mkpQ" placeholder="Quartier, description..."
+                                   class="w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <button type="button" id="mkpClearQ"
+                                    class="absolute inset-y-0 right-3 flex items-center text-gray-300 hover:text-gray-500"
+                                    style="display:none">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Type -->
+                    <div>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Type</label>
+                        <select id="mkpType" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="">Tous</option>
+                            @foreach(['appartement'=>'Appartement','maison'=>'Maison','villa'=>'Villa','terrain'=>'Terrain','bureau'=>'Bureau','commerce'=>'Local commercial','chambre'=>'Chambre','studio'=>'Studio'] as $v=>$l)
+                            <option value="{{ $v }}">{{ $l }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <!-- Ville -->
+                    <div>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Ville</label>
+                        <input type="text" id="mkpVille" list="mkpVillesList" placeholder="Cotonou..."
+                               class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <datalist id="mkpVillesList">
+                            @foreach($villesMarketplace ?? [] as $v)<option value="{{ $v }}">@endforeach
+                        </datalist>
+                    </div>
+                    <!-- Budget max -->
+                    <div>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Budget max (XOF)</label>
+                        <input type="number" id="mkpBudget" placeholder="500 000"
+                               class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                </div>
+            </div>
+
+            @if(isset($publicites) && $publicites->count() > 0)
+
+            <!-- Compteur résultats -->
+            <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                <p class="text-sm text-gray-500">
+                    <span class="font-bold text-gray-800" id="mkpCount">{{ $publicites->count() }}</span>
+                    <span id="mkpCountLabel">annonce{{ $publicites->count() > 1 ? 's' : '' }} trouvée{{ $publicites->count() > 1 ? 's' : '' }}</span>
+                </p>
+                <button type="button" id="mkpToggleMap"
+                        class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                    <span id="mkpMapLabel">Afficher la carte</span>
+                </button>
+            </div>
+
+            <!-- Carte Leaflet (masquée par défaut) -->
+            <div id="mkpMapContainer" style="display:none;margin-bottom:2rem">
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+                <div id="mkpMap" style="height:360px;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden"></div>
+            </div>
+
+            <!-- Message aucun résultat JS -->
+            <div id="mkpEmpty" style="display:none" class="py-12 text-center">
+                <svg class="w-14 h-14 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+                <p class="text-gray-500 font-medium">Aucune annonce ne correspond à votre recherche.</p>
+                <button type="button" onclick="mkpReset()" class="mt-3 text-sm text-blue-600 hover:underline">Effacer les filtres</button>
+            </div>
+
+            <!-- Grille des annonces -->
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" id="mkpGrid">
+                @foreach($publicites as $pub)
+                @php $pubImages = $pub->images; @endphp
+                <div class="mkp-card overflow-hidden bg-white shadow-md rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col"
+                     data-q="{{ strtolower($pub->localisation.' '.$pub->description.' '.($pub->ville ?? '').' '.($pub->quartier ?? '')) }}"
+                     data-type="{{ $pub->type_bien ?? '' }}"
+                     data-ville="{{ strtolower($pub->ville ?? '') }}"
+                     data-price="{{ (float) $pub->price }}">
+
+                    <!-- Image principale -->
+                    <div class="relative overflow-hidden" style="height:210px;background:#e2e8f0;flex-shrink:0">
+                        @if(count($pubImages))
+                        <img src="{{ asset('storage/'.$pubImages[0]) }}" alt="{{ $pub->localisation }}"
+                             class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+                             loading="lazy">
+                        @else
+                        <div class="flex items-center justify-center h-full text-gray-400 flex-col gap-2">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-sm">Pas de photo</span>
                         </div>
                         @endif
 
-                        <!-- Badge Prix -->
+                        <!-- Badges overlay -->
+                        <div class="absolute top-0 left-0 p-3 flex flex-wrap gap-1">
+                            @if($pub->is_sponsored_active)
+                            <span class="px-2 py-0.5 text-xs font-bold text-white rounded-full shadow"
+                                  style="background:linear-gradient(90deg,#f7b731,#f0932b)">
+                                ★ Sponsorisée
+                            </span>
+                            @endif
+                            @if($pub->type_bien)
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full"
+                                  style="background:rgba(255,255,255,.9);color:#2563eb">
+                                {{ $pub->type_label }}
+                            </span>
+                            @endif
+                            @if($pub->published_at && $pub->published_at->diffInDays(now()) < 3)
+                            <span class="px-2 py-0.5 text-xs font-bold text-white bg-green-500 rounded-full shadow">
+                                Nouveau
+                            </span>
+                            @endif
+                        </div>
+
+                        <!-- Prix -->
                         <div class="absolute top-3 right-3">
-                            <span class="px-3 py-1 text-sm font-bold text-white rounded-full shadow-lg bg-blue-600/90">
-                                {{ number_format($pub->price, 0, ',', '.') }} XOF
+                            <span class="px-3 py-1 text-sm font-bold text-white rounded-full shadow-lg"
+                                  style="background:rgba(37,99,235,.9)">
+                                {{ number_format((float)$pub->price, 0, ',', ' ') }} XOF
                             </span>
                         </div>
                     </div>
 
-                    <!-- Contenu -->
-                    <div class="p-5">
-                        <div class="flex items-start justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ $pub->localisation }}</h3>
-                        </div>
+                    <!-- Corps -->
+                    <div class="p-5 flex flex-col flex-1">
+                        <h3 class="mb-1 text-base font-bold text-gray-800 line-clamp-1">{{ $pub->localisation }}</h3>
+                        @if($pub->ville || $pub->quartier)
+                        <p class="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            {{ implode(', ', array_filter([$pub->quartier, $pub->ville])) }}
+                        </p>
+                        @endif
+                        <p class="mb-4 text-sm text-gray-500 line-clamp-2 flex-1">{{ $pub->description }}</p>
 
-                        <p class="mb-4 text-sm text-gray-500 line-clamp-2">{{ $pub->description }}</p>
-
-                        <div class="flex items-center gap-4 mb-4 text-sm text-gray-600">
+                        <!-- Caractéristiques -->
+                        <div class="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                            @if($pub->Superficie)
                             <div class="flex items-center gap-1">
-                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                 <span>{{ $pub->Superficie }} m²</span>
                             </div>
+                            @endif
                             <div class="flex items-center gap-1">
-                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 <span>{{ $pub->telephone }}</span>
                             </div>
                         </div>
 
-                        <a href="tel:{{ preg_replace('/\s+/', '', $pub->telephone) }}" class="flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-semibold text-white transition-all bg-blue-600 rounded-xl hover:bg-blue-700 hover:shadow-lg">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            Contacter
-                        </a>
+                        <!-- Actions -->
+                        <div class="flex gap-2 mt-auto">
+                            @if($pub->slug)
+                            <a href="{{ route('marketplace.show', $pub->slug) }}"
+                               class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm font-semibold text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Voir détail
+                            </a>
+                            @endif
+                            <a href="tel:{{ preg_replace('/\s+/', '', $pub->telephone) }}"
+                               class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                Appeler
+                            </a>
+                            @php $shareUrl = urlencode($pub->slug ? route('marketplace.show', $pub->slug) : url('/')); @endphp
+                            <a href="https://wa.me/?text={{ urlencode($pub->localisation.' — '.$pub->price.' XOF ') }}{{ $shareUrl }}"
+                               target="_blank"
+                               class="flex items-center justify-center px-3 py-2 rounded-xl transition-colors"
+                               style="background:#25d366;color:#fff"
+                               title="Partager sur WhatsApp">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.126 1.526 5.87L0 24l6.337-1.656A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.369l-.36-.213-3.76.983 1.002-3.659-.234-.376A9.817 9.817 0 012.182 12C2.182 6.573 6.574 2.182 12 2.182c5.427 0 9.818 4.391 9.818 9.818 0 5.427-4.391 9.818-9.818 9.818z"/></svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 @endforeach
-                </div><!-- /biens-track -->
-            </div><!-- /mask wrapper -->
+            </div>
+
+            <!-- CTA vers le Marketplace complet -->
+            <div class="mt-10 text-center">
+                <a href="{{ route('marketplace.index') }}"
+                   class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-2xl shadow-md hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    Voir toutes les annonces sur le Marketplace
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+
+            @else
+            <div class="py-16 text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <h3 class="mb-2 text-lg font-semibold text-gray-500">Aucune annonce trouvée</h3>
+                <p class="text-sm text-gray-400">Modifiez vos critères ou revenez plus tard.</p>
+                <a href="{{ url('/') }}#biens" class="inline-block mt-4 text-sm text-blue-600 hover:underline">Voir toutes les annonces</a>
+            </div>
+            @endif
+
         </div>
-        <style>
-            @keyframes marquee-biens {
-                from { transform: translateX(0); }
-                to   { transform: translateX(-50%); }
-            }
-            #biens-track { animation: marquee-biens 40s linear infinite; }
-            #biens-track:hover { animation-play-state: paused; }
-            @media (max-width: 768px) { #biens-track { animation-duration: 25s !important; } }
-        </style>
     </section>
 
+    @php
+    $mkpMapData = ($publicites ?? collect())->filter(function($p) {
+        return $p->lat && $p->lng;
+    })->map(function($p) {
+        return [
+            'lat'          => (float) $p->lat,
+            'lng'          => (float) $p->lng,
+            'localisation' => $p->localisation,
+            'price'        => $p->price,
+            'slug'         => $p->slug,
+            'image'        => $p->image_url ? asset('storage/'.$p->image_url) : null,
+        ];
+    })->values();
+    @endphp
     <script>
-    // Carrousel simple pour les publicités
     (function() {
-        var carousels = {};
+        // ── Filtrage JS temps réel ────────────────────────────────────────────
+        var fQ      = document.getElementById('mkpQ');
+        var fType   = document.getElementById('mkpType');
+        var fVille  = document.getElementById('mkpVille');
+        var fBudget = document.getElementById('mkpBudget');
+        var clearQ  = document.getElementById('mkpClearQ');
+        var grid    = document.getElementById('mkpGrid');
+        var empty   = document.getElementById('mkpEmpty');
+        var countEl = document.getElementById('mkpCount');
+        var labelEl = document.getElementById('mkpCountLabel');
 
-        document.querySelectorAll('.pub-carousel').forEach(function(el) {
-            var pubId = el.dataset.pubId;
-            var slides = el.querySelectorAll('.pub-slide');
-            var dots = el.querySelectorAll('.pub-dot');
-            carousels[pubId] = { slides: slides, dots: dots, current: 0, total: slides.length };
+        function runFilter() {
+            if (!grid) return;
+            var q      = fQ     ? fQ.value.toLowerCase().trim()     : '';
+            var type   = fType  ? fType.value                        : '';
+            var ville  = fVille ? fVille.value.toLowerCase().trim()  : '';
+            var budget = fBudget && fBudget.value ? parseFloat(fBudget.value) : null;
 
-            // Auto-slide
-            setInterval(function() {
-                nextSlide(parseInt(pubId));
-            }, 4000);
+            // Bouton effacer recherche
+            if (clearQ) clearQ.style.display = q ? '' : 'none';
+
+            var cards   = grid.querySelectorAll('.mkp-card');
+            var visible = 0;
+            cards.forEach(function(card) {
+                var dq    = (card.dataset.q    || '').toLowerCase();
+                var dtype = (card.dataset.type || '');
+                var dv    = (card.dataset.ville|| '').toLowerCase();
+                var dp    = parseFloat(card.dataset.price || '0');
+
+                var ok = true;
+                if (q     && dq.indexOf(q)        === -1) ok = false;
+                if (type  && dtype !== type)               ok = false;
+                if (ville && dv.indexOf(ville)    === -1) ok = false;
+                if (budget !== null && dp > budget)        ok = false;
+
+                card.style.display = ok ? '' : 'none';
+                if (ok) visible++;
+            });
+
+            // Compteur
+            if (countEl) countEl.textContent = visible;
+            if (labelEl) labelEl.textContent = 'annonce' + (visible > 1 ? 's' : '') + ' trouvée' + (visible > 1 ? 's' : '');
+
+            // Message vide
+            if (empty) empty.style.display = (visible === 0) ? '' : 'none';
+            if (grid)  grid.style.display  = (visible === 0) ? 'none' : '';
+        }
+
+        window.mkpReset = function() {
+            if (fQ)      fQ.value     = '';
+            if (fType)   fType.value  = '';
+            if (fVille)  fVille.value = '';
+            if (fBudget) fBudget.value= '';
+            runFilter();
+        };
+
+        [fQ, fVille, fBudget].forEach(function(el) {
+            if (el) el.addEventListener('input', runFilter);
+        });
+        if (fType) fType.addEventListener('change', runFilter);
+        if (clearQ) clearQ.addEventListener('click', function() {
+            if (fQ) fQ.value = '';
+            runFilter();
+            if (fQ) fQ.focus();
         });
 
-        window.goToSlide = function(pubId, index) {
-            var c = carousels[pubId];
-            if (!c) return;
-            c.slides.forEach(function(s, i) { s.style.opacity = i === index ? '1' : '0'; });
-            c.dots.forEach(function(d, i) {
-                d.className = d.className.replace(/bg-white\/50|bg-white scale-125/g, '').trim();
-                d.classList.add(i === index ? 'bg-white' : 'bg-white/50');
-                if (i === index) d.classList.add('scale-125');
+        // ── Carte (lazy) ──────────────────────────────────────────────────────
+        var mapLoaded = false;
+        var mapData   = @json($mkpMapData);
+
+        var toggleMap = document.getElementById('mkpToggleMap');
+        if (toggleMap) {
+            toggleMap.addEventListener('click', function() {
+                var container = document.getElementById('mkpMapContainer');
+                var label     = document.getElementById('mkpMapLabel');
+                var visible   = container.style.display !== 'none';
+
+                container.style.display = visible ? 'none' : '';
+                label.textContent = visible ? 'Afficher la carte' : 'Masquer la carte';
+
+                if (!visible && !mapLoaded) {
+                    mapLoaded = true;
+                    var s = document.createElement('script');
+                    s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                    s.onload = function() { initMap(); };
+                    document.head.appendChild(s);
+                } else if (!visible && mapLoaded) {
+                    setTimeout(function() { window._mkpMap && window._mkpMap.invalidateSize(); }, 100);
+                }
             });
-            c.current = index;
-        };
+        }
 
-        window.nextSlide = function(pubId) {
-            var c = carousels[pubId];
-            if (!c) return;
-            goToSlide(pubId, (c.current + 1) % c.total);
-        };
-
-        window.prevSlide = function(pubId) {
-            var c = carousels[pubId];
-            if (!c) return;
-            goToSlide(pubId, (c.current - 1 + c.total) % c.total);
-        };
-
-        // Doubler les cards pour l'infini (–50% translateX)
-        var biensTrack = document.getElementById('biens-track');
-        if (biensTrack) {
-            Array.from(biensTrack.children).forEach(function(child) {
-                biensTrack.appendChild(child.cloneNode(true));
+        function initMap() {
+            var m = L.map('mkpMap').setView([6.3703, 2.3912], 7);
+            window._mkpMap = m;
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(m);
+            var icon = L.divIcon({
+                html: '<div style="background:#2563eb;color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.3);border:2px solid #fff">&#128205;</div>',
+                iconSize: [30, 30], iconAnchor: [15, 30], className: ''
             });
+            var bounds = [];
+            mapData.forEach(function(a) {
+                var popup = '<div style="min-width:160px">'
+                    + (a.image ? '<img src="'+a.image+'" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">' : '')
+                    + '<strong style="font-size:.82rem;display:block;margin-bottom:2px">'+a.localisation+'</strong>'
+                    + '<span style="color:#2563eb;font-weight:700">'+parseFloat(a.price).toLocaleString('fr-FR')+' XOF</span>'
+                    + (a.slug ? '<br><a href="/marketplace/annonce/'+a.slug+'" style="font-size:.75rem;color:#2563eb;margin-top:4px;display:inline-block">Voir l\'annonce \u2192</a>' : '')
+                    + '</div>';
+                L.marker([a.lat, a.lng], {icon: icon}).addTo(m).bindPopup(popup);
+                bounds.push([a.lat, a.lng]);
+            });
+            if (bounds.length > 0) {
+                try { m.fitBounds(bounds, {padding:[40,40]}); } catch(e){}
+            }
         }
     })();
     </script>
-    @endif
 
     <!-- Portfolio Section -->
     <section id="portfolio" class="py-12 sm:py-16 lg:py-20 bg-white">
@@ -2723,7 +3064,7 @@
                                 ['Appartement Plateau','Cotonou — F3','#f0fdf4','#16a34a','AP','Disponible','#fef9c3','#92400e',0],
                                 ['Studio Cadjehoun','Cotonou — Studio','#fef9c3','#92400e','SC','Loué','#dcfce7','#16a34a',100],
                                 ['Maison Fidjrossè','Cotonou — 3 chambres','#faf5ff','#7c3aed','MF','Loué','#dcfce7','#16a34a',75],
-                                ['Duplex Agla','Cotonou — 5 pièces','#fef2f2','#dc2626','DA','Maintenance','#fee2e2','#dc2626',0],
+                                ['Duplex Agla','Cotonou — 5 pièces','#fef2f2','#dc2626','DA','Intervention','#fee2e2','#dc2626',0],
                             ] as $bien)
                             <div class="mock-list-item">
                                 <div class="mock-avatar" style="background:{{ $bien[2] }};color:{{ $bien[3] }};">{{ $bien[4] }}</div>
@@ -3342,7 +3683,7 @@
 
                     {{-- CTA --}}
                     <a href="#compte" class="plan-btn" style="{{ $btnStyle }}">
-                        <span data-i18n="{{ $btnI18nKey }}">{{ $btnLabel }}</span>
+                        <span data-i18n="plan.btn.select">Choisir ce plan</span>
                         <i class="fas fa-arrow-right ms-2" style="font-size:12px;"></i>
                     </a>
                 </div>
@@ -3363,69 +3704,56 @@
     <section id="compte" style="background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#1e40af 100%); padding:5rem 0;">
         <div class="px-4 mx-auto sm:px-6 lg:px-8" style="max-width:1100px;">
 
-            <!-- Layout deux colonnes -->
-            <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:3rem;align-items:start;">
+            <!-- ── Branding pleine largeur ── -->
+            <div style="text-align:center;color:#fff;margin-bottom:2.5rem;">
+                <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#93c5fd;font-size:0.75rem;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:1.25rem;letter-spacing:0.06em;text-transform:uppercase;">
+                    <i class="fas fa-rocket" style="font-size:10px;"></i> <span data-i18n="reg.badge">Démarrez gratuitement</span>
+                </span>
+                <h2 style="font-size:2.4rem;font-weight:900;line-height:1.2;margin-bottom:0.75rem;letter-spacing:-0.02em;">
+                    <span data-i18n="reg.h2">Créer votre compte</span><br>
+                    <span style="background:linear-gradient(135deg,#60a5fa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Lokativ</span>
+                </h2>
+                <p style="color:#94a3b8;font-size:0.95rem;line-height:1.7;max-width:520px;margin:0 auto 0;" data-i18n="reg.sub">
+                    Rejoignez des centaines de gestionnaires immobiliers. Configuré en moins de 3 minutes.
+                </p>
 
-                <!-- ── Colonne gauche : branding ── -->
-                <div style="color:#fff;padding-top:1rem;">
-                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#93c5fd;font-size:0.75rem;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem;letter-spacing:0.06em;text-transform:uppercase;">
-                        <i class="fas fa-rocket" style="font-size:10px;"></i> <span data-i18n="reg.badge">Démarrez gratuitement</span>
-                    </span>
-                    <h2 style="font-size:2rem;font-weight:900;line-height:1.2;margin-bottom:1rem;letter-spacing:-0.02em;">
-                        <span data-i18n="reg.h2">Créer votre compte</span><br>
-                        <span style="background:linear-gradient(135deg,#60a5fa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Lokativ</span>
-                    </h2>
-                    <p style="color:#94a3b8;font-size:0.95rem;line-height:1.7;margin-bottom:2rem;" data-i18n="reg.sub">
-                        Rejoignez des centaines de gestionnaires immobiliers. Configuré en moins de 3 minutes.
-                    </p>
-
-                    <!-- Avantages -->
-                    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:2rem;">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-shield-alt" style="color:#34d399;font-size:14px;"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat1.title">Données sécurisées</p>
-                                <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n="reg.feat1.sub">Chiffrement SSL · Sauvegarde quotidienne</p>
-                            </div>
+                <!-- Avantages — 3 colonnes -->
+                <div class="compte-avantages" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;max-width:780px;margin:1.75rem auto 1.5rem;">
+                    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                        <div style="width:40px;height:40px;border-radius:11px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-shield-alt" style="color:#34d399;font-size:15px;"></i>
                         </div>
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-credit-card" style="color:#60a5fa;font-size:14px;"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat2.title">Sans CB pour l'essai</p>
-                                <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n="reg.feat2.sub">14 jours gratuits · Annulation facile</p>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-headset" style="color:#c084fc;font-size:14px;"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat3.title">Support inclus</p>
-                                <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n="reg.feat3.sub">Assistance email & WhatsApp</p>
-                            </div>
-                        </div>
+                        <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat1.title">Données sécurisées</p>
+                        <p style="font-size:0.76rem;color:#64748b;margin:0;line-height:1.4;" data-i18n="reg.feat1.sub">Chiffrement SSL · Sauvegarde quotidienne</p>
                     </div>
-
-                    <!-- Témoignage -->
-                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px 20px;">
-                        <p style="font-size:0.85rem;color:#cbd5e1;font-style:italic;margin-bottom:12px;line-height:1.6;" data-i18n="reg.quote">
-                            « Lokativ a transformé ma façon de gérer mes 12 propriétés. Je gagne des heures chaque mois. »
-                        </p>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;">K</div>
-                            <div>
-                                <p style="font-weight:700;font-size:0.82rem;color:#f1f5f9;margin:0;">Kofi A.</p>
-                                <p style="font-size:0.75rem;color:#64748b;margin:0;" data-i18n="reg.quote.role">Promoteur immobilier · Cotonou</p>
-                            </div>
+                    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                        <div style="width:40px;height:40px;border-radius:11px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-credit-card" style="color:#60a5fa;font-size:15px;"></i>
                         </div>
+                        <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat2.title">Sans CB pour l'essai</p>
+                        <p style="font-size:0.76rem;color:#64748b;margin:0;line-height:1.4;" data-i18n="reg.feat2.sub">14 jours gratuits · Annulation facile</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                        <div style="width:40px;height:40px;border-radius:11px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-headset" style="color:#c084fc;font-size:15px;"></i>
+                        </div>
+                        <p style="font-weight:700;font-size:0.88rem;color:#f1f5f9;margin:0;" data-i18n="reg.feat3.title">Support inclus</p>
+                        <p style="font-size:0.76rem;color:#64748b;margin:0;line-height:1.4;" data-i18n="reg.feat3.sub">Assistance email &amp; WhatsApp</p>
                     </div>
                 </div>
 
-                <!-- ── Colonne droite : formulaire ── -->
+                <!-- Témoignage compact horizontal -->
+                <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 20px;max-width:580px;margin:0 auto;display:flex;align-items:center;gap:14px;text-align:left;">
+                    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:14px;flex-shrink:0;">K</div>
+                    <div>
+                        <p style="font-size:0.82rem;color:#cbd5e1;font-style:italic;margin:0 0 4px;line-height:1.5;" data-i18n="reg.quote">« Lokativ a transformé ma façon de gérer mes 12 propriétés. Je gagne des heures chaque mois. »</p>
+                        <p style="font-size:0.75rem;margin:0;"><strong style="color:#f1f5f9;">Kofi A.</strong> <span style="color:#64748b;" data-i18n="reg.quote.role">— Promoteur immobilier · Cotonou</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Formulaire centré ── -->
+            <div style="max-width:700px;margin:0 auto;">
                 <div style="background:#fff;border-radius:24px;padding:2rem;box-shadow:0 25px 60px rgba(0,0,0,0.3);">
 
                     <!-- Barre de progression -->
@@ -3575,8 +3903,24 @@
                             <span data-i18n="reg.step3.title">Choisissez votre plan</span>
                         </h3>
 
-                        <div id="plans-container" style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <div id="plans-container" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;">
                             <!-- Plans chargés dynamiquement -->
+                        </div>
+
+                        <!-- Sélecteur de durée — visible uniquement pour les plans payants -->
+                        <div id="nb-mois-container" style="display:none;margin-top:0.75rem;padding:14px 16px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:12px;">
+                            <label class="fw-semibold" style="font-size:0.88rem;color:#0369a1;display:block;margin-bottom:8px;">
+                                <i class="fas fa-calendar-alt me-1"></i> Durée de l'abonnement
+                            </label>
+                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                <input type="number" id="nb_mois_reg" value="1" min="1" max="24"
+                                       style="width:72px;padding:7px 10px;border:1.5px solid #bae6fd;border-radius:8px;font-size:1rem;text-align:center;font-weight:700;">
+                                <span style="color:#475569;font-size:0.88rem;">mois</span>
+                                <span id="total-preview-reg" style="margin-left:auto;font-weight:700;color:#1e40af;font-size:1rem;"></span>
+                            </div>
+                            <p style="margin-top:6px;margin-bottom:0;font-size:0.78rem;color:#64748b;">
+                                <i class="fas fa-calendar-check me-1"></i> Fin d'abonnement estimée : <strong id="fin-date-preview"></strong>
+                            </p>
                         </div>
 
                         <div style="margin-top:1.25rem;padding:14px 16px;background:#f8faff;border:1.5px solid #dbeafe;border-radius:12px;">
@@ -3601,18 +3945,21 @@
                     </div>
 
                 </div>
-                <!-- fin colonne formulaire -->
             </div>
-            <!-- fin grid -->
+            <!-- fin formulaire -->
 
         </div>
     </section>
 
     <style>
-        @media (max-width: 768px) {
-            #compte > div > div { grid-template-columns: 1fr !important; }
-            #compte > div > div > div:first-child { display: none; }
+        @media (max-width: 600px) {
+            #compte .compte-avantages { grid-template-columns: 1fr !important; }
+            #plans-container { grid-template-columns: 1fr !important; }
         }
+        @media (max-width: 480px) {
+            #plans-container { grid-template-columns: 1fr !important; }
+        }
+        #plans-container .plan-card { text-align: left; }
     </style>
 
     <!-- FAQ Section -->
@@ -4145,6 +4492,7 @@
         
         let currentStep = 1;
         let selectedPlan = null;
+        let selectedNbMois = 1;
         let accountType = '';
         let paymentAuthToken = null; // Token émis par preValidate(), requis avant tout paiement
         let createAccountLock = false; // Empêche les appels doubles à createAccount (listeners accumulés)
@@ -4411,7 +4759,7 @@
                         } else {
                             alert.style.display = 'block';
                             alert.className     = 'mb-4 p-3 rounded-xl text-sm font-medium bg-red-100 text-red-700';
-                            alert.textContent   = res.message || 'Une erreur est survenue.';
+                            alert.textContent   = res.message || '{{ __("common.swal_generic_error") }}';
                         }
                     })
                     .catch(() => {
@@ -4488,7 +4836,7 @@
             switch(step) {
                 case 1:
                     if (!accountType) {
-                        Swal.fire('Erreur', 'Veuillez sélectionner un type de compte.', 'error');
+                        Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_select_account_type") }}', 'error');
                         isValid = false;
                     }
                     break;
@@ -4535,7 +4883,7 @@
                     
                 case 3:
                     if (!selectedPlan) {
-                        Swal.fire('Erreur', 'Veuillez sélectionner un plan d\'abonnement.', 'error');
+                        Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_select_plan") }}', 'error');
                         isValid = false;
                     }
                     break;
@@ -4570,7 +4918,7 @@
                 planElement.className = 'plan-card';
                 planElement.setAttribute('data-plan', plan.id);
                 
-                const isPaidPlan    = plan.prix > 0;
+                const isPaidPlan    = plan.prix_mensuel > 0;
                 const providerLabel = PAYMENT_PROVIDER === 'fedapay' ? 'FedaPay' : 'KKiaPay';
                 const paymentBadge = (isPaidPlan && PAYMENT_ENABLED)
                     ? `<span class="badge" style="background:#10b981;font-size:11px;">
@@ -4578,26 +4926,24 @@
                        </span>`
                     : '';
 
+                const prixAffiche = plan.prix_mensuel === 0
+                    ? 'Gratuit'
+                    : plan.prix_mensuel.toLocaleString('fr-FR') + ' XOF/mois';
+
                 planElement.innerHTML = `
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h5 class="mb-1">${plan.nom} ${paymentBadge}</h5>
+                            <h5 class="mb-1">${plan.nom}</h5>
                             <p class="mb-1">Jusqu'à ${plan.proprietes} propriétés</p>
                         </div>
                         <div class="text-end">
-                            <h4 class="text-primary mb-1">${plan.prix === 0 ? 'Gratuit' : plan.prix.toLocaleString() + ' XOF'}</h4>
-                            <small class="text-muted">${plan.prix === 0 ? plan.periode : 'par ' + plan.periode}</small>
+                            <h4 class="text-primary mb-1">${prixAffiche}</h4>
+                            <small class="text-muted">${plan.prix_mensuel === 0 ? plan.periode : 'par mois'}</small>
                         </div>
                     </div>
                     <ul class="mt-3 mb-0">
                         ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
                     </ul>
-                    ${isPaidPlan && PAYMENT_ENABLED
-                        ? `<div class="mt-2 pt-2 border-top" style="font-size:12px;color:#065f46;">
-                               <i class="fas fa-shield-alt me-1"></i>
-                               Paiement sécurisé via ${providerLabel} — Mobile Money &amp; carte bancaire
-                           </div>`
-                        : ''}
                 `;
                 
                 planElement.addEventListener('click', function() {
@@ -4606,14 +4952,25 @@
                     selectedPlan = plan;
                     document.getElementById('btn-submit').disabled = false;
 
+                    // Afficher/masquer le sélecteur de durée
+                    const nbMoisContainer = document.getElementById('nb-mois-container');
+                    if (plan.prix_mensuel > 0) {
+                        nbMoisContainer.style.display = 'block';
+                        selectedNbMois = parseInt(document.getElementById('nb_mois_reg').value) || 1;
+                        updateNbMoisPreview();
+                    } else {
+                        nbMoisContainer.style.display = 'none';
+                        selectedNbMois = 1;
+                    }
+
                     // Mettre à jour le label du bouton selon le mode de paiement
-                    const isPaid = plan.prix > 0;
+                    const isPaid = plan.prix_mensuel > 0;
                     const label  = document.getElementById('btn-submit-label');
                     if (isPaid && PAYMENT_ENABLED) {
-                        label.textContent = 'Payer et créer mon compte';
+                        label.textContent = typeof _t === 'function' ? _t('reg.submit_pay') : 'Payer et créer mon compte';
                         document.getElementById('btn-submit').className = 'btn btn-primary';
                     } else {
-                        label.textContent = 'Créer mon compte';
+                        label.textContent = typeof _t === 'function' ? _t('reg.submit') : 'Créer mon compte';
                         document.getElementById('btn-submit').className = 'btn btn-success';
                     }
                 });
@@ -4622,6 +4979,32 @@
             });
         }
         
+        // ===== Mise à jour du prévisualisateur de durée =====
+        function updateNbMoisPreview() {
+            if (!selectedPlan || selectedPlan.prix_mensuel === 0) return;
+            const nb    = selectedNbMois;
+            const total = selectedPlan.prix_mensuel * nb;
+            document.getElementById('total-preview-reg').textContent =
+                'Total : ' + total.toLocaleString('fr-FR') + ' XOF';
+            // Calcul de la date de fin estimée
+            const fin = new Date();
+            fin.setMonth(fin.getMonth() + nb);
+            document.getElementById('fin-date-preview').textContent =
+                fin.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const nbInput = document.getElementById('nb_mois_reg');
+            if (nbInput) {
+                nbInput.addEventListener('input', function() {
+                    let val = Math.max(1, Math.min(24, parseInt(this.value) || 1));
+                    this.value  = val;
+                    selectedNbMois = val;
+                    updateNbMoisPreview();
+                });
+            }
+        });
+
         // ===== Soumission du formulaire =====
         // ===== Construction du formData partagé =====
         function buildFormData(transactionId = null) {
@@ -4633,6 +5016,7 @@
                 email:       document.getElementById('email').value,
                 telephone:   telephone,
                 plan_code:   selectedPlan.id,
+                nb_mois:     selectedNbMois || 1,
                 _token:      document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             };
             if (transactionId) {
@@ -4652,12 +5036,12 @@
 
         async function submitForm() {
             if (!selectedPlan) {
-                Swal.fire('Erreur', 'Veuillez sélectionner un plan d\'abonnement.', 'error');
+                Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_select_plan") }}', 'error');
                 return;
             }
             if (!document.getElementById('conditions').checked) {
                 document.getElementById('conditions').classList.add('is-invalid');
-                Swal.fire('Erreur', 'Vous devez accepter les conditions générales.', 'error');
+                Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_accept_terms") }}', 'error');
                 return;
             }
 
@@ -4666,8 +5050,38 @@
             paymentAuthToken   = null;
             createAccountLock  = false;
 
+            // ── ÉTAPE 0 : Vérification email disponible — bloque le paiement ─────
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ' + _t('reg.checking');
+            try {
+                const fd0       = buildFormData();
+                const emailResp = await fetch("{{ route('check_email_available') }}", {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept':       'application/json',
+                        'X-CSRF-TOKEN': fd0._token,
+                    },
+                    body: JSON.stringify({
+                        email:            fd0.email,
+                        email_entreprise: fd0.email_entreprise || null,
+                        type_compte:      fd0.type_compte,
+                    }),
+                });
+                const emailJson = await emailResp.json().catch(() => null);
+                if (!emailJson || emailJson.available === false) {
+                    Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_email_taken") }}', 'error');
+                    resetSubmitBtn(submitBtn);
+                    return; // STOP — email pris
+                }
+            } catch (_) {
+                Swal.fire('{{ __("common.swal_network_error") }}', '{{ __("pages.reg_js_email_check_error") }}', 'error');
+                resetSubmitBtn(submitBtn);
+                return; // STOP — erreur réseau
+            }
+            // ────────────────────────────────────────────────────────────────────
+
             // ── ÉTAPE 1 : Validation serveur — bloque TOUT si échoue ────────────
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Vérification...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ' + _t('reg.checking');
 
             let validationPassed = false; // démarre à false, ne peut passer à true que par réponse serveur explicite
             let serverJson       = null;
@@ -4687,15 +5101,22 @@
                 try { serverJson = await resp.json(); } catch (_) { serverJson = null; }
 
             } catch (networkErr) {
-                Swal.fire('Erreur réseau', 'Impossible de joindre le serveur. Vérifiez votre connexion.', 'error');
+                Swal.fire('{{ __("common.swal_network_error") }}', '{{ __("common.swal_cannot_reach") }}', 'error');
                 resetSubmitBtn(submitBtn);
                 return; // STOP
             }
 
-            // Seul cas où on autorise la suite : réponse JSON avec status === true
-            if (serverJson !== null && serverJson.status === true) {
+            // Seul cas où on autorise la suite : réponse JSON avec status === true SANS email_taken
+            if (serverJson !== null && serverJson.status === true && !serverJson.email_taken) {
                 validationPassed = true;
                 paymentAuthToken = serverJson.auth_token || null;
+            }
+
+            // Si email déjà utilisé — blocage immédiat sans afficher les champs en erreur
+            if (serverJson && serverJson.email_taken) {
+                Swal.fire('{{ __("common.swal_error") }}', serverJson.message || '{{ __("pages.reg_js_email_taken") }}', 'error');
+                resetSubmitBtn(submitBtn);
+                return; // STOP DÉFINITIF — email pris
             }
 
             // Si validation échouée → afficher erreurs et STOPPER
@@ -4718,8 +5139,8 @@
                         }
                     });
                 }
-                const errMsg = (serverJson && serverJson.message) || 'Veuillez vérifier les informations saisies.';
-                Swal.fire({ title: 'Erreur', text: errMsg, icon: 'error', confirmButtonText: 'Corriger' }).then(() => {
+                const errMsg = (serverJson && serverJson.message) || '{{ __("pages.reg_js_check_info") }}';
+                Swal.fire({ title: '{{ __("common.swal_error") }}', text: errMsg, icon: 'error', confirmButtonText: '{{ __("pages.reg_js_fix_btn") }}' }).then(() => {
                     if (firstErrorStep && firstErrorStep !== currentStep) {
                         document.getElementById(`step-form-${currentStep}`).classList.remove('active');
                         document.getElementById(`step-${currentStep}`).classList.remove('active');
@@ -4735,31 +5156,57 @@
             // ────────────────────────────────────────────────────────────────────
 
             // ── ÉTAPE 2 : Paiement ou création directe (uniquement si validationPassed) ──
-            const isPlanGratuit = selectedPlan.prix === 0;
+            const isPlanGratuit = selectedPlan.prix_mensuel === 0;
 
             if (!isPlanGratuit && PAYMENT_ENABLED) {
-                initiatePayment(submitBtn);
+                await initiatePayment(submitBtn);
             } else {
                 await createAccount(null, submitBtn);
             }
         }
 
         // ===== Ouverture du widget de paiement (KKiaPay ou FedaPay) =====
-        function initiatePayment(submitBtn) {
+        async function initiatePayment(submitBtn) {
             // Garde : le token doit avoir été émis par preValidate()
             if (!paymentAuthToken) {
-                Swal.fire('Erreur', 'Session de validation expirée ou manquante. Veuillez recommencer.', 'error');
+                Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_session_expired") }}', 'error');
                 resetSubmitBtn(submitBtn);
                 return;
             }
 
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Ouverture du paiement...';
+            // ── Vérification directe de l'email en DB avant d'ouvrir le widget ──
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ' + _t('reg.checking');
+            try {
+                const fd        = buildFormData();
+                const emailResp = await fetch("{{ route('check_email_available') }}", {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': fd._token },
+                    body: JSON.stringify({
+                        email:            fd.email,
+                        email_entreprise: fd.email_entreprise || null,
+                        type_compte:      fd.type_compte,
+                    }),
+                });
+                const emailJson = await emailResp.json().catch(() => null);
+                if (!emailJson || emailJson.available === false) {
+                    Swal.fire('{{ __("common.swal_error") }}', '{{ __("pages.reg_js_email_taken") }}', 'error');
+                    resetSubmitBtn(submitBtn);
+                    return;
+                }
+            } catch (_) {
+                Swal.fire('{{ __("common.swal_network_error") }}', '{{ __("pages.reg_js_email_check_error") }}', 'error');
+                resetSubmitBtn(submitBtn);
+                return;
+            }
+            // ─────────────────────────────────────────────────────────────────
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ' + _t('reg.opening_payment');
 
             if (PAYMENT_PROVIDER === 'kkiapay') {
                 if (typeof openKkiapayWidget !== 'function') {
                     Swal.fire({
-                        title: 'Service indisponible',
-                        text: 'Le widget de paiement KKiaPay n\'a pas pu être chargé. Vérifiez votre connexion internet et réessayez.',
+                        title: _t('payment.unavailable_title'),
+                        text: _t('payment.kkiapay_unavailable'),
                         icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#1e40af',
                     });
                     resetSubmitBtn(submitBtn);
@@ -4801,14 +5248,15 @@
                 // Sécurité : arrêt du polling après 15 min
                 setTimeout(kkCleanup, 900000);
 
+                const kkPaymentAmount = selectedPlan.prix_mensuel * selectedNbMois;
                 openKkiapayWidget({
-                    amount:  selectedPlan.prix,
+                    amount:  kkPaymentAmount,
                     key:     PAYMENT_PUBLIC_KEY,
                     sandbox: PAYMENT_SANDBOX,
                     email:   document.getElementById('email').value,
                     name:    document.getElementById('prenom').value + ' ' + document.getElementById('nom').value,
                     phone:   window._iti ? window._iti.getNumber() : document.getElementById('telephone').value,
-                    data:    JSON.stringify({ plan_code: selectedPlan.id }),
+                    data:    JSON.stringify({ plan_code: selectedPlan.id, nb_mois: selectedNbMois }),
                 });
 
                 addSuccessListener(async function(response) {
@@ -4816,7 +5264,7 @@
                     createAccountLock = true;
                     kkPaymentDone = true;
                     kkCleanup();
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ' + _t('reg.creating_account');
                     await createAccount(response.transactionId, submitBtn);
                 });
 
@@ -4824,9 +5272,9 @@
                     kkPaymentDone = true;
                     kkCleanup();
                     Swal.fire({
-                        title: 'Paiement échoué',
-                        text: 'Le paiement KKiaPay n\'a pas abouti. Veuillez réessayer.',
-                        icon: 'error', confirmButtonText: 'Réessayer', confirmButtonColor: '#1e40af',
+                        title: _t('payment.failed_title'),
+                        text: _t('payment.kkiapay_failed'),
+                        icon: 'error', confirmButtonText: _t('payment.retry'), confirmButtonColor: '#1e40af',
                     });
                     resetSubmitBtn(submitBtn);
                 });
@@ -4839,11 +5287,12 @@
                 });
 
             } else if (PAYMENT_PROVIDER === 'fedapay') {
+                const fdPaymentAmount = selectedPlan.prix_mensuel * selectedNbMois;
                 FedaPay.init({
                     public_key:  PAYMENT_PUBLIC_KEY,
                     transaction: {
-                        amount:      selectedPlan.prix,
-                        description: 'Abonnement Lokativ — ' + selectedPlan.nom,
+                        amount:      fdPaymentAmount,
+                        description: 'Abonnement Lokativ — ' + selectedPlan.nom + ' (' + selectedNbMois + ' mois)',
                     },
                     customer: {
                         email:     document.getElementById('email').value,
@@ -4859,13 +5308,13 @@
                         if (trans && trans.status === 'approved') {
                             if (createAccountLock) return;
                             createAccountLock = true;
-                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ' + _t('reg.creating_account');
                             await createAccount(String(trans.id), submitBtn);
                         } else {
                             Swal.fire({
-                                title: 'Paiement échoué',
-                                text: 'Le paiement FedaPay n\'a pas été approuvé. Veuillez réessayer.',
-                                icon: 'error', confirmButtonText: 'Réessayer', confirmButtonColor: '#1e40af',
+                                title: _t('payment.failed_title'),
+                                text: _t('payment.fedapay_failed'),
+                                icon: 'error', confirmButtonText: _t('payment.retry'), confirmButtonColor: '#1e40af',
                             });
                             resetSubmitBtn(submitBtn);
                         }
@@ -4877,7 +5326,7 @@
         function resetSubmitBtn(submitBtn) {
             createAccountLock = false;
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Créer mon compte';
+            submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> ' + _t('reg.submit');
         }
 
         // ===== Création du compte (après paiement ou directement) =====
@@ -4899,10 +5348,10 @@
 
                 if (data.status === true) {
                     Swal.fire({
-                        title:             'Compte créé !',
+                        title:             '{{ __("pages.reg_js_account_created_title") }}',
                         text:              data.message,
                         icon:              'success',
-                        confirmButtonText: 'Se connecter',
+                        confirmButtonText: '{{ __("pages.reg_js_login_btn") }}',
                         confirmButtonColor: '#1e40af',
                     }).then(() => {
                         window.location.href = "{{ route('login') }}";
@@ -4913,11 +5362,11 @@
                     // Cas spécial : paiement reçu mais création de compte échouée
                     if (data.payment_pending) {
                         Swal.fire({
-                            title:             'Paiement reçu — Compte non créé',
-                            html:              '<p>' + data.message + '</p>' +
-                                               '<p class="mt-2 text-muted" style="font-size:13px;">Conservez cette référence et contactez notre support pour régulariser votre compte.</p>',
+                            title:             data.alert_title || '{{ __("pages.reg_js_payment_pending_title") }}',
+                            html:              '<p>' + (data.message || '') + '</p>' +
+                                               '<p class="mt-2 text-muted" style="font-size:13px;">' + (data.alert_note || '{{ __("pages.reg_js_payment_pending_note") }}') + '</p>',
                             icon:              'warning',
-                            confirmButtonText: 'Compris',
+                            confirmButtonText: data.alert_btn || '{{ __("pages.reg_js_payment_pending_btn") }}',
                             confirmButtonColor: '#d97706',
                             allowOutsideClick: false,
                         });
@@ -4953,10 +5402,10 @@
                         : data.message;
 
                     Swal.fire({
-                        title:             'Erreur',
+                        title:             '{{ __("common.swal_error") }}',
                         html:              errorHtml,
                         icon:              'error',
-                        confirmButtonText: 'Corriger',
+                        confirmButtonText: '{{ __("pages.reg_js_fix_btn") }}',
                     }).then(() => {
                         if (firstErrorStep && firstErrorStep !== currentStep) {
                             document.getElementById(`step-form-${currentStep}`).classList.remove('active');
@@ -4969,8 +5418,8 @@
                     });
                 }
             } catch (error) {
-                console.error('Erreur:', error);
-                Swal.fire('Erreur', 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                console.error('Error:', error);
+                Swal.fire('{{ __("common.swal_error") }}', '{{ __("common.swal_generic_error") }}', 'error');
                 if (submitBtn) resetSubmitBtn(submitBtn);
             }
         }
@@ -5551,27 +6000,27 @@
         <div class="testi-modal">
             <button class="testi-modal-close" id="closeTestiModal" aria-label="Fermer">✕</button>
 
-            <h3 id="testiModalTitle">⭐ Partagez votre expérience</h3>
-            <p class="modal-sub">Votre avis aide d'autres gestionnaires à découvrir Lokativ.</p>
+            <h3 id="testiModalTitle" data-i18n="testi.modal.title">⭐ Partagez votre expérience</h3>
+            <p class="modal-sub" data-i18n="testi.modal.sub">Votre avis aide d'autres gestionnaires à découvrir Lokativ.</p>
 
             <form id="testiForm" novalidate>
                 @csrf
 
                 <!-- Nom -->
                 <div style="margin-bottom:1rem;">
-                    <label class="testi-form-label" for="testi-nom">Votre nom <span style="color:#ef4444;">*</span></label>
-                    <input type="text" id="testi-nom" class="testi-form-input" placeholder="Ex : Kofi Mensah" maxlength="80" required>
+                    <label class="testi-form-label" for="testi-nom"><span data-i18n="testi.modal.name">Votre nom</span> <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="testi-nom" class="testi-form-input" placeholder="Ex : Kofi Mensah" data-i18n-ph="testi.modal.name_ph" maxlength="80" required>
                 </div>
 
                 <!-- Rôle -->
                 <div style="margin-bottom:1rem;">
-                    <label class="testi-form-label" for="testi-role">Ville <span style="color:#94a3b8;font-weight:400;">(facultatif)</span></label>
-                    <input type="text" id="testi-role" class="testi-form-input" placeholder="Ex : Propriétaire · Cotonou" maxlength="100">
+                    <label class="testi-form-label" for="testi-role"><span data-i18n="testi.modal.role">Ville</span> <span style="color:#94a3b8;font-weight:400;" data-i18n="testi.modal.role_opt">(facultatif)</span></label>
+                    <input type="text" id="testi-role" class="testi-form-input" placeholder="Ex : Propriétaire · Cotonou" data-i18n-ph="testi.modal.role_ph" maxlength="100">
                 </div>
 
                 <!-- Note étoiles -->
                 <div style="margin-bottom:1rem;">
-                    <label class="testi-form-label">Note <span style="color:#ef4444;">*</span></label>
+                    <label class="testi-form-label"><span data-i18n="testi.modal.rating">Note</span> <span style="color:#ef4444;">*</span></label>
                     <div class="testi-star-row" id="testiStarRow" role="group" aria-label="Note de 1 à 5">
                         @for($i = 1; $i <= 5; $i++)
                         <button type="button" class="testi-star-btn" data-value="{{ $i }}" aria-label="{{ $i }} étoile{{ $i > 1 ? 's' : '' }}">★</button>
@@ -5582,12 +6031,12 @@
 
                 <!-- Avis -->
                 <div style="margin-bottom:0.25rem;">
-                    <label class="testi-form-label" for="testi-texte">Votre avis <span style="color:#ef4444;">*</span></label>
-                    <textarea id="testi-texte" class="testi-form-textarea" placeholder="Décrivez votre expérience avec Lokativ (minimum 20 caractères)..." maxlength="500" required></textarea>
+                    <label class="testi-form-label" for="testi-texte"><span data-i18n="testi.modal.review">Votre avis</span> <span style="color:#ef4444;">*</span></label>
+                    <textarea id="testi-texte" class="testi-form-textarea" placeholder="Décrivez votre expérience avec Lokativ (minimum 20 caractères)..." data-i18n-ph="testi.modal.review_ph" maxlength="500" required></textarea>
                     <p class="testi-char-count"><span id="testi-char-count">0</span> / 500</p>
                 </div>
 
-                <button type="submit" class="testi-submit-btn" id="testiSubmitBtn">
+                <button type="submit" class="testi-submit-btn" id="testiSubmitBtn" data-i18n="testi.modal.submit">
                     Publier mon avis
                 </button>
             </form>
@@ -5768,7 +6217,7 @@
 
                 const data = await res.json();
 
-                if (!res.ok || !data.status) throw new Error(data.message || 'Erreur serveur');
+                if (!res.ok || !data.status) throw new Error(data.message || '{{ __("common.swal_server_error") }}');
 
                 // Choisir la couleur selon l'id
                 const colors = PALETTE[data.temoignage.id % PALETTE.length];
@@ -5802,8 +6251,8 @@
             } catch (err) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Erreur',
-                    text: err.message || 'Une erreur est survenue. Veuillez réessayer.',
+                    title: '{{ __("common.swal_error") }}',
+                    text: err.message || '{{ __("common.swal_generic_error") }}',
                     confirmButtonColor: '#dc2626',
                 });
             } finally {
@@ -5854,8 +6303,19 @@
             'sec.testi.h2a'     : 'Ce que disent',
             'sec.testi.h2b'     : 'nos clients',
             'sec.testi.sub'     : 'Des milliers de gestionnaires font confiance à Lokativ pour simplifier leur quotidien.',
-            'sec.testi.cta1'    : 'Démarrer gratuitement',
-            'sec.testi.cta2'    : '⭐ Partager votre avis',
+            'sec.testi.cta1'        : 'Démarrer gratuitement',
+            'sec.testi.cta2'        : '⭐ Partager votre avis',
+            'testi.modal.title'     : '⭐ Partagez votre expérience',
+            'testi.modal.sub'       : 'Votre avis aide d\'autres gestionnaires à découvrir Lokativ.',
+            'testi.modal.name'      : 'Votre nom',
+            'testi.modal.name_ph'   : 'Ex : Kofi Mensah',
+            'testi.modal.role'      : 'Ville',
+            'testi.modal.role_opt'  : '(facultatif)',
+            'testi.modal.role_ph'   : 'Ex : Propriétaire · Cotonou',
+            'testi.modal.rating'    : 'Note',
+            'testi.modal.review'    : 'Votre avis',
+            'testi.modal.review_ph' : 'Décrivez votre expérience avec Lokativ (minimum 20 caractères)...',
+            'testi.modal.submit'    : 'Publier mon avis',
             'sec.pricing.badge' : 'Tarifs',
             'sec.pricing.h2a'   : 'Des plans adaptés à',
             'sec.pricing.h2b'   : 'chaque besoin',
@@ -5986,7 +6446,7 @@
             'phone.unpaid'             : 'Impayés',
             'phone.status.rented'      : 'Loué',
             'phone.status.avail'       : 'Disponible',
-            'phone.status.maint'       : 'Maintenance',
+            'phone.status.maint'       : 'Intervention',
             'phone.pay.ok'             : 'À jour',
             'phone.pay.late'           : 'Impayé',
             'phone.pay.wait'           : 'En attente',
@@ -6052,6 +6512,7 @@
             'plan.btn.featured'     : 'Choisir ce plan',
             'plan.btn.pro'          : 'Nous contacter',
             'plan.btn.default'      : 'Commencer',
+            'plan.btn.select'       : 'Choisir ce plan',
             'plan.maisons.unlimited': 'Maisons <strong>illimitées</strong>',
             'plan.maisons.upto'     : 'Jusqu\'à',
             'plan.maisons.unit'     : 'maisons',
@@ -6085,6 +6546,17 @@
             'footer.newsletter' : 'Restez informé',
             'footer.copy'       : '© __YEAR__ Lokativ — Tous droits réservés. Fabriqué avec ❤ en Afrique de l\'Ouest.',
             'footer.payment'    : 'Paiements acceptés :',
+            /* Formulaire inscription — états bouton & erreurs paiement */
+            'reg.submit_pay'             : 'Payer et créer mon compte',
+            'reg.checking'               : 'Vérification...',
+            'reg.opening_payment'        : 'Ouverture du paiement...',
+            'reg.creating_account'       : 'Création du compte...',
+            'payment.failed_title'       : 'Paiement échoué',
+            'payment.kkiapay_failed'     : 'Le paiement KKiaPay n\'a pas abouti. Veuillez réessayer.',
+            'payment.fedapay_failed'     : 'Le paiement FedaPay n\'a pas été approuvé. Veuillez réessayer.',
+            'payment.retry'              : 'Réessayer',
+            'payment.unavailable_title'  : 'Service indisponible',
+            'payment.kkiapay_unavailable': 'Le widget de paiement KKiaPay n\'a pas pu être chargé. Vérifiez votre connexion internet et réessayez.',
         },
         en: {
             /* Navigation */
@@ -6123,8 +6595,19 @@
             'sec.testi.h2a'     : 'What our',
             'sec.testi.h2b'     : 'clients say',
             'sec.testi.sub'     : 'Thousands of managers trust Lokativ to simplify their daily work.',
-            'sec.testi.cta1'    : 'Get started for free',
-            'sec.testi.cta2'    : '⭐ Share your review',
+            'sec.testi.cta1'        : 'Get started for free',
+            'sec.testi.cta2'        : '⭐ Share your review',
+            'testi.modal.title'     : '⭐ Share your experience',
+            'testi.modal.sub'       : 'Your review helps other managers discover Lokativ.',
+            'testi.modal.name'      : 'Your name',
+            'testi.modal.name_ph'   : 'E.g.: Kofi Mensah',
+            'testi.modal.role'      : 'City',
+            'testi.modal.role_opt'  : '(optional)',
+            'testi.modal.role_ph'   : 'E.g.: Property owner · Lagos',
+            'testi.modal.rating'    : 'Rating',
+            'testi.modal.review'    : 'Your review',
+            'testi.modal.review_ph' : 'Describe your experience with Lokativ (minimum 20 characters)...',
+            'testi.modal.submit'    : 'Publish my review',
             'sec.pricing.badge' : 'Pricing',
             'sec.pricing.h2a'   : 'Plans tailored to',
             'sec.pricing.h2b'   : 'every need',
@@ -6255,7 +6738,7 @@
             'phone.unpaid'             : 'Unpaid',
             'phone.status.rented'      : 'Rented',
             'phone.status.avail'       : 'Available',
-            'phone.status.maint'       : 'Maintenance',
+            'phone.status.maint'       : 'Intervention',
             'phone.pay.ok'             : 'Up to date',
             'phone.pay.late'           : 'Unpaid',
             'phone.pay.wait'           : 'Pending',
@@ -6321,6 +6804,7 @@
             'plan.btn.featured'     : 'Choose this plan',
             'plan.btn.pro'          : 'Contact us',
             'plan.btn.default'      : 'Get started',
+            'plan.btn.select'       : 'Choose this plan',
             'plan.maisons.unlimited': 'Unlimited <strong>houses</strong>',
             'plan.maisons.upto'     : 'Up to',
             'plan.maisons.unit'     : 'houses',
@@ -6354,10 +6838,25 @@
             'footer.newsletter' : 'Stay informed',
             'footer.copy'       : '© __YEAR__ Lokativ — All rights reserved. Made with ❤ in West Africa.',
             'footer.payment'    : 'Accepted payments:',
+            /* Registration form — button states & payment errors */
+            'reg.submit_pay'             : 'Pay and create my account',
+            'reg.checking'               : 'Checking...',
+            'reg.opening_payment'        : 'Opening payment...',
+            'reg.creating_account'       : 'Creating account...',
+            'payment.failed_title'       : 'Payment failed',
+            'payment.kkiapay_failed'     : 'The KKiaPay payment failed. Please try again.',
+            'payment.fedapay_failed'     : 'The FedaPay payment was not approved. Please try again.',
+            'payment.retry'              : 'Try again',
+            'payment.unavailable_title'  : 'Service unavailable',
+            'payment.kkiapay_unavailable': 'The KKiaPay payment widget could not be loaded. Check your internet connection and try again.',
         }
     };
 
     var currentLang = localStorage.getItem('lokativ-lang') || 'fr';
+
+    function _t(key) {
+        return ((LANG_DICT[currentLang] || LANG_DICT['fr']) || {})[key] || key;
+    }
 
     function setLang(lang) {
         currentLang = lang;

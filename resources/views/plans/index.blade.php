@@ -52,8 +52,8 @@
                         </div>
                         <div class="col-md-3 mb-3">
                             <div class="d-flex flex-column">
-                                <small class="text-muted">{{ __('pages.plan_label_annual_price') }}</small>
-                                <h5 class="mb-0">{{ number_format($currentPlan->prix_annuel, 0, ',', '.') }} XOF</h5>
+                                <small class="text-muted">Prix mensuel</small>
+                                <h5 class="mb-0">{{ number_format($currentPlan->prix_mensuel, 0, ',', '.') }} XOF/mois</h5>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
@@ -103,11 +103,11 @@
                         @endif
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title text-primary">{{ $plan->nom }}</h5>
-                            <h3 class="mb-1">
-                                @if(floatval($plan->prix_annuel) == 0)
+                            <h3 class="mb-0">
+                                @if(floatval($plan->prix_mensuel) == 0)
                                     {{ __('pages.plan_free') }}
                                 @else
-                                    {{ number_format($plan->prix_annuel, 0, ',', '.') }} <small class="text-muted" style="font-size:14px;">XOF/an</small>
+                                    {{ number_format($plan->prix_mensuel, 0, ',', '.') }} <small class="text-muted" style="font-size:14px;">XOF/mois</small>
                                 @endif
                             </h3>
                             <p class="text-muted small mb-3">{{ $plan->description }}</p>
@@ -134,12 +134,28 @@
                                 @elseif($isEssai)
                                     <button class="btn btn-outline-secondary" disabled>{{ __('pages.plan_btn_trial_only') }}</button>
                                 @else
+                                    @if(floatval($plan->prix_mensuel) > 0)
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-semibold mb-1" for="nb_mois_{{ $plan->idplan }}">
+                                            <i class="bx bx-calendar me-1"></i> Durée (mois)
+                                        </label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control nb-mois-input"
+                                                   id="nb_mois_{{ $plan->idplan }}"
+                                                   data-plan-id="{{ $plan->idplan }}"
+                                                   data-prix-mensuel="{{ $plan->prix_mensuel }}"
+                                                   value="1" min="1" max="24">
+                                            <span class="input-group-text text-muted" id="total_display_{{ $plan->idplan }}">
+                                                = {{ number_format($plan->prix_mensuel, 0, ',', '.') }} XOF
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @endif
                                     <button class="btn btn-primary btn-upgrade"
                                             data-plan-id="{{ $plan->idplan }}"
                                             data-plan-nom="{{ $plan->nom }}"
-                                            data-plan-prix="{{ number_format($plan->prix_annuel, 0, ',', '.') }}"
-                                            data-plan-prix-raw="{{ $plan->prix_annuel }}">
-                                        @if(($paymentEnabled ?? false) && floatval($plan->prix_annuel) > 0)
+                                            data-plan-prix-mensuel="{{ $plan->prix_mensuel }}">
+                                        @if(($paymentEnabled ?? false) && floatval($plan->prix_mensuel) > 0)
                                             <i class="bx bx-credit-card me-1"></i>{{ __('pages.plan_btn_pay_change') }}
                                         @else
                                             {{ __('pages.plan_btn_choose') }}
@@ -180,8 +196,28 @@
     const PAYMENT_PUBLIC_KEY = @json($paymentPublicKey ?? '');
     const PAYMENT_SANDBOX    = @json($paymentSandbox ?? true);
 
+    // ===== Mise à jour du total affiché quand on change la durée =====
+    document.querySelectorAll('.nb-mois-input').forEach(function(input) {
+        input.addEventListener('input', function() {
+            const planId      = this.getAttribute('data-plan-id');
+            const prixMensuel = parseFloat(this.getAttribute('data-prix-mensuel')) || 0;
+            const nb          = Math.max(1, Math.min(24, parseInt(this.value) || 1));
+            this.value        = nb;
+            const total       = prixMensuel * nb;
+            const display     = document.getElementById('total_display_' + planId);
+            if (display) {
+                display.textContent = '= ' + total.toLocaleString('fr-FR') + ' XOF';
+            }
+        });
+    });
+
+    function getNbMois(planId) {
+        const input = document.getElementById('nb_mois_' + planId);
+        return input ? Math.max(1, Math.min(24, parseInt(input.value) || 1)) : 1;
+    }
+
     // ===== Soumission du changement de plan (avec ou sans paiement) =====
-    function submitPlanChange(planId, transactionId) {
+    function submitPlanChange(planId, transactionId, nbMois) {
         const alertEl = document.getElementById('alertUpgrade');
         alertEl.classList.add('d-none');
 
@@ -197,6 +233,7 @@
             data: JSON.stringify({
                 plan_id:        planId,
                 transaction_id: transactionId || null,
+                nb_mois:        nbMois || 1,
                 _token:         document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             }),
             headers: {
@@ -229,7 +266,7 @@
     }
 
     // ===== Paiement puis changement de plan =====
-    function initiateUpgradePayment(planId, planNom, planPrix, planPrixRaw) {
+    function initiateUpgradePayment(planId, planNom, prixTotal, nbMois) {
         if (PAYMENT_PROVIDER === 'kkiapay') {
             if (typeof openKkiapayWidget !== 'function') {
                 Swal.fire({
@@ -241,14 +278,14 @@
                 return;
             }
             openKkiapayWidget({
-                amount:  planPrixRaw,
+                amount:  prixTotal,
                 key:     PAYMENT_PUBLIC_KEY,
                 sandbox: PAYMENT_SANDBOX,
                 data:    JSON.stringify({ plan_id: planId }),
             });
 
             addSuccessListener(function(response) {
-                submitPlanChange(planId, response.transactionId);
+                submitPlanChange(planId, response.transactionId, nbMois);
             });
 
             addFailedListener(function() {
@@ -262,8 +299,8 @@
             FedaPay.init({
                 public_key:  PAYMENT_PUBLIC_KEY,
                 transaction: {
-                    amount:      planPrixRaw,
-                    description: 'Changement de plan Lokativ — ' + planNom,
+                    amount:      prixTotal,
+                    description: 'Abonnement Lokativ — ' + planNom + ' (' + nbMois + ' mois)',
                 },
                 onComplete: function(resp) {
                     if (resp.reason === FedaPay.DIALOG_DISMISSED) {
@@ -272,7 +309,7 @@
                     }
                     var trans = resp.transaction;
                     if (trans && trans.status === 'approved') {
-                        submitPlanChange(planId, String(trans.id));
+                        submitPlanChange(planId, String(trans.id), nbMois);
                     } else {
                         Swal.fire(PLAN_I18N.payFailed, PLAN_I18N.fedaFailed, 'error');
                         resetButtons();
@@ -285,37 +322,39 @@
     // ===== Listener sur les boutons =====
     document.querySelectorAll('.btn-upgrade').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            const planId     = this.getAttribute('data-plan-id');
-            const planNom    = this.getAttribute('data-plan-nom');
-            const planPrix   = this.getAttribute('data-plan-prix');
-            const planPrixRaw = parseFloat(this.getAttribute('data-plan-prix-raw')) || 0;
-            const isPlanPaye  = planPrixRaw > 0;
+            const planId       = this.getAttribute('data-plan-id');
+            const planNom      = this.getAttribute('data-plan-nom');
+            const prixMensuel  = parseFloat(this.getAttribute('data-plan-prix-mensuel')) || 0;
+            const nbMois       = getNbMois(planId);
+            const prixTotal    = prixMensuel * nbMois;
+            const prixTotalFmt = prixTotal.toLocaleString('fr-FR');
+            const isPlanPaye   = prixMensuel > 0;
 
             if (isPlanPaye && PAYMENT_ENABLED) {
-                // Plan payant + prestataire actif → confirmer puis payer
                 const providerLabel = PAYMENT_PROVIDER === 'fedapay' ? 'FedaPay' : 'KKiaPay';
                 Swal.fire({
                     title: PLAN_I18N.payRequired,
                     html: `Vous allez passer au plan <strong>${planNom}</strong>.<br>
-                           Montant : <strong>${planPrix} XOF/an</strong>.<br><br>
+                           Durée : <strong>${nbMois} mois</strong> &nbsp;×&nbsp; ${prixMensuel.toLocaleString('fr-FR')} XOF/mois<br>
+                           Total : <strong>${prixTotalFmt} XOF</strong>.<br><br>
                            Le paiement sera traité via <strong>${providerLabel}</strong>.
                            Votre plan sera activé immédiatement après confirmation du paiement.`,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonColor: '#1e40af',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: `<i class="bx bx-credit-card me-1"></i> Payer ${planPrix} XOF`,
+                    confirmButtonText: `<i class="bx bx-credit-card me-1"></i> Payer ${prixTotalFmt} XOF`,
                     cancelButtonText: PLAN_I18N.cancel
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        initiateUpgradePayment(planId, planNom, planPrix, planPrixRaw);
+                        initiateUpgradePayment(planId, planNom, prixTotal, nbMois);
                     }
                 });
             } else {
-                // Plan gratuit ou pas de prestataire → confirmation simple
                 Swal.fire({
                     title: PLAN_I18N.confirmChange,
-                    html: `Vous allez passer au plan <strong>${planNom}</strong>${planPrixRaw > 0 ? ' (' + planPrix + ' XOF/an)' : ''}.<br><br>
+                    html: `Vous allez passer au plan <strong>${planNom}</strong>
+                           ${prixMensuel > 0 ? ' pour <strong>' + nbMois + ' mois</strong> (' + prixTotalFmt + ' XOF)' : ''}.<br><br>
                            Votre compte sera temporairement suspendu en attendant la validation de l'administrateur.<br>
                            Une facture vous sera envoyée par email.`,
                     icon: 'question',
@@ -326,7 +365,7 @@
                     cancelButtonText: PLAN_I18N.cancel
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        submitPlanChange(planId, null);
+                        submitPlanChange(planId, null, nbMois);
                     }
                 });
             }
@@ -336,8 +375,8 @@
     function resetButtons() {
         document.querySelectorAll('.btn-upgrade').forEach(function(b) {
             b.disabled = false;
-            const prixRaw = parseFloat(b.getAttribute('data-plan-prix-raw')) || 0;
-            if (prixRaw > 0 && PAYMENT_ENABLED) {
+            const prixMensuel = parseFloat(b.getAttribute('data-plan-prix-mensuel')) || 0;
+            if (prixMensuel > 0 && PAYMENT_ENABLED) {
                 b.innerHTML = PLAN_I18N.btnPayChange;
             } else {
                 b.innerHTML = PLAN_I18N.btnChoose;

@@ -15,6 +15,7 @@ use App\Services\WhatsAppService;
 use App\Mail\DocumentMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -180,11 +181,12 @@ class EnvoiDocumentController extends Controller
             if ($d['type'] === 'locataire') $locataireIds[]    = (int) $d['id'];
             else                             $proprietaireIds[] = (int) $d['id'];
         }
+        $dirId = Auth::user()->iddirection_ref;
         $locatairesMap    = !empty($locataireIds)
-            ? Locataire::whereIn('id', $locataireIds)->get()->keyBy('id')
+            ? Locataire::whereIn('id', $locataireIds)->where('iddirection_ref', $dirId)->get()->keyBy('id')
             : collect();
         $proprietairesMap = !empty($proprietaireIds)
-            ? Proprietaire::whereIn('id', $proprietaireIds)->get()->keyBy('id')
+            ? Proprietaire::whereIn('id', $proprietaireIds)->where('iddirection_ref', $dirId)->get()->keyBy('id')
             : collect();
 
         $totalEnvois = 0;
@@ -336,6 +338,7 @@ class EnvoiDocumentController extends Controller
                     // Envoyer
                     if ($methodeEnvoi === 'email') {
                         try {
+                            App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
                             Mail::to($contact)->send(new DocumentMail([
                                 'destinataire_nom'     => $destinataireNom,
                                 'destinataire_email'   => $contact,
@@ -656,16 +659,19 @@ class EnvoiDocumentController extends Controller
                 continue;
             }
 
+            // Locale avant génération des textes
+            App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
+
             // Construire le message WhatsApp
             if ($typeNotif === 'rappel_loyer') {
-                $sujet     = 'Rappel de paiement de loyer – ' . $moisCourant;
+                $sujet     = __('mail.rappel_loyer.subject') . ' – ' . $moisCourant;
                 $messageWA = "Bonjour {$destinataireNom},\n\n"
-                    . "Nous vous rappelons que votre loyer du mois de {$moisCourant} d'un montant de {$montantLoyer} XOF est dû.\n\n"
+                    . "Nous vous rappelons que votre loyer du mois de {$moisCourant} d'un montant de {$montantLoyer} " . get_devise_courante() . " est dû.\n\n"
                     . "Merci de bien vouloir procéder au règlement dans les meilleurs délais.\n\n"
                     . ($msgPerso ? "{$msgPerso}\n\n" : '')
                     . "Cordialement,\n{$agenceNom}";
             } else {
-                $sujet     = 'Préavis de fin de bail';
+                $sujet     = __('mail.preavis.subject');
                 $messageWA = "Bonjour {$destinataireNom},\n\n"
                     . "Nous vous informons que votre contrat de bail pour le logement {$logement} prend fin le {$dateFinFormatted}.\n\n"
                     . "Conformément aux termes de votre contrat, vous êtes prié(e) de libérer les lieux et de restituer les clés avant cette date.\n\n"
@@ -690,6 +696,7 @@ class EnvoiDocumentController extends Controller
                         'message_personnalise' => $msgPerso,
                         'agence_nom'           => $agenceNom,
                         'email_envoi'          => $parametre->email_envoi,
+                        'devise'               => get_symbole_devise($parametre->devise ?? null),
                     ]));
                 } catch (\Exception $e) {
                     $statut        = 'error';

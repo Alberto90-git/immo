@@ -95,7 +95,7 @@
         position: sticky;
         top: 0;
         z-index: 2;
-        background: #f8f9fa;
+        background: var(--doc-thead-bg, #f8f9fa);
         border-bottom: 2px solid #dee2e6;
         white-space: nowrap;
     }
@@ -396,7 +396,7 @@
                                         <td>{{ $loc->nom_maison }} / {{ $loc->type_chambre }} N°{{ $loc->numero_chambre }}</td>
                                         <td>
                                             <span class="badge bg-label-warning">
-                                                {{ number_format($loc->prix_mois ?? 0, 0, ',', ' ') }} XOF
+                                                {{ format_price($loc->prix_mois ?? 0) }}
                                             </span>
                                         </td>
                                         <td>{{ $loc->telephone }}</td>
@@ -1098,13 +1098,13 @@
             html += `<div class="col-12 col-facture ${avecColonneFacture ? '' : 'd-none'}">`;
             if (dest.type === 'locataire' && dest.factures.length > 0) {
                 html += `<label class="form-label small fw-semibold mb-1">${ENV_I18N.monthsLabel}</label>`;
-                html += `<div class="border rounded p-2" style="max-height:100px;overflow-y:auto;background:#f8f9fa;">`;
+                html += `<div class="border rounded p-2" style="max-height:100px;overflow-y:auto;background:var(--doc-thead-bg,#f8f9fa);">`;
                 dest.factures.forEach(function(f) {
                     html += `<div class="form-check form-check-sm mb-1">
                         <input class="form-check-input dest-facture-cb" type="checkbox"
                                value="${f.id}" id="fact_${idx}_${f.id}">
                         <label class="form-check-label small" for="fact_${idx}_${f.id}">
-                            ${escHtml(f.mois)} — ${Number(f.montant).toLocaleString('fr-FR')} XOF
+                            ${escHtml(f.mois)} — ${Number(f.montant).toLocaleString('fr-FR')} {{ get_symbole_devise() }}
                         </label>
                     </div>`;
                 });

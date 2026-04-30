@@ -366,9 +366,365 @@
     </div>
   </div>
 
+  {{-- ══════════════════════════════════════════════════════════════════════
+       SECTION ANALYTIQUE
+  ══════════════════════════════════════════════════════════════════════ --}}
+  <div class="mt-2 mb-2 d-flex align-items-center gap-2">
+    <h5 class="fw-bold mb-0"><i class="bx bx-bar-chart-alt text-primary me-1"></i>Tableau de bord analytique</h5>
+    <button class="btn btn-sm btn-outline-primary ms-2" id="btnChargerAnalytics">
+      <i class="bx bx-refresh me-1"></i>Charger les analyses
+    </button>
+    <span id="analyticsSpinner" class="d-none">
+      <span class="spinner-border spinner-border-sm text-primary"></span>
+    </span>
+  </div>
+
+  <div id="sectionAnalytics" style="display:none;">
+
+    {{-- ── Ligne alertes ─────────────────────────────────────────────────── --}}
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-md-3">
+        <div class="card stat-card h-100 border-start border-4 border-danger">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="stat-icon bg-label-danger"><i class="bx bx-error text-danger fs-4"></i></div>
+            <div>
+              <div class="kpi-label">Impayés ce mois</div>
+              <div class="kpi-value text-danger" id="kpi_nb_impayes">–</div>
+              <div class="kpi-sub">locataires sans paiement</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card h-100 border-start border-4 border-warning">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="stat-icon bg-label-warning"><i class="bx bx-time-five text-warning fs-4"></i></div>
+            <div>
+              <div class="kpi-label">À renouveler</div>
+              <div class="kpi-value text-warning" id="kpi_nb_renouveler">–</div>
+              <div class="kpi-sub">contrats ≥ 11 mois</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card h-100 border-start border-4 border-success">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="stat-icon bg-label-success"><i class="bx bx-trending-up text-success fs-4"></i></div>
+            <div>
+              <div class="kpi-label">Revenus <span id="kpi_annee_n" class="text-body">–</span> vs <span id="kpi_annee_n1" class="text-body">–</span></div>
+              <div class="kpi-value" id="kpi_delta_rev">–</div>
+              <div class="kpi-sub" id="kpi_delta_rev_sub">évolution annuelle</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card h-100 border-start border-4 border-info">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="stat-icon bg-label-info"><i class="bx bx-wallet text-info fs-4"></i></div>
+            <div>
+              <div class="kpi-label">Taux de recouvrement</div>
+              <div class="kpi-value" id="kpi_taux_recouvrement">–</div>
+              <div class="kpi-sub" id="kpi_recouvrement_sub">loyers encaissés / attendus</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- ── Graphiques ligne 1 ────────────────────────────────────────────── --}}
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-8">
+        <div class="card chart-card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between pb-0">
+            <h6 class="mb-0"><i class="bx bx-line-chart me-1 text-primary"></i>Évolution des revenus N vs N-1</h6>
+            <div class="d-flex gap-2 small">
+              <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#696cff"></span><span id="leg_annee_n">N</span></span>
+              <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#d3d3d3"></span><span id="leg_annee_n1">N-1</span></span>
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="chartNvsN1" style="max-height:260px"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="card chart-card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0"><i class="bx bx-pie-chart-alt-2 me-1 text-info"></i>Taux de recouvrement</h6>
+          </div>
+          <div class="card-body d-flex flex-column align-items-center justify-content-center">
+            <canvas id="chartRecouvrement" style="max-height:200px;max-width:200px"></canvas>
+            <div class="mt-2 text-center small text-muted" id="recouvrementDetail">–</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- ── Graphiques ligne 2 ────────────────────────────────────────────── --}}
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-6">
+        <div class="card chart-card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0"><i class="bx bx-building-house me-1 text-success"></i>Occupation par bâtiment</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="chartOccupationMaison" style="max-height:260px"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card chart-card h-100">
+          <div class="card-header pb-0">
+            <h6 class="mb-0"><i class="bx bx-trophy me-1 text-warning"></i>Top propriétaires — 12 mois</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="chartTopProprios" style="max-height:260px"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- ── Tableau impayés ──────────────────────────────────────────────── --}}
+    <div class="card chart-card mb-4">
+      <div class="card-header d-flex align-items-center justify-content-between pb-0">
+        <h6 class="mb-0"><i class="bx bx-error-circle me-1 text-danger"></i>Impayés en cours — <span id="mois_courant_label"></span></h6>
+        <span class="badge bg-danger" id="badge_nb_impayes">0</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Locataire</th>
+              <th>Téléphone</th>
+              <th>Logement</th>
+              <th class="text-end">Loyer dû</th>
+              <th class="text-center">Ancienneté</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyImpayes">
+            <tr><td colspan="5" class="text-center text-muted py-3">–</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>{{-- /sectionAnalytics --}}
+
   @endcan
 
 </div>
+
+<script>
+// ── Tableau de bord analytique ────────────────────────────────────────────────
+(function() {
+  var analyticsLoaded = false;
+  var chartNvsN1 = null, chartRecouvrement = null, chartOccupation = null, chartTopProprios = null;
+
+  document.getElementById('btnChargerAnalytics').addEventListener('click', function() {
+    if (analyticsLoaded) {
+      document.getElementById('sectionAnalytics').style.display = 'block';
+      this.innerHTML = '<i class="bx bx-refresh me-1"></i>Actualiser';
+      chargerAnalytics();
+      return;
+    }
+    chargerAnalytics();
+  });
+
+  function chargerAnalytics() {
+    var btn     = document.getElementById('btnChargerAnalytics');
+    var spinner = document.getElementById('analyticsSpinner');
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+
+    fetch('{{ route("analytics.data") }}')
+      .then(r => r.json())
+      .then(d => {
+        if (d.error) { alert('{{ __("common.swal_error") }}: ' + d.error); return; }
+        rendreAnalytics(d);
+        document.getElementById('sectionAnalytics').style.display = 'block';
+        analyticsLoaded = true;
+      })
+      .catch(e => alert('{{ __("common.swal_generic_error") }}'))
+      .finally(() => { btn.disabled = false; spinner.classList.add('d-none'); btn.innerHTML = '<i class="bx bx-refresh me-1"></i>{{ __("common.btn_refresh") }}'; });
+  }
+
+  function fmt(n) { return parseInt(n).toLocaleString('fr-FR'); }
+
+  function rendreAnalytics(d) {
+    // ── KPIs ──────────────────────────────────────────────────────────────────
+    document.getElementById('kpi_nb_impayes').textContent     = d.nb_impayes;
+    document.getElementById('kpi_nb_renouveler').textContent  = d.nb_a_renouveler;
+    document.getElementById('kpi_annee_n').textContent        = d.annee_n;
+    document.getElementById('kpi_annee_n1').textContent       = d.annee_n1;
+    document.getElementById('leg_annee_n').textContent        = d.annee_n;
+    document.getElementById('leg_annee_n1').textContent       = d.annee_n1;
+    document.getElementById('badge_nb_impayes').textContent   = d.nb_impayes;
+
+    var now = new Date();
+    document.getElementById('mois_courant_label').textContent =
+      now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+    // Delta revenus
+    var deltaEl = document.getElementById('kpi_delta_rev');
+    if (d.delta_rev !== null) {
+      var sign = d.delta_rev >= 0 ? '+' : '';
+      deltaEl.textContent = sign + d.delta_rev + '%';
+      deltaEl.className   = 'kpi-value ' + (d.delta_rev >= 0 ? 'text-success' : 'text-danger');
+    } else { deltaEl.textContent = '–'; }
+    document.getElementById('kpi_delta_rev_sub').textContent =
+      fmt(d.total_n) + ' vs ' + fmt(d.total_n1) + ' F CFA';
+
+    // Taux recouvrement
+    document.getElementById('kpi_taux_recouvrement').textContent = d.taux_recouvrement + '%';
+    document.getElementById('kpi_recouvrement_sub').textContent  =
+      fmt(d.loyers_encaisses) + ' / ' + fmt(d.loyers_attendus) + ' F CFA';
+    document.getElementById('recouvrementDetail').textContent  =
+      fmt(d.loyers_encaisses) + ' encaissés sur ' + fmt(d.loyers_attendus) + ' F CFA attendus';
+
+    // ── Graphique N vs N-1 ────────────────────────────────────────────────────
+    if (chartNvsN1) chartNvsN1.destroy();
+    chartNvsN1 = new Chart(document.getElementById('chartNvsN1'), {
+      type: 'line',
+      data: {
+        labels: d.mois_courts,
+        datasets: [
+          {
+            label: d.annee_n,
+            data: d.revenus_n,
+            borderColor: '#696cff',
+            backgroundColor: 'rgba(105,108,255,0.1)',
+            tension: 0.4, fill: true, pointRadius: 4,
+          },
+          {
+            label: d.annee_n1,
+            data: d.revenus_n1,
+            borderColor: '#d3d3d3',
+            backgroundColor: 'rgba(0,0,0,0.03)',
+            tension: 0.4, fill: false, borderDash: [5,4], pointRadius: 3,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.y) + ' F CFA' } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: v => fmt(v) } }
+        }
+      }
+    });
+
+    // ── Graphique recouvrement (donut) ────────────────────────────────────────
+    var nonRecouvre = Math.max(0, 100 - d.taux_recouvrement);
+    if (chartRecouvrement) chartRecouvrement.destroy();
+    chartRecouvrement = new Chart(document.getElementById('chartRecouvrement'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Encaissé', 'Non encaissé'],
+        datasets: [{ data: [d.taux_recouvrement, nonRecouvre],
+          backgroundColor: ['#71dd37', '#e7e9ef'], borderWidth: 0, cutout: '72%' }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.toFixed(1) + '%' } }
+        }
+      },
+      plugins: [{
+        id: 'centreText',
+        afterDraw(chart) {
+          var { ctx, chartArea: { width, height, left, top } } = chart;
+          ctx.save();
+          ctx.font = 'bold 22px sans-serif';
+          ctx.fillStyle = d.taux_recouvrement >= 80 ? '#71dd37' : (d.taux_recouvrement >= 50 ? '#ffab00' : '#ff3e1d');
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(d.taux_recouvrement + '%', left + width / 2, top + height / 2);
+          ctx.restore();
+        }
+      }]
+    });
+
+    // ── Graphique occupation par bâtiment (barres horizontales) ──────────────
+    if (chartOccupation) chartOccupation.destroy();
+    chartOccupation = new Chart(document.getElementById('chartOccupationMaison'), {
+      type: 'bar',
+      data: {
+        labels: d.occupation_par_maison.map(m => m.nom),
+        datasets: [
+          { label: 'Occupées', data: d.occupation_par_maison.map(m => m.occupees),
+            backgroundColor: '#696cff', borderRadius: 4 },
+          { label: 'Libres',   data: d.occupation_par_maison.map(m => m.total - m.occupees),
+            backgroundColor: '#e7e9ef', borderRadius: 4 }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12 } },
+          tooltip: { callbacks: {
+            afterBody: (items) => {
+              var idx = items[0].dataIndex;
+              return 'Taux : ' + d.occupation_par_maison[idx].taux + '%';
+            }
+          }}
+        },
+        scales: { x: { stacked: true, beginAtZero: true }, y: { stacked: true } }
+      }
+    });
+
+    // ── Graphique top propriétaires (barres horizontales) ────────────────────
+    if (chartTopProprios) chartTopProprios.destroy();
+    chartTopProprios = new Chart(document.getElementById('chartTopProprios'), {
+      type: 'bar',
+      data: {
+        labels: d.top_proprios.map(p => p.nom),
+        datasets: [{
+          label: 'Revenus F CFA',
+          data: d.top_proprios.map(p => p.total),
+          backgroundColor: ['#696cff','#71dd37','#ffab00','#03c3ec','#9155fd','#ff3e1d'],
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) + ' F CFA' } }
+        },
+        scales: { x: { beginAtZero: true, ticks: { callback: v => fmt(v) } } }
+      }
+    });
+
+    // ── Tableau impayés ───────────────────────────────────────────────────────
+    var tbody = document.getElementById('tbodyImpayes');
+    if (!d.impayes.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-success py-3"><i class="bx bx-check-circle me-1"></i>Aucun impayé ce mois. Bravo !</td></tr>';
+    } else {
+      tbody.innerHTML = d.impayes.map(function(l) {
+        var badge = l.anciennete >= 12
+          ? '<span class="badge bg-danger">' + l.anciennete + ' mois</span>'
+          : l.anciennete >= 6
+          ? '<span class="badge bg-warning text-dark">' + l.anciennete + ' mois</span>'
+          : '<span class="badge bg-label-secondary">' + l.anciennete + ' mois</span>';
+        return '<tr>'
+          + '<td><strong>' + l.nom + '</strong></td>'
+          + '<td>' + l.telephone + '</td>'
+          + '<td><small>' + l.logement + '</small></td>'
+          + '<td class="text-end fw-semibold">' + fmt(l.montant) + ' F</td>'
+          + '<td class="text-center">' + badge + '</td>'
+          + '</tr>';
+      }).join('');
+    }
+  }
+})();
+</script>
 
 <script>
 // ─── Données initiales (JSON Blade) ───────────────────────────────────────────

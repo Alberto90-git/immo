@@ -123,7 +123,6 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">{{ __('pages.fin_th_agency') }}</th>
                                     <th scope="col">{{ __('pages.fin_th_house') }}</th>
                                     <th scope="col">{{ __('pages.fin_th_district') }}</th>
                                     <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
@@ -135,7 +134,7 @@
 
                                 </tbody>
 
-                                <th colspan="5">{{ __('pages.fin_total_owner') }}</th>
+                                <th colspan="4">{{ __('pages.fin_total_owner') }}</th>
                                   <td id="total"></td>
                         
                               </table>
@@ -204,7 +203,6 @@
                               <table id="example" class="table table-bordered border-primary" style="width:100%" >
                                 <thead>
                                   <tr>
-                                    <th scope="col">{{ __('pages.fin_th_agency') }}</th>
                                     <th scope="col">{{ __('pages.fin_th_house') }}</th>
                                     <th scope="col">{{ __('pages.fin_th_district') }}</th>
                                     <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
@@ -216,7 +214,7 @@
 
                                 </tbody>
 
-                                <th colspan="5">{{ __('pages.fin_total_agency') }}</th>
+                                <th colspan="4">{{ __('pages.fin_total_agency') }}</th>
                                   <td id="total2"></td>
                               </table>
                             </div>
@@ -271,7 +269,6 @@
                             <table id="example" class="table table-bordered border-primary" style="width:100%" >
                               <thead>
                               <tr>
-                                <th scope="col">{{ __('pages.fin_th_agency') }}</th>
                                 <th scope="col">{{ __('pages.fin_th_house') }}</th>
                                 <th scope="col">{{ __('pages.fin_th_district') }}</th>
                                 <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
@@ -283,7 +280,7 @@
 
                             </tbody>
 
-                            <th colspan="5">{{ __('pages.fin_total') }}</th>
+                            <th colspan="4">{{ __('pages.fin_total') }}</th>
                               <td id="total_general"></td>
                      
                           </table>

@@ -192,6 +192,7 @@ class PlanController extends Controller
             $request->validate([
                 'plan_id'        => 'required|exists:plans,idplan',
                 'transaction_id' => 'nullable|string',
+                'nb_mois'        => 'required|integer|min:1|max:24',
             ]);
 
             $direction = Direction::find(Auth::user()->iddirection_ref);
@@ -223,8 +224,12 @@ class PlanController extends Controller
                 ], 400);
             }
 
+            $nbMois = (int) $request->input('nb_mois', 1);
+
             // ── Vérification du paiement si plan payant + prestataire actif ────────
-            $isPlanPaye    = floatval($newPlan->prix_annuel) > 0;
+            $prixMensuel   = floatval($newPlan->prix_mensuel);
+            $prixTotal     = $prixMensuel * $nbMois;
+            $isPlanPaye    = $prixMensuel > 0;
             $paymentConfig = PlatformConfig::getConfig();
             $paiementValide = false;
 
@@ -273,7 +278,7 @@ class PlanController extends Controller
             // Mise à jour du plan
             $direction->idplan_ref      = $newPlan->idplan;
             $direction->abonnement_debut = Carbon::now();
-            $direction->abonnement_fin   = Carbon::now()->addYear();
+            $direction->abonnement_fin   = Carbon::now()->addMonths($nbMois);
 
             if ($paiementValide) {
                 // Paiement confirmé → activation directe
@@ -284,7 +289,7 @@ class PlanController extends Controller
                     ->update(['blocage_entreprise' => null]);
                 Annexe::where('iddirection_ref', $direction->iddirection)
                     ->update(['blocage_annexe' => null]);
-                $successMessage = "Votre abonnement au plan {$newPlan->nom} est maintenant actif. Une facture vous a été envoyée par email.";
+                $successMessage = "Votre abonnement au plan {$newPlan->nom} ({$nbMois} mois) est maintenant actif. Une facture vous a été envoyée par email.";
             } else {
                 // Sans paiement → suspension en attente de validation admin
                 $direction->statut_abonnement = 'essai';
@@ -293,7 +298,7 @@ class PlanController extends Controller
                     ->update(['blocage_entreprise' => Carbon::now()]);
                 Annexe::where('iddirection_ref', $direction->iddirection)
                     ->update(['blocage_annexe' => Carbon::now()]);
-                $successMessage = "Votre demande de passage au plan {$newPlan->nom} a été enregistrée. Une facture vous a été envoyée par email. Votre compte sera activé après validation par l'administrateur.";
+                $successMessage = "Votre demande de passage au plan {$newPlan->nom} ({$nbMois} mois) a été enregistrée. Une facture vous a été envoyée par email. Votre compte sera activé après validation par l'administrateur.";
             }
 
             // Envoyer la facture dans tous les cas
@@ -307,16 +312,19 @@ class PlanController extends Controller
                         'telephone' => $direction->telephone ?? '',
                     ],
                     'plan' => [
-                        'nom'         => $newPlan->nom,
-                        'code'        => $newPlan->code,
-                        'prix_annuel' => $newPlan->prix_annuel,
-                        'max_maisons' => $newPlan->max_maisons,
-                        'max_annexes' => $newPlan->max_annexes,
+                        'nom'          => $newPlan->nom,
+                        'code'         => $newPlan->code,
+                        'prix_annuel'  => $newPlan->prix_annuel,
+                        'prix_mensuel' => $newPlan->prix_mensuel,
+                        'prix_total'   => $prixTotal,
+                        'max_maisons'  => $newPlan->max_maisons,
+                        'max_annexes'  => $newPlan->max_annexes,
                     ],
+                    'nb_mois'   => $nbMois,
                     'direction' => [
                         'designation'     => $direction->designation,
                         'abonnement_debut' => Carbon::now()->toDateString(),
-                        'abonnement_fin'   => Carbon::now()->addYear()->toDateString(),
+                        'abonnement_fin'   => Carbon::now()->addMonths($nbMois)->toDateString(),
                     ],
                 ];
 

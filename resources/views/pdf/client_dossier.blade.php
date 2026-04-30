@@ -145,7 +145,7 @@
                     <td>{{ $items->telephone }}</td>
                     <td>{{ $items->zone_voulu }}</td>
                     <td>{{ $items->superficie }} m2</td>
-                    <td class="amount">{{ number_format($items->budget, 0, ',', '.') }} XOF</td>
+                    <td class="amount">{{ format_price($items->budget) }}</td>
                     <td>{{ Carbon\Carbon::parse($items->status)->format('d/m/Y') }}</td>
                 </tr>
             @endforeach

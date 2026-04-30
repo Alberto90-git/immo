@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Validator;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use App\Services\PdfGeneratorService;
 
 class FactureController extends Controller
 {
@@ -86,7 +88,7 @@ class FactureController extends Controller
       ->get();
 
     foreach ($val as  $cont) {
-      $vide .= "<option value=" . $cont->id . ">" . $cont->numero_chambre . "</option>";
+      $vide .= "<option value=" . (int)$cont->id . ">" . htmlspecialchars($cont->numero_chambre, ENT_QUOTES, 'UTF-8') . "</option>";
     }
 
     return response()->json([
@@ -202,6 +204,7 @@ class FactureController extends Controller
               ]);
 
               if ($facture) {
+                $this->assignNumeroQuittance($facture);
 
                 activity()->performedOn(new Facture())
                   ->causedBy(Auth::user()->id)
@@ -286,6 +289,7 @@ class FactureController extends Controller
                   ]);
 
                   if ($facture) {
+                    $this->assignNumeroQuittance($facture);
 
                     activity()->performedOn(new Facture())
                       ->causedBy(Auth::user()->id)
@@ -492,10 +496,21 @@ class FactureController extends Controller
   public function destroy(Request $request)
   {
     try {
-      $deletedValue = Locataire::where('id', $request->facture_id_destroy)->first();
-      $deletedFacture = Facture::find($request->facture_id_destroy);
+      $dirId = Auth::user()->iddirection_ref;
 
-      $deleted = Facture::where('id', $request->facture_id_destroy)->update(['delete_at' => Carbon::now()]);
+      $deletedFacture = Facture::where('id', $request->facture_id_destroy)
+                               ->where('iddirection_ref', $dirId)
+                               ->first();
+
+      if (!$deletedFacture) {
+        return response()->json(['status' => false, 'message' => 'Facture introuvable.']);
+      }
+
+      $deletedValue = Locataire::where('id', $deletedFacture->locataire_id)->first();
+
+      $deleted = Facture::where('id', $request->facture_id_destroy)
+                        ->where('iddirection_ref', $dirId)
+                        ->update(['delete_at' => Carbon::now()]);
 
       if ($deleted) {
 
@@ -775,7 +790,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 11);
             $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
             $fpdf->SetX(10 + $colDesc);
-            $fpdf->Cell($colValue, 6, number_format($prix_mois, 0, ",", ".") . ' XOF', 0, 1, 'C');
+            $fpdf->Cell($colValue, 6, number_format($prix_mois, 0, ",", ".") . ' ' . get_devise_courante(), 0, 1, 'C');
             $y += 10;
 
             if ($y < 140) {
@@ -831,7 +846,9 @@ class FactureController extends Controller
           // Code de référence
           $fpdf->SetFont('Courier', 'B', 8);
           $fpdf->SetTextColor(50, 50, 50);
-          $ref = 'FACT-' . str_pad($id, 6, '0', STR_PAD_LEFT) . '-' . $date_paiement->format('dmY');
+          $ref = ($facture && $facture->numero_quittance)
+              ? $facture->numero_quittance
+              : 'FACT-' . str_pad($id, 6, '0', STR_PAD_LEFT) . '-' . $date_paiement->format('dmY');
           $fpdf->SetXY(10, $y);
           $fpdf->Cell(0, 4,utf8_decode('Référence: ')  . $ref, 0, 1, 'C');
           $y += 8;
@@ -1143,7 +1160,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 11);
       $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
       $fpdf->SetX(10 + $colDesc + $colQte);
-      $fpdf->Cell($colMontant, 6, number_format($total, 0, ",", ".") . ' XOF', 0, 1, 'C');
+      $fpdf->Cell($colMontant, 6, number_format($total, 0, ",", ".") . ' ' . get_devise_courante(), 0, 1, 'C');
       $y += 12;
 
       // Montant en lettres (si assez d'espace)
@@ -1153,7 +1170,7 @@ class FactureController extends Controller
           $fpdf->SetTextColor(0, 0, 0);
           $fpdf->SetX(10);
           
-          $montantLettres = ucfirst(nombreEnLettres($total)) . ' XOF';
+          $montantLettres = ucfirst(nombreEnLettres($total)) . ' ' . get_devise_courante();
           $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
           $fpdf->MultiCell(190, 6, utf8_decode('Quittance arrêtée à ' . $montantLettres), 0, 'L');
           
@@ -1274,17 +1291,71 @@ class FactureController extends Controller
       return;
   }
 
-  // Méthode optionnelle pour générer un QR code
-  // private function generateQRCode($data)
-  // {
-  //     // Si vous avez la librairie phpqrcode installée
-  //     if (class_exists('QRcode')) {
-  //         $tempFile = tempnam(sys_get_temp_dir(), 'qr_') . '.png';
-  //         QRcode::png($data, $tempFile, 'L', 4, 2);
-  //         return $tempFile;
-  //     }
-  //     return null;
-  // }
+  // ─── Relevé locataire ────────────────────────────────────────────────────────
+
+  public function releveLocataire($id)
+  {
+      try {
+          $pdfService = new PdfGeneratorService();
+          $result = $pdfService->genererReleveLocataire((int)$id);
+          return response($result['content'], 200)
+              ->header('Content-Type', 'application/pdf')
+              ->header('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"');
+      } catch (\Exception $e) {
+          return back()->with('error', 'Erreur lors de la generation du releve.');
+      }
+  }
+
+  // ─── Attestation de résidence ─────────────────────────────────────────────────
+
+  public function attestationResidence($id)
+  {
+      try {
+          $pdfService = new PdfGeneratorService();
+          $result = $pdfService->genererAttestationResidence((int)$id);
+          return response($result['content'], 200)
+              ->header('Content-Type', 'application/pdf')
+              ->header('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"');
+      } catch (\Exception $e) {
+          return back()->with('error', "Erreur lors de la generation de l'attestation.");
+      }
+  }
+
+  // ─── Attestation de paiement ──────────────────────────────────────────────────
+
+  public function attestationPaiement($id)
+  {
+      try {
+          $pdfService = new PdfGeneratorService();
+          $result = $pdfService->genererAttestationPaiement((int)$id);
+          return response($result['content'], 200)
+              ->header('Content-Type', 'application/pdf')
+              ->header('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"');
+      } catch (\Exception $e) {
+          return back()->with('error', "Erreur lors de la generation de l'attestation de paiement.");
+      }
+  }
+
+  // ─── Numérotation automatique des quittances ─────────────────────────────────
+
+  private function assignNumeroQuittance(Facture $facture): void
+  {
+      try {
+          DB::transaction(function () use ($facture) {
+              $year   = date('Y');
+              $prefix = 'QR-' . $year . '-';
+              $last   = Facture::where('iddirection_ref', $facture->iddirection_ref)
+                                ->where('numero_quittance', 'like', $prefix . '%')
+                                ->orderByDesc('id')
+                                ->lockForUpdate()
+                                ->value('numero_quittance');
+              $seq = $last ? ((int) substr($last, strlen($prefix)) + 1) : 1;
+              $facture->update(['numero_quittance' => $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
+          });
+      } catch (\Exception $e) {
+          // Numerotation non bloquante — la quittance reste valide sans numero
+      }
+  }
 
 
 

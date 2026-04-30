@@ -323,6 +323,7 @@
                   <input type="email"
                          class="form-control @error('email') is-invalid @enderror"
                          id="email" name="email"
+                         style="color: #fff;"
                          placeholder="{{ __('pages.login_email_ph') }}"
                          autofocus required />
                   @error('email')

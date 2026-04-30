@@ -372,6 +372,10 @@
                           href="{{ route('telecharge2', ['id' => $item->id]) }}">
                           <i class="bx bx-download"></i>
                         </a>
+                        <a class="btn btn-sm rounded-pill btn-outline-info me-1" title="Attestation de paiement"
+                          href="{{ route('attestation_paiement', ['id' => $item->id]) }}">
+                          <i class="bx bx-badge-check"></i>
+                        </a>
                       @endcan
                       <a class="btn btn-sm rounded-pill btn-outline-secondary btn-details-loyer" title="{{ __('common.title_details') }}" href="#">
                         <i class="bx bx-zoom-in"></i>
@@ -458,7 +462,7 @@ $(document).on('click', '.btn-details-loyer', function() {
     $('#dl-maison').text(r.data('nom-maison'));
     $('#dl-chambre').text(r.data('numero-chambre'));
     $('#dl-mois').text(r.data('mois') || '—');
-    $('#dl-montant').text(parseInt(r.data('montant') || 0).toLocaleString('fr-FR') + ' XOF');
+    $('#dl-montant').text(parseInt(r.data('montant') || 0).toLocaleString('fr-FR') + ' {{ get_symbole_devise() }}');
     $('#dl-mode-paiement').text(r.data('mode-paiement') || '—');
     var dp = r.data('date-paiement') || '';
     $('#dl-date-paiement').text(dp ? dp.toString().replace('T', ' ').substring(0, 16) : '—');

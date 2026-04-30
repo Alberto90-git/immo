@@ -74,6 +74,9 @@ class RoleController extends Controller
         $permissionEnvoi          = Permission::where("group", "envoi")->get();
         $permissionEtatDesLieux   = Permission::where("group", "etat_des_lieux")->get();
         $permissionMaintenance    = Permission::where("group", "maintenance")->get();
+        $permissionAutomation     = Permission::where("group", "automation")->get();
+        $permissionRecouvrement   = Permission::where("group", "recouvrement")->get();
+        $permissionSignature      = Permission::where("group", "signature")->get();
 
         return view('roles.create', compact(
             'permission', 'permissionParametrage',
@@ -81,7 +84,8 @@ class RoleController extends Controller
             'permissionPrix', 'permissionLocataire', 'permissionPaiement',
             'permissionStatistique', 'permissionDossier', 'permissionPub',
             'abonnement', 'permissionEnvoi', 'permissionEtatDesLieux',
-            'permissionMaintenance'
+            'permissionMaintenance', 'permissionAutomation', 'permissionRecouvrement',
+            'permissionSignature'
         ));
     }
 
@@ -180,6 +184,9 @@ class RoleController extends Controller
         $permissionEnvoi          = Permission::where("group", "envoi")->get();
         $permissionEtatDesLieux   = Permission::where("group", "etat_des_lieux")->get();
         $permissionMaintenance    = Permission::where("group", "maintenance")->get();
+        $permissionAutomation     = Permission::where("group", "automation")->get();
+        $permissionRecouvrement   = Permission::where("group", "recouvrement")->get();
+        $permissionSignature      = Permission::where("group", "signature")->get();
 
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
             ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
@@ -191,7 +198,8 @@ class RoleController extends Controller
             'permissionPrix', 'permissionLocataire', 'permissionPaiement',
             'permissionStatistique', 'permissionDossier', 'permissionPub',
             'abonnement', 'permissionEnvoi', 'permissionEtatDesLieux',
-            'permissionMaintenance'
+            'permissionMaintenance', 'permissionAutomation', 'permissionRecouvrement',
+            'permissionSignature'
         ));
     }
 

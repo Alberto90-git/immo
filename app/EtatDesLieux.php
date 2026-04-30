@@ -12,6 +12,7 @@ class EtatDesLieux extends Model
         'iddirection_ref', 'idannexe_ref', 'locataire_id', 'maison_id', 'chambre_id',
         'type', 'date_etat', 'etat_entree_id', 'statut', 'notes_generales',
         'retenue_caution', 'signature_token', 'signe_locataire', 'signe_locataire_at',
+        'signature_locataire_image',
         'signe_agent', 'signe_agent_at', 'created_by', 'delete_at',
     ];
 

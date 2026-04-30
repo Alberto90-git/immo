@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -102,6 +102,21 @@
     }
     .footer p { font-size: 12px; color: #94a3b8; line-height: 1.8; }
     .footer a { color: #1a56db; text-decoration: none; }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 24px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .body h2 { font-size: 18px !important; }
+    .info-row { display: block !important; padding: 12px 14px !important; }
+    .info-row .ir-icon { margin-bottom: 8px; }
+    .message-box { display: block !important; }
+    .message-box .icon { display: block; margin-bottom: 8px; }
+    .info-box { display: block !important; }
+    .info-box .icon { display: block; margin-bottom: 8px; }
+  }
   </style>
 </head>
 <body>
@@ -110,28 +125,26 @@
     <div class="header">
       <div class="brand">Loka<span>tiv</span></div>
       <div class="subtitle">{{ $data['agence_nom'] }}</div>
-      <div class="badge">📎 Document joint</div>
+      <div class="badge">{{ __('mail.document_envoi.badge') }}</div>
     </div>
 
     <div class="body">
-      <h2>Bonjour {{ $data['destinataire_nom'] }},</h2>
-      <p>
-        Veuillez trouver ci-joint le document suivant, transmis par <strong>{{ $data['agence_nom'] }}</strong>.
-      </p>
+      <h2>{{ __('mail.greeting', ['name' => $data['destinataire_nom']]) }}</h2>
+      <p>{!! __('mail.document_envoi.intro', ['agence' => $data['agence_nom']]) !!}</p>
 
       <div class="info-card">
-        <div class="card-header">Document transmis</div>
+        <div class="card-header">{{ __('mail.document_envoi.doc_header') }}</div>
         <div class="info-row">
           <div class="ir-icon">📄</div>
           <div>
-            <div class="ir-label">Type de document</div>
+            <div class="ir-label">{{ __('mail.document_envoi.doc_type_label') }}</div>
             <div class="ir-value">{{ $data['type_document_label'] }}</div>
           </div>
         </div>
         <div class="info-row">
           <div class="ir-icon">🏢</div>
           <div>
-            <div class="ir-label">Envoyé par</div>
+            <div class="ir-label">{{ __('mail.document_envoi.sent_by_label') }}</div>
             <div class="ir-value">{{ $data['agence_nom'] }}</div>
           </div>
         </div>
@@ -146,20 +159,20 @@
 
       <div class="info-box">
         <div class="icon">📎</div>
-        <p>Le document est disponible en <strong>pièce jointe PDF</strong> de cet email. Conservez-le pour vos archives.</p>
+        <p>{!! __('mail.document_envoi.attachment_note') !!}</p>
       </div>
 
       <hr class="divider">
       <p style="font-size:13px; color:#94a3b8;">
-        Pour toute question, contactez directement votre agence ou écrivez à
+        {{ __('mail.document_envoi.contact_note') }}
         <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
       </p>
     </div>
 
     <div class="footer">
       <p>
-        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
-        Ce message a été envoyé automatiquement — merci de ne pas y répondre directement.
+        {{ __('mail.footer_rights', ['year' => date('Y')]) }}<br>
+        {{ __('mail.footer_auto') }}
       </p>
     </div>
 

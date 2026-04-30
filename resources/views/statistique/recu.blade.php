@@ -94,9 +94,6 @@
                                     <table id="example" class="table table-striped table-hover align-middle" style="width:100%">
                                         <thead class="table-primary">
                                             <tr>
-                                                <th class="text-center" style="width: 10%;">
-                                                    <i class="bx bx-building-house me-1"></i>{{ __('pages.recu_th_agency') }}
-                                                </th>
                                                 <th class="text-center" style="width: 12%;">
                                                     <i class="bx bx-home me-1"></i>{{ __('pages.recu_th_house') }}
                                                 </th>
@@ -178,9 +175,6 @@
                                     <table id="example2" class="table table-striped table-hover align-middle" style="width:100%">
                                         <thead class="table-success">
                                             <tr>
-                                                <th class="text-center" style="width: 12%;">
-                                                    <i class="bx bx-building-house me-1"></i>{{ __('pages.recu_th_agency') }}
-                                                </th>
                                                 <th class="text-center" style="width: 14%;">
                                                     <i class="bx bx-home me-1"></i>{{ __('pages.recu_th_house') }}
                                                 </th>

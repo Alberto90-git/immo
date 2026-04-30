@@ -56,6 +56,30 @@ class Annexe extends Model
     }
 
     /**
+     * Récupérer le chemin complet du cachet électronique
+     */
+    public function getCachetPathAttribute()
+    {
+        if (!$this->cash_electronique) {
+            return null;
+        }
+
+        $possiblePaths = [
+            storage_path('app/public/' . $this->cash_electronique),
+            public_path('storage/' . $this->cash_electronique),
+            public_path($this->cash_electronique),
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Récupérer le chemin complet de la signature
      */
     public function getSignaturePathAttribute()

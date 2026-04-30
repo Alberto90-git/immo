@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rappel de paiement de loyer</title>
+  <title>{{ __('mail.rappel_loyer.title') }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -36,7 +36,6 @@
     .body { background: #ffffff; padding: 36px 32px; }
     .body h2 { font-size: 20px; color: #1e293b; margin-bottom: 16px; }
     .body p { font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 12px; }
-    /* Encadré montant */
     .amount-card {
       background: #fffbeb;
       border: 2px solid #f59e0b;
@@ -49,7 +48,6 @@
     .amount-card .ac-amount { font-size: 32px; font-weight: 800; color: #d97706; line-height: 1; }
     .amount-card .ac-currency { font-size: 16px; font-weight: 600; color: #b45309; margin-left: 4px; }
     .amount-card .ac-month { font-size: 14px; color: #78350f; margin-top: 8px; }
-    /* Info card */
     .info-card {
       margin: 20px 0;
       border: 1px solid #e2e8f0;
@@ -83,7 +81,6 @@
     }
     .info-row .ir-label { font-size: 12px; color: #94a3b8; margin-bottom: 2px; }
     .info-row .ir-value { font-size: 15px; color: #1e293b; font-weight: 600; }
-    /* Message perso */
     .message-box {
       display: flex;
       gap: 12px;
@@ -96,7 +93,6 @@
     }
     .message-box .icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
     .message-box p { font-size: 14px; color: #1e40af; margin: 0; line-height: 1.6; font-style: italic; }
-    /* Alerte urgence */
     .alert-box {
       display: flex;
       gap: 12px;
@@ -118,6 +114,22 @@
     }
     .footer p { font-size: 12px; color: #94a3b8; line-height: 1.8; }
     .footer a { color: #1a56db; text-decoration: none; }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 24px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .body h2 { font-size: 18px !important; }
+    .amount-card .ac-amount { font-size: 26px !important; }
+    .info-row { display: block !important; padding: 12px 14px !important; }
+    .info-row .ir-icon { margin-bottom: 8px; }
+    .message-box { display: block !important; }
+    .message-box .icon { display: block; margin-bottom: 8px; }
+    .alert-box { display: block !important; }
+    .alert-box .icon { display: block; margin-bottom: 8px; }
+  }
   </style>
 </head>
 <body>
@@ -126,31 +138,29 @@
     <div class="header">
       <div class="brand">Loka<span>tiv</span></div>
       <div class="subtitle">{{ $data['agence_nom'] }}</div>
-      <div class="badge">⏰ Rappel de loyer</div>
+      <div class="badge">{{ __('mail.rappel_loyer.badge') }}</div>
     </div>
 
     <div class="body">
-      <h2>Bonjour {{ $data['destinataire_nom'] }},</h2>
-      <p>
-        Nous vous adressons ce rappel concernant le paiement de votre loyer. Merci de bien vouloir régulariser votre situation dans les meilleurs délais.
-      </p>
+      <h2>{{ __('mail.greeting', ['name' => $data['destinataire_nom']]) }}</h2>
+      <p>{{ __('mail.rappel_loyer.intro') }}</p>
 
       <div class="amount-card">
-        <div class="ac-label">Montant du loyer dû</div>
+        <div class="ac-label">{{ __('mail.rappel_loyer.amount_label') }}</div>
         <div>
           <span class="ac-amount">{{ $data['montant_loyer'] }}</span>
-          <span class="ac-currency">XOF</span>
+          <span class="ac-currency">{{ $data['devise'] ?? 'XOF' }}</span>
         </div>
         <div class="ac-month">{{ $data['mois_courant'] }}</div>
       </div>
 
       @if (!empty($data['logement']))
       <div class="info-card">
-        <div class="card-header">Détails du logement</div>
+        <div class="card-header">{{ __('mail.rappel_loyer.logement_header') }}</div>
         <div class="info-row">
           <div class="ir-icon">🏠</div>
           <div>
-            <div class="ir-label">Logement concerné</div>
+            <div class="ir-label">{{ __('mail.rappel_loyer.logement_label') }}</div>
             <div class="ir-value">{{ $data['logement'] }}</div>
           </div>
         </div>
@@ -166,20 +176,20 @@
 
       <div class="alert-box">
         <div class="icon">⚠️</div>
-        <p>Pour éviter tout désagrément ou pénalité, veuillez procéder au règlement dès que possible. En cas de difficulté, contactez directement votre agence.</p>
+        <p>{{ __('mail.rappel_loyer.alert') }}</p>
       </div>
 
       <hr class="divider">
       <p style="font-size:13px; color:#94a3b8;">
-        Pour toute question, contactez <strong>{{ $data['agence_nom'] }}</strong> ou écrivez à
+        {{ __('mail.contact_note', ['agence' => $data['agence_nom']]) }}
         <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
       </p>
     </div>
 
     <div class="footer">
       <p>
-        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
-        Ce message a été envoyé automatiquement — merci de ne pas y répondre directement.
+        {{ __('mail.footer_rights', ['year' => date('Y')]) }}<br>
+        {{ __('mail.footer_auto') }}
       </p>
     </div>
 

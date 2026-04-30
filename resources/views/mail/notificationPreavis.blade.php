@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Préavis de fin de bail</title>
+  <title>{{ __('mail.preavis.title') }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -36,7 +36,6 @@
     .body { background: #ffffff; padding: 36px 32px; }
     .body h2 { font-size: 20px; color: #1e293b; margin-bottom: 16px; }
     .body p { font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 12px; }
-    /* Encadré date */
     .date-card {
       background: #fef2f2;
       border: 2px solid #ef4444;
@@ -47,7 +46,6 @@
     }
     .date-card .dc-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #991b1b; margin-bottom: 8px; }
     .date-card .dc-date { font-size: 26px; font-weight: 800; color: #dc2626; line-height: 1.2; }
-    /* Info card */
     .info-card {
       margin: 20px 0;
       border: 1px solid #e2e8f0;
@@ -81,7 +79,6 @@
     }
     .info-row .ir-label { font-size: 12px; color: #94a3b8; margin-bottom: 2px; }
     .info-row .ir-value { font-size: 15px; color: #1e293b; font-weight: 600; }
-    /* Message perso */
     .message-box {
       display: flex;
       gap: 12px;
@@ -94,7 +91,6 @@
     }
     .message-box .icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
     .message-box p { font-size: 14px; color: #1e40af; margin: 0; line-height: 1.6; font-style: italic; }
-    /* Alerte */
     .alert-box {
       display: flex;
       gap: 12px;
@@ -116,6 +112,22 @@
     }
     .footer p { font-size: 12px; color: #94a3b8; line-height: 1.8; }
     .footer a { color: #1a56db; text-decoration: none; }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 24px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .body h2 { font-size: 18px !important; }
+    .date-card .dc-date { font-size: 22px !important; }
+    .info-row { display: block !important; padding: 12px 14px !important; }
+    .info-row .ir-icon { margin-bottom: 8px; }
+    .message-box { display: block !important; }
+    .message-box .icon { display: block; margin-bottom: 8px; }
+    .alert-box { display: block !important; }
+    .alert-box .icon { display: block; margin-bottom: 8px; }
+  }
   </style>
 </head>
 <body>
@@ -124,41 +136,35 @@
     <div class="header">
       <div class="brand">Loka<span>tiv</span></div>
       <div class="subtitle">{{ $data['agence_nom'] }}</div>
-      <div class="badge">📋 Préavis de fin de bail</div>
+      <div class="badge">{{ __('mail.preavis.badge') }}</div>
     </div>
 
     <div class="body">
-      <h2>Bonjour {{ $data['destinataire_nom'] }},</h2>
-      <p>
-        Par la présente, <strong>{{ $data['agence_nom'] }}</strong> vous notifie officiellement la fin prochaine de votre contrat de bail.
-      </p>
+      <h2>{{ __('mail.greeting', ['name' => $data['destinataire_nom']]) }}</h2>
+      <p>{!! __('mail.preavis.intro', ['agence' => '<strong>'.$data['agence_nom'].'</strong>']) !!}</p>
 
       @if (!empty($data['date_fin_bail']))
       <div class="date-card">
-        <div class="dc-label">Date de fin de bail</div>
+        <div class="dc-label">{{ __('mail.preavis.date_label') }}</div>
         <div class="dc-date">{{ $data['date_fin_bail'] }}</div>
       </div>
       @endif
 
       @if (!empty($data['logement']))
       <div class="info-card">
-        <div class="card-header">Logement concerné</div>
+        <div class="card-header">{{ __('mail.preavis.logement_header') }}</div>
         <div class="info-row">
           <div class="ir-icon">🏠</div>
           <div>
-            <div class="ir-label">Adresse / Référence</div>
+            <div class="ir-label">{{ __('mail.preavis.logement_label') }}</div>
             <div class="ir-value">{{ $data['logement'] }}</div>
           </div>
         </div>
       </div>
       @endif
 
-      <p>
-        Conformément aux termes de votre contrat de location, vous êtes prié(e) de <strong>libérer les lieux et restituer les clés</strong> avant la date indiquée ci-dessus.
-      </p>
-      <p>
-        Nous vous invitons à prendre contact avec notre agence afin de planifier l'état des lieux de sortie.
-      </p>
+      <p>{!! __('mail.preavis.body_1') !!}</p>
+      <p>{{ __('mail.preavis.body_2') }}</p>
 
       @if (!empty($data['message_personnalise']))
       <div class="message-box">
@@ -169,20 +175,20 @@
 
       <div class="alert-box">
         <div class="icon">⚠️</div>
-        <p>Passé ce délai sans restitution des lieux, des frais supplémentaires pourront être engagés. Pour tout arrangement ou question, contactez directement votre agence.</p>
+        <p>{{ __('mail.preavis.alert') }}</p>
       </div>
 
       <hr class="divider">
       <p style="font-size:13px; color:#94a3b8;">
-        Pour toute question, contactez <strong>{{ $data['agence_nom'] }}</strong> ou écrivez à
+        {{ __('mail.contact_note', ['agence' => $data['agence_nom']]) }}
         <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
       </p>
     </div>
 
     <div class="footer">
       <p>
-        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
-        Ce message a été envoyé automatiquement — merci de ne pas y répondre directement.
+        {{ __('mail.footer_rights', ['year' => date('Y')]) }}<br>
+        {{ __('mail.footer_auto') }}
       </p>
     </div>
 

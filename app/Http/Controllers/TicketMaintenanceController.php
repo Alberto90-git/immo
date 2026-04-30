@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -39,9 +40,20 @@ class TicketMaintenanceController extends Controller
             ->when(Gate::none(['Is_admin']), fn($q) => $q->where('idannexe_ref', Auth::user()->idannexe_ref))
             ->orderBy('nom_maison')->get();
 
+        // Pour le select d'affectation (actifs seulement)
         $prestataires = Prestataire::whereNull('delete_at')
             ->where('actif', true)
             ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->orderBy('nom')->get();
+
+        // Pour la vue de gestion (tous + compteur tickets actifs)
+        $prestatairesList = Prestataire::withCount(['tickets as tickets_actifs' => function ($q) {
+                $q->whereNull('delete_at')->whereNotIn('statut', ['cloture']);
+            }])
+            ->whereNull('delete_at')
+            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+            ->when(Gate::none(['Is_admin']), fn($q) => $q->where('idannexe_ref', Auth::user()->idannexe_ref))
             ->orderBy('nom')->get();
 
         // Stats
@@ -52,7 +64,7 @@ class TicketMaintenanceController extends Controller
             'urgents'  => $tickets->where('priorite', 'urgente')->whereIn('statut', ['nouveau', 'en_cours'])->count(),
         ];
 
-        return view('maintenance.index', compact('tickets', 'maisons', 'prestataires', 'stats'));
+        return view('maintenance.index', compact('tickets', 'maisons', 'prestataires', 'prestatairesList', 'stats'));
     }
 
     // ─── Création ─────────────────────────────────────────────────────────────
@@ -150,13 +162,18 @@ class TicketMaintenanceController extends Controller
 
     public function changerStatut(Request $request)
     {
-        $ticket = TicketMaintenance::whereNull('delete_at')
+        $ticket = TicketMaintenance::with(['locataire', 'maison'])
+            ->whereNull('delete_at')
             ->where('iddirection_ref', Auth::user()->iddirection_ref)
             ->findOrFail($request->id);
 
         $suivant = $ticket->statutSuivant();
         if (!$suivant) {
             return response()->json(['status' => false, 'message' => 'Ce ticket est déjà clôturé.']);
+        }
+
+        if (!$ticket->prestataire_id) {
+            return response()->json(['status' => false, 'message' => 'Veuillez affecter un prestataire avant de faire avancer ce ticket.']);
         }
 
         $avant  = $ticket->statut;
@@ -269,10 +286,10 @@ class TicketMaintenanceController extends Controller
     {
         if (!$ticket->locataire) return;
 
+        // Email uniquement pour "prise en compte" et "clôture"
         $messages = [
-            'en_cours' => "Votre signalement \"{$ticket->titre}\" est en cours de traitement.",
-            'resolu'   => "Votre signalement \"{$ticket->titre}\" a été résolu.",
-            'cloture'  => "Votre signalement \"{$ticket->titre}\" est clôturé.",
+            'en_cours' => "Votre signalement \"{$ticket->titre}\" a bien été pris en compte et est en cours de traitement.",
+            'cloture'  => "Votre signalement \"{$ticket->titre}\" a été clôturé. Merci de votre confiance.",
         ];
 
         $message = $messages[$nouveauStatut] ?? null;
@@ -281,9 +298,19 @@ class TicketMaintenanceController extends Controller
         // Email
         if (!empty($ticket->locataire->email)) {
             try {
-                Mail::raw($message, function ($m) use ($ticket) {
+                $dirId = Auth::user()->iddirection_ref ?? null;
+                App::setLocale(get_direction_locale($dirId));
+                $data = [
+                    'locataire_nom' => $ticket->locataire->nom . ' ' . ($ticket->locataire->prenom ?? ''),
+                    'message'       => $message,
+                    'statut'        => $nouveauStatut,
+                    'ticket_titre'  => $ticket->titre,
+                    'logement'      => $ticket->maison->nom_maison ?? null,
+                    'categorie'     => $ticket->categorie_label ?? null,
+                ];
+                Mail::send('mail.notification_maintenance', $data, function ($m) use ($ticket) {
                     $m->to($ticket->locataire->email, $ticket->locataire->nom)
-                      ->subject('Mise à jour de votre signalement – ' . config('app.name'));
+                      ->subject(__('mail.maintenance.title') . ' – ' . config('app.name'));
                 });
             } catch (\Exception $e) {}
         }

@@ -203,11 +203,38 @@
         </li>
       @endcan
 
+      @can('gestion-automation')
+        <li class="menu-item {{ request()->is('automatisation*') ? 'active' : '' }}">
+          <a href="{{ route('automation.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-bot"></i>
+            <div>Automatisation</div>
+          </a>
+        </li>
+      @endcan
+
       @can('gestion-maintenance')
         <li class="menu-item {{ request()->is('maintenance*') ? 'active' : '' }}">
           <a href="{{ route('maintenance.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-wrench"></i>
-            <div>Maintenance</div>
+            <div>Interventions</div>
+          </a>
+        </li>
+      @endcan
+
+      @can('gestion-recouvrement')
+        <li class="menu-item {{ request()->is('recouvrement*') ? 'active' : '' }}">
+          <a href="{{ route('recouvrement.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-shield-alt-2"></i>
+            <div>Recouvrement</div>
+          </a>
+        </li>
+      @endcan
+
+      @can('gestion-signature')
+        <li class="menu-item {{ request()->is('signature*') ? 'active' : '' }}">
+          <a href="{{ route('signature.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-pen"></i>
+            <div>{{ __('sig.title') }}</div>
           </a>
         </li>
       @endcan
@@ -306,6 +333,14 @@
           </a>
         </li>
       @endcan
+
+      <!-- Marketplace public -->
+      <li class="menu-item {{ request()->is('marketplace*') ? 'active' : '' }}">
+        <a href="{{ route('marketplace.index') }}" class="menu-link" target="_blank">
+          <i class="menu-icon tf-icons bx bx-store"></i>
+          <div>Marketplace</div>
+        </a>
+      </li>
 
       @can('historique')
       <li class="menu-item {{ request()->is('historique') ? 'active' : '' }}">

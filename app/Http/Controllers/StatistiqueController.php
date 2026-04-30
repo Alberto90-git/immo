@@ -164,14 +164,13 @@ class StatistiqueController extends Controller
             {
                 foreach ($donnees as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td><td>'.$value->numero_chambre.'</td>';
                     $vide.='<td>'.$value->type_chambre.'</td>';
                     $vide.='<td>'.number_format($value->prix,"0",",",".").' XOF'.'</td>';
                     $vide.='</tr>';
                 }
 
-                $valeur .= '<a '.'class'.'='.' "btn rounded-pill btn-success" '.
+                $valeur .= '<a '.'class'.'='.' "btn rounded-pill btn-primary" '.
                               'title'.'='.' "Télécharger pdf" '.'href'.'='."house-chambre/$request->idRecu".'>'.
                                  'Télécharger pdf'.
                                '</a>';
@@ -318,14 +317,13 @@ class StatistiqueController extends Controller
             {
                 foreach ($donnees as $value) {
                     $vide.='<tr>';
-                     $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->numero_chambre.'</td><td>'.$value->type_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide.='<td>'.$value->telephone.'</td><td>'.$value->nombre_avance.' mois'.'</td>';
                     $vide.='<td>'.Carbon::parse($value->date_entree)->format('d/m/Y').'</td>';
                     $vide.='</tr>';
                 }
 
-                 $valeur .= '<a '.'class'.'='.' "btn rounded-pill btn-success" '.
+                 $valeur .= '<a '.'class'.'='.' "btn rounded-pill btn-primary" '.
                               'title'.'='.' "Télécharger pdf" '.'href'.'='."house-locataire/$request->house_recu".'>'.
                                  'Télécharger pdf'.
                                '</a>';
@@ -391,12 +389,11 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide.='<td>'.$value->profession.'</td><td>'.$value->telephone.'</td>';
                     $vide.='<td>'.$value->nombre_avance.' Mois'.'</td>';
                     $vide.='<td>'.strftime("%d/%m/%Y", strtotime($value->date_entree)) .'</td><td>'
-                              .'<a '.'class'.'='.' "btn rounded-pill btn-success" '.
+                              .'<a '.'class'.'='.' "btn rounded-pill btn-primary" '.
                               'title'.'='.' "Télecharge réçu" '.'href'.'='."gerer-facture/telecharge/$value->id".'>'.
                                  'Télécharger'.
                                '</a>'
@@ -452,7 +449,6 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide.='<td>'.$value->profession.'</td><td>'.$value->telephone.'</td>';
                     $vide.='<td>'.$value->nombre_avance.' Mois'.'</td>';
@@ -519,7 +515,6 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide.='<td>'.number_format($value->montant,"0",",",".").' XOF'.'</td><td>'.$value->mois.'</td>';
                     $vide.='<td>'.strftime("%d/%m/%Y à %Hh:%M min", strtotime($value->date_paiement)) .'</td><td>'
@@ -580,7 +575,6 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                     $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide.='<td>'.number_format($value->montant,"0",",",".").' XOF'.'</td><td>'.$value->mois.'</td>';
                     $vide.='<td>'.strftime("%d/%m/%Y à %Hh:%M min", strtotime($value->date_paiement)) .'</td><td>'
@@ -676,7 +670,6 @@ class StatistiqueController extends Controller
 
            foreach ($donnees as $value) {
                $vide.='<tr>';
-               $vide.='<td>'.$value->designation.'</td>';
                $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td>';
                $vide.='<td>'.$value->type_chambre.' ( N° '.$value->numero_chambre.')'.'</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
                $vide.='<td>'.number_format( ( $value->montant * (100 - $request->pourcentage) ) / 100,"0",",",".").' XOF'.'</td>';
@@ -775,7 +768,6 @@ class StatistiqueController extends Controller
 
            foreach ($donnees as $value) {
                $vide.='<tr>';
-               $vide.='<td>'.$value->designation.'</td>';
                $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td>';
                $vide.='<td>'.$value->type_chambre.' (N° '.$value->numero_chambre.')'. '</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
                $vide.='<td>'.number_format( ( $value->montant * $request->pourcentage2 ) / 100,"0",",",".").' XOF'.'</td>';
@@ -789,7 +781,7 @@ class StatistiqueController extends Controller
            $vide2.='<td>'.number_format($garde ,"0",",",".").' XOF'.'</td>';
 
            //CREATION DU LIEN POUR TELECHARGEMENT PDF
-           $pdf = '<a '.'class'.'='.' "btn btn-success rounded-pill ri-arrow-down-circle-fill shadow" '.
+           $pdf = '<a '.'class'.'='.' "btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow" '.
                   'title'.'='.' "Télécharger réçu" '.'href'.'='."pdf-solde-agence/$request->proprietaire2/$request->pourcentage2/$request->date_debut2/$request->date_fin2".'>'.
                      'Télécharger'.
                   '</a>';
@@ -890,7 +882,6 @@ class StatistiqueController extends Controller
 
            foreach ($donnees as $value) {
                $vide.='<tr>';
-               $vide.='<td>'.$value->designation.'</td>';
                $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td>';
                $vide.='<td>'.$value->type_chambre.'(N° '.$value->numero_chambre.')'.'</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
                $vide.='<td>'.number_format( ( $value->montant * $request->pourcentage_general ) / 100,"0",",",".").' XOF'.'</td>';
@@ -904,7 +895,7 @@ class StatistiqueController extends Controller
            $vide2.='<td>'.number_format($garde ,"0",",",".").' XOF'.'</td>';
 
            //CREATION DU LIEN POUR TELECHARGEMENT PDF
-           $pdf = '<a '.'class'.'='.' "btn btn-success rounded-pill ri-arrow-down-circle-fill shadow" '.
+           $pdf = '<a '.'class'.'='.' "btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow" '.
                   'title'.'='.' "Télécharger réçu" '.'href'.'='."pdf-all-solde-agence/$request->pourcentage_general/$request->date_debut_general/$request->date_fin_general".'>'.
                      'Télécharger'.
                   '</a>';
@@ -1008,7 +999,6 @@ class StatistiqueController extends Controller
             {
                 foreach ($dossierClient as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide .= '<td>'.$value->telephone.'</td><td>'.$value->zone_voulu.'</td>';
                     $vide.='<td>'.$value->superficie.' m²'.'</td><td>'.number_format( $value->budget,"0",",",".").' XOF'.'</td>';
@@ -1016,7 +1006,7 @@ class StatistiqueController extends Controller
                     $vide.='</tr>';
                 }
 
-                 $pdf = '<a '.'class'.'='.' "btn btn-success rounded-pill ri-arrow-down-circle-fill shadow" '.
+                 $pdf = '<a '.'class'.'='.' "btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow" '.
                   'title'.'='.' "Télécharger pdf" '.'href'.'='."pdf-client-dossier/$request->date_debut/$request->date_fin".'>'.
                      'Télécharger pdf'.
                   '</a>';
@@ -1095,7 +1085,6 @@ class StatistiqueController extends Controller
             {
                 foreach ($dossierParcelle as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->designation.'</td>';
                     $vide.='<td>'.$value->nom.' '.$value->prenom.'</td>';
                     $vide .= '<td>'.$value->telephone.'</td><td>'.$value->quartier.'</td>';
                     $vide.='<td>'.$value->superficie.' m²'.'</td><td>'.number_format( $value->prix,"0",",",".").' XOF'.'</td>';
@@ -1104,7 +1093,7 @@ class StatistiqueController extends Controller
                     $vide.='</tr>';
                 }
 
-                $pdf2 = '<a '.'class'.'='.' "btn btn-success rounded-pill ri-arrow-down-circle-fill shadow" '.
+                $pdf2 = '<a '.'class'.'='.' "btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow" '.
                   'title'.'='.' "Télécharger pdf" '.'href'.'='."pdf-parcelle-dossier/$request->date_debut2/$request->date_fin2".'>'.
                      'Télécharger pdf'.
                   '</a>';

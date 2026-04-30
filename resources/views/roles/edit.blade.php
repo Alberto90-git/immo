@@ -323,7 +323,7 @@
                         </tr>
 
                         <tr>
-                            <td class="text-nowrap">Maintenance</td>
+                            <td class="text-nowrap">Interventions</td>
                             <td>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label text-dark">
@@ -338,6 +338,75 @@
                                                     class="form-check-input permission-maintenance"
                                                     {{ in_array($pM->id, $rolePermissions) ? 'checked' : '' }}>
                                                 {{ $pM->label }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap">Automatisation</td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        <input type="checkbox" id="selectAllAutomation" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
+                                    </label>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    @foreach($permissionAutomation as $p)
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label text-dark">
+                                                <input type="checkbox" name="permission[]" value="{{ $p->id }}"
+                                                    class="form-check-input permission-automation"
+                                                    {{ in_array($p->id, $rolePermissions) ? 'checked' : '' }}>
+                                                {{ $p->label }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap">Recouvrement</td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        <input type="checkbox" id="selectAllRecouvrement" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
+                                    </label>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    @foreach($permissionRecouvrement as $pRec)
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label text-dark">
+                                                <input type="checkbox" name="permission[]" value="{{ $pRec->id }}"
+                                                    class="form-check-input permission-recouvrement"
+                                                    {{ in_array($pRec->id, $rolePermissions) ? 'checked' : '' }}>
+                                                {{ $pRec->label }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap">Signature électronique</td>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-dark">
+                                        <input type="checkbox" id="selectAllSignature" class="form-check-input select-all"> {{ __('pages.role_perm_all') }}
+                                    </label>
+                                </div>
+                                <div class="d-flex flex-wrap">
+                                    @foreach($permissionSignature as $pSig)
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label text-dark">
+                                                <input type="checkbox" name="permission[]" value="{{ $pSig->id }}"
+                                                    class="form-check-input permission-signature"
+                                                    {{ in_array($pSig->id, $rolePermissions) ? 'checked' : '' }}>
+                                                {{ $pSig->label }}
                                             </label>
                                         </div>
                                     @endforeach
@@ -449,8 +518,11 @@
     setupSelectAll('selectAllAbonnement',   'permission-abonnement');
     setupSelectAll('selectAllEtatDesLieux',  'permission-etat-des-lieux');
     setupSelectAll('selectAllMaintenance',  'permission-maintenance');
-    setupSelectAll('selectAllEnvoi',        'permission-envoi');
-    setupSelectAll('selectAllUser',         'permission-user');
+    setupSelectAll('selectAllAutomation',   'permission-automation');
+    setupSelectAll('selectAllEnvoi',         'permission-envoi');
+    setupSelectAll('selectAllRecouvrement',  'permission-recouvrement');
+    setupSelectAll('selectAllSignature',     'permission-signature');
+    setupSelectAll('selectAllUser',          'permission-user');
 
     /* ── Soumission AJAX ── */
     function update_role() {

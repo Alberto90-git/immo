@@ -10,8 +10,13 @@ class TicketHistorique extends Model
 
     protected $fillable = ['ticket_id', 'statut_avant', 'statut_apres', 'commentaire', 'user_id'];
 
-    public function ticket() { return $this->belongsTo(TicketMaintenance::class, 'ticket_id'); }
-    public function user()   { return $this->belongsTo(User::class, 'user_id'); }
+    public function ticket() { 
+        return $this->belongsTo(TicketMaintenance::class, 'ticket_id'); 
+    }
+    
+    public function user() {
+         return $this->belongsTo(User::class, 'user_id'); 
+    }
 
     public function getStatutApresLabelAttribute()
     {

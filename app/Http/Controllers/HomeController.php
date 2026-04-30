@@ -404,6 +404,157 @@ class HomeController extends Controller
 
 
 
+    // ── Tableau de bord analytique (AJAX) ────────────────────────────────────────
+    public function analyticsData(Request $request)
+    {
+        try {
+            $dirId        = Auth::user()->iddirection_ref;
+            $idannexe_ref = get_active_annexe_id();
+            $now          = Carbon::now();
+
+            // ── Occupation par bâtiment ──────────────────────────────────────────
+            $maisons = Maison::whereNull('maisons.delete_at')
+                ->where('maisons.iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('maisons.idannexe_ref', $idannexe_ref))
+                ->leftJoin('chambres as c_all', function($j) {
+                    $j->on('c_all.maison_id', '=', 'maisons.id')->whereNull('c_all.delete_at');
+                })
+                ->leftJoin('chambres as c_occ', function($j) {
+                    $j->on('c_occ.maison_id', '=', 'maisons.id')->whereNull('c_occ.delete_at')->where('c_occ.etat', 1);
+                })
+                ->groupBy('maisons.id', 'maisons.nom_maison')
+                ->selectRaw('maisons.id, maisons.nom_maison,
+                    COUNT(DISTINCT c_all.id) as total_chambres,
+                    COUNT(DISTINCT c_occ.id) as chambres_occupees')
+                ->get()
+                ->map(fn($m) => [
+                    'nom'     => $m->nom_maison,
+                    'total'   => (int) $m->total_chambres,
+                    'occupees'=> (int) $m->chambres_occupees,
+                    'taux'    => $m->total_chambres > 0 ? round(($m->chambres_occupees / $m->total_chambres) * 100) : 0,
+                ]);
+
+            // ── Taux de recouvrement du mois ─────────────────────────────────────
+            $loyersAttendus = (int) Locataire::whereNull('delete_at')
+                ->where('status', true)->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->sum('prix_mois');
+
+            $loyersEncaisses = (int) Facture::whereNull('delete_at')
+                ->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->whereYear('date_paiement', $now->year)->whereMonth('date_paiement', $now->month)
+                ->sum('montant');
+
+            $tauxRecouvrement = $loyersAttendus > 0 ? round(($loyersEncaisses / $loyersAttendus) * 100, 1) : 0;
+
+            // ── Comparaison N vs N-1 ─────────────────────────────────────────────
+            $revenusN = []; $revenusN1 = []; $moisCourts = [];
+            for ($i = 0; $i < 12; $i++) {
+                $mois = Carbon::createFromDate($now->year, 1, 1)->addMonths($i);
+                $moisCourts[] = ucfirst($mois->locale('fr')->monthName);
+
+                $revenusN[] = (int) Facture::whereNull('delete_at')->where('iddirection_ref', $dirId)
+                    ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                    ->whereYear('date_paiement', $now->year)->whereMonth('date_paiement', $mois->month)
+                    ->sum('montant');
+
+                $revenusN1[] = (int) Facture::whereNull('delete_at')->where('iddirection_ref', $dirId)
+                    ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                    ->whereYear('date_paiement', $now->year - 1)->whereMonth('date_paiement', $mois->month)
+                    ->sum('montant');
+            }
+
+            // ── Impayés du mois courant ──────────────────────────────────────────
+            $impayes = Locataire::whereNull('locataires.delete_at')
+                ->where('locataires.status', true)->where('locataires.iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('locataires.idannexe_ref', $idannexe_ref))
+                ->whereNotExists(function($q) use ($now) {
+                    $q->from('factures')
+                      ->whereColumn('factures.locataire_id', 'locataires.id')
+                      ->whereNull('factures.delete_at')
+                      ->whereYear('factures.date_paiement', $now->year)
+                      ->whereMonth('factures.date_paiement', $now->month);
+                })
+                ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
+                ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
+                ->select(
+                    'locataires.nom', 'locataires.prenom', 'locataires.telephone',
+                    'locataires.prix_mois', 'locataires.date_entree',
+                    'maisons.nom_maison', 'chambres.numero_chambre'
+                )
+                ->get()
+                ->map(fn($l) => [
+                    'nom'       => $l->prenom . ' ' . $l->nom,
+                    'telephone' => $l->telephone ?? '–',
+                    'montant'   => $l->prix_mois,
+                    'logement'  => $l->nom_maison . ' · ' . $l->numero_chambre,
+                    'anciennete'=> Carbon::parse($l->date_entree)->diffInMonths($now),
+                ]);
+
+            // ── Top propriétaires rentables (12 mois glissants) ─────────────────
+            $topProprios = Proprietaire::whereNull('proprietaires.delete_at')
+                ->where('proprietaires.iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('proprietaires.idannexe_ref', $idannexe_ref))
+                ->join('maisons', 'maisons.proprio_id', '=', 'proprietaires.id')
+                ->whereNull('maisons.delete_at')
+                ->join('factures', 'factures.maison_id', '=', 'maisons.id')
+                ->whereNull('factures.delete_at')
+                ->where('factures.date_paiement', '>=', $now->copy()->subMonths(12)->startOfDay())
+                ->groupBy('proprietaires.id', 'proprietaires.nom', 'proprietaires.prenom')
+                ->selectRaw('proprietaires.id, proprietaires.nom, proprietaires.prenom, SUM(factures.montant) as total_revenus')
+                ->orderByDesc('total_revenus')
+                ->limit(6)
+                ->get()
+                ->map(fn($p) => ['nom' => $p->prenom . ' ' . $p->nom, 'total' => (int) $p->total_revenus]);
+
+            // ── Contrats à renouveler (>= 11 mois sans date_fin_bail) ───────────
+            $nbARenouveler = Locataire::whereNull('delete_at')
+                ->where('status', true)->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->where('date_entree', '<=', $now->copy()->subMonths(11)->toDateString())
+                ->count();
+
+            // ── Totaux N et N-1 pour comparaison ────────────────────────────────
+            $totalN  = array_sum($revenusN);
+            $totalN1 = array_sum($revenusN1);
+            $deltaRev = $totalN1 > 0 ? round((($totalN - $totalN1) / $totalN1) * 100, 1) : null;
+
+            $nbLocatairesN  = Locataire::whereNull('delete_at')->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->whereYear('date_entree', $now->year)->count();
+            $nbLocatairesN1 = Locataire::whereNull('delete_at')->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->whereYear('date_entree', $now->year - 1)->count();
+            $deltaLoc = $nbLocatairesN1 > 0 ? round((($nbLocatairesN - $nbLocatairesN1) / $nbLocatairesN1) * 100, 1) : null;
+
+            return response()->json([
+                'occupation_par_maison' => $maisons,
+                'taux_recouvrement'     => $tauxRecouvrement,
+                'loyers_attendus'       => $loyersAttendus,
+                'loyers_encaisses'      => $loyersEncaisses,
+                'revenus_n'             => $revenusN,
+                'revenus_n1'            => $revenusN1,
+                'mois_courts'           => $moisCourts,
+                'annee_n'               => $now->year,
+                'annee_n1'              => $now->year - 1,
+                'total_n'               => $totalN,
+                'total_n1'              => $totalN1,
+                'delta_rev'             => $deltaRev,
+                'nb_locataires_n'       => $nbLocatairesN,
+                'nb_locataires_n1'      => $nbLocatairesN1,
+                'delta_loc'             => $deltaLoc,
+                'impayes'               => $impayes,
+                'nb_impayes'            => $impayes->count(),
+                'nb_a_renouveler'       => $nbARenouveler,
+                'top_proprios'          => $topProprios,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function profile()
     {
         return view('profile');

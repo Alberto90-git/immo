@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Facture d'abonnement Lokativ</title>
+  <title>{{ __('mail.subscription_invoice.title') }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -175,6 +175,20 @@
     }
     .footer p { font-size: 12px; color: #94a3b8; line-height: 1.8; }
     .footer a { color: #1a56db; text-decoration: none; }
+
+  @media only screen and (max-width: 600px) {
+    body { padding: 0 !important; }
+    .wrapper { width: 100% !important; }
+    .header { border-radius: 0 !important; padding: 24px 16px !important; }
+    .body { padding: 24px 16px !important; }
+    .footer { border-radius: 0 !important; }
+    .body h2 { font-size: 18px !important; }
+    .info-row { display: block !important; padding: 12px 14px !important; }
+    .info-row .ir-icon { margin-bottom: 8px; }
+    .info-box { display: block !important; }
+    .info-box .icon { display: block; margin-bottom: 8px; }
+    .btn-connect { padding: 14px !important; }
+  }
   </style>
 </head>
 <body>
@@ -183,26 +197,26 @@
     <!-- Header -->
     <div class="header">
       <div class="brand">Loka<span>tiv</span></div>
-      <p>Plateforme de gestion immobilière</p>
-      <div class="badge-invoice">🧾 Facture d'abonnement</div>
+      <p>{{ __('mail.subscription_invoice.platform') }}</p>
+      <div class="badge-invoice">{{ __('mail.subscription_invoice.badge') }}</div>
     </div>
 
     <!-- Body -->
     <div class="body">
-      <h2>Merci pour votre confiance, {{ $invoiceData['user']['prenom'] }} !</h2>
+      <h2>{{ __('mail.subscription_invoice.welcome', ['prenom' => $invoiceData['user']['prenom']]) }}</h2>
       <p>
-        Bonjour <strong>{{ $invoiceData['user']['nom'] }} {{ $invoiceData['user']['prenom'] }}</strong>,<br>
-        Votre abonnement <strong>Lokativ</strong> est confirmé. Vous trouverez ci-dessous le récapitulatif ainsi que la facture PDF en pièce jointe.
+        {{ __('mail.subscription_invoice.greeting', ['nom' => $invoiceData['user']['nom'], 'prenom' => $invoiceData['user']['prenom']]) }}<br>
+        {!! __('mail.subscription_invoice.intro') !!}
       </p>
 
       <!-- Plan -->
       <div class="info-card">
-        <div class="card-header">Plan souscrit</div>
+        <div class="card-header">{{ __('mail.subscription_invoice.plan_header') }}</div>
 
         <div class="info-row">
           <div class="ir-icon">📦</div>
           <div>
-            <div class="ir-label">Plan</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.plan_label') }}</div>
             <div class="ir-value">{{ $invoiceData['plan']['nom'] }}</div>
           </div>
         </div>
@@ -210,7 +224,7 @@
         <div class="info-row">
           <div class="ir-icon">📅</div>
           <div>
-            <div class="ir-label">Période</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.period_label') }}</div>
             <div class="ir-value">
               {{ \Carbon\Carbon::parse($invoiceData['direction']['abonnement_debut'])->format('d/m/Y') }}
               &rarr;
@@ -222,11 +236,16 @@
         <div class="info-row">
           <div class="ir-icon">💰</div>
           <div>
-            <div class="ir-label">Montant</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.amount_label') }}</div>
             <div class="ir-value">
-              {{ $invoiceData['plan']['prix_annuel'] == 0
-                  ? 'Gratuit (essai)'
-                  : number_format($invoiceData['plan']['prix_annuel'], 0, ',', ' ') . ' XOF' }}
+              @php
+                $montantAffiche = isset($invoiceData['plan']['prix_total']) && $invoiceData['plan']['prix_total'] > 0
+                    ? $invoiceData['plan']['prix_total']
+                    : ($invoiceData['plan']['prix_annuel'] ?? 0);
+              @endphp
+              {{ $montantAffiche == 0
+                  ? __('mail.subscription_invoice.free_trial')
+                  : number_format($montantAffiche, 0, ',', ' ') . ' XOF' }}
             </div>
           </div>
         </div>
@@ -235,15 +254,15 @@
       <!-- Paiement (si applicable) -->
       @if(!empty($invoiceData['payment']))
       <div class="info-card">
-        <div class="card-header">Confirmation de paiement</div>
+        <div class="card-header">{{ __('mail.subscription_invoice.payment_header') }}</div>
 
         <div class="info-row payment">
           <div class="ir-icon">🏦</div>
           <div>
-            <div class="ir-label">Prestataire</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.provider_label') }}</div>
             <div class="ir-value">
               {{ $invoiceData['payment']['provider'] }}
-              <span class="badge-paid">✓ PAYÉ</span>
+              <span class="badge-paid">{{ __('mail.subscription_invoice.paid_badge') }}</span>
             </div>
           </div>
         </div>
@@ -251,7 +270,7 @@
         <div class="info-row payment">
           <div class="ir-icon">🔖</div>
           <div>
-            <div class="ir-label">Référence transaction</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.transaction_label') }}</div>
             <div class="ir-value"><code>{{ $invoiceData['payment']['transaction_id'] }}</code></div>
           </div>
         </div>
@@ -259,15 +278,15 @@
         <div class="info-row payment">
           <div class="ir-icon">💳</div>
           <div>
-            <div class="ir-label">Montant débité</div>
-            <div class="ir-value">{{ number_format($invoiceData['plan']['prix_annuel'], 0, ',', ' ') }} XOF</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.amount_paid_label') }}</div>
+            <div class="ir-value">{{ number_format($montantAffiche, 0, ',', ' ') }} XOF</div>
           </div>
         </div>
 
         <div class="info-row payment">
           <div class="ir-icon">🗓️</div>
           <div>
-            <div class="ir-label">Date</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.date_label') }}</div>
             <div class="ir-value">{{ \Carbon\Carbon::now()->format('d/m/Y à H:i') }}</div>
           </div>
         </div>
@@ -276,8 +295,8 @@
         <div class="info-row payment">
           <div class="ir-icon">⚠️</div>
           <div>
-            <div class="ir-label">Mode</div>
-            <div class="ir-value" style="color:#d97706;">Sandbox (test)</div>
+            <div class="ir-label">{{ __('mail.subscription_invoice.sandbox_label') }}</div>
+            <div class="ir-value" style="color:#d97706;">{{ __('mail.subscription_invoice.sandbox_value') }}</div>
           </div>
         </div>
         @endif
@@ -286,18 +305,18 @@
 
       <!-- Bouton connexion -->
       <a href="{{ config('app.url') }}/login" class="btn-connect">
-        Accéder à mon espace →
+        {{ __('mail.subscription_invoice.btn_text') }}
       </a>
 
       <!-- Note PDF -->
       <div class="info-box">
         <div class="icon">📎</div>
-        <p>La <strong>facture PDF</strong> est jointe à cet email pour vos archives. Conservez-la pour toute demande de remboursement ou justificatif comptable.</p>
+        <p>{!! __('mail.subscription_invoice.pdf_note') !!}</p>
       </div>
 
       <hr class="divider">
       <p style="font-size:13px; color:#94a3b8;">
-        Des questions ? Contactez notre support à
+        {{ __('mail.subscription_invoice.contact_note') }}
         <a href="mailto:support@lokativ.com" style="color:#1a56db;">support@lokativ.com</a>.
       </p>
     </div>
@@ -305,8 +324,10 @@
     <!-- Footer -->
     <div class="footer">
       <p>
-        &copy; {{ date('Y') }} Lokativ. Tous droits réservés.<br>
-        <a href="#">Politique de confidentialité</a> &nbsp;|&nbsp; <a href="#">Aide</a>
+        {!! __('mail.footer_rights', ['year' => date('Y')]) !!}<br>
+        <a href="#">{{ __('mail.subscription_invoice.footer_privacy') }}</a>
+        &nbsp;|&nbsp;
+        <a href="#">{{ __('mail.subscription_invoice.footer_help') }}</a>
       </p>
     </div>
 

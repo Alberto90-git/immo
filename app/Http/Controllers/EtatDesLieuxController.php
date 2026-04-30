@@ -18,6 +18,7 @@ use App\Maison;
 use App\Chambre;
 use PDF;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 
 class EtatDesLieuxController extends Controller
@@ -401,6 +402,10 @@ class EtatDesLieuxController extends Controller
         $envoye = false;
         $canal   = '';
 
+        // Locale de la direction
+        $dirId = Auth::user()->iddirection_ref ?? null;
+        App::setLocale(get_direction_locale($dirId));
+
         // Envoi email si disponible
         if (!empty($etat->locataire->email)) {
             try {
@@ -412,7 +417,7 @@ class EtatDesLieuxController extends Controller
                     'agence'      => $agence['designation'] ?? config('app.name'),
                 ], function ($m) use ($etat, $nomLocataire, $agence) {
                     $m->to($etat->locataire->email, $nomLocataire)
-                      ->subject('Signature état des lieux – ' . ($agence['designation'] ?? config('app.name')));
+                      ->subject(__('mail.signature_edl.subtitle') . ' – ' . ($agence['designation'] ?? config('app.name')));
                 });
                 $envoye = true;
                 $canal   = 'email';
@@ -444,8 +449,7 @@ class EtatDesLieuxController extends Controller
 
         return response()->json([
             'status'  => true,
-            'message' => 'Lien de signature envoyé par ' . $canal . '.',
-            'lien'    => $lien,
+            'message' => 'Lien de signature envoyé par ' . $canal . '.'
         ]);
     }
 
@@ -490,11 +494,26 @@ class EtatDesLieuxController extends Controller
             return response()->json(['status' => false, 'message' => 'Déjà signé.']);
         }
 
-        $etat->update([
-            'signe_locataire'    => true,
-            'signe_locataire_at' => Carbon::now(),
-            'statut'             => 'signe',
-        ]);
+        $signatureImage = $request->input('signature_image');
+        if (empty($signatureImage) || !preg_match('/^data:image\/png;base64,/', $signatureImage)) {
+            return response()->json(['status' => false, 'message' => 'Veuillez dessiner votre signature avant de valider.']);
+        }
+
+        try {
+            $etat->update([
+                'signe_locataire'           => true,
+                'signe_locataire_at'        => Carbon::now(),
+                'signature_locataire_image' => $signatureImage,
+                'statut'                    => 'signe',
+            ]);
+        } catch (\Exception $e) {
+            // Si la colonne n'existe pas encore (migration non lancée), on enregistre sans l'image
+            $etat->update([
+                'signe_locataire'    => true,
+                'signe_locataire_at' => Carbon::now(),
+                'statut'             => 'signe',
+            ]);
+        }
 
         return response()->json(['status' => true, 'message' => 'Signature enregistrée. Merci !']);
     }
