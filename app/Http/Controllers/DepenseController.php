@@ -404,6 +404,83 @@ class DepenseController extends Controller
     }
 
     // ──────────────────────────────────────────────────────────────────────────
+    // SYNTHÈSE ANNUELLE REVENUS FONCIERS PAR PROPRIÉTAIRE (CSV)
+    // ──────────────────────────────────────────────────────────────────────────
+    public function syntheseProprietaire(Request $request)
+    {
+        $dirId = $this->dirId();
+        $annee = (int) $request->input('annee', now()->year);
+
+        $dateDebut = Carbon::create($annee, 1, 1)->startOfDay();
+        $dateFin   = Carbon::create($annee, 12, 31)->endOfDay();
+
+        // Recettes par propriétaire via maisons
+        $recettesParProprio = \Illuminate\Support\Facades\DB::table('factures')
+            ->join('maisons', 'factures.maison_id', '=', 'maisons.id')
+            ->join('proprietaires', 'maisons.proprio_id', '=', 'proprietaires.id')
+            ->where('factures.iddirection_ref', $dirId)
+            ->whereNull('factures.delete_at')
+            ->whereBetween('factures.date_paiement', [$dateDebut, $dateFin])
+            ->selectRaw('proprietaires.id, proprietaires.nom, proprietaires.prenom, SUM(factures.montant) as total_recettes, COUNT(DISTINCT maisons.id) as nb_maisons')
+            ->groupBy('proprietaires.id', 'proprietaires.nom', 'proprietaires.prenom')
+            ->get()
+            ->keyBy('id');
+
+        // Dépenses imputées par propriétaire
+        $depensesParProprio = Depense::where('iddirection_ref', $dirId)
+            ->where('type_imputation', 'proprietaire')
+            ->whereBetween('date_depense', [$dateDebut, $dateFin])
+            ->selectRaw('proprietaire_id, SUM(montant) as total_depenses')
+            ->groupBy('proprietaire_id')
+            ->pluck('total_depenses', 'proprietaire_id');
+
+        // Fusion des données
+        $lignes = collect($recettesParProprio->all())
+            ->map(function ($row) use ($depensesParProprio) {
+                $dep = (float) ($depensesParProprio[$row->id] ?? 0);
+                return [
+                    'proprio'        => $row->nom . ' ' . $row->prenom,
+                    'nb_maisons'     => $row->nb_maisons,
+                    'recettes'       => (float) $row->total_recettes,
+                    'depenses'       => $dep,
+                    'resultat_net'   => (float) $row->total_recettes - $dep,
+                ];
+            })
+            ->sortByDesc('recettes')
+            ->values();
+
+        $devise   = get_devise_courante($dirId);
+        $filename = 'synthese_revenus_fonciers_' . $annee . '_' . now()->format('Ymd') . '.csv';
+        $headers  = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($lignes, $annee, $devise) {
+            $file = fopen('php://output', 'w');
+            fwrite($file, "\xEF\xBB\xBF");
+            fputcsv($file, ['Synthèse annuelle des revenus fonciers — ' . $annee], ';');
+            fputcsv($file, ['Propriétaire', 'Nbre maisons', 'Recettes (' . $devise . ')', 'Dépenses imputées (' . $devise . ')', 'Résultat net (' . $devise . ')'], ';');
+            foreach ($lignes as $l) {
+                fputcsv($file, [
+                    $l['proprio'],
+                    $l['nb_maisons'],
+                    number_format($l['recettes'],     2, ',', ' '),
+                    number_format($l['depenses'],     2, ',', ' '),
+                    number_format($l['resultat_net'], 2, ',', ' '),
+                ], ';');
+            }
+            // Ligne totaux
+            $totRec = $lignes->sum('recettes');
+            $totDep = $lignes->sum('depenses');
+            fputcsv($file, ['TOTAL', '', number_format($totRec, 2, ',', ' '), number_format($totDep, 2, ',', ' '), number_format($totRec - $totDep, 2, ',', ' ')], ';');
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
     // Helper format
     // ──────────────────────────────────────────────────────────────────────────
     private function formatDepense(Depense $d): array

@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use DateTime;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -225,6 +226,7 @@ class FactureController extends Controller
                   'message' => "Paiement effectué avec succès, aller télécharger le réçu",
                   'facture' => [
                     'id'             => $facture->id,
+                    'encoded_id'     => encrypt_id($facture->id),
                     'nom_maison'     => $maisonObj ? $maisonObj->nom_maison : '',
                     'numero_chambre' => $facture->numero_chambre,
                     'type_chambre'   => $facture->type_chambre,
@@ -310,6 +312,7 @@ class FactureController extends Controller
                       'message' => "Paiement effectué avec succès, aller télécharger le réçu",
                       'facture' => [
                         'id'             => $facture->id,
+                        'encoded_id'     => encrypt_id($facture->id),
                         'nom_maison'     => $maisonObj ? $maisonObj->nom_maison : '',
                         'numero_chambre' => $facture->numero_chambre,
                         'type_chambre'   => $facture->type_chambre,
@@ -370,6 +373,7 @@ class FactureController extends Controller
       if ($request->type_paiement == 'direct') {
 
         $exist  = Facture::where('id', $request->facture_id2)
+          ->where('iddirection_ref', Auth::user()->iddirection_ref)
           ->where('type_paiement', "avance")
           ->first();
 
@@ -378,14 +382,22 @@ class FactureController extends Controller
           $nombre_avance = FactureController::requeteData($request->locataire_id2, 'nombre_avance_consomme');
 
           $facture = Locataire::where('id', $request->locataire_id2)
+            ->where('iddirection_ref', Auth::user()->iddirection_ref)
             ->update([
               'nombre_avance_consomme' => $nombre_avance - 1,
             ]);
         }
 
-        $oldFacture = Facture::find($request->facture_id2);
+        $oldFacture = Facture::where('id', $request->facture_id2)
+            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->first();
+
+        if (!$oldFacture) {
+            return response()->json(['status' => false, 'message' => 'Paiement introuvable']);
+        }
 
         $facture = Facture::where('id', $request->facture_id2)
+                          ->where('iddirection_ref', Auth::user()->iddirection_ref)
                           ->update([
                             'maison_id' => $request->maison_id2,
                             'chambre_id' => $request->chambre_id2,
@@ -424,12 +436,14 @@ class FactureController extends Controller
 
         //RECUPERATION DU NOMBRE D'AVANCE QUI RESTE
         $nombre_avance_restant = Locataire::where('id', $request->locataire_id2)
+                                          ->where('iddirection_ref', Auth::user()->iddirection_ref)
                                           ->whereNull('delete_at')
                                           ->where('status', true)
                                           ->get()
                                           ->pluck('nombre_avance')[0];
 
         $nombre_avance_consomme = Locataire::where('id', $request->locataire_id2)
+                                            ->where('iddirection_ref', Auth::user()->iddirection_ref)
                                             ->whereNull('delete_at')
                                             ->where('status', true)
                                             ->get()
@@ -441,6 +455,7 @@ class FactureController extends Controller
           // Mettre à jour le nombre d'avance consommé
 
           $diminue_nombre_avance = Locataire::where('id', $request->locataire_id2)
+            ->where('iddirection_ref', Auth::user()->iddirection_ref)
             ->whereNull('delete_at')
             ->where('status', true)
             ->update([
@@ -449,9 +464,12 @@ class FactureController extends Controller
           //Je crée le paiement
           if ($diminue_nombre_avance) {
 
-            $oldFacture2 = Facture::find($request->facture_id2);
+            $oldFacture2 = Facture::where('id', $request->facture_id2)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
 
             $facture = Facture::where('id', $request->facture_id2)
+              ->where('iddirection_ref', Auth::user()->iddirection_ref)
               ->update([
                 'maison_id' => $request->maison_id2,
                 'chambre_id' => $request->chambre_id2,
@@ -552,6 +570,7 @@ class FactureController extends Controller
 
   public function factureParMois($id)
   {
+      $id = decrypt_id($id); abort_if(!$id, 404);
       try {
            // Version professionnelle sur une page A5
             $fpdf = new FPDF('P', 'mm', 'A5');
@@ -595,7 +614,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 14);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetXY(30, $y);
-            $fpdf->Cell($pageWidth - 40, 8, 'QUITTANCE DE LOYER MENSUEL', 0, 1, 'C');
+            $fpdf->Cell($pageWidth - 40, 8, utf8_decode(__('pdf.quittance_mensuelle_title')), 0, 1, 'C');
 
             // Informations agence
             if ($annexeData) {
@@ -664,7 +683,7 @@ class FactureController extends Controller
             $mois = $this->requeteDataFactureMois($id, 'mois');
             //$mode_paiement = $this->requeteDataFactureMois($id, 'mode_paiement');
             $type_paiement = $this->requeteDataFactureMois($id, 'type_paiement');
-            $valeur = $type_paiement == 'direct' ? 'Direct' : 'Dans son avance';
+            $valeur = $type_paiement == 'direct' ? utf8_decode(__('pdf.fpdf_type_direct')) : utf8_decode(__('pdf.fpdf_type_avance'));
 
             $date_paiement = Facture::where('factures.id', $id)
                                     ->join('maisons', 'factures.maison_id', '=', 'maisons.id')
@@ -679,7 +698,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 10);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell(0, 6, 'INFORMATIONS', 0, 1);
+            $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_informations')), 0, 1);
             $y += 8;
 
             // Grille d'informations compacte
@@ -690,7 +709,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($labelWidth, $lineHeight, 'Locataire:', 0, 0);
+            $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_locataire')), 0, 0);
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetTextColor(0, 0, 0);
             $fpdf->Cell(0, $lineHeight, utf8_decode($nom_locataire . ' ' . $prenom_locataire), 0, 1);
@@ -700,7 +719,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($labelWidth, $lineHeight, 'Maison:', 0, 0);
+            $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_maison')), 0, 0);
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetTextColor(0, 0, 0);
             $fpdf->Cell(0, $lineHeight, utf8_decode($maison), 0, 1);
@@ -710,7 +729,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($labelWidth, $lineHeight, 'Chambre:', 0, 0);
+            $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_chambre')), 0, 0);
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetTextColor(0, 0, 0);
             $fpdf->Cell(0, $lineHeight, utf8_decode('N° ' . $numero_chambre . ' (' . $type_chambre . ')'), 0, 1);
@@ -720,7 +739,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($labelWidth, $lineHeight, 'Profession:', 0, 0);
+            $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_profession')), 0, 0);
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetTextColor(0, 0, 0);
             $fpdf->Cell(0, $lineHeight, utf8_decode($profession), 0, 1);
@@ -730,12 +749,12 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 10);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell(0, 6, 'DETAILS DU PAIEMENT', 0, 1);
+            $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_details_paiement')), 0, 1);
             $y += 5;
 
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell(0, 6, 'Mode paiement :'.utf8_decode($mode_paiement), 0, 1);
+            $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_mode_paiement')) . utf8_decode($mode_paiement), 0, 1);
             $y += 8;
             // Tableau des détails
             $colDesc = 70;
@@ -746,15 +765,15 @@ class FactureController extends Controller
             $fpdf->SetTextColor(255, 255, 255);
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($colDesc, 6, 'DESCRIPTION', 1, 0, 'L', true);
-            $fpdf->Cell($colValue, 6, 'VALEUR', 1, 1, 'C', true);
+            $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_col_description')), 1, 0, 'L', true);
+            $fpdf->Cell($colValue, 6, utf8_decode(__('pdf.fpdf_col_valeur')), 1, 1, 'C', true);
             $y += 6;
 
             // Ligne 1 - Période
             $fpdf->SetTextColor(0, 0, 0);
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($colDesc, 6, utf8_decode('Période de loyer'), 1, 0, 'L');
+            $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_periode_loyer')), 1, 0, 'L');
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->Cell($colValue, 6, utf8_decode($mois), 1, 1, 'C');
             $y += 6;
@@ -762,7 +781,7 @@ class FactureController extends Controller
             // Ligne 2 - Type de paiement
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($colDesc, 6, 'Type de paiement', 1, 0, 'L');
+            $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_type_paiement_col')), 1, 0, 'L');
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->Cell($colValue, 6, utf8_decode($valeur), 1, 1, 'C');
             $y += 6;
@@ -770,7 +789,7 @@ class FactureController extends Controller
             // Ligne 3 - Date de paiement
             $fpdf->SetFont('Arial', '', 8);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($colDesc, 6, 'Date de paiement', 1, 0, 'L');
+            $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_date_paiement_col')), 1, 0, 'L');
             $fpdf->SetFont('Arial', 'B', 8);
             $fpdf->Cell($colValue, 6, date('d/m/Y H:i', strtotime($date_paiement)), 1, 1, 'C');
             $y += 8;
@@ -785,7 +804,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 9);
             $fpdf->SetTextColor(0, 0, 0);
             $fpdf->SetXY(10, $y);
-            $fpdf->Cell($colDesc, 6,utf8_decode('MONTANT PERÇU:') , 0, 0, 'L');
+            $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_montant_percu')), 0, 0, 'L');
 
             $fpdf->SetFont('Arial', 'B', 11);
             $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
@@ -803,9 +822,9 @@ class FactureController extends Controller
               $fpdf->SetTextColor(0, 0, 0);
               $fpdf->SetX(10);
           
-              $montantLettres = ucfirst(nombreEnLettres($prix_mois)) . ' francs CFA';
+              $montantLettres = ucfirst(nombreEnLettres($prix_mois)) . ' ' . get_devise_courante();
               $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
-              $fpdf->MultiCell(190, 6, utf8_decode('Quittance arrêtée à :'.$montantLettres), 0, 'L');
+              $fpdf->MultiCell(190, 6, utf8_decode(__('pdf.fpdf_quittance_arretee') . $montantLettres), 0, 'L');
           
               $y = $fpdf->GetY() + 8;
           }
@@ -818,7 +837,7 @@ class FactureController extends Controller
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetXY(10, $cashY);
-            $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+            $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_modes_paiement_mobile')), 0, 1, 'L');
             $fpdf->SetFont('Arial', '', 7);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetX(10);
@@ -834,7 +853,7 @@ class FactureController extends Controller
             $fpdf->MultiCell(
               $pageWidth - 20,
               3,
-              utf8_decode('Cette quittance fait foi de paiement du loyer pour la période indiquée.'),
+              utf8_decode(__('pdf.fpdf_quittance_footer')),
               0,
               'C'
             );
@@ -850,7 +869,7 @@ class FactureController extends Controller
               ? $facture->numero_quittance
               : 'FACT-' . str_pad($id, 6, '0', STR_PAD_LEFT) . '-' . $date_paiement->format('dmY');
           $fpdf->SetXY(10, $y);
-          $fpdf->Cell(0, 4,utf8_decode('Référence: ')  . $ref, 0, 1, 'C');
+          $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_reference')) . $ref, 0, 1, 'C');
           $y += 8;
 
           // Pied de page avec signatures
@@ -864,11 +883,11 @@ class FactureController extends Controller
           $fpdf->SetFont('Arial', 'I', 7);
           $fpdf->SetTextColor(100, 100, 100);
           $fpdf->SetXY(10, $signatureY);
-          $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du locataire'), 0, 0, 'C');
+          $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_locataire')), 0, 0, 'C');
 
           // Signature responsable
           $fpdf->SetX(($pageWidth - 30) / 2 + 20);
-          $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
+          $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_responsable')), 0, 1, 'C');
 
           // Image signature dans colonne droite (signature_path ou cash_electronique_image_path en fallback)
           $sigImgPath = null;
@@ -905,13 +924,13 @@ class FactureController extends Controller
           $fpdf->SetY($pageHeight - 12);
           $fpdf->SetFont('Arial', 'I', 7);
           $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
-          $fpdf->Cell(0, 3, 'Merci pour votre confiance !', 0, 0, 'C');
+          $fpdf->Cell(0, 3, utf8_decode(__('pdf.fpdf_merci')), 0, 0, 'C');
 
           // Date de génération
           $fpdf->SetY($pageHeight - 8);
           $fpdf->SetFont('Arial', 'I', 6);
           $fpdf->SetTextColor(120, 120, 120);
-          $fpdf->Cell(0, 3, utf8_decode('Facture générée le ')  .utf8_decode(date('d/m/Y à H:i')) , 0, 0, 'C');
+          $fpdf->Cell(0, 3, utf8_decode(__('pdf.fpdf_generated')) . utf8_decode(date('d/m/Y')), 0, 0, 'C');
 
           // Journalisation
           activity()->performedOn(new Facture())
@@ -947,6 +966,7 @@ class FactureController extends Controller
 
   public function factureAvance($id)
   {
+      $id = decrypt_id($id); abort_if(!$id, 404);
       // Version professionnelle sur une page A5
       $fpdf = new FPDF('P', 'mm', 'A5');
       $fpdf->SetAutoPageBreak(false);
@@ -989,7 +1009,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 14);
       $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
       $fpdf->SetXY(30, $y);
-      $fpdf->Cell($pageWidth - 40, 8, 'QUITTANCE DE CAUTION', 0, 1, 'C');
+      $fpdf->Cell($pageWidth - 40, 8, utf8_decode(__('pdf.quittance_caution_title')), 0, 1, 'C');
 
       // Informations agence
       if ($annexeData) {
@@ -1034,7 +1054,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 10);
       $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell(0, 6, 'INFORMATIONS', 0, 1);
+      $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_informations')), 0, 1);
       $y += 8;
 
       // Grille d'informations compacte
@@ -1045,7 +1065,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 8);
       $fpdf->SetTextColor(80, 80, 80);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($labelWidth, $lineHeight, 'Locataire:', 0, 0);
+      $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_locataire')), 0, 0);
       $fpdf->SetFont('Arial', '', 8);
       $fpdf->SetTextColor(0, 0, 0);
       $fpdf->Cell(0, $lineHeight, utf8_decode($nom_locataire . ' ' . $prenom_locataire), 0, 1);
@@ -1055,7 +1075,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 8);
       $fpdf->SetTextColor(80, 80, 80);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($labelWidth, $lineHeight, 'Maison:', 0, 0);
+      $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_maison')), 0, 0);
       $fpdf->SetFont('Arial', '', 8);
       $fpdf->SetTextColor(0, 0, 0);
       $fpdf->Cell(0, $lineHeight, utf8_decode($maison), 0, 1);
@@ -1065,7 +1085,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 8);
       $fpdf->SetTextColor(80, 80, 80);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($labelWidth, $lineHeight, 'Chambre:', 0, 0);
+      $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_chambre')), 0, 0);
       $fpdf->SetFont('Arial', '', 8);
       $fpdf->SetTextColor(0, 0, 0);
       $fpdf->Cell(0, $lineHeight, utf8_decode('N° ' . $numero_chambre . ' (' . $type_chambre . ')'), 0, 1);
@@ -1075,7 +1095,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 8);
       $fpdf->SetTextColor(80, 80, 80);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($labelWidth, $lineHeight, 'Profession:', 0, 0);
+      $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_profession')), 0, 0);
       $fpdf->SetFont('Arial', '', 8);
       $fpdf->SetTextColor(0, 0, 0);
       $fpdf->Cell(0, $lineHeight, utf8_decode($profession), 0, 1);
@@ -1085,7 +1105,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 8);
       $fpdf->SetTextColor(80, 80, 80);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($labelWidth, $lineHeight, utf8_decode('Date entrée:'), 0, 0);
+      $fpdf->Cell($labelWidth, $lineHeight, utf8_decode(__('pdf.fpdf_date_entree')), 0, 0);
       $fpdf->SetFont('Arial', '', 8);
       $fpdf->SetTextColor(0, 0, 0);
       $fpdf->Cell(0, $lineHeight, date('d/m/Y', strtotime($mode_paiement)), 0, 1);
@@ -1095,12 +1115,12 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 10);
       $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell(0, 6, 'DETAILS DES MONTANTS', 0, 1);
+      $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_details_montants')), 0, 1);
       $y += 4;
 
       $fpdf->SetFont('Arial', 'B', 7);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell(0, 6, 'Mode paiement :'.utf8_decode($mode_paiement), 0, 1);
+      $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_mode_paiement')) . utf8_decode($mode_paiement), 0, 1);
       $y += 8;
 
 
@@ -1114,9 +1134,9 @@ class FactureController extends Controller
       $fpdf->SetTextColor(255, 255, 255);
       $fpdf->SetFont('Arial', 'B', 8);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($colDesc, 6, 'DESCRIPTION', 1, 0, 'L', true);
-      $fpdf->Cell($colQte, 6, 'QTE', 1, 0, 'C', true);
-      $fpdf->Cell($colMontant, 6, 'MONTANT', 1, 1, 'C', true);
+      $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_col_description')), 1, 0, 'L', true);
+      $fpdf->Cell($colQte, 6, utf8_decode(__('pdf.fpdf_col_qte')), 1, 0, 'C', true);
+      $fpdf->Cell($colMontant, 6, utf8_decode(__('pdf.fpdf_col_montant')), 1, 1, 'C', true);
       $y += 6;
 
       // Calcul des montants
@@ -1126,10 +1146,10 @@ class FactureController extends Controller
 
       // Items du tableau
       $items = [
-          ['Avance', $nombre_avance . ' mois', $montant_avance],
-          ['Caution', $nombre_caution . ' mois', $montant_caution],
-          ['Caution électricité', '1', $caution_courant],
-          ['Caution eau', '1', $caution_eau]
+          [utf8_decode(__('pdf.fpdf_caution_avance')),      $nombre_avance . ' mois',  $montant_avance],
+          [utf8_decode(__('pdf.fpdf_caution_caution')),     $nombre_caution . ' mois', $montant_caution],
+          [utf8_decode(__('pdf.fpdf_caution_electricite')), '1',                       $caution_courant],
+          [utf8_decode(__('pdf.fpdf_caution_eau')),         '1',                       $caution_eau],
       ];
 
       foreach ($items as $item) {
@@ -1155,7 +1175,7 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'B', 9);
       $fpdf->SetTextColor(0, 0, 0);
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell($colDesc + $colQte, 6, 'TOTAL A PAYER:', 0, 0, 'L');
+      $fpdf->Cell($colDesc + $colQte, 6, utf8_decode(__('pdf.fpdf_total_a_payer')), 0, 0, 'L');
 
       $fpdf->SetFont('Arial', 'B', 11);
       $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
@@ -1172,7 +1192,7 @@ class FactureController extends Controller
           
           $montantLettres = ucfirst(nombreEnLettres($total)) . ' ' . get_devise_courante();
           $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
-          $fpdf->MultiCell(190, 6, utf8_decode('Quittance arrêtée à ' . $montantLettres), 0, 'L');
+          $fpdf->MultiCell(190, 6, utf8_decode(__('pdf.fpdf_quittance_arretee_a') . ' ' . $montantLettres), 0, 'L');
           
           $y = $fpdf->GetY() + 8;
       }
@@ -1183,7 +1203,7 @@ class FactureController extends Controller
           $fpdf->SetFont('Arial', 'B', 7);
           $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
           $fpdf->SetXY(10, $cashY);
-          $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+          $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_modes_paiement_mobile')), 0, 1, 'L');
           $fpdf->SetFont('Arial', '', 7);
           $fpdf->SetTextColor(80, 80, 80);
           $fpdf->SetX(10);
@@ -1199,7 +1219,7 @@ class FactureController extends Controller
           $fpdf->MultiCell(
               $pageWidth - 20,
               3,
-              utf8_decode('Cette quittance fait foi de paiement des cautions pour le logement indiqué.'),
+              utf8_decode(__('pdf.fpdf_caution_footer')),
               0,
               'C'
           );
@@ -1216,7 +1236,7 @@ class FactureController extends Controller
       $fpdf->SetTextColor(50, 50, 50);
       $ref = 'FACT-' . str_pad($id, 6, '0', STR_PAD_LEFT) . '-' . $date_entre->format('dmY');
       $fpdf->SetXY(10, $y);
-      $fpdf->Cell(0, 4, utf8_decode('Référence: ') . $ref, 0, 1, 'C');
+      $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_reference')) . $ref, 0, 1, 'C');
       $y += 8;
 
       // Pied de page avec signatures
@@ -1230,11 +1250,11 @@ class FactureController extends Controller
       $fpdf->SetFont('Arial', 'I', 7);
       $fpdf->SetTextColor(100, 100, 100);
       $fpdf->SetXY(10, $signatureY);
-      $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du locataire'), 0, 0, 'C');
+      $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_locataire')), 0, 0, 'C');
 
       // Signature responsable
       $fpdf->SetX(($pageWidth - 30) / 2 + 20);
-      $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
+      $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_responsable')), 0, 1, 'C');
 
       // Image signature dans colonne droite (signature_path ou cash_electronique_image_path en fallback)
       $sigImgPath = null;
@@ -1277,7 +1297,7 @@ class FactureController extends Controller
       $fpdf->SetY($pageHeight - 8);
       $fpdf->SetFont('Arial', 'I', 6);
       $fpdf->SetTextColor(120, 120, 120);
-      $fpdf->Cell(0, 3, utf8_decode('Quittance générée le ') . utf8_decode(date('d/m/Y à H:i')), 0, 0, 'C');
+      $fpdf->Cell(0, 3, utf8_decode(__('pdf.fpdf_quittance_generee')) . utf8_decode(date('d/m/Y')), 0, 0, 'C');
 
       // Journalisation
       activity()->performedOn(new Facture())
@@ -1295,6 +1315,7 @@ class FactureController extends Controller
 
   public function releveLocataire($id)
   {
+      $id = decrypt_id($id); abort_if(!$id, 404);
       try {
           $pdfService = new PdfGeneratorService();
           $result = $pdfService->genererReleveLocataire((int)$id);
@@ -1310,6 +1331,7 @@ class FactureController extends Controller
 
   public function attestationResidence($id)
   {
+      $id = decrypt_id($id); abort_if(!$id, 404);
       try {
           $pdfService = new PdfGeneratorService();
           $result = $pdfService->genererAttestationResidence((int)$id);
@@ -1325,6 +1347,7 @@ class FactureController extends Controller
 
   public function attestationPaiement($id)
   {
+      $id = decrypt_id($id); abort_if(!$id, 404);
       try {
           $pdfService = new PdfGeneratorService();
           $result = $pdfService->genererAttestationPaiement((int)$id);
@@ -1333,6 +1356,22 @@ class FactureController extends Controller
               ->header('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"');
       } catch (\Exception $e) {
           return back()->with('error', "Erreur lors de la generation de l'attestation de paiement.");
+      }
+  }
+
+  // ─── Reçu de caution ──────────────────────────────────────────────────────────
+
+  public function quittanceCaution($id)
+  {
+      $id = decrypt_id($id); abort_if(!$id, 404);
+      try {
+          $pdfService = new PdfGeneratorService();
+          $result = $pdfService->genererQuittanceCaution((int)$id);
+          return response($result['content'], 200)
+              ->header('Content-Type', 'application/pdf')
+              ->header('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"');
+      } catch (\Exception $e) {
+          return back()->with('error', 'Erreur lors de la génération du reçu de caution.');
       }
   }
 

@@ -245,7 +245,7 @@
               @endphp
               {{ $montantAffiche == 0
                   ? __('mail.subscription_invoice.free_trial')
-                  : number_format($montantAffiche, 0, ',', ' ') . ' XOF' }}
+                  : number_format($montantAffiche, 0, ',', ' ') . ' ' . ($invoiceData['devise'] ?? get_symbole_devise('XOF')) }}
             </div>
           </div>
         </div>
@@ -279,7 +279,7 @@
           <div class="ir-icon">💳</div>
           <div>
             <div class="ir-label">{{ __('mail.subscription_invoice.amount_paid_label') }}</div>
-            <div class="ir-value">{{ number_format($montantAffiche, 0, ',', ' ') }} XOF</div>
+            <div class="ir-value">{{ number_format($montantAffiche, 0, ',', ' ') }} {{ $invoiceData['devise'] ?? get_symbole_devise('XOF') }}</div>
           </div>
         </div>
 

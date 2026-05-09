@@ -257,8 +257,12 @@ class PubliciteController extends Controller
                     }
                 }
 
-                Publicite::where('id',$request->id)->update($updateData);
-                $updatedPub = Publicite::find($request->id);
+                Publicite::where('id',$request->id)
+                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                    ->update($updateData);
+                $updatedPub = Publicite::where('id',$request->id)
+                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                    ->first();
 
                 if ($updatedPub) {
 
@@ -312,7 +316,9 @@ class PubliciteController extends Controller
                 ]);
             }
 
-            $pub = Publicite::find($request->id);
+            $pub = Publicite::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
             if (!$pub) {
                 return response()->json([
                     'status' => false,
@@ -370,7 +376,9 @@ class PubliciteController extends Controller
                 ]);
             }
 
-            $pub = Publicite::find($request->id);
+            $pub = Publicite::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
             if (!$pub) {
                 return response()->json([
                     'status' => false,

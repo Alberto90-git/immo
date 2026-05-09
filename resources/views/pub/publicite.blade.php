@@ -116,6 +116,12 @@
         font-size: 0.7rem;
         line-height: 1.4;
     }
+    /* Dark mode */
+    html.dark-style .img-slot,
+    html.dark-style .edit-img-box { background:#373852; border-color:#444564; }
+    html.dark-style .img-slot:hover { border-color:#696cff; }
+    html.dark-style .slot-placeholder,
+    html.dark-style .edit-placeholder { color:#7f7f9d; }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -145,30 +151,30 @@
             <form class="row g-3" method="post" action="javascript:void(0);" id="formulaire" enctype="multipart/form-data">
                 @csrf
 
-                 <div class="col-6">
+                 <div class="col-12 col-sm-6">
                    <label class="form-label">{{ __('pages.pub_label_address') }}<span style="color: red;">*</span></label>
                    <input type="text" name="adresse" class="form-control" id="adresse" required="">
                    <span class="invalid-feedback adresse_err" role="alert"></span>
                  </div>
-                 <div class="col-6">
+                 <div class="col-12 col-sm-6">
                    <label class="form-label">{{ __('pages.pub_label_area') }}<span style="color: red;">*</span></label>
                    <input type="text" name="superficie" class="form-control" id="superficie" onkeypress="return /[0-9]/i.test(event.key)" required="">
                    <span class="invalid-feedback superficie_err" role="alert"></span>
                  </div>
-                 <div class="col-6">
+                 <div class="col-12 col-sm-6">
                    <label class="form-label">{{ __('pages.pub_label_price') }}<span style="color: red;">*</span></label>
                    <input type="text" name="prix_vente" class="form-control" id="prix_vente" onkeypress="return /[0-9]/i.test(event.key)" required="">
                    <span class="invalid-feedback prix_vente_err" role="alert"></span>
                  </div>
 
-                 <div class="col-6">
+                 <div class="col-12 col-sm-6">
                    <label class="form-label">{{ __('pages.pub_label_phone') }}<span style="color: red;">*</span></label>
                    <input type="tel" name="telephone" class="form-control" id="telephone" required="">
                    <span class="invalid-feedback telephone_err" role="alert"></span>
                  </div>
 
                  <!-- Marketplace fields -->
-                 <div class="col-4">
+                 <div class="col-6 col-md-4">
                    <label class="form-label">Type de bien</label>
                    <select name="type_bien" id="type_bien" class="form-select">
                      <option value="">-- Choisir --</option>
@@ -182,19 +188,19 @@
                      <option value="studio">Studio</option>
                    </select>
                  </div>
-                 <div class="col-4">
+                 <div class="col-6 col-md-4">
                    <label class="form-label">Ville</label>
                    <input type="text" name="ville" id="ville" class="form-control" placeholder="Ex: Cotonou">
                  </div>
-                 <div class="col-4">
+                 <div class="col-6 col-md-4">
                    <label class="form-label">Quartier</label>
                    <input type="text" name="quartier" id="quartier" class="form-control" placeholder="Ex: Fidjrossè">
                  </div>
-                 <div class="col-6">
+                 <div class="col-12 col-sm-6">
                    <label class="form-label">Latitude <small class="text-muted">(optionnel)</small></label>
                    <input type="number" step="any" name="lat" id="lat" class="form-control" placeholder="6.3703">
                  </div>
-                 <div class="col-6">
+                 <div class="col-12 col-sm-6">
                    <label class="form-label">Longitude <small class="text-muted">(optionnel)</small></label>
                    <input type="number" step="any" name="lng" id="lng" class="form-control" placeholder="2.3912">
                  </div>
@@ -350,7 +356,7 @@
                     <div id="gedetail-images" class="row g-2 mb-3"></div>
                     <div class="mt-2">
                         <p class="mb-1"><strong>{{ __('pages.pub_detail_area') }}</strong> <span id="gedetail-superficie"></span> m²</p>
-                        <p class="mb-1"><strong>{{ __('pages.pub_detail_price') }}</strong> <span id="gedetail-prix"></span> XOF</p>
+                        <p class="mb-1"><strong>{{ __('pages.pub_detail_price') }}</strong> <span id="gedetail-prix"></span> {{ get_symbole_devise() }}</p>
                         <p class="mb-1"><strong>{{ __('pages.pub_detail_contact') }}</strong> <span id="gedetail-telephone"></span></p>
                         <p class="mb-1" id="gedetail-publie-row"><strong>{{ __('pages.pub_detail_published') }}</strong> <span id="gedetail-publie"></span></p>
                     </div>
@@ -374,23 +380,23 @@
             <form class="row g-3" id="globalModifierForm" enctype="multipart/form-data">
               @csrf
               <input type="hidden" name="id" id="gedit-id">
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.pub_label_address') }}<span style="color: red;">*</span></label>
                 <input type="text" name="adresse" id="gedit-adresse" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.pub_label_area') }}<span style="color: red;">*</span></label>
                 <input type="text" name="superficie" id="gedit-superficie" class="form-control" onkeypress="return /[0-9]/i.test(event.key)" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.pub_label_price') }}<span style="color: red;">*</span></label>
                 <input type="text" name="prix_vente" id="gedit-prix" class="form-control" onkeypress="return /[0-9]/i.test(event.key)" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.pub_label_phone') }}<span style="color: red;">*</span></label>
                 <input type="tel" name="telephone" id="gedit-telephone" class="form-control" required>
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <label class="form-label">Type de bien</label>
                 <select name="type_bien" id="gedit-type_bien" class="form-select">
                   <option value="">-- Choisir --</option>
@@ -399,23 +405,23 @@
                   @endforeach
                 </select>
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <label class="form-label">Ville</label>
                 <input type="text" name="ville" id="gedit-ville" class="form-control" placeholder="Cotonou">
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <label class="form-label">Quartier</label>
                 <input type="text" name="quartier" id="gedit-quartier" class="form-control" placeholder="Fidjrossè">
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <label class="form-label">Latitude</label>
                 <input type="number" step="any" name="lat" id="gedit-lat" class="form-control" placeholder="6.3703">
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <label class="form-label">Longitude</label>
                 <input type="number" step="any" name="lng" id="gedit-lng" class="form-control" placeholder="2.3912">
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <label class="form-label">URL Vidéo</label>
                 <input type="url" name="video_url" id="gedit-video_url" class="form-control" placeholder="https://...">
               </div>
@@ -587,7 +593,7 @@
 
         function formatPrice(n) {
             var s = Math.round(Number(n)).toString();
-            return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' XOF';
+            return s.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' {{ get_symbole_devise() }}';
         }
 
         function esc(s) {
@@ -1023,7 +1029,7 @@
             $('#globalDetailTitle').text(PUB_I18N.detailPrefix + (pub.localisation || ''));
             $('#gedetail-description').text(pub.description || '');
             $('#gedetail-superficie').text(pub.Superficie || '');
-            $('#gedetail-prix').text(formatPrice(pub.price).replace(' XOF', ''));
+            $('#gedetail-prix').text(formatPrice(pub.price).replace(' {{ get_symbole_devise() }}', ''));
             $('#gedetail-telephone').text(pub.telephone || '');
             var publie = pub.published_at || '';
             $('#gedetail-publie').text(publie);

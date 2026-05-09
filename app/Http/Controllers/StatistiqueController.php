@@ -10,7 +10,8 @@ use App\Parcelle;
 use App\Locataire;
 use App\Facture;
 use PDF;
-use Carbon\Carbon;  
+use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -126,9 +127,9 @@ class StatistiqueController extends Controller
         $valeur = '';
 
 
-        $proprio_nom     =  $this->getProprietaireNom($request->idRecu);
-
-        $proprio_prenom    = $this->getProprietairePrenom($request->idRecu);
+        $proprio_obj    = $this->getProprietaire($request->idRecu);
+        $proprio_nom    = $proprio_obj ? $proprio_obj->nom    : '';
+        $proprio_prenom = $proprio_obj ? $proprio_obj->prenom : '';
 
         $donnees = Maison::where('maisons.proprio_id',$request->idRecu)
                          ->where('maisons.iddirection_ref',Auth::user()->iddirection_ref)
@@ -164,14 +165,14 @@ class StatistiqueController extends Controller
             {
                 foreach ($donnees as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td><td>'.$value->numero_chambre.'</td>';
-                    $vide.='<td>'.$value->type_chambre.'</td>';
+                    $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->quartier).'</td><td>'.e($value->numero_chambre).'</td>';
+                    $vide.='<td>'.e($value->type_chambre).'</td>';
                     $vide.='<td>'.number_format($value->prix,"0",",",".").' XOF'.'</td>';
                     $vide.='</tr>';
                 }
 
                 $valeur .= '<a '.'class'.'='.' "btn rounded-pill btn-primary" '.
-                              'title'.'='.' "Télécharger pdf" '.'href'.'='."house-chambre/$request->idRecu".'>'.
+                              'title'.'='.' "Télécharger pdf" '.'href'.'='.'house-chambre/'.encrypt_id($request->idRecu).'>'.
                                  'Télécharger pdf'.
                                '</a>';
 
@@ -192,6 +193,8 @@ class StatistiqueController extends Controller
     //TELECHARGER PDF DES MAISONS  AVEC LEURS CHAMBRES FILTER BY PROPRITOR
     public function getHouseChambrePdf(Request $request)
     {
+        $decId = decrypt_id($request->route('id') ?? $request->id); abort_if(!$decId, 404);
+        $request->merge(['id' => $decId]);
         $proprio = Proprietaire::where('id', $request->id)
                                 ->whereNull('delete_at')
                                 ->select('nom', 'prenom')
@@ -232,6 +235,8 @@ class StatistiqueController extends Controller
     //TELECHARGER PDF DES MAISONS  AVEC LEURS locataire FILTER BY HOUSE
     public function getHouseLocatairePdf(Request $request)
     {
+        $decId = decrypt_id($request->route('id') ?? $request->id); abort_if(!$decId, 404);
+        $request->merge(['id' => $decId]);
           $element2['house_name']     = Maison::where('id',$request->id)
                                               ->whereNull('delete_at')
                                               ->select('nom_maison')
@@ -317,14 +322,14 @@ class StatistiqueController extends Controller
             {
                 foreach ($donnees as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->numero_chambre.'</td><td>'.$value->type_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
-                    $vide.='<td>'.$value->telephone.'</td><td>'.$value->nombre_avance.' mois'.'</td>';
+                    $vide.='<td>'.e($value->numero_chambre).'</td><td>'.e($value->type_chambre).'</td><td>'.e($value->nom).' '.e($value->prenom).'</td>';
+                    $vide.='<td>'.e($value->telephone).'</td><td>'.(int)$value->nombre_avance.' mois'.'</td>';
                     $vide.='<td>'.Carbon::parse($value->date_entree)->format('d/m/Y').'</td>';
                     $vide.='</tr>';
                 }
 
                  $valeur .= '<a '.'class'.'='.' "btn rounded-pill btn-primary" '.
-                              'title'.'='.' "Télécharger pdf" '.'href'.'='."house-locataire/$request->house_recu".'>'.
+                              'title'.'='.' "Télécharger pdf" '.'href'.'='.'house-locataire/'.encrypt_id($request->house_recu).'>'.
                                  'Télécharger pdf'.
                                '</a>';
 
@@ -357,7 +362,7 @@ class StatistiqueController extends Controller
     {
         $vide = '';
 
-        $facture =  Locataire::whereBetween('locataires.created_at', [$request->date_debut.' 01:00:00',$request->date_fin.' 23:59:59'])
+        $facture =  Locataire::whereBetween('locataires.date_entree', [$request->date_debut, $request->date_fin])
                               ->whereNull('locataires.delete_at')
                               ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
                               ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
@@ -389,14 +394,13 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
-                    $vide.='<td>'.$value->profession.'</td><td>'.$value->telephone.'</td>';
-                    $vide.='<td>'.$value->nombre_avance.' Mois'.'</td>';
-                    $vide.='<td>'.strftime("%d/%m/%Y", strtotime($value->date_entree)) .'</td><td>'
-                              .'<a '.'class'.'='.' "btn rounded-pill btn-primary" '.
-                              'title'.'='.' "Télecharge réçu" '.'href'.'='."gerer-facture/telecharge/$value->id".'>'.
-                                 'Télécharger'.
-                               '</a>'
+                    $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->numero_chambre).'</td><td>'.e($value->nom).' '.e($value->prenom).'</td>';
+                    $vide.='<td>'.e($value->profession).'</td><td>'.e($value->telephone).'</td>';
+                    $vide.='<td>'.(int)$value->nombre_avance.' Mois'.'</td>';
+                    $vide.='<td>'.Carbon::parse($value->date_entree)->format('d/m/Y').'</td><td>'
+                              .'<a class="btn btn-sm btn-primary rounded-pill" href="gerer-facture/telecharge/'.encrypt_id($value->id).'">'
+                              .'<i class="bx bx-download me-1"></i>Télécharger'
+                              .'</a>'
                             .'</td>';
                     $vide.='</tr>';
                 }
@@ -416,8 +420,10 @@ class StatistiqueController extends Controller
     {
         $vide = '';
 
-        $facture =  Locataire::where('locataires.nom','like','%'.$request->user_name.'%')
-                              ->orwhere('locataires.prenom','like','%'.$request->user_name.'%')
+        $facture =  Locataire::where(function($q) use ($request) {
+                                    $q->where('locataires.nom','like','%'.$request->user_name.'%')
+                                      ->orWhere('locataires.prenom','like','%'.$request->user_name.'%');
+                              })
                               ->where('locataires.iddirection_ref',Auth::user()->iddirection_ref)
                               ->where(function($querry){
                                 if (Gate::none(['Is_admin'])) {
@@ -449,14 +455,13 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
-                    $vide.='<td>'.$value->profession.'</td><td>'.$value->telephone.'</td>';
-                    $vide.='<td>'.$value->nombre_avance.' Mois'.'</td>';
-                    $vide.='<td>'.strftime("%d/%m/%Y", strtotime($value->date_entree)) .'</td><td>'
-                              .'<a '.'class'.'='.' "bx bx-download me-1" '.
-                              'title'.'='.' "Télecharge réçu" '.'href'.'='."gerer-facture/telecharge/$value->id".'>'.
-                                 
-                               '</a>'
+                    $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->numero_chambre).'</td><td>'.e($value->nom).' '.e($value->prenom).'</td>';
+                    $vide.='<td>'.e($value->profession).'</td><td>'.e($value->telephone).'</td>';
+                    $vide.='<td>'.(int)$value->nombre_avance.' Mois'.'</td>';
+                    $vide.='<td>'.Carbon::parse($value->date_entree)->format('d/m/Y').'</td><td>'
+                              .'<a class="btn btn-sm btn-primary rounded-pill" href="gerer-facture/telecharge/'.encrypt_id($value->id).'">'
+                              .'<i class="bx bx-download me-1"></i>Télécharger'
+                              .'</a>'
                             .'</td>';
                     $vide.='</tr>';
                 }
@@ -480,7 +485,7 @@ class StatistiqueController extends Controller
     public function getFactureByDatePerMonths(Request $request)
     {
         $vide = '';
-        $facture =  Facture::whereBetween('locataires.created_at', [$request->date_debut2.' 01:00:00',$request->date_fin2.' 23:59:59'])
+        $facture =  Facture::whereBetween('factures.date_paiement', [$request->date_debut2.' 00:00:00', $request->date_fin2.' 23:59:59'])
                             ->whereNull('factures.delete_at')
                             ->join('maisons', 'factures.maison_id', '=', 'maisons.id')
                             ->join('chambres', 'factures.chambre_id', '=', 'chambres.id')
@@ -515,13 +520,12 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
-                    $vide.='<td>'.number_format($value->montant,"0",",",".").' XOF'.'</td><td>'.$value->mois.'</td>';
-                    $vide.='<td>'.strftime("%d/%m/%Y à %Hh:%M min", strtotime($value->date_paiement)) .'</td><td>'
-                              .'<a '.'class'.'='.' "bx bx-download me-1" '.
-                              'title'.'='.' "Télécharger réçu" '.'href'.'='."gerer-facture/telecharge2/$value->id".'>'.
-                                 
-                               '</a>'
+                    $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->numero_chambre).'</td><td>'.e($value->nom).' '.e($value->prenom).'</td>';
+                    $vide.='<td>'.format_price($value->montant).'</td><td>'.e($value->mois).'</td>';
+                    $vide.='<td>'.Carbon::parse($value->date_paiement)->format('d/m/Y H:i').'</td><td>'
+                              .'<a class="btn btn-sm btn-success rounded-pill" href="gerer-facture/telecharge2/'.encrypt_id($value->id).'">'
+                              .'<i class="bx bx-download me-1"></i>Télécharger'
+                              .'</a>'
                             .'</td>';
                     $vide.='</tr>';
                 }
@@ -539,8 +543,10 @@ class StatistiqueController extends Controller
     {
 
         $vide = '';
-        $facture =  Facture::where('locataires.nom','like','%'.$request->user_name2.'%')
-                            ->orwhere('locataires.prenom','like','%'.$request->user_name2.'%')
+        $facture =  Facture::where(function($q) use ($request) {
+                                $q->where('locataires.nom','like','%'.$request->user_name2.'%')
+                                  ->orWhere('locataires.prenom','like','%'.$request->user_name2.'%');
+                            })
                             ->where('factures.iddirection_ref',Auth::user()->iddirection_ref)
                             ->where(function($querry){
                                 if (Gate::none(['Is_admin'])) {
@@ -575,13 +581,12 @@ class StatistiqueController extends Controller
             {
                 foreach ($facture as $value) {
                     $vide.='<tr>';
-                    $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->numero_chambre.'</td><td>'.$value->nom.' '.$value->prenom.'</td>';
-                    $vide.='<td>'.number_format($value->montant,"0",",",".").' XOF'.'</td><td>'.$value->mois.'</td>';
-                    $vide.='<td>'.strftime("%d/%m/%Y à %Hh:%M min", strtotime($value->date_paiement)) .'</td><td>'
-                              .'<a '.'class'.'='.' "bx bx-download me-1" '.
-                              'title'.'='.' "Télécharger réçu" '.'href'.'='."gerer-facture/telecharge2/$value->id".'>'.
-                                 
-                               '</a>'
+                    $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->numero_chambre).'</td><td>'.e($value->nom).' '.e($value->prenom).'</td>';
+                    $vide.='<td>'.format_price($value->montant).'</td><td>'.e($value->mois).'</td>';
+                    $vide.='<td>'.Carbon::parse($value->date_paiement)->format('d/m/Y H:i').'</td><td>'
+                              .'<a class="btn btn-sm btn-success rounded-pill" href="gerer-facture/telecharge2/'.encrypt_id($value->id).'">'
+                              .'<i class="bx bx-download me-1"></i>Télécharger'
+                              .'</a>'
                             .'</td>';
                     $vide.='</tr>';
                 }
@@ -648,14 +653,16 @@ class StatistiqueController extends Controller
 
         $donnees = $this->get_maison_data($request->proprietaire,$request->date_debut,$request->date_fin);
 
+        $pourcentage = get_pourcentage_gestion_or_null($request->proprietaire) ?? (float)($request->pourcentage ?? 10);
+
         activity()->performedOn(new Proprietaire())
                    ->causedBy(Auth::user()->id)
                    ->log('Consultation de la statistique du montant à payer à '. $proprio_nom.' '. $proprio_prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
-                         
+
        if(count($donnees) === 0)
        {
 
-           $vide.='<tr> <td colspan="13">Aucune donné trouvée</td><tr>';
+           $vide.='<tr> <td colspan="13">'.__('pdf.no_result').'</td><tr>';
            return response()->json([
                'infos_solde'=> $vide,
                'somme_solde'=> $vide2,
@@ -664,28 +671,28 @@ class StatistiqueController extends Controller
 
            ]);
        }
-       else  
+       else
        {
            $garde = 0 ;
 
            foreach ($donnees as $value) {
                $vide.='<tr>';
-               $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td>';
-               $vide.='<td>'.$value->type_chambre.' ( N° '.$value->numero_chambre.')'.'</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
-               $vide.='<td>'.number_format( ( $value->montant * (100 - $request->pourcentage) ) / 100,"0",",",".").' XOF'.'</td>';
+               $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->quartier).'</td>';
+               $vide.='<td>'.e($value->type_chambre).' ( N° '.e($value->numero_chambre).')'.'</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
+               $vide.='<td>'.number_format( ( $value->montant * (100 - $pourcentage) ) / 100,"0",",",".").' XOF'.'</td>';
                $vide.='</tr>';
 
-                
 
-               $garde += $value->montant * (100 - $request->pourcentage)  / 100;
+
+               $garde += $value->montant * (100 - $pourcentage)  / 100;
            }
 
            $vide2.='<td>'.number_format($garde ,"0",",",".").' XOF'.'</td>';
 
            //CREATION DU LIEN POUR TELECHARGEMENT PDF
            $pdf = '<a '.'class'.'='.' "bx bx-download me-1" '.
-                  'title'.'='.' "Télécharger réçu" '.'href'.'='."pdf-solde-proprietor/$request->proprietaire/$request->pourcentage/$request->date_debut/$request->date_fin".'>'.
-                     
+                  'title'.'='.' "Télécharger réçu" '.'href'.'='.'pdf-solde-proprietor/'.encrypt_id($request->proprietaire).'/'.$pourcentage.'/'.$request->date_debut.'/'.$request->date_fin.'>'.
+
                   '</a>';
 
            return response()->json([
@@ -702,20 +709,23 @@ class StatistiqueController extends Controller
     //TELECHARGER PDF DU SOLDE A PAYER AU PROPRIETAIRE
     public function getPropriotorSoldePdf(Request $request)
     {
+        $decId = decrypt_id($request->route('id') ?? $request->id); abort_if(!$decId, 404);
+        $request->merge(['id' => $decId]);
         $element2['proprio_nom'] = $this->getProprietaireNom($request->id);
         $element2['proprio_prenom'] = $this->getProprietairePrenom($request->id);
 
         $element2['date_debut'] = $request->date_debut;
         $element2['date_fin'] = $request->date_fin;
-        $element2['pourcentage'] = $request->pourcentage;
 
+        $pctResolved = get_pourcentage_gestion_or_null($request->id) ?? (float)($request->pourcentage ?? 10);
+        $element2['pourcentage'] = $pctResolved;
 
         $element2['donnees'] = $this->get_maison_data($request->id,$request->date_debut,$request->date_fin);
-        
+
         //Total
         $element2['garde'] = 0;
         foreach ($element2['donnees'] as $value) {
-          $element2['garde'] += $value->montant * (100 - $request->pourcentage)  / 100;
+          $element2['garde'] += $value->montant * (100 - $pctResolved) / 100;
         }
 
 
@@ -743,17 +753,17 @@ class StatistiqueController extends Controller
         $proprio_nom = $this->getProprietaireNom($request->proprietaire2);
         $proprio_prenom = $this->getProprietairePrenom($request->proprietaire2);
 
-
         $donnees = $this->get_maison_data($request->proprietaire2,$request->date_debut2,$request->date_fin2);
-   
+
+        $pourcentage2 = get_pourcentage_gestion_or_null($request->proprietaire2) ?? (float)($request->pourcentage2 ?? 10);
 
           activity()->performedOn(new Proprietaire())
                      ->causedBy(Auth::user()->id)
                      ->log('Consultation de la statistique du montant réçu de l\'agence chez '. $proprio_nom.' '. $proprio_prenom.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
-                         
+
        if(count($donnees) === 0)
        {
-           $vide.='<tr> <td colspan="13">Aucune donné trouvée</td><tr>';
+           $vide.='<tr> <td colspan="13">'.__('pdf.no_result').'</td><tr>';
            return response()->json([
                'infos_solde2'=> $vide,
                'somme_solde2'=> $vide2,
@@ -762,27 +772,27 @@ class StatistiqueController extends Controller
 
            ]);
        }
-       else  
+       else
        {
            $garde = 0 ;
 
            foreach ($donnees as $value) {
                $vide.='<tr>';
-               $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td>';
-               $vide.='<td>'.$value->type_chambre.' (N° '.$value->numero_chambre.')'. '</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
-               $vide.='<td>'.number_format( ( $value->montant * $request->pourcentage2 ) / 100,"0",",",".").' XOF'.'</td>';
+               $vide.='<td>'.e($value->nom_maison).'</td><td>'.e($value->quartier).'</td>';
+               $vide.='<td>'.e($value->type_chambre).' (N° '.e($value->numero_chambre).')'. '</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
+               $vide.='<td>'.number_format( ( $value->montant * $pourcentage2 ) / 100,"0",",",".").' XOF'.'</td>';
                $vide.='</tr>';
 
-                
 
-               $garde += ( $value->montant * $request->pourcentage2 )  / 100;
+
+               $garde += ( $value->montant * $pourcentage2 )  / 100;
            }
 
            $vide2.='<td>'.number_format($garde ,"0",",",".").' XOF'.'</td>';
 
            //CREATION DU LIEN POUR TELECHARGEMENT PDF
            $pdf = '<a '.'class'.'='.' "btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow" '.
-                  'title'.'='.' "Télécharger réçu" '.'href'.'='."pdf-solde-agence/$request->proprietaire2/$request->pourcentage2/$request->date_debut2/$request->date_fin2".'>'.
+                  'title'.'='.' "Télécharger réçu" '.'href'.'='.'pdf-solde-agence/'.encrypt_id($request->proprietaire2).'/'.$pourcentage2.'/'.$request->date_debut2.'/'.$request->date_fin2.'>'.
                      'Télécharger'.
                   '</a>';
 
@@ -800,20 +810,23 @@ class StatistiqueController extends Controller
     //TELECHARGER PDF DU SOLDE A PAYER AU PROPRIETAIRE
     public function getAgencySoldePdf(Request $request)
     {
+        $decId2 = decrypt_id($request->route('id2') ?? $request->id2); abort_if(!$decId2, 404);
+        $request->merge(['id2' => $decId2]);
         $element2['proprio_nom'] = $this->getProprietaireNom($request->id2);
         $element2['proprio_prenom'] = $this->getProprietairePrenom($request->id2);
 
         $element2['date_debut'] = $request->date_debut2;
         $element2['date_fin'] = $request->date_fin2;
-        $element2['pourcentage'] = $request->pourcentage2;
 
+        $pctResolved2 = get_pourcentage_gestion_or_null($request->id2) ?? (float)($request->pourcentage2 ?? 10);
+        $element2['pourcentage'] = $pctResolved2;
 
         $element2['donnees'] = $this->get_maison_data($request->id2,$request->date_debut2,$request->date_fin2);
-        
+
         //Total
         $element2['garde'] = 0;
         foreach ($element2['donnees'] as $value) {
-          $element2['garde'] += $value->montant * $request->pourcentage2  / 100;
+          $element2['garde'] += $value->montant * $pctResolved2 / 100;
         }
 
 
@@ -845,7 +858,7 @@ class StatistiqueController extends Controller
                         })
                         ->join('annexes', 'annexes.idannexes', '=', 'maisons.idannexe_ref')
                         ->whereNull('maisons.delete_at')
-                        ->select('annexes.designation','maisons.nom_maison','maisons.quartier','factures.montant','factures.numero_chambre','factures.type_chambre')
+                        ->select('annexes.designation','maisons.nom_maison','maisons.quartier','maisons.proprio_id','factures.montant','factures.numero_chambre','factures.type_chambre')
                         ->get();
 
     }
@@ -859,55 +872,51 @@ class StatistiqueController extends Controller
         $pdf = '';
 
         $donnees = $this->get_house_data_by_date($request->date_debut_general,$request->date_fin_general);
-        
-                         
-          activity()->performedOn(new Proprietaire())
-                     ->causedBy(Auth::user()->id)
-                     ->log('Consultation de la statistique du bénéfice de l\'agence chez tous les propriétaires '.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
 
-                         
+        activity()->performedOn(new Proprietaire())
+                   ->causedBy(Auth::user()->id)
+                   ->log('Consultation de la statistique du bénéfice de l\'agence chez tous les propriétaires '.' par '.Auth::user()->nom.' '.Auth::user()->prenom);
+
        if(count($donnees) === 0)
        {
-           $vide.='<tr> <td colspan="13">Aucune donné trouvée</td><tr>';
+           $vide.='<tr> <td colspan="7">Aucune donné trouvée</td></tr>';
            return response()->json([
                'infos_solde_general'=> $vide,
                'somme_solde_general'=> $vide2,
                'pdf_general' => $pdf,
-               'titre_general' => 'Bénéfice réalisé chez  tous les propriétaires'.' entre '.$request->date_debut_general.' au '.$request->date_fin_general
+               'titre_general' => 'Bénéfice réalisé chez tous les propriétaires entre '.$request->date_debut_general.' au '.$request->date_fin_general
            ]);
        }
-       else  
+       else
        {
-           $garde = 0 ;
+           $garde = 0;
 
            foreach ($donnees as $value) {
+               $pct = get_pourcentage_gestion($value->proprio_id);
+               $commission = ($value->montant * $pct) / 100;
+               $garde += $commission;
+
                $vide.='<tr>';
                $vide.='<td>'.$value->nom_maison.'</td><td>'.$value->quartier.'</td>';
-               $vide.='<td>'.$value->type_chambre.'(N° '.$value->numero_chambre.')'.'</td><td>'.number_format($value->montant,"0",",",".").' XOF'. '</td>';
-               $vide.='<td>'.number_format( ( $value->montant * $request->pourcentage_general ) / 100,"0",",",".").' XOF'.'</td>';
+               $vide.='<td>'.$value->type_chambre.' (N° '.$value->numero_chambre.')</td>';
+               $vide.='<td>'.format_price($value->montant).'</td>';
+               $vide.='<td>'.$pct.' %</td>';
+               $vide.='<td>'.format_price($commission).'</td>';
                $vide.='</tr>';
-
-                
-
-               $garde += ( $value->montant * $request->pourcentage_general )  / 100;
            }
 
-           $vide2.='<td>'.number_format($garde ,"0",",",".").' XOF'.'</td>';
+           $vide2.='<td>'.format_price($garde).'</td>';
 
-           //CREATION DU LIEN POUR TELECHARGEMENT PDF
            $pdf = '<a '.'class'.'='.' "btn btn-primary rounded-pill ri-arrow-down-circle-fill shadow" '.
-                  'title'.'='.' "Télécharger réçu" '.'href'.'='."pdf-all-solde-agence/$request->pourcentage_general/$request->date_debut_general/$request->date_fin_general".'>'.
+                  'title'.'='.' "Télécharger réçu" '.'href'.'='."pdf-all-solde-agence/$request->date_debut_general/$request->date_fin_general".'>'.
                      'Télécharger'.
                   '</a>';
 
-
-
            return response()->json([
                'infos_solde_general'=> $vide,
                'somme_solde_general'=> $vide2,
                'pdf_general' => $pdf,
-               'titre_general' => 'Bénéfice réalisé chez tous les propriétaires'.' entre '.Carbon::parse($request->date_debut_general)->format('d/m/Y').' au '.Carbon::parse($request->date_fin_general)->format('d/m/Y')
-
+               'titre_general' => 'Bénéfice réalisé chez tous les propriétaires entre '.Carbon::parse($request->date_debut_general)->format('d/m/Y').' au '.Carbon::parse($request->date_fin_general)->format('d/m/Y')
            ]);
        }
     }
@@ -919,19 +928,17 @@ class StatistiqueController extends Controller
     {
         $element2['date_debut'] = $request->date_debut_general;
         $element2['date_fin'] = $request->date_fin_general;
-        $element2['pourcentage'] = $request->pourcentage_general;
 
+        $donnees = $this->get_house_data_by_date($request->date_debut_general,$request->date_fin_general);
 
-        $element2['donnees'] = $this->get_house_data_by_date($request->date_debut_general,$request->date_fin_general);
-        
+        // Enrichir chaque ligne avec le pourcentage propre au propriétaire
+        $element2['donnees'] = $donnees->map(function ($item) {
+            $item->pourcentage = get_pourcentage_gestion($item->proprio_id);
+            $item->commission  = ($item->montant * $item->pourcentage) / 100;
+            return $item;
+        });
 
-       
-        //Total
-        $element2['garde'] = 0;
-        foreach ($element2['donnees'] as $value) {
-          $element2['garde'] += $value->montant * $request->pourcentage_general  / 100;
-        }
-
+        $element2['garde'] = $element2['donnees']->sum('commission');
 
         $annexeData = get_annexe_details_for_invoice(get_active_annexe_id());
         $pdf = PDF::loadView('pdf.solde_general',compact('element2','annexeData'))->setOptions(['defaultFont' => 'sans-serif']);

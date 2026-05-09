@@ -114,11 +114,16 @@ class ParametreController extends SessionController
 
         $temoignagesDb = Temoignage::latest()->get();
 
+        $deviseMapWelcome = \App\Parametre::whereIn(
+                'iddirection_ref',
+                $publicites->pluck('iddirection_ref')->filter()->unique()
+            )->pluck('devise', 'iddirection_ref')->toArray();
+
         return view('/welcome', compact(
             'publicites', 'villesMarketplace',
             'paymentEnabled', 'paymentProvider', 'paymentPublicKey', 'paymentSandbox',
             'plansActifs', 'plansJs',
-            'temoignagesDb'
+            'temoignagesDb', 'deviseMapWelcome'
         ));
     }
 
@@ -151,7 +156,16 @@ class ParametreController extends SessionController
                 ->whereNull('delete_at')
                 ->get();
 
-            $contratConfig = ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+            $contratConfigs = ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->orderBy('is_default', 'desc')
+                ->orderBy('nom_modele')
+                ->get();
+            $typesBail = [
+                'meuble'     => 'Bail meublé',
+                'nu'         => 'Bail nu',
+                'commercial' => 'Bail commercial',
+                'autre'      => 'Autre',
+            ];
 
             // Devise & Région
             $deviseParamtre = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
@@ -160,7 +174,7 @@ class ParametreController extends SessionController
 
             return view('parametre', compact(
                 'param', 'liste_annexe', 'pourcentageGeneral', 'pourcentageGroupes',
-                'proprietaires_list', 'contratConfig',
+                'proprietaires_list', 'contratConfigs', 'typesBail',
                 'deviseParamtre', 'devisesList', 'paysList'
             ));
 
@@ -918,6 +932,10 @@ class ParametreController extends SessionController
     {
         try {
             $validator = Validator::make($request->all(), [
+                'id'            => 'nullable|integer',
+                'nom_modele'    => 'nullable|string|max:100',
+                'type_bail'     => 'nullable|in:meuble,nu,commercial,autre',
+                'is_default'    => 'nullable|boolean',
                 'titre_contrat' => 'required|string|max:255',
                 'sous_titre'    => 'nullable|string|max:500',
                 'articles'      => 'required|array|min:1',
@@ -938,45 +956,117 @@ class ParametreController extends SessionController
                 return back()->withErrors($validator)->with('active_tab', 'contrat');
             }
 
-            ContratConfig::updateOrCreate(
-                ['iddirection_ref' => Auth::user()->iddirection_ref],
-                [
-                    'titre_contrat' => $request->titre_contrat,
-                    'sous_titre'    => $request->sous_titre,
-                    'articles'      => $request->articles,
-                ]
-            );
+            $dirId = Auth::user()->iddirection_ref;
+            $isDefault = (bool) ($request->is_default ?? false);
+
+            // Si ce template devient défaut, retirer le flag des autres
+            if ($isDefault) {
+                ContratConfig::where('iddirection_ref', $dirId)->update(['is_default' => false]);
+            }
+
+            $data = [
+                'nom_modele'    => $request->nom_modele ?? 'Modèle par défaut',
+                'type_bail'     => $request->type_bail ?? 'autre',
+                'is_default'    => $isDefault,
+                'titre_contrat' => $request->titre_contrat,
+                'sous_titre'    => $request->sous_titre,
+                'articles'      => $request->articles,
+            ];
+
+            if ($request->filled('id')) {
+                $config = ContratConfig::where('id', $request->id)
+                    ->where('iddirection_ref', $dirId)
+                    ->firstOrFail();
+                $config->update($data);
+                $action = 'Modification';
+            } else {
+                $data['iddirection_ref'] = $dirId;
+                // Si c'est le premier template, le mettre par défaut
+                if (!ContratConfig::where('iddirection_ref', $dirId)->exists()) {
+                    $data['is_default'] = true;
+                }
+                ContratConfig::create($data);
+                $action = 'Création';
+            }
 
             activity()->performedOn(new ContratConfig())
                 ->causedBy(Auth::user())
-                ->log('Modification du modèle de contrat par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+                ->log($action . ' du modèle de contrat "' . ($data['nom_modele']) . '" par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
             if ($request->expectsJson()) {
-                return response()->json(['status' => true, 'message' => 'Modèle de contrat enregistré avec succès.']);
+                return response()->json(['status' => true, 'message' => __('messages.contrat_config_saved')]);
             }
-            return back()->with('success', 'Modèle de contrat enregistré avec succès.')->with('active_tab', 'contrat');
+            return back()->with('success', __('messages.contrat_config_saved'))->with('active_tab', 'contrat');
 
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
-                return response()->json(['status' => false, 'message' => 'Échec, veuillez réessayer.']);
+                return response()->json(['status' => false, 'message' => __('messages.contrat_config_fail')]);
             }
-            return back()->with('error', 'Échec, veuillez réessayer.')->with('active_tab', 'contrat');
+            return back()->with('error', __('messages.contrat_config_fail'))->with('active_tab', 'contrat');
         }
     }
 
     public function resetContratConfig(Request $request)
     {
         try {
-            ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->delete();
+            $dirId = Auth::user()->iddirection_ref;
+
+            if ($request->filled('id')) {
+                ContratConfig::where('id', $request->id)
+                    ->where('iddirection_ref', $dirId)
+                    ->delete();
+                // Si plus aucun défaut, marquer le premier restant
+                if (!ContratConfig::where('iddirection_ref', $dirId)->where('is_default', true)->exists()) {
+                    ContratConfig::where('iddirection_ref', $dirId)->orderBy('id')->first()?->update(['is_default' => true]);
+                }
+            } else {
+                ContratConfig::where('iddirection_ref', $dirId)->delete();
+            }
 
             activity()->performedOn(new ContratConfig())
                 ->causedBy(Auth::user())
-                ->log('Réinitialisation du modèle de contrat par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+                ->log('Suppression d\'un modèle de contrat par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
 
-            return back()->with('success', 'Modèle de contrat remis aux valeurs par défaut.')->with('active_tab', 'contrat');
+            return back()->with('success', __('messages.contrat_config_deleted'))->with('active_tab', 'contrat');
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Échec de la réinitialisation.')->with('active_tab', 'contrat');
+            return back()->with('error', __('messages.contrat_config_fail'))->with('active_tab', 'contrat');
+        }
+    }
+
+    public function updateStatutBail(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'locataire_id' => 'required|integer',
+                'statut_bail'  => 'required|in:en_cours,signe,en_litige,resilie',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }
+
+            $locataire = \App\Locataire::where('id', $request->locataire_id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->firstOrFail();
+
+            $locataire->statut_bail = $request->statut_bail;
+            $locataire->save();
+
+            activity()->performedOn($locataire)
+                ->causedBy(Auth::user())
+                ->log('Mise à jour statut bail de ' . $locataire->nom . ' ' . $locataire->prenom . ' → ' . $request->statut_bail . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom);
+
+            return response()->json([
+                'status'      => true,
+                'message'     => __('messages.statut_bail_updated'),
+                'statut_bail' => $locataire->statut_bail,
+                'badge_class' => $locataire->getStatutBailBadgeClass(),
+                'label'       => $locataire->getStatutBailLabel(),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => __('messages.statut_bail_fail')]);
         }
     }
 

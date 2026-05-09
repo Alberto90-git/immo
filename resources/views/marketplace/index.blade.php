@@ -42,6 +42,7 @@
     .share-fb { color: #1877f2; }
     /* Map */
     #map { height: 420px; border-radius: 12px; }
+    @media (max-width: 576px) { #map { height: 240px; } }
     /* Pagination */
     .pagination .page-link { color: var(--brand); }
     .pagination .page-item.active .page-link { background: var(--brand); border-color: var(--brand); }
@@ -76,7 +77,7 @@
       <form method="GET" action="{{ route('marketplace.index') }}" id="filterForm">
         <div class="row g-3 align-items-end">
           <!-- Recherche libre -->
-          <div class="col-md-4">
+          <div class="col-12 col-md-4">
             <label class="form-label fw-semibold small mb-1">Recherche libre</label>
             <div class="input-group">
               <span class="input-group-text"><i class='bx bx-search'></i></span>
@@ -84,7 +85,7 @@
             </div>
           </div>
           <!-- Type de bien -->
-          <div class="col-md-2">
+          <div class="col-6 col-md-2">
             <label class="form-label fw-semibold small mb-1">Type</label>
             <select name="type_bien" class="form-select">
               <option value="">Tous</option>
@@ -94,7 +95,7 @@
             </select>
           </div>
           <!-- Ville -->
-          <div class="col-md-2">
+          <div class="col-6 col-md-2">
             <label class="form-label fw-semibold small mb-1">Ville</label>
             <input type="text" name="ville" list="villesList" class="form-control" placeholder="Cotonou..." value="{{ request('ville') }}">
             <datalist id="villesList">
@@ -102,12 +103,12 @@
             </datalist>
           </div>
           <!-- Quartier -->
-          <div class="col-md-2">
+          <div class="col-6 col-md-2">
             <label class="form-label fw-semibold small mb-1">Quartier</label>
             <input type="text" name="quartier" class="form-control" placeholder="Fidjrossè..." value="{{ request('quartier') }}">
           </div>
           <!-- Budget max -->
-          <div class="col-md-2 d-flex gap-2">
+          <div class="col-12 col-md-2 d-flex gap-2">
             <div class="flex-1" style="flex:1">
               <label class="form-label fw-semibold small mb-1">Budget max</label>
               <input type="number" name="budget_max" class="form-control" placeholder="500000" value="{{ request('budget_max') }}">

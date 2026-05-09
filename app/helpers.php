@@ -20,34 +20,48 @@ use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('encrypt_id')) {
     /**
-     * Chiffre un ID numérique pour l'insérer dans une URL.
-     * Produit une chaîne courte (~22 chars), URL-safe, sans +/=
+     * Chiffre un ID numérique — AES-256-GCM avec nonce aléatoire.
+     * Produit une chaîne URL-safe (~44-48 chars) avec intégrité authentifiée.
+     * Chaque appel produit un résultat différent (nonce aléatoire).
      */
     function encrypt_id($id): string
     {
-        $key = substr(hash('sha256', config('app.key')), 0, 32);
-        $iv  = substr(hash('sha256', config('app.key') . '_iv'), 0, 16);
-        $enc = openssl_encrypt((string) $id, 'AES-256-CBC', $key, 0, $iv);
-        // Rendre URL-safe : + → -, / → _, supprimer le padding =
-        return rtrim(strtr($enc, '+/', '-_'), '=');
+        $rawKey = config('app.key');
+        if (str_starts_with($rawKey, 'base64:')) {
+            $rawKey = base64_decode(substr($rawKey, 7));
+        }
+        $key    = hash_hmac('sha256', 'lokativ_id_cipher_v2', $rawKey, true);
+        $nonce  = random_bytes(12);
+        $tag    = '';
+        $cipher = openssl_encrypt((string) $id, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag, '', 16);
+        return rtrim(strtr(base64_encode($nonce . $tag . $cipher), '+/', '-_'), '=');
     }
 }
 
 if (!function_exists('decrypt_id')) {
     /**
-     * Déchiffre un ID récupéré depuis une URL.
-     * Retourne l'ID original (string) ou null si le hash est invalide/falsifié.
+     * Déchiffre un ID récupéré depuis une URL (AES-256-GCM).
+     * Retourne l'ID original (string) ou null si invalide / falsifié / tampered.
      */
     function decrypt_id(string $hash): ?string
     {
         try {
-            $key    = substr(hash('sha256', config('app.key')), 0, 32);
-            $iv     = substr(hash('sha256', config('app.key') . '_iv'), 0, 16);
-            // Restaurer le base64 standard : - → +, _ → /, ajouter le padding
-            $padded = $hash . str_repeat('=', (4 - strlen($hash) % 4) % 4);
-            $dec    = openssl_decrypt(strtr($padded, '-_', '+/'), 'AES-256-CBC', $key, 0, $iv);
-            return ($dec !== false && is_numeric($dec)) ? $dec : null;
-        } catch (\Exception $e) {
+            $padded = str_pad($hash, strlen($hash) + (4 - strlen($hash) % 4) % 4, '=');
+            $raw    = base64_decode(strtr($padded, '-_', '+/'));
+            if ($raw === false || strlen($raw) < 29) {
+                return null;
+            }
+            $nonce  = substr($raw, 0, 12);
+            $tag    = substr($raw, 12, 16);
+            $cipher = substr($raw, 28);
+            $rawKey = config('app.key');
+            if (str_starts_with($rawKey, 'base64:')) {
+                $rawKey = base64_decode(substr($rawKey, 7));
+            }
+            $key   = hash_hmac('sha256', 'lokativ_id_cipher_v2', $rawKey, true);
+            $plain = openssl_decrypt($cipher, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag);
+            return ($plain !== false && ctype_digit($plain) && (int) $plain > 0) ? $plain : null;
+        } catch (\Throwable $e) {
             return null;
         }
     }
@@ -1193,6 +1207,36 @@ if (!function_exists("get_pourcentage_gestion")) {
 
         } catch (\Exception $e) {
             return 10;
+        }
+    }
+}
+
+if (!function_exists('get_pourcentage_gestion_or_null')) {
+    /**
+     * Retourne le pourcentage de gestion configuré pour un propriétaire,
+     * ou null si aucune configuration explicite n'existe.
+     */
+    function get_pourcentage_gestion_or_null($proprietaire_id): ?float
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Auth::check()) return null;
+            $directionId = \Illuminate\Support\Facades\Auth::user()->iddirection_ref;
+
+            $groupe = \App\PourcentageGestion::where('iddirection_ref', $directionId)
+                ->where('type', 'groupe')->where('is_active', true)->whereNull('delete_at')
+                ->whereHas('proprietaires', function ($q) use ($proprietaire_id) {
+                    $q->where('proprietaires.id', $proprietaire_id);
+                })->first();
+            if ($groupe) return (float) $groupe->pourcentage;
+
+            $general = \App\PourcentageGestion::where('iddirection_ref', $directionId)
+                ->where('type', 'general')->where('is_active', true)->whereNull('delete_at')
+                ->first();
+            if ($general) return (float) $general->pourcentage;
+
+            return null;
+        } catch (\Exception $e) {
+            return null;
         }
     }
 }

@@ -228,6 +228,7 @@ class SignatureElectroniqueController extends Controller
 
     public function certificat($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $demande = SignatureDemande::with('audits')
             ->where('iddirection_ref', Auth::user()->iddirection_ref)
             ->where('statut', 'signe')

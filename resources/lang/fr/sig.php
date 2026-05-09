@@ -105,4 +105,17 @@ return [
     'audit_exemplaire_envoye'   => 'Exemplaire signé envoyé',
     'audit_annule'              => 'Demande annulée',
     'audit_certificate_generated'=> 'Certificat généré',
+
+    // Certificat PDF — champs non encore traduits
+    'cert_sha_section'   => 'Empreintes numériques (SHA-256)',
+    'cert_col_date'      => 'Date',
+    'cert_col_action'    => 'Action',
+    'cert_col_canal'     => 'Canal',
+    'cert_col_ip'        => 'IP',
+    'cert_legal_label'   => 'Note légale :',
+    'cert_generated_on'  => 'Document généré le',
+    'cert_footer'        => 'Certificat de signature électronique — Généré automatiquement',
+    'cert_description'   => 'Description',
+    'cert_email'         => 'Email',
+    'cert_telephone'     => 'Téléphone',
 ];

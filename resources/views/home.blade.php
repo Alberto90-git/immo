@@ -33,6 +33,10 @@
   .kpi-sub   { font-size: .8rem; color: #8592a3; margin-top: 2px; }
   .taux-bar-wrap { height: 6px; background:#e7e9ef; border-radius: 3px; margin-top: 8px; }
   .taux-bar      { height: 6px; border-radius: 3px; background: linear-gradient(90deg,#696cff,#9155fd); }
+  /* Dark mode */
+  html.dark-style .taux-bar-wrap { background:#444564; }
+  html.dark-style .kpi-label,
+  html.dark-style .kpi-sub { color:#7f7f9d; }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -191,7 +195,7 @@
           <div>
             <div class="kpi-label">{{ __('dashboard.revenue_month') }} — {{ now()->translatedFormat('F Y') }}</div>
             <div class="kpi-value text-success" id="total_revenus_mois">
-              {{ number_format($data['totalRevenusMois'] ?? 0, 0, ',', ' ') }} F
+              {{ format_price($data['totalRevenusMois'] ?? 0) }}
             </div>
             <div class="kpi-sub">{{ __('dashboard.total_collected') }}</div>
           </div>
@@ -251,7 +255,7 @@
       <div class="card chart-card h-100">
         <div class="card-header d-flex align-items-center justify-content-between pb-0">
           <h6 class="mb-0"><i class="bx bx-bar-chart-alt-2 me-1 text-primary"></i>{{ __('dashboard.monthly_payments') }}</h6>
-          <span class="badge bg-label-primary">F CFA</span>
+          <span class="badge bg-label-primary">{{ get_symbole_devise() }}</span>
         </div>
         <div class="card-body">
           <canvas id="chartPaiements" style="max-height:280px"></canvas>
@@ -315,7 +319,7 @@
                 <td>{{ $p->nom }} {{ $p->prenom }}</td>
                 <td>{{ $p->nom_maison }}</td>
                 <td>{{ $p->mois }}</td>
-                <td class="text-success fw-bold">{{ number_format($p->montant, 0, ',', ' ') }} F</td>
+                <td class="text-success fw-bold">{{ format_price($p->montant) }}</td>
                 <td><span class="badge bg-label-primary">{{ $p->mode_paiement ?: '-' }}</span></td>
                 <td>{{ \Carbon\Carbon::parse($p->date_paiement)->format('d/m/Y') }}</td>
               </tr>
@@ -574,14 +578,14 @@
       deltaEl.className   = 'kpi-value ' + (d.delta_rev >= 0 ? 'text-success' : 'text-danger');
     } else { deltaEl.textContent = '–'; }
     document.getElementById('kpi_delta_rev_sub').textContent =
-      fmt(d.total_n) + ' vs ' + fmt(d.total_n1) + ' F CFA';
+      fmt(d.total_n) + ' vs ' + fmt(d.total_n1) + ' {{ get_symbole_devise() }}';
 
     // Taux recouvrement
     document.getElementById('kpi_taux_recouvrement').textContent = d.taux_recouvrement + '%';
     document.getElementById('kpi_recouvrement_sub').textContent  =
-      fmt(d.loyers_encaisses) + ' / ' + fmt(d.loyers_attendus) + ' F CFA';
+      fmt(d.loyers_encaisses) + ' / ' + fmt(d.loyers_attendus) + ' {{ get_symbole_devise() }}';
     document.getElementById('recouvrementDetail').textContent  =
-      fmt(d.loyers_encaisses) + ' encaissés sur ' + fmt(d.loyers_attendus) + ' F CFA attendus';
+      fmt(d.loyers_encaisses) + ' encaissés sur ' + fmt(d.loyers_attendus) + ' {{ get_symbole_devise() }} attendus';
 
     // ── Graphique N vs N-1 ────────────────────────────────────────────────────
     if (chartNvsN1) chartNvsN1.destroy();
@@ -610,7 +614,7 @@
         responsive: true,
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.y) + ' F CFA' } }
+          tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.y) + ' {{ get_symbole_devise() }}' } }
         },
         scales: {
           y: { beginAtZero: true, ticks: { callback: v => fmt(v) } }
@@ -685,7 +689,7 @@
       data: {
         labels: d.top_proprios.map(p => p.nom),
         datasets: [{
-          label: 'Revenus F CFA',
+          label: 'Revenus {{ get_symbole_devise() }}',
           data: d.top_proprios.map(p => p.total),
           backgroundColor: ['#696cff','#71dd37','#ffab00','#03c3ec','#9155fd','#ff3e1d'],
           borderRadius: 4,
@@ -696,7 +700,7 @@
         responsive: true,
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) + ' F CFA' } }
+          tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) + ' {{ get_symbole_devise() }}' } }
         },
         scales: { x: { beginAtZero: true, ticks: { callback: v => fmt(v) } } }
       }
@@ -755,7 +759,7 @@ var chartPaiements = new Chart(ctxBar, {
       tooltip: {
         callbacks: {
           label: function(ctx) {
-            return ' ' + ctx.parsed.y.toLocaleString('fr-FR') + ' F CFA';
+            return ' ' + ctx.parsed.y.toLocaleString('fr-FR') + ' {{ get_symbole_devise() }}';
           }
         }
       }
@@ -870,7 +874,7 @@ function updateCharts(data) {
 
   if (data.total_revenus_mois !== undefined) {
     document.getElementById('total_revenus_mois').textContent =
-      parseInt(data.total_revenus_mois).toLocaleString('fr-FR') + ' F';
+      parseInt(data.total_revenus_mois).toLocaleString('fr-FR') + ' {{ get_symbole_devise() }}';
   }
 }
 

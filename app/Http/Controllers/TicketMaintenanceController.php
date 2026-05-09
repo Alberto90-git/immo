@@ -133,7 +133,7 @@ class TicketMaintenanceController extends Controller
                 'maison_nom'     => $ticket->maison->nom_maison ?? '–',
                 'chambre_numero' => $ticket->chambre->numero_chambre ?? null,
                 'date_ouverture' => $ticket->date_ouverture->format('d/m/Y'),
-                'show_url'       => route('maintenance.show', $ticket->id),
+                'show_url'       => route('maintenance.show', encrypt_id($ticket->id)),
             ],
         ]);
     }
@@ -142,6 +142,7 @@ class TicketMaintenanceController extends Controller
 
     public function show($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $ticket = TicketMaintenance::with([
             'maison', 'chambre', 'locataire', 'prestataire',
             'historiques.user', 'createdBy',

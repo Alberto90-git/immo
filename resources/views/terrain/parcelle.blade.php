@@ -37,38 +37,38 @@
             <form class="row g-3" id="formulaire" onsubmit="save_parcelle(event)">
                @csrf
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.par_label_owner_name') }}<span style="color: red;">*</span></label>
                   <input type="text" name="nom" class="form-control" id="nom" required="">
                   <span class="invalid-feedback nom_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.par_label_owner_first') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prenom" class="form-control" id="prenom" required="">
                   <span class="invalid-feedback prenom_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.par_label_phone') }}<span style="color: red;">*</span></label>
                   <input type="text" name="telephone" class="form-control" id="telephone" required=""
                     onkeypress="return /[0-9]/i.test(event.key)">
                   <span class="invalid-feedback telephone_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.par_label_district') }}<span style="color: red;">*</span></label>
                   <input type="text" name="quartier" class="form-control" id="quartier" required="">
                   <span class="invalid-feedback quartier_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.par_label_area') }}</label>
                   <input type="text" name="superficie" class="form-control" id="superficie"
                     onkeypress="return /[0-9]/i.test(event.key)">
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.par_label_price') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prix" class="form-control" id="prix" required="">
                   <span class="invalid-feedback prix_err" role="alert"></span>
@@ -99,7 +99,7 @@
           </div>
           <div class="modal-body">
             <div class="row g-3">
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-phone fs-4 text-primary mb-1"></i>
@@ -108,7 +108,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-map fs-4 text-success mb-1"></i>
@@ -117,7 +117,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-area fs-4 text-info mb-1"></i>
@@ -126,7 +126,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-money fs-4 text-warning mb-1"></i>
@@ -157,29 +157,29 @@
               @csrf
               <input type="hidden" name="id" id="mp-id">
 
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.par_label_name') }}<span style="color: red;">*</span></label>
                 <input type="text" name="nom" id="mp-nom" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.par_label_firstname') }}<span style="color: red;">*</span></label>
                 <input type="text" name="prenom" id="mp-prenom" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.par_label_phone') }}<span style="color: red;">*</span></label>
                 <input type="text" name="telephone" id="mp-telephone" class="form-control" required
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.par_label_district') }}<span style="color: red;">*</span></label>
                 <input type="text" name="quartier" id="mp-quartier" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.par_label_area') }}</label>
                 <input type="text" name="superficie" id="mp-superficie" class="form-control"
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.par_label_price') }}<span style="color: red;">*</span></label>
                 <input type="text" name="prix" id="mp-prix" class="form-control" required
                   onkeypress="return /[0-9]/i.test(event.key)">

@@ -123,7 +123,7 @@
         <div class="ac-label">{{ __('mail.paiement.amount_label') }}</div>
         <div>
           <span class="ac-amount">{{ number_format($client['montant'] * $client['nombre_mois'], 0, ',', ' ') }}</span>
-          <span class="ac-currency">XOF</span>
+          <span class="ac-currency">{{ $client['devise'] ?? get_symbole_devise('XOF') }}</span>
         </div>
       </div>
 

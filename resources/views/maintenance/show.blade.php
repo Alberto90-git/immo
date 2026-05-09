@@ -24,7 +24,7 @@
   <div class="row g-4">
 
     {{-- ── Colonne principale ──────────────────────────────────────────────── --}}
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
 
       {{-- Détails ticket --}}
       <div class="card shadow-sm mb-4">
@@ -34,29 +34,29 @@
         </div>
         <div class="card-body">
           <div class="row g-3 mb-3">
-            <div class="col-sm-4">
+            <div class="col-6 col-sm-4">
               <div class="small text-muted mb-1">{{ __('ui.maintenance.category') }}</div>
               <div><i class="{{ $ticket->categorie_icon }} me-1"></i>{{ $ticket->categorie_label }}</div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-6 col-sm-4">
               <div class="small text-muted mb-1">{{ __('ui.maintenance.priority') }}</div>
               <div>{!! $ticket->priorite_badge !!}</div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-6 col-sm-4">
               <div class="small text-muted mb-1">{{ __('ui.maintenance.col_status') }}</div>
               <div id="statutBadgeDetail">{!! $ticket->statut_badge !!}</div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-6 col-sm-4">
               <div class="small text-muted mb-1">{{ __('ui.maintenance.property') }}</div>
               <div class="fw-semibold">{{ $ticket->maison->nom_maison ?? '–' }}</div>
               @if($ticket->chambre)<div class="small text-muted">{{ __('ui.maintenance.room') }} {{ $ticket->chambre->numero_chambre }}</div>@endif
             </div>
-            <div class="col-sm-4">
+            <div class="col-6 col-sm-4">
               <div class="small text-muted mb-1">{{ __('ui.maintenance.tenant') }}</div>
               <div>{{ $ticket->locataire ? $ticket->locataire->nom . ' ' . $ticket->locataire->prenom : '–' }}</div>
               @if($ticket->locataire?->telephone)<div class="small text-muted">{{ $ticket->locataire->telephone }}</div>@endif
             </div>
-            <div class="col-sm-4">
+            <div class="col-6 col-sm-4">
               <div class="small text-muted mb-1">{{ __('ui.maintenance.created_by') }}</div>
               <div class="small">{{ $ticket->createdBy->name ?? '–' }}</div>
             </div>
@@ -116,7 +116,7 @@
     </div>
 
     {{-- ── Colonne actions ─────────────────────────────────────────────────── --}}
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4">
 
       {{-- Changer statut --}}
       @can('modify-maintenance')

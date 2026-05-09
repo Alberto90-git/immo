@@ -859,117 +859,204 @@
                     </div>
                     <!-- FIN TAB 3 -->
 
-                    <!-- TAB 4 : Modèle de Contrat -->
+                    <!-- TAB 4 : Modèles de Contrats -->
                     <div class="tab-pane fade" id="navs-pills-justified-contrat" role="tabpanel">
                         <div class="row p-3">
-                            <div class="col-12 mb-3">
-                                <h6 class="text-primary fw-bold"><i class="bx bx-file me-1"></i>{{ __('pages.param_contrat_heading') }}</h6>
-                                <p class="text-muted small">{{ __('pages.param_contrat_desc') }}</p>
+                            <div class="col-12 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h6 class="text-primary fw-bold mb-0"><i class="bx bx-file me-1"></i>{{ __('pages.contrat_modele_list_title') }}</h6>
+                                    <p class="text-muted small mb-0">{{ __('pages.param_contrat_desc') }}</p>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm" id="btnNouveauModele" onclick="ouvrirModalContrat(null)">
+                                    <i class="bx bx-plus me-1"></i>{{ __('pages.contrat_modele_add_btn') }}
+                                </button>
                             </div>
 
-                            {{-- Variables disponibles --}}
-                            <div class="col-12 mb-3">
-                                <div class="accordion" id="accordionVariables">
-                                    <div class="accordion-item border">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVariables">
-                                                <i class="bx bx-code-alt me-2 text-primary"></i> <strong>{{ __('pages.param_vars_accordion') }}</strong> <span class="ms-2 text-muted small">{{ __('pages.param_vars_click') }}</span>
-                                            </button>
-                                        </h2>
-                                        <div id="collapseVariables" class="accordion-collapse collapse">
-                                            <div class="accordion-body py-2">
-                                                <div class="row g-2">
-                                                    @php
-                                                    $vars = [
-                                                        ['{nom_agence}',__('pages.param_var_agency_name')],['{adresse_agence}',__('pages.param_var_agency_address')],['{telephone_agence}',__('pages.param_var_agency_phone')],
-                                                        ['{nom_locataire}',__('pages.param_var_tenant_name')],['{telephone_locataire}',__('pages.param_var_tenant_phone')],['{profession_locataire}',__('pages.param_var_tenant_job')],['{adresse_locataire}',__('pages.param_var_tenant_address')],
-                                                        ['{nom_maison}',__('pages.param_var_house_name')],['{quartier_maison}',__('pages.param_var_house_district')],['{type_chambre}',__('pages.param_var_room_type')],['{numero_chambre}',__('pages.param_var_room_number')],
-                                                        ['{montant_loyer}',__('pages.param_var_rent')],['{nombre_caution}',__('pages.param_var_caution_months')],['{montant_caution}',__('pages.param_var_caution_amount')],['{caution_courant}',__('pages.param_var_caution_elec')],['{caution_eau}',__('pages.param_var_caution_water')],
-                                                        ['{nombre_avance}',__('pages.param_var_advance_months')],['{montant_avance}',__('pages.param_var_advance_amount')],['{mode_paiement}',__('pages.param_var_payment_mode')],
-                                                        ['{date_entree}',__('pages.param_var_entry_date')],['{date_contrat}',__('pages.param_var_contract_date')],
-                                                    ];
-                                                    @endphp
-                                                    @foreach($vars as $v)
-                                                    <div class="col-md-6 col-lg-4">
-                                                        <div class="d-flex align-items-start gap-2">
-                                                            <code class="text-primary bg-light px-1 rounded small text-nowrap" style="cursor:pointer" onclick="navigator.clipboard.writeText('{{ $v[0] }}');this.classList.add('text-success');setTimeout(()=>this.classList.remove('text-success'),800)">{{ $v[0] }}</code>
-                                                            <span class="small text-muted">{{ $v[1] }}</span>
-                                                        </div>
-                                                    </div>
-                                                    @endforeach
-                                                </div>
-                                                <p class="small text-muted mt-2 mb-0"><i class="bx bx-mouse-alt me-1"></i>{{ __('pages.param_vars_copy_hint') }}</p>
-                                            </div>
+                            {{-- Liste des templates --}}
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>{{ __('pages.contrat_col_nom') }}</th>
+                                                        <th>{{ __('pages.contrat_col_type') }}</th>
+                                                        <th class="text-center">{{ __('pages.contrat_col_default') }}</th>
+                                                        <th class="text-center">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($contratConfigs as $cfg)
+                                                    <tr>
+                                                        <td class="fw-semibold">{{ $cfg->nom_modele ?? 'Modèle par défaut' }}</td>
+                                                        <td>
+                                                            <span class="badge bg-label-secondary">{{ $cfg->getTypeBailLabel() }}</span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if($cfg->is_default)
+                                                                <span class="badge bg-success">{{ __('pages.contrat_badge_default') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                                                                onclick="ouvrirModalContrat({{ $cfg->id }}, @json($cfg))">
+                                                                <i class="bx bx-edit"></i>
+                                                            </button>
+                                                            <form method="POST" action="{{ route('reset_contrat_config') }}" class="d-inline formSupprimerModele">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $cfg->id }}">
+                                                                <button type="button" class="btn btn-sm btn-outline-danger btnSupprimerModele"
+                                                                    data-nom="{{ $cfg->nom_modele }}">
+                                                                    <i class="bx bx-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center py-4 text-muted">
+                                                            <i class="bx bx-folder-open fs-4 d-block mb-1"></i>
+                                                            {{ __('pages.contrat_no_modele') }}
+                                                        </td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- Formulaire principal --}}
-                            <div class="col-12">
-                                <form method="POST" action="{{ route('store_contrat_config') }}" id="formContrat">
-                                    @csrf
-
-                                    <div class="card border-0 shadow-sm mb-3">
-                                        <div class="card-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <label class="form-label fw-semibold">{{ __('pages.param_contrat_title_lbl') }} <span class="text-danger">*</span></label>
-                                                    <input type="text" name="titre_contrat" class="form-control" required
-                                                        value="{{ $contratConfig->titre_contrat ?? 'Contrat de Bail d\'Habitation' }}"
-                                                        placeholder="{{ __('pages.param_contrat_title_ph') }}">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label fw-semibold">{{ __('pages.param_contrat_subtitle_lbl') }}</label>
-                                                    <input type="text" name="sous_titre" class="form-control"
-                                                        value="{{ $contratConfig->sous_titre ?? '' }}"
-                                                        placeholder="{{ __('pages.param_contrat_sub_ph') }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Liste des articles --}}
-                                    <div class="card border-0 shadow-sm mb-3">
-                                        <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
-                                            <span class="fw-semibold"><i class="bx bx-list-ul me-1 text-primary"></i>{{ __('pages.param_articles_title') }}</span>
-                                            <button type="button" class="btn btn-sm btn-primary" onclick="contratOpenModal()">
-                                                <i class="bx bx-plus me-1"></i>{{ __('pages.param_article_add_btn') }}
-                                            </button>
-                                        </div>
-                                        <div class="card-body p-0">
-                                            <div id="articles-list" class="list-group list-group-flush">
-                                                {{-- Rempli par JS --}}
-                                            </div>
-                                            <p id="articles-empty" class="text-center text-muted py-4 mb-0 d-none">
-                                                <i class="bx bx-info-circle me-1"></i>{{ __('pages.param_article_empty') }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {{-- Inputs hidden pour la soumission --}}
-                                    <div id="articles-hidden-inputs"></div>
-
-                                    <div class="d-flex gap-2 flex-wrap">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save_template') }}
-                                        </button>
-                                    </div>
-                                </form>
-
-                                {{-- Bouton reset séparé --}}
-                                @if($contratConfig)
-                                <form method="POST" action="{{ route('reset_contrat_config') }}" id="formResetContrat" class="d-inline mt-2">
-                                    @csrf
-                                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btnResetContrat">
-                                        <i class="bx bx-reset me-1"></i>{{ __('pages.param_btn_reset') }}
-                                    </button>
-                                </form>
-                                @endif
-                            </div>
                         </div>
                     </div>
                     <!-- FIN TAB 4 -->
+
+                    {{-- Modal création/édition modèle de contrat --}}
+                    <div class="modal fade" id="modalContratModele" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalContratTitre">{{ __('pages.contrat_modele_add_btn') }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="{{ route('store_contrat_config') }}" id="formContrat">
+                                        @csrf
+                                        <input type="hidden" name="id" id="contrat_edit_id" value="">
+
+                                        {{-- Métadonnées du modèle --}}
+                                        <div class="card border-0 shadow-sm mb-3">
+                                            <div class="card-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-semibold">{{ __('pages.contrat_modele_nom_lbl') }} <span class="text-danger">*</span></label>
+                                                        <input type="text" name="nom_modele" id="contrat_nom_modele" class="form-control" required
+                                                            placeholder="{{ __('pages.contrat_modele_nom_ph') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-semibold">{{ __('pages.contrat_type_bail_lbl') }}</label>
+                                                        <select name="type_bail" id="contrat_type_bail" class="form-select">
+                                                            @foreach($typesBail as $code => $label)
+                                                                <option value="{{ $code }}">{{ $label }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4 d-flex align-items-end">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="is_default" id="contrat_is_default" value="1">
+                                                            <label class="form-check-label" for="contrat_is_default">
+                                                                {{ __('pages.contrat_is_default_lbl') }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Titre et sous-titre --}}
+                                        <div class="card border-0 shadow-sm mb-3">
+                                            <div class="card-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold">{{ __('pages.param_contrat_title_lbl') }} <span class="text-danger">*</span></label>
+                                                        <input type="text" name="titre_contrat" id="contrat_titre" class="form-control" required
+                                                            placeholder="{{ __('pages.param_contrat_title_ph') }}">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold">{{ __('pages.param_contrat_subtitle_lbl') }}</label>
+                                                        <input type="text" name="sous_titre" id="contrat_sous_titre" class="form-control"
+                                                            placeholder="{{ __('pages.param_contrat_sub_ph') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Variables disponibles --}}
+                                        <div class="mb-3">
+                                            <div class="accordion" id="accordionVariables">
+                                                <div class="accordion-item border">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVariables">
+                                                            <i class="bx bx-code-alt me-2 text-primary"></i> <strong>{{ __('pages.param_vars_accordion') }}</strong> <span class="ms-2 text-muted small">{{ __('pages.param_vars_click') }}</span>
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseVariables" class="accordion-collapse collapse">
+                                                        <div class="accordion-body py-2">
+                                                            <div class="row g-2">
+                                                                @php
+                                                                $vars = [
+                                                                    ['{nom_agence}',__('pages.param_var_agency_name')],['{adresse_agence}',__('pages.param_var_agency_address')],['{telephone_agence}',__('pages.param_var_agency_phone')],
+                                                                    ['{nom_locataire}',__('pages.param_var_tenant_name')],['{telephone_locataire}',__('pages.param_var_tenant_phone')],['{profession_locataire}',__('pages.param_var_tenant_job')],['{adresse_locataire}',__('pages.param_var_tenant_address')],
+                                                                    ['{nom_maison}',__('pages.param_var_house_name')],['{quartier_maison}',__('pages.param_var_house_district')],['{type_chambre}',__('pages.param_var_room_type')],['{numero_chambre}',__('pages.param_var_room_number')],
+                                                                    ['{montant_loyer}',__('pages.param_var_rent')],['{nombre_caution}',__('pages.param_var_caution_months')],['{montant_caution}',__('pages.param_var_caution_amount')],['{caution_courant}',__('pages.param_var_caution_elec')],['{caution_eau}',__('pages.param_var_caution_water')],
+                                                                    ['{nombre_avance}',__('pages.param_var_advance_months')],['{montant_avance}',__('pages.param_var_advance_amount')],['{mode_paiement}',__('pages.param_var_payment_mode')],
+                                                                    ['{date_entree}',__('pages.param_var_entry_date')],['{date_contrat}',__('pages.param_var_contract_date')],
+                                                                ];
+                                                                @endphp
+                                                                @foreach($vars as $v)
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="d-flex align-items-start gap-2">
+                                                                        <code class="text-primary bg-light px-1 rounded small text-nowrap" style="cursor:pointer" onclick="navigator.clipboard.writeText('{{ $v[0] }}');this.classList.add('text-success');setTimeout(()=>this.classList.remove('text-success'),800)">{{ $v[0] }}</code>
+                                                                        <span class="small text-muted">{{ $v[1] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                @endforeach
+                                                            </div>
+                                                            <p class="small text-muted mt-2 mb-0"><i class="bx bx-mouse-alt me-1"></i>{{ __('pages.param_vars_copy_hint') }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Liste des articles --}}
+                                        <div class="card border-0 shadow-sm mb-3">
+                                            <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                                                <span class="fw-semibold"><i class="bx bx-list-ul me-1 text-primary"></i>{{ __('pages.param_articles_title') }}</span>
+                                                <button type="button" class="btn btn-sm btn-primary" onclick="contratOpenModal()">
+                                                    <i class="bx bx-plus me-1"></i>{{ __('pages.param_article_add_btn') }}
+                                                </button>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <div id="articles-list" class="list-group list-group-flush"></div>
+                                                <p id="articles-empty" class="text-center text-muted py-4 mb-0 d-none">
+                                                    <i class="bx bx-info-circle me-1"></i>{{ __('pages.param_article_empty') }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div id="articles-hidden-inputs"></div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('pages.param_btn_cancel') }}</button>
+                                    <button type="submit" form="formContrat" class="btn btn-primary">
+                                        <i class="bx bx-save me-1"></i>{{ __('pages.param_btn_save_template') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     {{-- ===== ONGLET COMMUNICATION ===== --}}
                     <div class="tab-pane fade" id="navs-pills-justified-communication" role="tabpanel">
@@ -1278,6 +1365,11 @@
         commSaving:     '{{ __('pages.param_js_comm_saving') }}',
         btnSaveComm:    '{!! __('pages.param_js_btn_save_comm') !!}',
         netErrTitle:    '{{ __('pages.param_js_net_err_title') }}',
+        // F7
+        delModeleTitle:   '{{ __('pages.contrat_del_modele_title') }}',
+        delModeleSuffix:  '{{ __('pages.contrat_del_modele_suffix') }}',
+        delModeleBtn:     '{{ __('pages.contrat_del_modele_btn') }}',
+        editModeleTitle:  '{{ __('pages.contrat_modele_edit_title') }}',
     };
 
     // Synchronisation des 5 nav-items entre les deux blocs visuels
@@ -1858,8 +1950,8 @@
         { titre: "Election de Domicile", contenu: "Pour l'execution du present contrat, les parties elisent domicile a leurs adresses respectives. En cas de litige, le tribunal competent du lieu de l'immeuble sera saisi apres tentative de reglement amiable." },
     ];
 
-    var phpData = @json($contratConfig ? $contratConfig->articles : null);
-    window.contratArticles = (phpData && phpData.length) ? phpData : JSON.parse(JSON.stringify(DEFAULT_ARTICLES));
+    var phpData = null; // Chargé dynamiquement à l'ouverture du modal
+    window.contratArticles = JSON.parse(JSON.stringify(DEFAULT_ARTICLES));
 
     // Le modal est placé après ce script dans le DOM → initialisation après DOMContentLoaded
     var articleModal = null;
@@ -1945,15 +2037,18 @@
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data.status) {
-                Swal.fire({ icon: 'success', title: PARAM_I18N.success, text: successMsg || data.message, timer: 2000, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: PARAM_I18N.success, text: successMsg || data.message, timer: 1800, showConfirmButton: false })
+                    .then(function() {
+                        localStorage.setItem('parametre_active_tab', '#navs-pills-justified-contrat');
+                        window.location.reload();
+                    });
             } else {
                 Swal.fire({ icon: 'error', title: PARAM_I18N.error, text: data.message || PARAM_I18N.saveFail });
+                if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = PARAM_I18N.btnSaveTpl; }
             }
         })
         .catch(function() {
             Swal.fire({ icon: 'error', title: PARAM_I18N.netErrTitle, text: PARAM_I18N.serverError });
-        })
-        .finally(function() {
             if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = PARAM_I18N.btnSaveTpl; }
         });
     }
@@ -1991,7 +2086,6 @@
 
         renderArticlesList();
         if (articleModal) articleModal.hide();
-        saveArticlesToServer(isEdit ? PARAM_I18N.articleEdited : PARAM_I18N.articleAdded);
     };
 
     // ── Suppression avec confirmation SweetAlert + sauvegarde auto ───
@@ -2010,7 +2104,6 @@
             if (result.isConfirmed) {
                 window.contratArticles.splice(index, 1);
                 renderArticlesList();
-                saveArticlesToServer(PARAM_I18N.articleDel);
             }
         });
     };
@@ -2027,26 +2120,40 @@
 
     window.contratEditArticle = function(index) { window.contratOpenModal(index); };
 
-    // ── Bouton reset : confirmation SweetAlert avant soumission ──────
-    var btnReset = document.getElementById('btnResetContrat');
-    if (btnReset) {
-        btnReset.addEventListener('click', function() {
+    // ── Boutons supprimer modèle : confirmation SweetAlert ──────────
+    document.querySelectorAll('.btnSupprimerModele').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var nom = this.dataset.nom || 'ce modèle';
+            var form = this.closest('.formSupprimerModele');
             Swal.fire({
-                title: PARAM_I18N.resetTitle,
-                html: PARAM_I18N.resetHtml,
+                title: PARAM_I18N.delModeleTitle,
+                html: '<strong>' + nom + '</strong> ' + PARAM_I18N.delModeleSuffix,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: PARAM_I18N.resetBtn,
+                confirmButtonText: PARAM_I18N.delModeleBtn,
                 cancelButtonText: PARAM_I18N.cancel,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6c757d',
             }).then(function(result) {
-                if (result.isConfirmed) {
-                    document.getElementById('formResetContrat').submit();
-                }
+                if (result.isConfirmed) { form.submit(); }
             });
         });
-    }
+    });
+
+    // ── Ouvrir modal création/édition modèle ────────────────────────
+    window.ouvrirModalContrat = function(id, cfg) {
+        var DEFAULT_ARTS = JSON.parse(JSON.stringify(DEFAULT_ARTICLES));
+        document.getElementById('contrat_edit_id').value = id || '';
+        document.getElementById('contrat_nom_modele').value = cfg ? (cfg.nom_modele || '') : '';
+        document.getElementById('contrat_type_bail').value = cfg ? (cfg.type_bail || 'autre') : 'autre';
+        document.getElementById('contrat_is_default').checked = cfg ? !!cfg.is_default : false;
+        document.getElementById('contrat_titre').value = cfg ? (cfg.titre_contrat || '') : '';
+        document.getElementById('contrat_sous_titre').value = cfg ? (cfg.sous_titre || '') : '';
+        document.getElementById('modalContratTitre').textContent = id ? PARAM_I18N.editModeleTitle : '{{ __('pages.contrat_modele_add_btn') }}';
+        window.contratArticles = (cfg && cfg.articles && cfg.articles.length) ? JSON.parse(JSON.stringify(cfg.articles)) : DEFAULT_ARTS;
+        renderArticlesList();
+        new bootstrap.Modal(document.getElementById('modalContratModele')).show();
+    };
 
     // ── Bouton "Enregistrer le modèle" (titre + sous-titre + ordre) ──
     var formContrat = document.getElementById('formContrat');
@@ -2057,7 +2164,7 @@
                 Swal.fire({ icon: 'warning', title: PARAM_I18N.warning, text: PARAM_I18N.noArticles });
                 return;
             }
-            var btn = formContrat.querySelector('[type="submit"]');
+            var btn = document.querySelector('[form="formContrat"][type="submit"]') || formContrat.querySelector('[type="submit"]');
             saveArticlesToServer(PARAM_I18N.tplSaved, btn);
         });
     }

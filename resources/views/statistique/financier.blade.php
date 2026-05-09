@@ -82,20 +82,13 @@
                                     </div>
                             
                                     <!-- Pourcentage -->
-                                    <div class="col-md-3">
-                                        <label>{{ __('pages.fin_label_pct') }}<span style="color: red;">*</span></label>
-                                        <select class="form-select" name="pourcentage" id="pourcentage">
-                                            <option selected disabled>{{ __('pages.fin_ph_pct') }}</option>
-                                            @if(isset($pourcentages))
-                                                @foreach($pourcentages as $pct)
-                                                    <option value="{{ $pct }}">{{ $pct }} %</option>
-                                                @endforeach
-                                            @else
-                                                <option value="10">10 %</option>
-                                            @endif
-                                        </select>
+                                    <div class="col-md-3" id="pct-fiche-wrapper">
+                                        <label>{{ __('pages.fin_label_pct') }}</label>
+                                        <div id="pct-fiche-container" class="pt-1">
+                                            <span class="text-muted small">{{ __('pages.fin_ph_owner') }}</span>
+                                        </div>
                                     </div>
-                            
+
                                     <!-- Date début -->
                                     <div class="col-md-3">
                                         <label>{{ __('pages.fin_label_date_start') }}<span style="color: red;">*</span></label>
@@ -164,20 +157,13 @@
                                     </div>
                             
                                     <!-- Pourcentage -->
-                                    <div class="col-md-3">
-                                        <label>{{ __('pages.fin_label_pct') }}<span style="color: red;">*</span></label>
-                                        <select class="form-select" name="pourcentage2" id="pourcentage2">
-                                            <option selected disabled>{{ __('pages.fin_ph_pct') }}</option>
-                                            @if(isset($pourcentages))
-                                                @foreach($pourcentages as $pct)
-                                                    <option value="{{ $pct }}">{{ $pct }} %</option>
-                                                @endforeach
-                                            @else
-                                                <option value="10">10 %</option>
-                                            @endif
-                                        </select>
+                                    <div class="col-md-3" id="pct-fiche2-wrapper">
+                                        <label>{{ __('pages.fin_label_pct') }}</label>
+                                        <div id="pct-fiche2-container" class="pt-1">
+                                            <span class="text-muted small">{{ __('pages.fin_ph_owner') }}</span>
+                                        </div>
                                     </div>
-                            
+
                                     <!-- Date début -->
                                     <div class="col-md-3">
                                         <label>{{ __('pages.fin_label_date_start') }}<span style="color: red;">*</span></label>
@@ -190,7 +176,7 @@
                                         <input type="date" name="date_fin2" id="date_fin2" class="form-control" required>
                                     </div>
                                 </div>
-                              </form> 
+                              </form>
                             </div>
                             <br/>
                             
@@ -229,39 +215,24 @@
                             <div class="col-12 mt-5">
                               <form>
                                 <div class="row align-items-center">
-                                    <!-- Pourcentage de gestion -->
-                                    <div class="col-md-4">
-                                        <label>{{ __('pages.fin_label_pct') }}<span style="color: red;">*</span></label>
-                                        <select class="form-select" name="pourcentage_general" id="pourcentage_general">
-                                            <option selected disabled>{{ __('pages.fin_ph_pct') }}</option>
-                                            @if(isset($pourcentages))
-                                                @foreach($pourcentages as $pct)
-                                                    <option value="{{ $pct }}">{{ $pct }} %</option>
-                                                @endforeach
-                                            @else
-                                                <option value="10">10 %</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                            
                                     <!-- Date début -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label>{{ __('pages.fin_label_date_start') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_debut_general" id="date_debut_general" class="form-control" required>
                                     </div>
 
                                     <!-- Date fin -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label>{{ __('pages.fin_label_date_end') }}<span style="color: red;">*</span></label>
                                         <input type="date" name="date_fin_general" id="date_fin_general" class="form-control" required>
                                     </div>
                                 </div>
                               </form>
+                              <p class="text-muted small mt-2"><i class="bx bx-info-circle me-1"></i>Le taux de commission est calculé automatiquement selon le groupe de chaque propriétaire.</p>
                             </div>
                             <br/>
-                          
-                          
-                            <p id="pdfToDownload_general"></p> 
+
+                            <p id="pdfToDownload_general"></p>
                             <h5 class="card-title text-center" id="titre_general"></h5>
                             <br/>
 
@@ -273,6 +244,7 @@
                                 <th scope="col">{{ __('pages.fin_th_district') }}</th>
                                 <th scope="col">{{ __('pages.fin_th_room_type') }}</th>
                                 <th scope="col">{{ __('pages.fin_th_price') }}</th>
+                                <th scope="col">{{ __('pages.fin_label_pct') }}</th>
                                 <th scope="col">{{ __('pages.fin_th_agency_amount') }}</th>
                               </tr>
                             </thead>
@@ -280,9 +252,9 @@
 
                             </tbody>
 
-                            <th colspan="4">{{ __('pages.fin_total') }}</th>
+                            <th colspan="5">{{ __('pages.fin_total') }}</th>
                               <td id="total_general"></td>
-                     
+
                           </table>
                         </div>
                     </div>
@@ -306,70 +278,86 @@
         });
     
     
-        // Auto-sélection du pourcentage quand un propriétaire est choisi
+        var ROUTE_PCT_FICHE = '{{ route("envoi_document.pourcentages") }}';
+
+        function renderPctContainer(container, hiddenId, pctData) {
+            var value      = (pctData && pctData.pourcentage !== null && pctData.pourcentage !== undefined)
+                             ? pctData.pourcentage : 10;
+            var configured = pctData && pctData.configured;
+            var borderClass = configured ? 'border-success' : '';
+            var statusHtml  = configured
+                ? '<small class="text-success d-block mt-1"><i class="bx bx-check-circle me-1"></i>Depuis la configuration</small>'
+                : '<small class="text-muted d-block mt-1"><i class="bx bx-info-circle me-1"></i>Taux par défaut — modifiable</small>';
+
+            container.html(
+                '<div class="input-group">' +
+                '<input type="number" id="' + hiddenId + '" class="form-control ' + borderClass + '" ' +
+                'value="' + value + '" min="0" max="100" step="0.1">' +
+                '<span class="input-group-text">%</span>' +
+                '</div>' +
+                statusHtml
+            );
+        }
+
         $('#proprietaire').on('change', function() {
             var proprietaireId = $(this).val();
-            if (proprietaireId) {
-                $.ajax({
-                    url: '{{ route("api.get_pourcentage_proprietaire") }}',
-                    data: { proprietaire_id: proprietaireId },
-                    type: 'GET',
-                    success: function(data) {
-                        if (data.status && data.pourcentage) {
-                            var pctValue = parseFloat(data.pourcentage);
-                            var selectEl = $('#pourcentage');
-                            // Vérifier si l'option existe, sinon l'ajouter
-                            if (selectEl.find('option[value="' + pctValue + '"]').length === 0) {
-                                selectEl.append('<option value="' + pctValue + '">' + pctValue + ' %</option>');
-                            }
-                            selectEl.val(pctValue);
-                        }
+            var container = $('#pct-fiche-container');
+            if (!proprietaireId) return;
+            container.html('<span class="text-muted small"><i class="bx bx-loader-alt bx-spin"></i></span>');
+            $.ajax({
+                url: ROUTE_PCT_FICHE,
+                data: { ids: [proprietaireId], _token: $('meta[name="csrf-token"]').attr('content') },
+                type: 'POST',
+                success: function(res) {
+                    var pctData = (res.status && res.data) ? (res.data[proprietaireId] || null) : null;
+                    renderPctContainer(container, 'pourcentage', pctData);
+                    // Si les dates sont déjà renseignées, recharger automatiquement
+                    if ($('#date_debut').val() && $('#date_fin').val()) {
+                        $('#date_fin').trigger('change');
                     }
-                });
-            }
+                },
+                error: function() {
+                    renderPctContainer(container, 'pourcentage', null);
+                }
+            });
         });
 
         $('#proprietaire2').on('change', function() {
             var proprietaireId = $(this).val();
-            if (proprietaireId) {
-                $.ajax({
-                    url: '{{ route("api.get_pourcentage_proprietaire") }}',
-                    data: { proprietaire_id: proprietaireId },
-                    type: 'GET',
-                    success: function(data) {
-                        if (data.status && data.pourcentage) {
-                            var pctValue = parseFloat(data.pourcentage);
-                            var selectEl = $('#pourcentage2');
-                            if (selectEl.find('option[value="' + pctValue + '"]').length === 0) {
-                                selectEl.append('<option value="' + pctValue + '">' + pctValue + ' %</option>');
-                            }
-                            selectEl.val(pctValue);
-                        }
+            var container = $('#pct-fiche2-container');
+            if (!proprietaireId) return;
+            container.html('<span class="text-muted small"><i class="bx bx-loader-alt bx-spin"></i></span>');
+            $.ajax({
+                url: ROUTE_PCT_FICHE,
+                data: { ids: [proprietaireId], _token: $('meta[name="csrf-token"]').attr('content') },
+                type: 'POST',
+                success: function(res) {
+                    var pctData = (res.status && res.data) ? (res.data[proprietaireId] || null) : null;
+                    renderPctContainer(container, 'pourcentage2', pctData);
+                    // Si les dates sont déjà renseignées, recharger automatiquement
+                    if ($('#date_debut2').val() && $('#date_fin2').val()) {
+                        $('#date_fin2').trigger('change');
                     }
-                });
-            }
+                },
+                error: function() {
+                    renderPctContainer(container, 'pourcentage2', null);
+                }
+            });
         });
 
         $('#date_fin').on('change',function(e)
         {
-          //alert($(this).val());
-
           var proprietaire = $('#proprietaire').val();
-          var pourcentage = $('#pourcentage').val();
-          var date_debut = $('#date_debut').val();
-          var date_fin = $(this).val();
-    
-    
-    
-            if((proprietaire === null) || (pourcentage === null) || (date_debut === null) 
-            || (date_fin === null) )
+          var pourcentage  = $('#pourcentage').val() || 10;
+          var date_debut   = $('#date_debut').val();
+          var date_fin     = $(this).val();
+
+            if(!proprietaire || !date_debut || !date_fin)
             {
-                alert(FIN_I18N.alertAllFields);
                 return false;
             }
             else
             {
-              // alert(code_banque);
                 return $.ajax
                 ({
                     url: '{{ url('propritor-payment') }}',
@@ -378,18 +366,12 @@
                     cache: false,
                     dataType: 'json',
                     success: function (data) {
-                        //$('#echeance').val(data.echeance);
                         $('#solde').html(data.infos_solde);
                         $('#total').html(data.somme_solde) ;
                         $('#titre').html(data.titre) ;
                         $('#pdfToDownload').html(data.pdf) ;
-                        //$('#tableData').append(data.table_data);
                     },
-                    error:function(data) 
-                    {
-                      //alert(data.infor_proprio);
-    
-                    },
+                    error:function(data) {},
                });
             }
         });
@@ -399,24 +381,17 @@
     
         $('#date_fin2').on('change',function(e)
         {
-          //alert($(this).val());
-    
           var proprietaire2 = $('#proprietaire2').val();
-          var pourcentage2 = $('#pourcentage2').val();
-          var date_debut2 = $('#date_debut2').val();
-          var date_fin2 = $(this).val();
-    
-    
-    
-            if((proprietaire2 === null) || (pourcentage2 === null) || (date_debut2 === null) 
-            || (date_fin2 === null) )
+          var pourcentage2  = $('#pourcentage2').val() || 10;
+          var date_debut2   = $('#date_debut2').val();
+          var date_fin2     = $(this).val();
+
+            if(!proprietaire2 || !date_debut2 || !date_fin2)
             {
-                alert(FIN_I18N.alertAllFields);
                 return false;
             }
             else
             {
-              // alert(code_banque);
                 return $.ajax
                 ({
                     url: '{{ url('agence-payment') }}',
@@ -425,65 +400,43 @@
                     cache: false,
                     dataType: 'json',
                     success: function (data) {
-                        //$('#echeance').val(data.echeance);
                         $('#solde2').html(data.infos_solde2);
                         $('#total2').html(data.somme_solde2) ;
                         $('#titre2').html(data.titre2) ;
                         $('#pdfToDownload2').html(data.pdf2) ;
-                        //$('#tableData').append(data.table_data);
                     },
-                    error:function(data) 
-                    {
-                      //alert(data.infor_proprio);
-    
-                    },
+                    error:function(data) {},
                });
             }
         });
     
     
-        $('#date_fin_general').on('change',function(e)
-        {
-          //alert($(this).val());
-    
-         
-          var pourcentage_general = $('#pourcentage_general').val();
+        function chargerBeneficeGeneral() {
           var date_debut_general = $('#date_debut_general').val();
-          var date_fin_general = $(this).val();
-    
-    
-    
-            if( (pourcentage_general === null) || (date_debut_general === null) 
-            || (date_fin_general === null) )
-            {
-                alert(FIN_I18N.alertAllFields);
-                return false;
-            }
-            else
-            {
-              
-                return $.ajax
-                ({
-                    url: '{{ url('agence-payment-general') }}',
-                    data: {pourcentage_general:pourcentage_general,date_debut_general:date_debut_general,date_fin_general:date_fin_general},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        //$('#echeance').val(data.echeance);
-                        $('#solde_general').html(data.infos_solde_general);
-                        $('#total_general').html(data.somme_solde_general) ;
-                        $('#titre_general').html(data.titre_general) ;
-                        $('#pdfToDownload_general').html(data.pdf_general) ;
-                        //$('#tableData').append(data.table_data);
-                    },
-                    error:function(data) 
-                    {
-                      //alert(data.infor_proprio);
-    
-                    },
-               });
-            }
+          var date_fin_general   = $('#date_fin_general').val();
+
+          if (!date_debut_general || !date_fin_general) {
+              return false;
+          }
+
+          return $.ajax({
+              url: '{{ url('agence-payment-general') }}',
+              data: {date_debut_general: date_debut_general, date_fin_general: date_fin_general},
+              type: 'GET',
+              cache: false,
+              dataType: 'json',
+              success: function (data) {
+                  $('#solde_general').html(data.infos_solde_general);
+                  $('#total_general').html(data.somme_solde_general);
+                  $('#titre_general').html(data.titre_general);
+                  $('#pdfToDownload_general').html(data.pdf_general);
+              },
+              error: function() {}
+          });
+        }
+
+        $('#date_debut_general, #date_fin_general').on('change', function() {
+            chargerBeneficeGeneral();
         });
     
     

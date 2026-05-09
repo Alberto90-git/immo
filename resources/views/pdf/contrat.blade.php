@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contrat de Bail d'Habitation</title>
+    <title>{{ __('pdf.contrat_doc_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -190,13 +190,13 @@
 
     <!-- Titre du contrat -->
     <div class="contract-title">
-        <h1>{{ $contratConfig->titre_contrat ?? "Contrat de Bail d'Habitation" }}</h1>
+        <h1>{{ $contratConfig->titre_contrat ?? __('pdf.contrat_doc_title') }}</h1>
     </div>
     <div class="contract-ref">
-        {{ $contratConfig->sous_titre ?? "Conformément à la Loi N°2022-30 du 20 décembre 2022 portant régime juridique du bail à usage d'habitation en République du Bénin" }}
+        {{ $contratConfig->sous_titre ?? __('pdf.contrat_subtitle') }}
     </div>
 
-    <p style="margin-bottom: 15px;"><strong>ENTRE LES SOUSSIGNÉS :</strong></p>
+    <p style="margin-bottom: 15px;"><strong>{{ __('pdf.contrat_entre_soussignes') }}</strong></p>
 
     @if($articlesCustom)
     {{-- Articles personnalisés par la direction --}}
@@ -207,203 +207,192 @@
     </div>
     @endforeach
     @else
+
     <!-- Article 1 : Les parties -->
     <div class="article">
-        <div class="article-title">Article 1 - Les Parties</div>
+        <div class="article-title">{{ __('pdf.contrat_art1_titre') }}</div>
 
         <div class="party-info">
-            <div class="party-label">Le Bailleur (Agence Immobilière)</div>
+            <div class="party-label">{{ __('pdf.contrat_bailleur_label') }}</div>
             <p>
                 <strong>{{ $agence['designation'] ?? '' }}</strong><br>
-                @if(!empty($agence['siege_social']))Siège social : {{ $agence['siege_social'] }}<br>@endif
-                @if(!empty($agence['telephone']))Téléphone : {{ $agence['telephone'] }}<br>@endif
-                @if(!empty($agence['email']))Email : {{ $agence['email'] }}<br>@endif
+                @if(!empty($agence['siege_social'])){{ __('pdf.contrat_bailleur_siege') }} {{ $agence['siege_social'] }}<br>@endif
+                @if(!empty($agence['telephone'])){{ __('pdf.contrat_bailleur_tel') }} {{ $agence['telephone'] }}<br>@endif
+                @if(!empty($agence['email'])){{ __('pdf.contrat_bailleur_email') }} {{ $agence['email'] }}<br>@endif
             </p>
-            <p>Ci-après dénommé(e) <strong>« le Bailleur »</strong>,</p>
+            <p>{!! __('pdf.contrat_denomme_bailleur') !!}</p>
         </div>
 
-        <p style="text-align: center; font-weight: bold; margin: 10px 0;">ET</p>
+        <p style="text-align: center; font-weight: bold; margin: 10px 0;">{{ __('pdf.contrat_et') }}</p>
 
         <div class="party-info">
-            <div class="party-label">Le Locataire</div>
+            <div class="party-label">{{ __('pdf.contrat_locataire_label') }}</div>
             <p>
                 <strong>M./Mme {{ $data->nom ?? '' }} {{ $data->prenom ?? '' }}</strong><br>
-                @if(!empty($data->profession))Profession : {{ $data->profession }}<br>@endif
-                @if(!empty($data->telephone))Téléphone : {{ $data->telephone }}<br>@endif
-                @if(!empty($data->quartier))Domicile : {{ $data->quartier }}<br>@endif
+                @if(!empty($data->profession)){{ __('pdf.contrat_profession') }} {{ $data->profession }}<br>@endif
+                @if(!empty($data->telephone)){{ __('pdf.contrat_bailleur_tel') }} {{ $data->telephone }}<br>@endif
+                @if(!empty($data->quartier)){{ __('pdf.contrat_domicile') }} {{ $data->quartier }}<br>@endif
             </p>
-            <p>Ci-après dénommé(e) <strong>« le Locataire »</strong>,</p>
+            <p>{!! __('pdf.contrat_denomme_locataire') !!}</p>
         </div>
 
-        <p style="margin-top: 10px;"><strong>IL A ÉTÉ CONVENU ET ARRÊTÉ CE QUI SUIT :</strong></p>
+        <p style="margin-top: 10px;"><strong>{{ __('pdf.contrat_convenu') }}</strong></p>
     </div>
 
     <!-- Article 2 : Objet du contrat -->
     <div class="article">
-        <div class="article-title">Article 2 - Objet du Contrat</div>
-        <p>
-            Le Bailleur donne en location au Locataire, qui accepte, un logement dont les caractéristiques sont les suivantes :
-        </p>
+        <div class="article-title">{{ __('pdf.contrat_art2_titre') }}</div>
+        <p>{{ __('pdf.contrat_art2_intro') }}</p>
         <table class="recap-table">
             <tr>
-                <td>Maison</td>
+                <td>{{ __('pdf.contrat_art2_col_maison') }}</td>
                 <td>{{ $data->nom_maison ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td>Quartier / Localisation</td>
+                <td>{{ __('pdf.contrat_art2_col_quartier') }}</td>
                 <td>{{ $data->quartier ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td>Type de chambre</td>
+                <td>{{ __('pdf.contrat_art2_col_type') }}</td>
                 <td>{{ $data->type_chambre ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td>Numéro de chambre</td>
+                <td>{{ __('pdf.contrat_art2_col_numero') }}</td>
                 <td>{{ $data->numero_chambre ?? 'N/A' }}</td>
             </tr>
         </table>
-        <p>Le logement est destiné exclusivement à l'usage d'habitation du Locataire et de sa famille.</p>
+        <p>{{ __('pdf.contrat_art2_usage') }}</p>
     </div>
 
     <!-- Article 3 : Durée du bail -->
     <div class="article">
-        <div class="article-title">Article 3 - Durée du Bail</div>
+        <div class="article-title">{{ __('pdf.contrat_art3_titre') }}</div>
         <p>
-            Le présent bail est consenti et accepté pour une durée indéterminée, prenant effet à compter du
+            {{ __('pdf.contrat_art3_body1') }}
             <strong>{{ isset($data->date_entree) ? \Carbon\Carbon::parse($data->date_entree)->translatedFormat('d F Y') : 'N/A' }}</strong>.
         </p>
-        <p>
-            Conformément à la loi, chacune des parties pourra mettre fin au bail sous réserve du respect d'un préavis de trois (3) mois, notifié par écrit.
-        </p>
+        <p>{{ __('pdf.contrat_art3_body2') }}</p>
     </div>
 
     <!-- Article 4 : Loyer -->
     <div class="article">
-        <div class="article-title">Article 4 - Loyer</div>
+        <div class="article-title">{{ __('pdf.contrat_art4_titre') }}</div>
         <p>
-            Le loyer mensuel est fixé à la somme de <strong>{{ number_format($data->prix_mois ?? 0, 0, ',', '.') }} F CFA</strong>, payable au plus tard le <strong>cinq (5) de chaque mois</strong>.
+            {!! __('pdf.contrat_art4_loyer', [
+                'montant'  => '<strong>' . format_price($data->prix_mois ?? 0, $data->iddirection_ref ?? null) . '</strong>',
+                'echeance' => '<strong>' . __('pdf.contrat_art4_echeance') . '</strong>',
+            ]) !!}
         </p>
         <p>
-            Le paiement s'effectue par {{ $data->mode_paiement ?? 'tout moyen convenu entre les parties' }}.
+            {!! __('pdf.contrat_art4_paiement', [
+                'mode' => $data->mode_paiement ?? __('pdf.contrat_art4_mode_default') ?? '—',
+            ]) !!}
         </p>
-        <p>
-            Conformément à l'article 12 de la Loi N°2022-30, le loyer ne pourra excéder huit pour cent (8%) de la valeur vénale du local par an.
-        </p>
+        <p>{{ __('pdf.contrat_art4_loi') }}</p>
     </div>
 
     <!-- Article 5 : Caution -->
     <div class="article">
-        <div class="article-title">Article 5 - Dépôt de Garantie (Caution)</div>
+        <div class="article-title">{{ __('pdf.contrat_art5_titre') }}</div>
         <p>
-            Conformément à l'article 14 de la Loi N°2022-30, le Locataire verse au Bailleur un dépôt de garantie correspondant à
-            <strong>{{ $data->nombre_caution ?? 0 }} mois</strong> de loyer, soit la somme de
-            <strong>{{ number_format(($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0), 0, ',', '.') }} F CFA</strong>.
+            {!! __('pdf.contrat_art5_body1', [
+                'n_mois' => '<strong>' . ($data->nombre_caution ?? 0) . '</strong>',
+                'montant' => '<strong>' . format_price(($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0), $data->iddirection_ref ?? null) . '</strong>',
+            ]) !!}
         </p>
-        <p>Ce dépôt de garantie ne pourra excéder trois (3) mois de loyer.</p>
+        <p>{{ __('pdf.contrat_art5_body2') }}</p>
         <table class="recap-table">
             <tr>
-                <td>Caution électricité</td>
-                <td>{{ number_format($data->caution_courant ?? 0, 0, ',', '.') }} F CFA</td>
+                <td>{{ __('pdf.contrat_art5_col_courant') }}</td>
+                <td>{{ format_price($data->caution_courant ?? 0, $data->iddirection_ref ?? null) }}</td>
             </tr>
             <tr>
-                <td>Caution eau</td>
-                <td>{{ number_format($data->caution_eau ?? 0, 0, ',', '.') }} F CFA</td>
+                <td>{{ __('pdf.contrat_art5_col_eau') }}</td>
+                <td>{{ format_price($data->caution_eau ?? 0, $data->iddirection_ref ?? null) }}</td>
             </tr>
             <tr>
-                <td>Total caution</td>
-                <td><strong>{{ number_format((($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0)) + ($data->caution_courant ?? 0) + ($data->caution_eau ?? 0), 0, ',', '.') }} F CFA</strong></td>
+                <td>{{ __('pdf.contrat_art5_col_total') }}</td>
+                <td><strong>{{ format_price((($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0)) + ($data->caution_courant ?? 0) + ($data->caution_eau ?? 0), $data->iddirection_ref ?? null) }}</strong></td>
             </tr>
         </table>
-        <p>
-            Le dépôt de garantie sera restitué au Locataire dans un délai maximum de trois (3) mois après la restitution des clés, déduction faite des sommes restant dues et des réparations locatives à la charge du Locataire.
-        </p>
+        <p>{{ __('pdf.contrat_art5_restitution') }}</p>
     </div>
 
     <!-- Article 6 : Avance -->
     <div class="article">
-        <div class="article-title">Article 6 - Avance sur Loyer</div>
+        <div class="article-title">{{ __('pdf.contrat_art6_titre') }}</div>
         <p>
-            Le Locataire verse au Bailleur une avance de
-            <strong>{{ $data->nombre_avance ?? 0 }} mois</strong> de loyer, soit la somme de
-            <strong>{{ number_format(($data->nombre_avance ?? 0) * ($data->prix_mois ?? 0), 0, ',', '.') }} F CFA</strong>.
+            {!! __('pdf.contrat_art6_body1', [
+                'n_mois' => '<strong>' . ($data->nombre_avance ?? 0) . '</strong>',
+                'montant' => '<strong>' . format_price(($data->nombre_avance ?? 0) * ($data->prix_mois ?? 0), $data->iddirection_ref ?? null) . '</strong>',
+            ]) !!}
         </p>
         <p>
-            Cette avance couvre les {{ $data->nombre_avance ?? 0 }} premiers mois de location à compter de la date d'effet du bail.
+            {!! __('pdf.contrat_art6_body2', [
+                'n_mois' => $data->nombre_avance ?? 0,
+            ]) !!}
         </p>
     </div>
 
     <!-- Article 7 : Obligations du Bailleur -->
     <div class="article">
-        <div class="article-title">Article 7 - Obligations du Bailleur</div>
-        <p>Conformément aux articles 22 à 24 de la Loi N°2022-30, le Bailleur s'engage à :</p>
+        <div class="article-title">{{ __('pdf.contrat_art7_titre') }}</div>
+        <p>{{ __('pdf.contrat_art7_intro') }}</p>
         <ul>
-            <li>Délivrer au Locataire le logement en bon état d'usage et de réparation, ainsi que les équipements mentionnés au contrat ;</li>
-            <li>Assurer au Locataire la jouissance paisible du logement ;</li>
-            <li>Entretenir les locaux en état de servir à l'usage prévu, notamment les gros ouvrages (toiture, murs porteurs, fondations, canalisations principales) ;</li>
-            <li>Ne pas s'opposer aux aménagements réalisés par le Locataire, dès lors qu'ils ne constituent pas une transformation de la chose louée ;</li>
-            <li>Remettre au Locataire une quittance de loyer à chaque paiement.</li>
+            <li>{{ __('pdf.contrat_art7_li1') }}</li>
+            <li>{{ __('pdf.contrat_art7_li2') }}</li>
+            <li>{{ __('pdf.contrat_art7_li3') }}</li>
+            <li>{{ __('pdf.contrat_art7_li4') }}</li>
+            <li>{{ __('pdf.contrat_art7_li5') }}</li>
         </ul>
     </div>
 
     <!-- Article 8 : Obligations du Locataire -->
     <div class="article">
-        <div class="article-title">Article 8 - Obligations du Locataire</div>
-        <p>Conformément aux articles 25 à 27 de la Loi N°2022-30, le Locataire s'engage à :</p>
+        <div class="article-title">{{ __('pdf.contrat_art8_titre') }}</div>
+        <p>{{ __('pdf.contrat_art8_intro') }}</p>
         <ul>
-            <li>Payer le loyer et les charges aux termes convenus ;</li>
-            <li>User des locaux loués en bon père de famille et suivant la destination qui leur a été donnée ;</li>
-            <li>Répondre des dégradations et pertes qui surviennent pendant la durée du contrat, à moins de prouver qu'elles ont eu lieu par cas de force majeure ;</li>
-            <li>Ne pas transformer les locaux sans l'accord écrit préalable du Bailleur ;</li>
-            <li>Ne pas sous-louer tout ou partie du logement sans l'accord écrit du Bailleur ;</li>
-            <li>Signaler sans délai au Bailleur toute dégradation ou tout dysfonctionnement nécessitant une réparation à la charge de celui-ci ;</li>
-            <li>Laisser exécuter dans les locaux les travaux d'amélioration ou d'entretien nécessaires ;</li>
-            <li>Restituer les locaux en bon état à la fin du bail, sous réserve de l'usure normale.</li>
+            <li>{{ __('pdf.contrat_art8_li1') }}</li>
+            <li>{{ __('pdf.contrat_art8_li2') }}</li>
+            <li>{{ __('pdf.contrat_art8_li3') }}</li>
+            <li>{{ __('pdf.contrat_art8_li4') }}</li>
+            <li>{{ __('pdf.contrat_art8_li5') }}</li>
+            <li>{{ __('pdf.contrat_art8_li6') }}</li>
+            <li>{{ __('pdf.contrat_art8_li7') }}</li>
+            <li>{{ __('pdf.contrat_art8_li8') }}</li>
         </ul>
     </div>
 
     <!-- Article 9 : Résiliation -->
     <div class="article">
-        <div class="article-title">Article 9 - Résiliation du Bail</div>
-        <p>
-            Conformément à l'article 30 de la Loi N°2022-30, chacune des parties peut mettre fin au bail moyennant un préavis de
-            <strong>trois (3) mois</strong>, notifié à l'autre partie par lettre recommandée avec accusé de réception ou par tout moyen permettant de rapporter la preuve de la notification.
-        </p>
-        <p>Le bail peut être résilié de plein droit :</p>
+        <div class="article-title">{{ __('pdf.contrat_art9_titre') }}</div>
+        <p>{{ __('pdf.contrat_art9_body1') }}</p>
+        <p>{{ __('pdf.contrat_art9_body2') }}</p>
         <ul>
-            <li>En cas de défaut de paiement du loyer ou des charges dans les délais prévus, après mise en demeure restée infructueuse pendant un mois ;</li>
-            <li>En cas de non-respect des obligations contractuelles par l'une des parties ;</li>
-            <li>En cas de destruction totale du logement par cas de force majeure.</li>
+            <li>{{ __('pdf.contrat_art9_li1') }}</li>
+            <li>{{ __('pdf.contrat_art9_li2') }}</li>
+            <li>{{ __('pdf.contrat_art9_li3') }}</li>
         </ul>
     </div>
 
     <!-- Article 10 : État des lieux -->
     <div class="article">
-        <div class="article-title">Article 10 - État des Lieux</div>
-        <p>
-            Un état des lieux sera établi contradictoirement par les parties lors de la remise et de la restitution des clés.
-        </p>
-        <p>
-            L'état des lieux d'entrée et de sortie sera annexé au présent contrat. À défaut d'état des lieux, le Locataire est présumé avoir reçu les locaux en bon état de réparations locatives.
-        </p>
+        <div class="article-title">{{ __('pdf.contrat_art10_titre') }}</div>
+        <p>{{ __('pdf.contrat_art10_body1') }}</p>
+        <p>{{ __('pdf.contrat_art10_body2') }}</p>
     </div>
 
     <!-- Article 11 : Clause résolutoire -->
     <div class="article">
-        <div class="article-title">Article 11 - Clause Résolutoire</div>
-        <p>
-            À défaut de paiement à son échéance d'un seul terme de loyer ou de charges, et un mois après un commandement de payer ou une mise en demeure restés sans effet, le présent bail sera résilié de plein droit, si bon semble au Bailleur, sans qu'il soit besoin de faire prononcer cette résiliation en justice.
-        </p>
+        <div class="article-title">{{ __('pdf.contrat_art11_titre') }}</div>
+        <p>{{ __('pdf.contrat_art11_body') }}</p>
     </div>
 
     <!-- Article 12 : Élection de domicile -->
     <div class="article">
-        <div class="article-title">Article 12 - Élection de Domicile et Juridiction Compétente</div>
-        <p>
-            Pour l'exécution du présent contrat, les parties élisent domicile en leurs adresses respectives indiquées ci-dessus.
-        </p>
-        <p>
-            En cas de litige relatif à l'interprétation ou à l'exécution du présent contrat, les parties s'engagent à rechercher un règlement amiable. À défaut d'accord, le tribunal compétent du lieu de situation de l'immeuble sera saisi.
-        </p>
+        <div class="article-title">{{ __('pdf.contrat_art12_titre') }}</div>
+        <p>{{ __('pdf.contrat_art12_body1') }}</p>
+        <p>{{ __('pdf.contrat_art12_body2') }}</p>
     </div>
 
     @endif
@@ -419,10 +408,8 @@
 
     <!-- Fait à ... -->
     <div class="fait-a">
-        <p>
-            Fait à {{ $agence['siege_social'] ?? '.........................' }}, le {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
-        </p>
-        <p>En deux (2) exemplaires originaux, un pour chaque partie.</p>
+        <p>{{ __('pdf.fait_a', ['lieu' => $agence['siege_social'] ?? '.........................', 'date' => \Carbon\Carbon::now()->translatedFormat('d F Y')]) }}</p>
+        <p>{{ __('pdf.en_deux_exemplaires') }}</p>
     </div>
 
     <!-- Signatures -->
@@ -430,10 +417,10 @@
         {{-- Ligne 1 : labels --}}
         <tr>
             <td style="width:50%; text-align:center; padding:4px 20px; border:none;">
-                <u><strong style="color:#012970; font-size:12px;">Pour le Bailleur</strong></u>
+                <u><strong style="color:#012970; font-size:12px;">{{ __('pdf.sig_bailleur') }}</strong></u>
             </td>
             <td style="width:50%; text-align:center; padding:4px 20px; border:none;">
-                <u><strong style="color:#012970; font-size:12px;">Pour le Locataire</strong></u>
+                <u><strong style="color:#012970; font-size:12px;">{{ __('pdf.sig_locataire_contrat') }}</strong></u>
             </td>
         </tr>
         {{-- Ligne 2 : image signature --}}
@@ -471,7 +458,7 @@
 
     <!-- Pied de page -->
     <div class="page-footer">
-        {{ $agence['designation'] ?? '' }} | Contrat de bail d'habitation | Loi N°2022-30 du 20/12/2022
+        {{ $agence['designation'] ?? '' }} | {{ __('pdf.contrat_footer_loi') }}
     </div>
 
 </body>

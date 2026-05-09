@@ -177,6 +177,80 @@ class PlanController extends Controller
     }
 
     /**
+     * Calcule le montant proraté pour un changement de plan
+     */
+    public function calculerProration(Request $request)
+    {
+        try {
+            if (!Auth::check()) {
+                return response()->json(['status' => false, 'message' => 'Non authentifié.'], 401);
+            }
+
+            $request->validate([
+                'plan_id' => 'required|exists:plans,idplan',
+                'nb_mois' => 'required|integer|min:1|max:24',
+            ]);
+
+            $direction = Direction::find(Auth::user()->iddirection_ref);
+            $newPlan   = Plan::find($request->plan_id);
+            $nbMois    = (int) $request->nb_mois;
+
+            $prixNouveauTotal = floatval($newPlan->prix_mensuel) * $nbMois;
+            $credit           = 0;
+            $joursRestants    = 0;
+            $extraDays        = 0;
+            $hasProration     = false;
+            $currentPlan      = $direction ? $direction->plan : null;
+
+            if (
+                $direction &&
+                $currentPlan &&
+                floatval($currentPlan->prix_mensuel) > 0 &&
+                $direction->abonnement_fin &&
+                $direction->statut_abonnement === 'actif' &&
+                !$direction->isAbonnementExpire()
+            ) {
+                $joursRestants = max(0, (int) Carbon::now()->diffInDays(Carbon::parse($direction->abonnement_fin), false));
+
+                if ($joursRestants > 0) {
+                    $credit       = round(floatval($currentPlan->prix_mensuel) / 30 * $joursRestants);
+                    $hasProration = true;
+                }
+            }
+
+            $montantDu = max(0, $prixNouveauTotal - $credit);
+
+            // Crédit excédentaire → jours bonus sur le nouveau plan
+            if ($hasProration && $credit > $prixNouveauTotal && floatval($newPlan->prix_mensuel) > 0) {
+                $excedent  = $credit - $prixNouveauTotal;
+                $extraDays = (int) round($excedent / (floatval($newPlan->prix_mensuel) / 30));
+            }
+
+            // Avertissement si l'user a des annexes extra et que le nouveau plan n'en autorise pas
+            $annexesExtra    = $direction ? $direction->getNombreAnnexes() : 0;
+            $annexesWarning  = ($newPlan->max_annexes === 0 || $newPlan->max_annexes === null)
+                               && $annexesExtra > 0;
+
+            return response()->json([
+                'status'           => true,
+                'has_proration'    => $hasProration,
+                'jours_restants'   => $joursRestants,
+                'credit'           => $credit,
+                'prix_total'       => $prixNouveauTotal,
+                'montant_du'       => $montantDu,
+                'extra_days'       => $extraDays,
+                'plan_actuel_nom'  => $currentPlan ? $currentPlan->nom : null,
+                'plan_actuel_prix' => $currentPlan ? floatval($currentPlan->prix_mensuel) : 0,
+                'annexes_warning'  => $annexesWarning,
+                'annexes_extra'    => $annexesExtra,
+                'new_max_annexes'  => $newPlan->max_annexes,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Erreur calcul prorata.'], 500);
+        }
+    }
+
+    /**
      * Change le plan de l'utilisateur (nécessite traitement de paiement)
      */
     public function changePlan(Request $request)
@@ -193,6 +267,7 @@ class PlanController extends Controller
                 'plan_id'        => 'required|exists:plans,idplan',
                 'transaction_id' => 'nullable|string',
                 'nb_mois'        => 'required|integer|min:1|max:24',
+                'extra_days'     => 'nullable|integer|min:0',
             ]);
 
             $direction = Direction::find(Auth::user()->iddirection_ref);
@@ -217,23 +292,53 @@ class PlanController extends Controller
                 ], 400);
             }
 
-            if ($currentAnnexes > $newPlan->max_annexes) {
+            if ($newPlan->max_annexes > 0 && $currentAnnexes > $newPlan->max_annexes) {
                 return response()->json([
                     'status' => false,
                     'message' => "Vous avez actuellement {$currentAnnexes} annexe(s). Le plan {$newPlan->nom} n'autorise que {$newPlan->max_annexes} annexe(s). Veuillez d'abord réduire le nombre d'annexes."
                 ], 400);
             }
 
-            $nbMois = (int) $request->input('nb_mois', 1);
+            $nbMois    = (int) $request->input('nb_mois', 1);
+            $extraDays = max(0, (int) $request->input('extra_days', 0));
 
-            // ── Vérification du paiement si plan payant + prestataire actif ────────
-            $prixMensuel   = floatval($newPlan->prix_mensuel);
-            $prixTotal     = $prixMensuel * $nbMois;
-            $isPlanPaye    = $prixMensuel > 0;
-            $paymentConfig = PlatformConfig::getConfig();
-            $paiementValide = false;
+            // ── Calcul prorata server-side (source de vérité) ──────────────────
+            $prixMensuel      = floatval($newPlan->prix_mensuel);
+            $prixNouveauTotal = $prixMensuel * $nbMois;
+            $isPlanPaye       = $prixMensuel > 0;
+            $paymentConfig    = PlatformConfig::getConfig();
+            $paiementValide   = false;
 
-            if ($isPlanPaye && $paymentConfig->isOperational()) {
+            // Recalcul du crédit côté serveur pour validation sécurisée
+            $credit        = 0;
+            $currentPlan   = $direction->plan;
+            $joursRestants = 0;
+
+            if (
+                $currentPlan &&
+                floatval($currentPlan->prix_mensuel) > 0 &&
+                $direction->abonnement_fin &&
+                $direction->statut_abonnement === 'actif' &&
+                !$direction->isAbonnementExpire()
+            ) {
+                $joursRestants = max(0, (int) Carbon::now()->diffInDays(Carbon::parse($direction->abonnement_fin), false));
+                if ($joursRestants > 0) {
+                    $credit = round(floatval($currentPlan->prix_mensuel) / 30 * $joursRestants);
+                }
+            }
+
+            $montantDu = max(0, $prixNouveauTotal - $credit);
+
+            // Recalcul sécurisé des jours bonus
+            $extraDaysServeur = 0;
+            if ($credit > $prixNouveauTotal && $prixMensuel > 0) {
+                $excedent         = $credit - $prixNouveauTotal;
+                $extraDaysServeur = (int) round($excedent / ($prixMensuel / 30));
+            }
+            // ────────────────────────────────────────────────────────────────────
+
+            // ── Vérification du paiement si montant dû > 0 + prestataire actif ─
+            if ($isPlanPaye && $montantDu > 0 && $paymentConfig->isOperational()) {
                 $transactionId = $request->input('transaction_id');
 
                 if (empty($transactionId)) {
@@ -272,26 +377,31 @@ class PlanController extends Controller
                 }
 
                 $paiementValide = true;
+            } elseif ($isPlanPaye && $montantDu == 0) {
+                // Crédit couvre entièrement → pas de paiement requis, activation directe
+                $paiementValide = true;
             }
             // ────────────────────────────────────────────────────────────────────
 
+            // Calcul de la nouvelle date de fin (avec jours bonus si crédit excédentaire)
+            $nouvelleFin = Carbon::now()->addMonths($nbMois)->addDays($extraDaysServeur);
+
             // Mise à jour du plan
-            $direction->idplan_ref      = $newPlan->idplan;
+            $direction->idplan_ref       = $newPlan->idplan;
             $direction->abonnement_debut = Carbon::now();
-            $direction->abonnement_fin   = Carbon::now()->addMonths($nbMois);
+            $direction->abonnement_fin   = $nouvelleFin;
 
             if ($paiementValide) {
-                // Paiement confirmé → activation directe
                 $direction->statut_abonnement = 'actif';
                 $direction->save();
-                // Débloquer l'entreprise et les annexes
                 User::where('iddirection_ref', $direction->iddirection)
                     ->update(['blocage_entreprise' => null]);
                 Annexe::where('iddirection_ref', $direction->iddirection)
                     ->update(['blocage_annexe' => null]);
-                $successMessage = "Votre abonnement au plan {$newPlan->nom} ({$nbMois} mois) est maintenant actif. Une facture vous a été envoyée par email.";
+
+                $extraMsg = $extraDaysServeur > 0 ? " + {$extraDaysServeur} jour(s) de crédit" : '';
+                $successMessage = "Votre abonnement au plan {$newPlan->nom} ({$nbMois} mois{$extraMsg}) est maintenant actif. Une facture vous a été envoyée par email.";
             } else {
-                // Sans paiement → suspension en attente de validation admin
                 $direction->statut_abonnement = 'essai';
                 $direction->save();
                 User::where('iddirection_ref', $direction->iddirection)
@@ -316,7 +426,7 @@ class PlanController extends Controller
                         'code'         => $newPlan->code,
                         'prix_annuel'  => $newPlan->prix_annuel,
                         'prix_mensuel' => $newPlan->prix_mensuel,
-                        'prix_total'   => $prixTotal,
+                        'prix_total'   => $montantDu > 0 ? $montantDu : $prixNouveauTotal,
                         'max_maisons'  => $newPlan->max_maisons,
                         'max_annexes'  => $newPlan->max_annexes,
                     ],
@@ -324,8 +434,14 @@ class PlanController extends Controller
                     'direction' => [
                         'designation'     => $direction->designation,
                         'abonnement_debut' => Carbon::now()->toDateString(),
-                        'abonnement_fin'   => Carbon::now()->addMonths($nbMois)->toDateString(),
+                        'abonnement_fin'   => $nouvelleFin->toDateString(),
                     ],
+                    'proration' => $credit > 0 ? [
+                        'credit'         => $credit,
+                        'jours_restants' => $joursRestants,
+                        'montant_du'     => $montantDu,
+                        'extra_days'     => $extraDaysServeur,
+                    ] : null,
                 ];
 
                 $invoiceService = new SubscriptionInvoiceService();
@@ -338,9 +454,13 @@ class PlanController extends Controller
                 ]);
             }
 
+            $logNote = $credit > 0
+                ? " (prorata: crédit {$credit} XOF, payé {$montantDu} XOF)"
+                : ($paiementValide ? ' (paiement confirmé)' : '');
+
             activity()->performedOn($direction)
                 ->causedBy(Auth::user()->id)
-                ->log('Changement de plan vers ' . $newPlan->nom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom . ($paiementValide ? ' (paiement confirmé)' : ''));
+                ->log('Changement de plan vers ' . $newPlan->nom . ' par ' . Auth::user()->nom . ' ' . Auth::user()->prenom . $logNote);
 
             return response()->json([
                 'status'   => true,

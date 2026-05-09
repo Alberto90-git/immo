@@ -8,6 +8,7 @@ use App\Proprietaire;
 use App\Maison;
 use Carbon\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 
@@ -38,6 +39,8 @@ class PdfGeneratorService
             throw new \Exception('Locataire introuvable');
         }
 
+        App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
+
         $idannexe_ref = get_active_annexe_id() ?? $data->idannexe_ref;
         $agence = get_annexe_details_for_invoice($idannexe_ref) ?? [
             'designation'      => 'Agence Immobilière',
@@ -50,7 +53,9 @@ class PdfGeneratorService
             'signature_base64' => null,
         ];
 
-        $contratConfig = \App\ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+        $dirId = Auth::user()->iddirection_ref;
+        $contratConfig = \App\ContratConfig::where('iddirection_ref', $dirId)->where('is_default', true)->first()
+            ?? \App\ContratConfig::where('iddirection_ref', $dirId)->first();
 
         $replacements = [
             '{nom_agence}'           => $agence['designation'] ?? '',
@@ -64,14 +69,14 @@ class PdfGeneratorService
             '{quartier_maison}'      => $data->quartier_maison ?? '',
             '{type_chambre}'         => $data->type_chambre ?? '',
             '{numero_chambre}'       => $data->numero_chambre ?? '',
-            '{montant_loyer}'        => number_format($data->prix_mois ?? 0, 0, ',', '.') . ' F CFA',
+            '{montant_loyer}'        => format_price($data->prix_mois ?? 0, $dirId),
             '{nombre_caution}'       => $data->nombre_caution ?? 0,
-            '{montant_caution}'      => number_format(($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0), 0, ',', '.') . ' F CFA',
-            '{caution_courant}'      => number_format($data->caution_courant ?? 0, 0, ',', '.') . ' F CFA',
-            '{caution_eau}'          => number_format($data->caution_eau ?? 0, 0, ',', '.') . ' F CFA',
+            '{montant_caution}'      => format_price(($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0), $dirId),
+            '{caution_courant}'      => format_price($data->caution_courant ?? 0, $dirId),
+            '{caution_eau}'          => format_price($data->caution_eau ?? 0, $dirId),
             '{nombre_avance}'        => $data->nombre_avance ?? 0,
-            '{montant_avance}'       => number_format(($data->nombre_avance ?? 0) * ($data->prix_mois ?? 0), 0, ',', '.') . ' F CFA',
-            '{mode_paiement}'        => $data->mode_paiement ?? 'tout moyen convenu entre les parties',
+            '{montant_avance}'       => format_price(($data->nombre_avance ?? 0) * ($data->prix_mois ?? 0), $dirId),
+            '{mode_paiement}'        => $data->mode_paiement ?? __('pdf.contrat_art4_mode_default'),
             '{date_entree}'          => isset($data->date_entree) ? Carbon::parse($data->date_entree)->translatedFormat('d F Y') : 'N/A',
             '{date_contrat}'         => Carbon::now()->translatedFormat('d F Y'),
         ];
@@ -92,7 +97,7 @@ class PdfGeneratorService
 
         $content  = $pdf->output();
         $filename = 'Contrat_' . ($data->nom ?? '') . '_' . ($data->prenom ?? '') . '_' . Carbon::now()->format('d-m-Y') . '.pdf';
-        $label    = 'Contrat de ' . trim(($data->nom ?? '') . ' ' . ($data->prenom ?? ''));
+        $label    = __('mail.document_labels.contrat', ['name' => trim(($data->nom ?? '') . ' ' . ($data->prenom ?? ''))]);
 
         return compact('content', 'filename', 'label');
     }
@@ -133,7 +138,7 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 14);
         $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
         $fpdf->SetXY(30, $y);
-        $fpdf->Cell($pageWidth - 40, 8, 'QUITTANCE DE LOYER MENSUEL', 0, 1, 'C');
+        $fpdf->Cell($pageWidth - 40, 8, utf8_decode(__('pdf.quittance_mensuelle_title')), 0, 1, 'C');
 
         if ($annexeData) {
             $y += 8;
@@ -192,7 +197,7 @@ class PdfGeneratorService
         $prix_mois        = $row->montant;
         $mois             = $row->mois;
         $type_paiement    = $row->type_paiement;
-        $valeur           = $type_paiement == 'direct' ? 'Direct' : 'Dans son avance';
+        $valeur           = $type_paiement == 'direct' ? utf8_decode(__('pdf.fpdf_type_direct')) : utf8_decode(__('pdf.fpdf_type_avance'));
         $date_paiement    = $row->date_paiement;
 
         $labelWidth = 45;
@@ -201,17 +206,17 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 10);
         $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
         $fpdf->SetXY(10, $y);
-        $fpdf->Cell(0, 6, 'INFORMATIONS', 0, 1);
+        $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_informations')), 0, 1);
         $y += 8;
 
         $infos = [
-            'Locataire:'      => utf8_decode($nom_locataire . ' ' . $prenom_locataire),
-            'Profession:'     => utf8_decode($profession),
-            'Maison:'         => utf8_decode($maison),
-            'Chambre:'        => $type_chambre . ' N°' . $numero_chambre,
-            'Mode paiement:'  => utf8_decode($mode_paiement),
-            'Type paiement:'  => $valeur,
-            'Mois:'           => $mois,
+            utf8_decode(__('pdf.fpdf_locataire'))     => utf8_decode($nom_locataire . ' ' . $prenom_locataire),
+            utf8_decode(__('pdf.fpdf_profession'))    => utf8_decode($profession),
+            utf8_decode(__('pdf.fpdf_maison'))        => utf8_decode($maison),
+            utf8_decode(__('pdf.fpdf_chambre'))       => $type_chambre . ' N°' . $numero_chambre,
+            utf8_decode(__('pdf.fpdf_mode_paiement')) => utf8_decode($mode_paiement),
+            utf8_decode(__('pdf.fpdf_type_paiement')) => $valeur,
+            utf8_decode(__('pdf.fpdf_mois'))          => $mois,
         ];
 
         foreach ($infos as $label => $val) {
@@ -232,7 +237,7 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 9);
         $fpdf->SetTextColor(0, 0, 0);
         $fpdf->SetXY(10, $y);
-        $fpdf->Cell($colDesc, 6, utf8_decode('MONTANT PERÇU:'), 0, 0, 'L');
+        $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_montant_percu')), 0, 0, 'L');
         $fpdf->SetFont('Arial', 'B', 11);
         $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
         $fpdf->SetX(10 + $colDesc);
@@ -240,11 +245,11 @@ class PdfGeneratorService
         $y += 10;
 
         if ($y < 140) {
-            $montantLettres = ucfirst(nombreEnLettres($prix_mois)) . ' francs CFA';
+            $montantLettres = ucfirst(nombreEnLettres($prix_mois)) . ' ' . get_devise_courante();
             $fpdf->SetFont('Arial', 'B', 10);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetX(10);
-            $fpdf->MultiCell(190, 6, utf8_decode('Quittance arrêtée à :' . $montantLettres), 0, 'L');
+            $fpdf->MultiCell(190, 6, utf8_decode(__('pdf.fpdf_quittance_arretee') . $montantLettres), 0, 'L');
             $y = $fpdf->GetY() + 8;
         }
 
@@ -253,7 +258,7 @@ class PdfGeneratorService
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetXY(10, $cashY);
-            $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+            $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_modes_paiement_mobile')), 0, 1, 'L');
             $fpdf->SetFont('Arial', '', 7);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetX(10);
@@ -265,7 +270,7 @@ class PdfGeneratorService
             $fpdf->SetFont('Arial', 'I', 7);
             $fpdf->SetTextColor(100, 100, 100);
             $fpdf->SetXY(10, $y);
-            $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode('Cette quittance fait foi de paiement du loyer pour la période indiquée.'), 0, 'C');
+            $fpdf->MultiCell($pageWidth - 20, 3, utf8_decode(__('pdf.fpdf_quittance_footer')), 0, 'C');
             $y += 10;
         }
 
@@ -274,7 +279,7 @@ class PdfGeneratorService
         $fpdf->SetFont('Courier', 'B', 8);
         $fpdf->SetTextColor(50, 50, 50);
         $fpdf->SetXY(10, $y);
-        $fpdf->Cell(0, 4, utf8_decode('Référence: ') . $ref, 0, 1, 'C');
+        $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_reference')) . $ref, 0, 1, 'C');
         $y += 8;
 
         $signatureY = $pageHeight - 50;
@@ -283,9 +288,9 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'I', 7);
         $fpdf->SetTextColor(100, 100, 100);
         $fpdf->SetXY(10, $signatureY);
-        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du locataire'), 0, 0, 'C');
+        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_locataire')), 0, 0, 'C');
         $fpdf->SetX(($pageWidth - 30) / 2 + 20);
-        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
+        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_responsable')), 0, 1, 'C');
 
         // Image signature dans colonne droite (signature_path ou cash_electronique_image_path en fallback)
         $sigImgPath = null;
@@ -316,15 +321,15 @@ class PdfGeneratorService
         $fpdf->SetY($pageHeight - 12);
         $fpdf->SetFont('Arial', 'I', 7);
         $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
-        $fpdf->Cell(0, 3, 'Merci pour votre confiance !', 0, 0, 'C');
+        $fpdf->Cell(0, 3, utf8_decode(__('pdf.fpdf_merci')), 0, 0, 'C');
         $fpdf->SetY($pageHeight - 8);
         $fpdf->SetFont('Arial', 'I', 6);
         $fpdf->SetTextColor(120, 120, 120);
-        $fpdf->Cell(0, 3, utf8_decode('Facture générée le ') . utf8_decode(date('d/m/Y à H:i')), 0, 0, 'C');
+        $fpdf->Cell(0, 3, utf8_decode(__('pdf.fpdf_generated')) . utf8_decode(date('d/m/Y')), 0, 0, 'C');
 
         $content  = $fpdf->Output('S', '');
         $filename = 'Quittance_Mensuelle_' . str_replace(' ', '_', $nom_locataire) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Quittance mensuelle de ' . trim($nom_locataire . ' ' . $prenom_locataire) . ' - ' . $mois;
+        $label    = __('mail.document_labels.quittance_mensuelle', ['name' => trim($nom_locataire . ' ' . $prenom_locataire), 'mois' => $mois]);
 
         return compact('content', 'filename', 'label');
     }
@@ -364,7 +369,7 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 14);
         $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
         $fpdf->SetXY(30, $y);
-        $fpdf->Cell($pageWidth - 40, 8, 'QUITTANCE DE CAUTION', 0, 1, 'C');
+        $fpdf->Cell($pageWidth - 40, 8, utf8_decode(__('pdf.quittance_caution_title')), 0, 1, 'C');
 
         if ($annexeData) {
             $y += 8;
@@ -433,16 +438,16 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 10);
         $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
         $fpdf->SetXY(10, $y);
-        $fpdf->Cell(0, 6, 'INFORMATIONS', 0, 1);
+        $fpdf->Cell(0, 6, utf8_decode(__('pdf.fpdf_informations')), 0, 1);
         $y += 8;
 
         $infos = [
-            'Locataire:'     => utf8_decode($nom_locataire . ' ' . $prenom_locataire),
-            'Profession:'    => utf8_decode($profession),
-            'Maison:'        => utf8_decode($maison),
-            'Chambre:'       => $type_chambre . ' N°' . $numero_chambre,
-            'Date entrée:'   => $date_entre,
-            'Mode paiement:' => utf8_decode($mode_paiement),
+            utf8_decode(__('pdf.fpdf_locataire'))     => utf8_decode($nom_locataire . ' ' . $prenom_locataire),
+            utf8_decode(__('pdf.fpdf_profession'))    => utf8_decode($profession),
+            utf8_decode(__('pdf.fpdf_maison'))        => utf8_decode($maison),
+            utf8_decode(__('pdf.fpdf_chambre'))       => $type_chambre . ' N°' . $numero_chambre,
+            utf8_decode(__('pdf.fpdf_date_entree'))   => $date_entre,
+            utf8_decode(__('pdf.fpdf_mode_paiement')) => utf8_decode($mode_paiement),
         ];
 
         foreach ($infos as $label => $val) {
@@ -465,9 +470,9 @@ class PdfGeneratorService
         $fpdf->SetTextColor(255, 255, 255);
         $fpdf->SetFont('Arial', 'B', 8);
         $fpdf->SetXY(10, $y);
-        $fpdf->Cell($colDesc, 6, 'DESCRIPTION', 1, 0, 'L', true);
-        $fpdf->Cell($colQte, 6, 'QTE', 1, 0, 'C', true);
-        $fpdf->Cell($colMontant, 6, 'MONTANT', 1, 1, 'C', true);
+        $fpdf->Cell($colDesc, 6, utf8_decode(__('pdf.fpdf_col_description')), 1, 0, 'L', true);
+        $fpdf->Cell($colQte, 6, utf8_decode(__('pdf.fpdf_col_qte')), 1, 0, 'C', true);
+        $fpdf->Cell($colMontant, 6, utf8_decode(__('pdf.fpdf_col_montant')), 1, 1, 'C', true);
         $y += 6;
 
         $montant_avance = $prix_mois * $nombre_avance;
@@ -475,10 +480,10 @@ class PdfGeneratorService
         $total = $montant_avance + $caution_courant + $caution_eau + $montant_caution;
 
         $items = [
-            ['Avance', $nombre_avance . ' mois', $montant_avance],
-            ['Caution', $nombre_caution . ' mois', $montant_caution],
-            ['Caution électricité', '1', $caution_courant],
-            ['Caution eau', '1', $caution_eau],
+            [utf8_decode(__('pdf.fpdf_caution_avance')),      $nombre_avance . ' mois',  $montant_avance],
+            [utf8_decode(__('pdf.fpdf_caution_caution')),     $nombre_caution . ' mois', $montant_caution],
+            [utf8_decode(__('pdf.fpdf_caution_electricite')), '1',                       $caution_courant],
+            [utf8_decode(__('pdf.fpdf_caution_eau')),         '1',                       $caution_eau],
         ];
 
         foreach ($items as $item) {
@@ -496,7 +501,7 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'B', 9);
         $fpdf->SetTextColor(0, 0, 0);
         $fpdf->SetXY(10, $y);
-        $fpdf->Cell($colDesc + $colQte, 6, 'TOTAL A PAYER:', 0, 0, 'L');
+        $fpdf->Cell($colDesc + $colQte, 6, utf8_decode(__('pdf.fpdf_total_a_payer')), 0, 0, 'L');
         $fpdf->SetFont('Arial', 'B', 11);
         $fpdf->SetTextColor($color_success[0], $color_success[1], $color_success[2]);
         $fpdf->SetX(10 + $colDesc + $colQte);
@@ -508,7 +513,7 @@ class PdfGeneratorService
             $fpdf->SetFont('Arial', 'B', 10);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetX(10);
-            $fpdf->MultiCell(190, 6, utf8_decode('Quittance arrêtée à ' . $montantLettres), 0, 'L');
+            $fpdf->MultiCell(190, 6, utf8_decode(__('pdf.fpdf_quittance_arretee_a') . ' ' . $montantLettres), 0, 'L');
             $y = $fpdf->GetY() + 8;
         }
 
@@ -517,7 +522,7 @@ class PdfGeneratorService
             $fpdf->SetFont('Arial', 'B', 7);
             $fpdf->SetTextColor($color_header[0], $color_header[1], $color_header[2]);
             $fpdf->SetXY(10, $cashY);
-            $fpdf->Cell(0, 4, 'MODES DE PAIEMENT MOBILE:', 0, 1, 'L');
+            $fpdf->Cell(0, 4, utf8_decode(__('pdf.fpdf_modes_paiement_mobile')), 0, 1, 'L');
             $fpdf->SetFont('Arial', '', 7);
             $fpdf->SetTextColor(80, 80, 80);
             $fpdf->SetX(10);
@@ -531,9 +536,9 @@ class PdfGeneratorService
         $fpdf->SetFont('Arial', 'I', 7);
         $fpdf->SetTextColor(100, 100, 100);
         $fpdf->SetXY(10, $signatureY);
-        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du locataire'), 0, 0, 'C');
+        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_locataire')), 0, 0, 'C');
         $fpdf->SetX(($pageWidth - 30) / 2 + 20);
-        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode('Signature du responsable'), 0, 1, 'C');
+        $fpdf->Cell(($pageWidth - 30) / 2, 4, utf8_decode(__('pdf.fpdf_sig_responsable')), 0, 1, 'C');
 
         // Image signature dans colonne droite (signature_path ou cash_electronique_image_path en fallback)
         $sigImgPath = null;
@@ -550,7 +555,7 @@ class PdfGeneratorService
 
         $content  = $fpdf->Output('S', '');
         $filename = 'Quittance_Caution_' . str_replace(' ', '_', $nom_locataire) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Quittance de caution de ' . trim($nom_locataire . ' ' . $prenom_locataire);
+        $label    = __('mail.document_labels.quittance_caution', ['name' => trim($nom_locataire . ' ' . $prenom_locataire)]);
 
         return compact('content', 'filename', 'label');
     }
@@ -585,7 +590,7 @@ class PdfGeneratorService
 
         $content  = $pdf->output();
         $filename = 'Releve_Proprietaire_' . str_replace(' ', '_', $proprio->nom) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Relevé propriétaire ' . trim($proprio->nom . ' ' . $proprio->prenom) . ' du ' . $debut . ' au ' . $fin;
+        $label    = __('mail.document_labels.releve_proprietaire', ['name' => trim($proprio->nom . ' ' . $proprio->prenom), 'debut' => $debut, 'fin' => $fin]);
 
         return compact('content', 'filename', 'label');
     }
@@ -620,7 +625,7 @@ class PdfGeneratorService
 
         $content  = $pdf->output();
         $filename = 'Releve_Agence_' . str_replace(' ', '_', $proprio->nom) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Relevé agence chez ' . trim($proprio->nom . ' ' . $proprio->prenom) . ' du ' . $debut . ' au ' . $fin;
+        $label    = __('mail.document_labels.releve_agence', ['name' => trim($proprio->nom . ' ' . $proprio->prenom), 'debut' => $debut, 'fin' => $fin]);
 
         return compact('content', 'filename', 'label');
     }
@@ -664,7 +669,7 @@ class PdfGeneratorService
 
         $content  = $pdf->output();
         $filename = 'Releve_Locataire_' . str_replace(' ', '_', $locataire->nom) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Relevé locataire ' . trim($locataire->nom . ' ' . $locataire->prenom);
+        $label    = __('mail.document_labels.releve_locataire', ['name' => trim($locataire->nom . ' ' . $locataire->prenom)]);
 
         return compact('content', 'filename', 'label');
     }
@@ -702,7 +707,7 @@ class PdfGeneratorService
 
         $content  = $pdf->output();
         $filename = 'Attestation_Residence_' . str_replace(' ', '_', $locataire->nom) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Attestation de résidence de ' . trim($locataire->nom . ' ' . $locataire->prenom);
+        $label    = __('mail.document_labels.attestation_residence', ['name' => trim($locataire->nom . ' ' . $locataire->prenom)]);
 
         return compact('content', 'filename', 'label');
     }
@@ -745,7 +750,7 @@ class PdfGeneratorService
 
         $content  = $pdf->output();
         $filename = 'Attestation_Paiement_' . str_replace(' ', '_', $facture->nom) . '_' . date('Ymd') . '.pdf';
-        $label    = 'Attestation de paiement de ' . trim($facture->nom . ' ' . $facture->prenom) . ' — ' . $facture->mois;
+        $label    = __('mail.document_labels.attestation_paiement', ['name' => trim($facture->nom . ' ' . $facture->prenom), 'mois' => $facture->mois]);
 
         return compact('content', 'filename', 'label');
     }

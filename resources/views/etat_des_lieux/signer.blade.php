@@ -363,7 +363,7 @@
                       @endif
                     </td>
                     <td style="text-align:right; {{ $el->montant_retenue > 0 ? 'color:#dc2626;font-weight:700' : 'color:#94a3b8' }}">
-                      {{ $el->montant_retenue > 0 ? number_format($el->montant_retenue, 0, ',', ' ') : '–' }}
+                      {{ $el->montant_retenue > 0 ? format_price($el->montant_retenue, $etat->iddirection_ref ?? null) : '–' }}
                     </td>
                   @endif
                 </tr>
@@ -394,7 +394,7 @@
                   <td>{{ $piece->nom_piece }}</td>
                   <td>{{ $el->element }}</td>
                   <td style="color:#64748b">{{ $el->description ?: '–' }}</td>
-                  <td style="text-align:right">{{ number_format($el->montant_retenue, 0, ',', ' ') }}</td>
+                  <td style="text-align:right">{{ format_price($el->montant_retenue, $etat->iddirection_ref ?? null) }}</td>
                 </tr>
               @endforeach
             @endforeach
@@ -402,7 +402,7 @@
           <tfoot>
             <tr>
               <td colspan="3" style="text-align:right; font-weight:700; color:#dc2626">{{ __('ui.edl.deposit_total') }}</td>
-              <td style="text-align:right; font-weight:700; color:#dc2626">{{ number_format($etat->retenue_caution, 0, ',', ' ') }} F</td>
+              <td style="text-align:right; font-weight:700; color:#dc2626">{{ format_price($etat->retenue_caution, $etat->iddirection_ref ?? null) }}</td>
             </tr>
           </tfoot>
         </table>

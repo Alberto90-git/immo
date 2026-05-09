@@ -57,7 +57,7 @@ class ContactController extends Controller
     public function toggleLu(Request $request, $id)
     {
         $this->authorize('config-paiement');
-
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $msg = ContactMessage::findOrFail($id);
         $msg->lu = !$msg->lu;
         $msg->save();
@@ -71,7 +71,7 @@ class ContactController extends Controller
     public function destroy($id)
     {
         $this->authorize('config-paiement');
-
+        $id = decrypt_id($id); abort_if(!$id, 404);
         ContactMessage::findOrFail($id)->delete();
 
         return response()->json(['status' => true]);

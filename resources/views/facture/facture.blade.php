@@ -45,7 +45,7 @@
               <span class="invalid-feedback nom_maison_err" role="alert"></span>
             </div>
 
-            <div class="col-4">
+            <div class="col-12 col-md-4">
               <label class="form-label">{{ __('pages.invoice_choose_room') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="numero_chambre" id="numero_chambre">
                 <option selected disabled value="">{{ __('pages.invoice_choose_room') }}</option>
@@ -53,12 +53,12 @@
               <span class="invalid-feedback numero_chambre_err" role="alert"></span>
             </div>
 
-            <div class="col-4">
+            <div class="col-12 col-md-4">
               <label class="form-label">{{ __('pages.invoice_to_pay') }} <span class="text-danger">*</span></label>
               <input type="number" class="form-control" id="sonPrix" name="sonPrix" readonly>
             </div>
 
-            <div class="col-4">
+            <div class="col-12 col-md-4">
               <label class="form-label">{{ __('pages.invoice_date') }} <span class="text-danger">*</span></label>
               <input type="datetime-local" name="date_paiement" class="form-control"
                 id="date_paiement" min="<?= date('1970-m-d\T00:00:00'); ?>" required>
@@ -69,13 +69,13 @@
               <input type="text" name="type_chambre" class="form-control" id="type_chambre_getData" readonly>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_received') }} <span class="text-danger">*</span></label>
               <input type="text" name="montant" class="form-control" id="montant" required>
               <span class="invalid-feedback montant_err" role="alert"></span>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_pay_type') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="type_paiement" id="type_paiement" required>
                 <option selected disabled value="">{{ __('pages.invoice_pay_type_opt') }}</option>
@@ -84,12 +84,12 @@
               </select>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_tenant') }}</label>
               <input type="text" class="form-control" id="myLocataire" name="locataire" readonly disabled>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_month') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="mois" id="mois" required>
                 <option selected disabled value="">{{ __('pages.invoice_month') }}</option>
@@ -108,7 +108,7 @@
               </select>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_pay_mode') }}</label>
               <select class="form-select" name="mode_paiement" id="mode_paiement">
                 <option selected disabled value="">{{ __('pages.invoice_pay_mode_opt') }}</option>
@@ -142,7 +142,7 @@
         <div class="modal-body p-0">
           <div class="px-4 pt-3 pb-2">
             <div class="row g-3">
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-primary p-2"><i class="bx bx-home"></i></span>
                   <div>
@@ -151,7 +151,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-success p-2"><i class="bx bx-calendar"></i></span>
                   <div>
@@ -160,7 +160,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-warning p-2"><i class="bx bx-money"></i></span>
                   <div>
@@ -169,7 +169,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-info p-2"><i class="bx bx-credit-card"></i></span>
                   <div>
@@ -178,7 +178,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-secondary p-2"><i class="bx bx-time"></i></span>
                   <div>
@@ -187,7 +187,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-danger p-2"><i class="bx bx-transfer"></i></span>
                   <div>
@@ -246,35 +246,35 @@
               <label class="form-label">{{ __('pages.invoice_th_house') }}</label>
               <input type="text" class="form-control" id="ml-maison" readonly disabled>
             </div>
-            <div class="col-5">
+            <div class="col-12 col-sm-5">
               <label class="form-label">{{ __('pages.invoice_th_room') }}</label>
               <input type="text" class="form-control" id="ml-chambre" readonly disabled>
             </div>
-            <div class="col-7">
+            <div class="col-12 col-sm-7">
               <label class="form-label">{{ __('pages.invoice_room_type') }}</label>
               <input type="text" class="form-control" id="ml-type-chambre" readonly disabled>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_to_pay_label') }}</label>
               <input type="text" class="form-control" id="ml-montant-payer" name="sonPrix" readonly disabled>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_received') }} <span class="text-danger">*</span></label>
               <input type="text" name="montant" id="ml-montant" class="form-control"
                 onkeypress="return /[0-9]/i.test(event.key)" required>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_pay_type') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="type_paiement" id="ml-type-paiement" required>
                 <option value="direct">{{ __('pages.pay_direct') }}</option>
                 <option value="avance">{{ __('pages.pay_advance') }}</option>
               </select>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_tenant') }}</label>
               <input type="text" class="form-control" id="ml-locataire" name="locataire" readonly disabled>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_month') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="mois" id="ml-mois" required>
                 <option value="Janvier">{{ __('pages.month_jan') }}</option>
@@ -291,12 +291,12 @@
                 <option value="Décembre">{{ __('pages.month_dec') }}</option>
               </select>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_pay_date') }} <span class="text-danger">*</span></label>
               <input type="datetime-local" name="date_paiement" id="ml-date-paiement" class="form-control"
                 required min="<?= date('1970-m-d\T00:00:00'); ?>">
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.invoice_pay_mode') }}</label>
               <select class="form-select" name="mode_paiement" id="ml-mode-paiement">
                 <option value="">—</option>
@@ -369,11 +369,11 @@
                       @endcan
                       @can('download-recu-location')
                         <a class="btn btn-sm rounded-pill btn-outline-success me-1" title="{{ __('common.title_download') }}"
-                          href="{{ route('telecharge2', ['id' => $item->id]) }}">
+                          href="{{ route('telecharge2', ['id' => encrypt_id($item->id)]) }}">
                           <i class="bx bx-download"></i>
                         </a>
                         <a class="btn btn-sm rounded-pill btn-outline-info me-1" title="Attestation de paiement"
-                          href="{{ route('attestation_paiement', ['id' => $item->id]) }}">
+                          href="{{ route('attestation_paiement', ['id' => encrypt_id($item->id)]) }}">
                           <i class="bx bx-badge-check"></i>
                         </a>
                       @endcan
@@ -411,8 +411,9 @@ var INVOICE_I18N = {
 
 var canModifyLoyer    = @json(Auth::user()->can('modify-paiement'));
 var canDeleteLoyer    = @json(Auth::user()->can('delete-paiement'));
-var canDownloadLoyer  = @json(Auth::user()->can('download-recu-location'));
-var telecharge2Base   = "{{ route('telecharge2', ['id' => 'LOYERID']) }}".replace('LOYERID', '');
+var canDownloadLoyer       = @json(Auth::user()->can('download-recu-location'));
+var telecharge2Base        = "{{ route('telecharge2', ['id' => 'ENCID']) }}".replace('ENCID', '');
+var attestationPaiementBase = "{{ route('attestation_paiement', ['id' => 'ENCID']) }}".replace('ENCID', '');
 
 function toastLoyer(message, icon) {
     Swal.fire({ toast: true, position: 'top-end', icon: icon, title: message,
@@ -577,7 +578,8 @@ function save_paiement(e) {
                 var btns = '';
                 if (canModifyLoyer)   btns += '<a class="btn btn-sm rounded-pill btn-outline-primary btn-modif-loyer me-1" title="' + INVOICE_I18N.titleEdit + '" href="#"><i class="bx bx-edit-alt"></i></a>';
                 if (canDeleteLoyer)   btns += '<a class="btn btn-sm rounded-pill btn-outline-danger btn-supp-loyer me-1" title="' + INVOICE_I18N.titleDelete + '" href="#"><i class="bx bx-trash"></i></a>';
-                if (canDownloadLoyer) btns += '<a class="btn btn-sm rounded-pill btn-outline-success me-1" title="' + INVOICE_I18N.titleDownload + '" href="' + telecharge2Base + f.id + '"><i class="bx bx-download"></i></a>';
+                if (canDownloadLoyer) btns += '<a class="btn btn-sm rounded-pill btn-outline-success me-1" title="' + INVOICE_I18N.titleDownload + '" href="' + telecharge2Base + f.encoded_id + '"><i class="bx bx-download"></i></a>';
+                if (canDownloadLoyer) btns += '<a class="btn btn-sm rounded-pill btn-outline-info me-1" title="Attestation de paiement" href="' + attestationPaiementBase + f.encoded_id + '"><i class="bx bx-badge-check"></i></a>';
                 btns += '<a class="btn btn-sm rounded-pill btn-outline-secondary btn-details-loyer" title="' + INVOICE_I18N.titleDetails + '" href="#"><i class="bx bx-zoom-in"></i></a>';
 
                 var newRow = $('<tr id="row-' + f.id + '"></tr>')

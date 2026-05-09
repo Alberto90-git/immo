@@ -143,7 +143,7 @@
         <h5 class="fw-bold mb-3">Caractéristiques</h5>
         <div class="row g-0">
           @if($annonce->type_bien)
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <div class="detail-row">
               <i class='bx bx-home detail-icon'></i>
               <div><small class="text-muted d-block">Type</small><strong>{{ $annonce->type_label }}</strong></div>
@@ -151,7 +151,7 @@
           </div>
           @endif
           @if($annonce->Superficie)
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <div class="detail-row">
               <i class='bx bx-area detail-icon'></i>
               <div><small class="text-muted d-block">Superficie</small><strong>{{ $annonce->Superficie }} m²</strong></div>
@@ -159,7 +159,7 @@
           </div>
           @endif
           @if($annonce->ville)
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <div class="detail-row">
               <i class='bx bx-map detail-icon'></i>
               <div><small class="text-muted d-block">Ville</small><strong>{{ $annonce->ville }}</strong></div>
@@ -167,7 +167,7 @@
           </div>
           @endif
           @if($annonce->quartier)
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <div class="detail-row">
               <i class='bx bx-map-pin detail-icon'></i>
               <div><small class="text-muted d-block">Quartier</small><strong>{{ $annonce->quartier }}</strong></div>
@@ -175,7 +175,7 @@
           </div>
           @endif
           @if($annonce->telephone)
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <div class="detail-row">
               <i class='bx bx-phone detail-icon'></i>
               <div><small class="text-muted d-block">Téléphone</small><strong>{{ $annonce->telephone }}</strong></div>
@@ -183,7 +183,7 @@
           </div>
           @endif
           @if($annonce->published_at)
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <div class="detail-row">
               <i class='bx bx-calendar detail-icon'></i>
               <div><small class="text-muted d-block">Publié le</small><strong>{{ $annonce->published_at->format('d/m/Y') }}</strong></div>

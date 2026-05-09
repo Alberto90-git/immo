@@ -145,7 +145,7 @@
 
 <div class="info-box">
     <p><strong>Type de rapport:</strong> Synthese generale</p>
-    <p><strong>Commission appliquee:</strong> {{ $element2['pourcentage'] }}%</p>
+    <p><strong>Commission:</strong> Taux individuel par proprietaire</p>
     <p><strong>Nombre de transactions:</strong> {{ isset($element2['donnees']) ? count($element2['donnees']) : 0 }}</p>
     <p><strong>Date d'edition:</strong> {{ Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
 </div>
@@ -154,10 +154,11 @@
     <thead>
         <tr>
             <th style="width: 12%;">Agence</th>
-            <th style="width: 18%;">Maison</th>
-            <th style="width: 18%;">Quartier</th>
-            <th style="width: 15%;">Chambre</th>
-            <th style="width: 17%;" class="amount">Loyer percu</th>
+            <th style="width: 16%;">Maison</th>
+            <th style="width: 16%;">Quartier</th>
+            <th style="width: 14%;">Chambre</th>
+            <th style="width: 14%;" class="amount">Loyer percu</th>
+            <th style="width: 8%;" style="text-align:center;">Taux</th>
             <th style="width: 20%;" class="amount">Commission agence</th>
         </tr>
     </thead>
@@ -170,16 +171,17 @@
                     <td>{{ $items->quartier }}</td>
                     <td>{{ $items->type_chambre }} (N {{ $items->numero_chambre }})</td>
                     <td class="amount">{{ format_price($items->montant) }}</td>
-                    <td class="amount" style="color: #9b59b6;">{{ format_price(($items->montant * $element2['pourcentage']) / 100) }}</td>
+                    <td style="text-align:center;">{{ $items->pourcentage }} %</td>
+                    <td class="amount" style="color: #9b59b6;">{{ format_price($items->commission) }}</td>
                 </tr>
             @endforeach
         @else
             <tr>
-                <td colspan="6" style="text-align: center; padding: 20px;">Aucune donnee disponible</td>
+                <td colspan="7" style="text-align: center; padding: 20px;">Aucune donnee disponible</td>
             </tr>
         @endif
         <tr class="total-row">
-            <td colspan="5" style="text-align: right;">TOTAL BENEFICE GLOBAL:</td>
+            <td colspan="6" style="text-align: right;">TOTAL BENEFICE GLOBAL:</td>
             <td class="amount">{{ format_price($element2['garde']) }}</td>
         </tr>
     </tbody>

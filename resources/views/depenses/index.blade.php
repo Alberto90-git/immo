@@ -49,7 +49,7 @@
           <option value="{{ $cat->id }}">{{ $cat->nom }}</option>
           @endforeach
         </select>
-        <input type="text" id="filterQ" class="form-control form-control-sm" placeholder="Rechercher..." style="width:180px" oninput="filterDep()">
+        <input type="text" id="filterQ" class="form-control form-control-sm" placeholder="Rechercher..." style="width:auto;min-width:120px;max-width:180px" oninput="filterDep()">
         @can('gestion-depenses')
         <a href="{{ route('depenses.export_csv') }}" class="btn btn-sm btn-outline-success" id="btnExportCsv">
           <i class="bx bx-download me-1"></i>CSV
@@ -174,6 +174,14 @@
             <i class="bx bx-refresh me-1"></i>{{ __('pages.dep_refresh_btn') }}
           </button>
         </div>
+      </div>
+      <div class="mt-3 pt-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <span class="text-muted small"><i class="bx bx-info-circle me-1"></i>{{ __('pages.dep_synthese_hint') }}</span>
+        <a id="btnSyntheseProprietaire"
+           href="{{ route('depenses.synthese_proprio', ['annee' => date('Y')]) }}"
+           class="btn btn-sm btn-outline-success">
+          <i class="bx bx-download me-1"></i>{{ __('pages.dep_synthese_btn') }}
+        </a>
       </div>
     </div>
 
@@ -405,6 +413,22 @@
   </div>
 </div>
 
+@php
+$depDataMap = $depenses->keyBy('id')->map(function($d) {
+    return [
+        'id'              => $d->id,
+        'categorie_id'    => $d->categorie_id,
+        'montant'         => $d->montant,
+        'date_raw'        => $d->date_depense ? $d->date_depense->format('Y-m-d') : '',
+        'description'     => $d->description ?? '',
+        'type_imputation' => $d->type_imputation,
+        'proprietaire_id' => $d->proprietaire_id,
+        'maison_id'       => $d->maison_id,
+        'chambre_id'      => $d->chambre_id,
+        'justificatif_raw'=> $d->getRawOriginal('justificatif_url'),
+    ];
+});
+@endphp
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────────
@@ -438,20 +462,7 @@ function filterDep() {
 // ─────────────────────────────────────────────────────────────────
 // MODAL DÉPENSE
 // ─────────────────────────────────────────────────────────────────
-var depData = @json($depenses->keyBy('id')->map(function($d) {
-    return [
-        'id'              => $d->id,
-        'categorie_id'    => $d->categorie_id,
-        'montant'         => $d->montant,
-        'date_raw'        => $d->date_depense->format('Y-m-d'),
-        'description'     => $d->description ?? '',
-        'type_imputation' => $d->type_imputation,
-        'proprietaire_id' => $d->proprietaire_id,
-        'maison_id'       => $d->maison_id,
-        'chambre_id'      => $d->chambre_id,
-        'justificatif_raw'=> $d->getRawOriginal('justificatif_url'),
-    ];
-}));
+var depData = @json($depDataMap);
 
 function openDepModal() {
     document.getElementById('depId').value = '';
@@ -602,6 +613,12 @@ async function loadBilan() {
     var moisDeb = document.getElementById('bilanMoisDeb').value;
     var moisFin = document.getElementById('bilanMoisFin').value;
     var url     = '{{ route('depenses.bilan') }}?annee=' + annee + '&mois_debut=' + moisDeb + '&mois_fin=' + moisFin;
+
+    // Met à jour le lien de synthèse annuelle avec l'année sélectionnée
+    var btnSynthese = document.getElementById('btnSyntheseProprietaire');
+    if (btnSynthese) {
+        btnSynthese.href = '{{ route('depenses.synthese_proprio') }}?annee=' + annee;
+    }
 
     try {
         var r    = await fetch(url, { headers:{'Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'} });

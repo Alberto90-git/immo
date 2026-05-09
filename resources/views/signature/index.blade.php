@@ -83,7 +83,7 @@
                   {{-- Certificat PDF --}}
                   @can('download-signature')
                     @if($d->statut === 'signe')
-                      <a href="{{ route('signature.certificat', $d->id) }}" target="_blank"
+                      <a href="{{ route('signature.certificat', encrypt_id($d->id)) }}" target="_blank"
                          class="btn btn-sm btn-outline-success" title="{{ __('sig.btn_cert') }}">
                         <i class="bx bx-file-pdf"></i>
                       </a>
@@ -119,7 +119,7 @@
 ════════════════════════════════════════════════════════ --}}
 @can('ajoute-signature')
 <div class="modal fade" id="modalNouvelle" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header" style="background:linear-gradient(135deg,#696cff,#5a5fba);color:white;">
         <h5 class="modal-title">{{ __('sig.form_title') }}</h5>

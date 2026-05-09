@@ -90,7 +90,7 @@ class AutomationController extends Controller
                     'recipient_count'        => $recipientCount,
                     'unit_cost'              => $rate ? $rate->sms_unit_cost : 0,
                     'total_amount'           => $rate ? $rate->sms_unit_cost * $recipientCount : 0,
-                    'currency'               => $rate ? $rate->currency : 'XOF',
+                    'currency'               => $rate ? $rate->currency : get_devise_courante($this->directionId()),
                     'country_code'           => $countryCode,
                     'payment_provider'       => $cfg->getActiveProvider(),
                     'payment_transaction_id' => $txnId,

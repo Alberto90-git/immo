@@ -149,7 +149,7 @@
         <div class="ac-label">{{ __('mail.rappel_loyer.amount_label') }}</div>
         <div>
           <span class="ac-amount">{{ $data['montant_loyer'] }}</span>
-          <span class="ac-currency">{{ $data['devise'] ?? 'XOF' }}</span>
+          <span class="ac-currency">{{ $data['devise'] ?? get_symbole_devise('XOF') }}</span>
         </div>
         <div class="ac-month">{{ $data['mois_courant'] }}</div>
       </div>

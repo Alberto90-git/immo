@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
 <meta charset="UTF-8">
 <style>
@@ -95,7 +95,7 @@
 </head>
 <body>
 
-  {{-- ── En-tête agence (même pattern que proprio_house) ──────────────────── --}}
+  {{-- ── En-tête agence ─────────────────────────────────────────────────────── --}}
   @if(isset($annexeData) && $annexeData)
   <div class="agency-header">
     @if(!empty($annexeData['logo_base64']))
@@ -116,71 +116,62 @@
   @endif
 
   {{-- ── Badge document ─────────────────────────────────────────────────────── --}}
-  <div class="doc-badge"><span>Mise en Demeure</span></div>
+  <div class="doc-badge"><span>{{ __('pdf.med_titre') }}</span></div>
 
   {{-- ── Références ───────────────────────────────────────────────────────── --}}
   <div class="ref-line">
-    Réf. : MED-{{ str_pad($dossier->id, 5, '0', STR_PAD_LEFT) }} &nbsp;|&nbsp; Le : {{ $date }}
+    {{ __('pdf.med_ref') }} MED-{{ str_pad($dossier->id, 5, '0', STR_PAD_LEFT) }} &nbsp;|&nbsp; {{ __('pdf.med_le') }} {{ $date }}
   </div>
 
   {{-- ── Destinataire ─────────────────────────────────────────────────────── --}}
   <div class="destinataire-block">
-    <div class="label">Destinataire</div>
+    <div class="label">{{ __('pdf.med_destinataire') }}</div>
     <div class="nom">{{ $locataire->prenom }} {{ $locataire->nom }}</div>
     <div class="sub">
       {{ $locataire->maison->nom_maison ?? '' }}
-      @if($locataire->chambre) — Logement n° {{ $locataire->chambre->numero_chambre }} @endif
-      <br>Tél. : {{ $locataire->telephone }}
+      @if($locataire->chambre) — {{ __('pdf.med_logement') }} {{ $locataire->chambre->numero_chambre }} @endif
+      <br>{{ __('pdf.med_tph') }} {{ $locataire->telephone }}
       @if($locataire->email) &nbsp;|&nbsp; {{ $locataire->email }} @endif
     </div>
   </div>
 
   {{-- ── Objet ────────────────────────────────────────────────────────────── --}}
   <div class="objet-line">
-    Objet : <span>Mise en demeure de paiement – Loyers impayés</span>
+    {{ __('pdf.med_objet_label') }} <span>{{ __('pdf.med_objet') }}</span>
   </div>
 
   {{-- ── Corps ───────────────────────────────────────────────────────────── --}}
   <div class="body-text">
-    <p>Monsieur / Madame <strong>{{ $locataire->prenom }} {{ $locataire->nom }}</strong>,</p>
+    <p>{{ __('pdf.med_salutation') }} <strong>{{ $locataire->prenom }} {{ $locataire->nom }}</strong>,</p>
 
     <p>
-      Nous vous contactons concernant le non-paiement de vos loyers échus à ce jour. Malgré
+      {{ __('pdf.med_corps_1a') }}
       @if($dossier->relances->count())
-        les {{ $dossier->relances->count() }} relance(s) qui vous ont été adressée(s) précédemment,
+        {{ __('pdf.med_corps_1b_relances', ['n' => $dossier->relances->count()]) }}
       @else
-        notre attente,
+        {{ __('pdf.med_corps_1b_attente') }}
       @endif
-      votre situation locative n'a pas été régularisée.
+      {{ __('pdf.med_corps_1c') }}
     </p>
 
     <div class="montant-box">
-      <div class="label-m">Montant total dû</div>
+      <div class="label-m">{{ __('pdf.med_montant_label') }}</div>
       <div class="value-m">{{ format_price($dossier->montant_du - $dossier->montant_recouvre) }}</div>
       @if($dossier->nb_mois_impayes > 0)
-        <div style="font-size:8.5px;color:#9a3412;margin-top:4px;">correspondant à {{ $dossier->nb_mois_impayes }} mois impayés</div>
+        <div style="font-size:8.5px;color:#9a3412;margin-top:4px;">{{ __('pdf.med_mois_impayes', ['n' => $dossier->nb_mois_impayes]) }}</div>
       @endif
     </div>
 
     <div class="delai-box">
-      <strong>MISE EN DEMEURE :</strong> Nous vous mettons en demeure de nous régler la somme précitée
-      dans un délai de <strong>{{ $delaiJours }} ({{ $delaiLettre }}) jours</strong> à compter de la réception de la présente lettre.
+      <strong>{{ __('pdf.med_injonction_label') }}</strong> {{ __('pdf.med_injonction', ['n' => $delaiJours, 'lettres' => $delaiLettre]) }}
     </div>
 
-    <p>
-      À défaut de règlement dans ce délai, nous nous verrons dans l'obligation d'engager
-      toutes les procédures légales et judiciaires à notre disposition pour recouvrer
-      les sommes dues, y compris la résiliation du bail, l'expulsion et la saisie des
-      biens, aux frais exclusifs du locataire défaillant.
-    </p>
+    <p>{{ __('pdf.med_corps_2') }}</p>
 
-    <p>
-      Nous espérons que vous apporterez à ce courrier toute l'attention qu'il mérite
-      afin d'éviter toute action judiciaire préjudiciable à votre égard.
-    </p>
+    <p>{{ __('pdf.med_corps_3') }}</p>
 
     @if($dossier->notes_juridiques)
-    <p><em>Note : {{ $dossier->notes_juridiques }}</em></p>
+    <p><em>{{ __('pdf.med_note') }} {{ $dossier->notes_juridiques }}</em></p>
     @endif
   </div>
 
@@ -188,7 +179,7 @@
   <div style="page-break-inside: avoid;">
   <div class="signature-section">
     <div class="signature-block">
-      <div class="sig-label">Fait à {{ $siegeSocial ?: '___________' }}, le {{ $date }}</div>
+      <div class="sig-label">{{ __('pdf.fait_a', ['lieu' => $siegeSocial ?: '___________', 'date' => $date]) }}</div>
       @if(!empty($annexeData['sig_base64']))
         <img src="{{ $annexeData['sig_base64'] }}" class="sig-img" alt="Signature">
       @else
@@ -198,7 +189,7 @@
         <img src="{{ $annexeData['cachet_base64'] }}" class="cachet-img" alt="Cachet">
       @endif
       <div class="sig-name">{{ $nomDirecteur }}</div>
-      <div class="sig-role">Le Directeur</div>
+      <div class="sig-role">{{ __('pdf.med_le_directeur') }}</div>
     </div>
   </div>
 
@@ -210,7 +201,7 @@
     @if(!empty($annexeData['siege_social']))
       &nbsp;·&nbsp; {{ $annexeData['siege_social'] }}
     @endif
-    &nbsp;·&nbsp; Document généré le {{ $date }}
+    &nbsp;·&nbsp; {{ __('pdf.med_generated') }} {{ $date }}
   </div>
 
 </body>

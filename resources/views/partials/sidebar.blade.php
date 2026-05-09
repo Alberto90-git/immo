@@ -194,6 +194,34 @@
         </li>
       @endcan
 
+      @can('gestion-prospect')
+        <li class="menu-item {{ request()->is('prospects*') ? 'active open' : '' }}">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-user-voice"></i>
+            <div>{{ __('layout.prospect_pipeline') }}</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item {{ request()->routeIs('prospects.index') ? 'active' : '' }}">
+              <a href="{{ route('prospects.index') }}" class="menu-link">
+                <div>{{ __('pages.prospect_breadcrumb') }}</div>
+              </a>
+            </li>
+            @can('gestion-visite')
+            <li class="menu-item {{ request()->routeIs('prospects.agenda') ? 'active' : '' }}">
+              <a href="{{ route('prospects.agenda') }}" class="menu-link">
+                <div>{{ __('pages.agenda_breadcrumb') }}</div>
+              </a>
+            </li>
+            @endcan
+            <li class="menu-item {{ request()->routeIs('prospects.calendrier') ? 'active' : '' }}">
+              <a href="{{ route('prospects.calendrier') }}" class="menu-link">
+                <div>{{ __('pages.calendar_breadcrumb') }}</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+      @endcan
+
       @can('gestion-etat-des-lieux')
         <li class="menu-item {{ request()->is('etat-des-lieux*') ? 'active' : '' }}">
           <a href="{{ route('etat_des_lieux.index') }}" class="menu-link">
@@ -239,11 +267,29 @@
         </li>
       @endcan
 
+      @can('voir-archives-contrats')
+        <li class="menu-item {{ request()->routeIs('contrats.archives') ? 'active' : '' }}">
+          <a href="{{ route('contrats.archives') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-archive"></i>
+            <div>{{ __('layout.contract_archives') }}</div>
+          </a>
+        </li>
+      @endcan
+
       @can('gestion-paiement')
         <li class="menu-item {{ request()->is('gerer-facture*') ? 'active' : '' }}">
           <a href="{{ route('get_factureView') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-money"></i>
             <div>{{ __('layout.rent_management') }}</div>
+          </a>
+        </li>
+      @endcan
+
+      @can('gestion-depenses')
+        <li class="menu-item {{ request()->is('depenses*') ? 'active' : '' }}">
+          <a href="{{ route('depenses.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-wallet-alt"></i>
+            <div>{{ __('layout.expenses') }}</div>
           </a>
         </li>
       @endcan

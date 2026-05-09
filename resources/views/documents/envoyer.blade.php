@@ -83,7 +83,7 @@
 
     /* ── Tableaux scrollables ── */
     .table-scroll-wrapper {
-        max-height: 420px;
+        max-height: min(420px, 50vh);
         overflow-y: auto;
         border: 1px solid #e9ecef;
         border-radius: 8px;
@@ -99,6 +99,14 @@
         border-bottom: 2px solid #dee2e6;
         white-space: nowrap;
     }
+    /* Dark mode */
+    html.dark-style #tabDest { background:#373852; }
+    html.dark-style #tabDest .nav-link { color:#a3a4cc; }
+    html.dark-style #tabDest .nav-link:hover:not(.active) { background:rgba(140,142,255,.12); color:#8c8eff; }
+    html.dark-style #tabDest .nav-link:not(.active) .badge { background:#444564 !important; color:#a3a4cc !important; }
+    html.dark-style .dest-row { border-bottom-color:#444564; }
+    html.dark-style .table-scroll-wrapper { border-color:#444564; }
+    html.dark-style .table-scroll-wrapper thead th { border-bottom-color:#444564; }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -329,37 +337,58 @@
             </ul>
 
             <style>
-                #tab-rappel {
-                    background: rgba(245,158,11,.55);
-                    color: #fff !important;
+                /* Inactive state: neutral gray so active state stands out clearly */
+                #tab-rappel,
+                #tab-preavis {
+                    background: transparent !important;
+                    color: #6c757d !important;
+                    font-weight: 500;
                 }
+                /* Active: full vibrant color */
                 #tab-rappel.active {
-                    background: #f59e0b;
+                    background: #f59e0b !important;
                     color: #fff !important;
                     box-shadow: 0 4px 14px rgba(245,158,11,.45);
-                }
-                #tab-rappel:hover:not(.active) {
-                    background: rgba(245,158,11,.75);
-                    color: #fff !important;
-                }
-                #tab-preavis {
-                    background: rgba(239,68,68,.55);
-                    color: #fff !important;
+                    font-weight: 600;
                 }
                 #tab-preavis.active {
-                    background: #ef4444;
+                    background: #ef4444 !important;
                     color: #fff !important;
                     box-shadow: 0 4px 14px rgba(239,68,68,.45);
+                    font-weight: 600;
+                }
+                /* Hover on inactive: subtle tint */
+                #tab-rappel:hover:not(.active) {
+                    background: rgba(245,158,11,.15) !important;
+                    color: #b45309 !important;
                 }
                 #tab-preavis:hover:not(.active) {
-                    background: rgba(239,68,68,.75);
-                    color: #fff !important;
+                    background: rgba(239,68,68,.15) !important;
+                    color: #b91c1c !important;
                 }
             </style>
 
             <div class="tab-content">
                 {{-- ===== ONGLET RAPPEL DE LOYER ===== --}}
                 <div class="tab-pane fade show active" id="pane-rappel">
+                    {{-- Bannière info mois précédent --}}
+                    @if(count($idsRappelDefault) > 0)
+                    <div class="alert alert-warning py-2 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <i class="bx bx-error-circle me-1"></i>
+                            <strong>{{ count($idsRappelDefault) }}</strong> locataire(s) n'ont pas payé le loyer de <strong>{{ $moisPrecedentNom }}</strong>.
+                            <span class="text-muted small ms-1">(affiché par défaut)</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" id="btnVoirTousRappel" onclick="voirTousRappel()">
+                                <i class="bx bx-expand-alt me-1"></i>Voir tous
+                            </button>
+                            <button class="btn btn-sm btn-warning d-none" id="btnRappelDefaut" onclick="filtrerRappelDefaut()">
+                                <i class="bx bx-filter me-1"></i>Impayés uniquement
+                            </button>
+                        </div>
+                    </div>
+                    @endif
                     <div class="mb-3">
                         <input type="text" id="searchRappel" class="form-control search-input"
                                placeholder="{{ __('pages.env_ph_search_tenant') }}">
@@ -381,7 +410,7 @@
                             </thead>
                             <tbody>
                                 @forelse($locataires as $loc)
-                                    <tr>
+                                    <tr data-default-rappel="{{ isset($idsRappelDefault[$loc->id]) ? '1' : '0' }}">
                                         <td>
                                             <input type="checkbox"
                                                    class="form-check-input check-notif"
@@ -423,6 +452,24 @@
 
                 {{-- ===== ONGLET PRÉAVIS ===== --}}
                 <div class="tab-pane fade" id="pane-preavis">
+                    {{-- Bannière info préavis --}}
+                    @if(count($idsPreavisDefault) > 0)
+                    <div class="alert alert-danger py-2 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <i class="bx bx-calendar-exclamation me-1"></i>
+                            <strong>{{ count($idsPreavisDefault) }}</strong> locataire(s) ont l'avance épuisée ou entament leur caution.
+                            <span class="text-muted small ms-1">(affiché par défaut)</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" id="btnVoirTousPreavis" onclick="voirTousPreavis()">
+                                <i class="bx bx-expand-alt me-1"></i>Voir tous
+                            </button>
+                            <button class="btn btn-sm btn-danger d-none" id="btnPreavisDefaut" onclick="filtrerPreavisDefaut()">
+                                <i class="bx bx-filter me-1"></i>Alertes uniquement
+                            </button>
+                        </div>
+                    </div>
+                    @endif
                     <div class="mb-3">
                         <input type="text" id="searchPreavis" class="form-control search-input"
                                placeholder="{{ __('pages.env_ph_search_tenant') }}">
@@ -436,6 +483,7 @@
                                     </th>
                                     <th>{{ __('pages.env_th_name') }}</th>
                                     <th>{{ __('pages.env_th_housing_short') }}</th>
+                                    <th>Situation</th>
                                     <th>{{ __('pages.env_th_entry_date') }}</th>
                                     <th>{{ __('pages.env_th_phone') }}</th>
                                     <th>{{ __('pages.env_th_email') }}</th>
@@ -444,7 +492,11 @@
                             </thead>
                             <tbody>
                                 @forelse($locataires as $loc)
-                                    <tr>
+                                    @php
+                                        $isPreavisDefault = isset($idsPreavisDefault[$loc->id]);
+                                        $detail = $detailsPreavis[$loc->id] ?? null;
+                                    @endphp
+                                    <tr data-default-preavis="{{ $isPreavisDefault ? '1' : '0' }}">
                                         <td>
                                             <input type="checkbox"
                                                    class="form-check-input check-preavis"
@@ -457,6 +509,22 @@
                                         </td>
                                         <td>{{ $loc->nom }} {{ $loc->prenom }}</td>
                                         <td>{{ $loc->nom_maison }} / {{ $loc->type_chambre }} N°{{ $loc->numero_chambre }}</td>
+                                        <td>
+                                            @if($detail)
+                                                @if($detail['avance_epuisee'])
+                                                    <span class="badge bg-warning text-dark me-1" title="Toute l'avance est consommée">
+                                                        <i class="bx bx-minus-circle me-1"></i>Avance épuisée
+                                                    </span>
+                                                @endif
+                                                @if($detail['caution_entamee'])
+                                                    <span class="badge bg-danger" title="{{ $detail['caution_mois'] }} mois prélevé(s) sur la caution">
+                                                        <i class="bx bx-shield-x me-1"></i>Caution -{{ $detail['caution_mois'] }} mois
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="text-muted small">—</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $loc->date_entree ? \Carbon\Carbon::parse($loc->date_entree)->format('d/m/Y') : '—' }}</td>
                                         <td>{{ $loc->telephone }}</td>
                                         <td>{{ $loc->email ?? '—' }}</td>
@@ -473,7 +541,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="7" class="text-center text-muted">{{ __('pages.env_empty_no_tenants') }}</td></tr>
+                                    <tr><td colspan="8" class="text-center text-muted">{{ __('pages.env_empty_no_tenants') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -484,6 +552,10 @@
     </div>
 
     {{-- Historique --}}
+    @php
+        $defaultDateDebut = \Carbon\Carbon::now()->subMonth()->startOfMonth()->format('Y-m-d');
+        $defaultDateFin   = \Carbon\Carbon::now()->subMonth()->endOfMonth()->format('Y-m-d');
+    @endphp
     <div class="card mt-4">
         <div class="card-header">
             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -495,7 +567,25 @@
                     </button>
                 </div>
             </div>
-            {{-- Filtres --}}
+            {{-- Filtres période (rechargement serveur) --}}
+            <div class="row g-2 align-items-end mb-2">
+                <div class="col-6 col-md-auto">
+                    <label class="form-label form-label-sm mb-1 text-muted">{{ __('pages.env_histo_du') }}</label>
+                    <input type="date" id="histoFiltreDateDebut" class="form-control form-control-sm"
+                           value="{{ $defaultDateDebut }}">
+                </div>
+                <div class="col-6 col-md-auto">
+                    <label class="form-label form-label-sm mb-1 text-muted">{{ __('pages.env_histo_au') }}</label>
+                    <input type="date" id="histoFiltreDateFin" class="form-control form-control-sm"
+                           value="{{ $defaultDateFin }}">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-primary" id="histoBtnAppliquer">
+                        <i class="bx bx-filter-alt me-1"></i>{{ __('pages.env_btn_apply') }}
+                    </button>
+                </div>
+            </div>
+            {{-- Filtres client (sans rechargement) --}}
             <div class="row g-2">
                 <div class="col-12 col-md-4">
                     <input type="text" id="histoFiltreNom" class="form-control form-control-sm"
@@ -680,20 +770,21 @@
                     {{-- Bloc dates (pour relevés) --}}
                     <div id="blocReleve" class="mt-3 d-none p-3 rounded" style="background:rgba(255,193,7,.07);border:1px solid rgba(255,193,7,.3);">
                         <div class="row g-2">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold small" for="dateDebut">{{ __('pages.env_label_start_date') }}</label>
                                 <input type="date" class="form-control form-control-sm" id="dateDebut">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold small" for="dateFin">{{ __('pages.env_label_end_date') }}</label>
                                 <input type="date" class="form-control form-control-sm" id="dateFin">
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small" for="pourcentage">{{ __('pages.env_label_pct') }}</label>
-                                <input type="number" class="form-control form-control-sm" id="pourcentage"
-                                       value="10" min="0" max="100" step="0.5">
-                            </div>
                         </div>
+                        <p class="text-muted small mt-2 mb-0">
+                            <i class="bx bx-info-circle me-1"></i>
+                            {{ app()->getLocale() === 'en'
+                                ? 'The management rate is automatically retrieved from the configuration for each owner. If not set, a field will appear in the recipient row.'
+                                : 'Le taux de gestion est récupéré automatiquement depuis la configuration pour chaque propriétaire. S\'il n\'est pas défini, un champ apparaîtra sur la ligne du destinataire.' }}
+                        </p>
                     </div>
                 </div>
 
@@ -714,6 +805,37 @@
                     <label class="form-label fw-semibold" for="messagePerso">{{ __('pages.env_label_custom_msg') }} <small class="text-muted fw-normal">{{ __('pages.env_optional') }}</small></label>
                     <textarea class="form-control" id="messagePerso" rows="2" maxlength="1000"
                               placeholder="{{ __('pages.env_ph_custom_msg') }}"></textarea>
+                </div>
+
+                <hr class="my-3">
+
+                {{-- Section 5 — Signature électronique --}}
+                <div class="mb-2">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="avecSignature" role="switch">
+                        <label class="form-check-label fw-semibold" for="avecSignature">
+                            <i class="bx bx-pen me-1 text-primary"></i>{{ __('pages.env_sig_toggle') }}
+                        </label>
+                    </div>
+                    <div id="signatureOptions" class="d-none p-3 rounded border" style="background:rgba(105,108,255,.04);">
+                        <div class="row g-2 align-items-end mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-semibold mb-1" for="signatureExpiresDays">
+                                    {{ __('pages.env_sig_validity') }}
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" class="form-control" id="signatureExpiresDays"
+                                           value="7" min="1" max="60">
+                                    <span class="input-group-text">{{ __('pages.env_sig_days') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-primary py-2 mb-0 small">
+                            <i class="bx bx-info-circle me-1"></i>
+                            <span id="signatureInfoEmail">{{ __('pages.env_sig_info_email') }}</span>
+                            <span id="signatureInfoWA" class="d-none">{{ __('pages.env_sig_info_wa') }}</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -875,8 +997,9 @@
 @endif
 <script>
     const CSRF             = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
-    const ROUTE_ENVOYER    = '{{ route("envoi_document.envoyer") }}';
-    const ROUTE_HISTORIQUE = '{{ route("envoi_document.historique") }}';
+    const ROUTE_ENVOYER       = '{{ route("envoi_document.envoyer") }}';
+    const ROUTE_HISTORIQUE    = '{{ route("envoi_document.historique") }}';
+    const ROUTE_POURCENTAGES  = '{{ route("envoi_document.pourcentages") }}';
 
     var ENV_I18N = {
         selected:         '{{ __('pages.env_action_selected') }}',
@@ -929,6 +1052,11 @@
         failure:          '{{ __('pages.env_js_failure') }}',
         contactEmpty:     '{{ __('pages.env_js_contact_empty') }}',
         fieldPhone:       '{{ __('pages.env_js_field_phone') }}',
+        sigLinksTitle:    '{{ __('pages.env_js_sig_links_title') }}',
+        sigClose:         '{{ __('pages.env_js_sig_close') }}',
+        sigWaShare:       '{{ __('pages.env_js_sig_wa_share') }}',
+        sigEmailSent:     '{{ __('pages.env_js_sig_email_sent') }}',
+        sigCopy:          '{{ __('pages.env_js_sig_copy') }}',
     };
 
     // ── État global ─────────────────────────────────────────────
@@ -1036,8 +1164,13 @@
         document.getElementById('blocReleve').classList.add('d-none');
         document.getElementById('messagePerso').value = '';
 
+        // Réinitialiser signature
+        document.getElementById('avecSignature').checked = false;
+        document.getElementById('signatureOptions').classList.add('d-none');
+        document.getElementById('signatureExpiresDays').value = '7';
+
         // Construire la liste des destinataires
-        construireListeDestinataires(false);
+        construireListeDestinataires(false, false);
 
         // Méthode d'envoi : réinitialiser selon disponibilité
         const emailRadio = document.getElementById('methodeEmail');
@@ -1054,7 +1187,7 @@
     }
 
     // ── Construction de la liste des destinataires dans le modal ─
-    function construireListeDestinataires(avecColonneFacture) {
+    function construireListeDestinataires(avecColonneFacture, avecReleve) {
         const container = document.getElementById('listeDestinataires');
 
         if (selectedDestinataires.length === 0) {
@@ -1114,6 +1247,15 @@
             }
             html += `</div>`;
 
+            // Colonne taux de gestion (visible uniquement pour les propriétaires quand un relevé est coché)
+            if (dest.type === 'proprietaire') {
+                const pctVisible = avecReleve ? '' : 'd-none';
+                html += `<div class="col-12 col-pct-releve ${pctVisible}">`;
+                html += `<div class="dest-pct-container d-flex align-items-center gap-2">`;
+                html += `<span class="text-muted small fst-italic dest-pct-loading"><i class="bx bx-loader-alt bx-spin me-1"></i>Taux...</span>`;
+                html += `</div></div>`;
+            }
+
             html += `</div></div>`;
         });
 
@@ -1129,6 +1271,75 @@
             .replace(/"/g, '&quot;');
     }
 
+    // ── Liens de signature après envoi ────────────────────────────
+    function afficherLiensSignature(sigLinks) {
+        var docLabels = {
+            contrat:             ENV_I18N.docContract,
+            quittance_mensuelle: ENV_I18N.docMonthly,
+            quittance_caution:   ENV_I18N.docDeposit,
+            releve_proprietaire: ENV_I18N.docOwnerStmt,
+            releve_agence:       ENV_I18N.docAgencyStmt,
+        };
+
+        var html = '<div class="text-start" style="max-height:420px;overflow-y:auto;">';
+        sigLinks.forEach(function(d, i) {
+            var lien   = d.signature_lien;
+            var nom    = escHtml(d.destinataire);
+            var doc    = escHtml(docLabels[d.document] || d.document);
+            var tel    = (d.telephone || '').replace(/\s+/g, '').replace(/^\+/, '');
+            var msgWa  = encodeURIComponent(
+                d.destinataire + '\n\n' + lien
+            );
+            var waUrl  = tel
+                ? 'https://wa.me/' + tel + '?text=' + msgWa
+                : 'https://wa.me/?text=' + msgWa;
+
+            html += '<div class="border rounded p-3 mb-2" style="background:#f8f9fa;">';
+            html += '<div class="fw-semibold mb-2">' + nom + ' <span class="text-muted small fw-normal">— ' + doc + '</span>';
+            if (d.signature_email_sent) {
+                html += ' <span class="badge bg-info ms-1"><i class="bx bx-envelope me-1"></i>' + ENV_I18N.sigEmailSent + '</span>';
+            }
+            html += '</div>';
+            html += '<div class="input-group input-group-sm mb-2">';
+            html += '<input type="text" class="form-control sig-link-inp" id="sigLnk' + i + '" value="' + escHtml(lien) + '" readonly>';
+            html += '<button class="btn btn-outline-secondary sig-copy-btn" type="button" data-target="sigLnk' + i + '">';
+            html += '<i class="bx bx-copy me-1"></i>' + ENV_I18N.sigCopy + '</button>';
+            html += '</div>';
+            html += '<a href="' + escHtml(waUrl) + '" target="_blank" rel="noopener" class="btn btn-success btn-sm">';
+            html += '<i class="bx bxl-whatsapp me-1"></i>' + ENV_I18N.sigWaShare + '</a>';
+            html += '</div>';
+        });
+        html += '</div>';
+
+        Swal.fire({
+            title:             '<i class="bx bx-pen me-2"></i>' + ENV_I18N.sigLinksTitle,
+            html:              html,
+            width:             640,
+            confirmButtonText: ENV_I18N.sigClose,
+            didOpen: function() {
+                document.querySelectorAll('.sig-copy-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var inp = document.getElementById(this.dataset.target);
+                        if (!inp) return;
+                        inp.select();
+                        navigator.clipboard.writeText(inp.value).catch(function() {
+                            document.execCommand('copy');
+                        });
+                        var orig = btn.innerHTML;
+                        btn.innerHTML = '<i class="bx bx-check me-1"></i>' + ENV_I18N.sigCopy;
+                        btn.classList.add('btn-success');
+                        btn.classList.remove('btn-outline-secondary');
+                        setTimeout(function() {
+                            btn.innerHTML = orig;
+                            btn.classList.remove('btn-success');
+                            btn.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    });
+                });
+            },
+        });
+    }
+
     // ── Changement de méthode d'envoi ────────────────────────────
     document.querySelectorAll('input[name="methode_envoi"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
@@ -1141,7 +1352,19 @@
         const methode = document.querySelector('input[name="methode_envoi"]:checked')?.value || 'email';
         document.getElementById('infoExpediteurEmail').classList.toggle('d-none', methode !== 'email');
         document.getElementById('infoExpediteurWA').classList.toggle('d-none', methode !== 'whatsapp');
+        // Synchroniser le texte d'info signature selon méthode
+        const sigInfoEmail = document.getElementById('signatureInfoEmail');
+        const sigInfoWA    = document.getElementById('signatureInfoWA');
+        if (sigInfoEmail && sigInfoWA) {
+            sigInfoEmail.classList.toggle('d-none', methode !== 'email');
+            sigInfoWA.classList.toggle('d-none', methode === 'email');
+        }
     }
+
+    // ── Toggle signature options ──────────────────────────────────
+    document.getElementById('avecSignature').addEventListener('change', function() {
+        document.getElementById('signatureOptions').classList.toggle('d-none', !this.checked);
+    });
 
     // ── Paiement : Envoi Documents ───────────────────────────────
     var docPaymentDone = false;
@@ -1277,20 +1500,82 @@
             const docReleveP    = document.getElementById('docReleveP');
             const docReleveA    = document.getElementById('docReleveA');
 
-            // Toggle colonne facture
             const avecFacture = docsMensuelle && docsMensuelle.checked;
+            const avecReleve  = (docReleveP && docReleveP.checked) || (docReleveA && docReleveA.checked);
+
+            // Toggle colonne facture
             document.querySelectorAll('.col-facture').forEach(function(col) {
                 col.classList.toggle('d-none', !avecFacture);
             });
 
             // Toggle bloc dates relevés
-            const avecReleve = (docReleveP && docReleveP.checked) || (docReleveA && docReleveA.checked);
             document.getElementById('blocReleve').classList.toggle('d-none', !avecReleve);
 
+            // Toggle colonne taux (show/hide sans reconstruire)
+            document.querySelectorAll('.col-pct-releve').forEach(function(col) {
+                col.classList.toggle('d-none', !avecReleve);
+            });
+
             // Reconstruire la liste pour mettre à jour les colonnes
-            construireListeDestinataires(avecFacture);
+            construireListeDestinataires(avecFacture, avecReleve);
+
+            // Charger les taux depuis la config si relevé coché
+            if (avecReleve) fetchPctReleve();
         });
     });
+
+    // ── Chargement des taux de gestion par propriétaire ──────────
+    async function fetchPctReleve() {
+        const rows = document.querySelectorAll('#listeDestinataires .dest-row[data-type="proprietaire"]');
+        if (rows.length === 0) return;
+
+        const ids = Array.from(rows).map(function(r) { return parseInt(r.dataset.id); });
+
+        let data = {};
+        try {
+            const res  = await fetch(ROUTE_POURCENTAGES, {
+                method:  'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body:    JSON.stringify({ ids }),
+            });
+            const json = await res.json();
+            if (json.status) data = json.data;
+        } catch (e) { /* réseau — on laisse les champs manuels */ }
+
+        rows.forEach(function(row) {
+            const id        = parseInt(row.dataset.id);
+            const container = row.querySelector('.dest-pct-container');
+            if (!container) return;
+
+            const info = data[id] || data[String(id)];
+            if (!info) {
+                // Erreur réseau : montrer un champ manuel
+                container.innerHTML = `<input type="number" class="dest-pct form-control form-control-sm"
+                    value="10" min="0" max="100" step="0.5" style="max-width:90px;"
+                    title="Taux de gestion (%)">
+                    <span class="text-muted small">%</span>`;
+                return;
+            }
+
+            if (info.configured) {
+                // Taux configuré → lecture seule
+                container.innerHTML = `<span class="badge bg-success-subtle text-success border border-success-subtle">
+                    <i class="bx bx-check-circle me-1"></i>${info.pourcentage}%
+                </span>
+                <span class="text-muted small fst-italic">config.</span>
+                <input type="hidden" class="dest-pct" value="${info.pourcentage}">`;
+            } else {
+                // Pas configuré → champ saisie
+                container.innerHTML = `<label class="form-label small fw-semibold mb-0 text-warning">
+                    <i class="bx bx-edit me-1"></i>Taux non défini :
+                </label>
+                <input type="number" class="dest-pct form-control form-control-sm"
+                    value="10" min="0" max="100" step="0.5" style="max-width:90px;"
+                    title="Taux de gestion (%)">
+                <span class="text-muted small">%</span>`;
+            }
+        });
+    }
 
     // ── Submit envoi ─────────────────────────────────────────────
     document.getElementById('btnSubmitEnvoi').addEventListener('click', async function() {
@@ -1355,10 +1640,20 @@
         if (erreurContact) return;
 
         // Champs relevé
-        const dateDebut   = document.getElementById('dateDebut').value   || null;
-        const dateFin     = document.getElementById('dateFin').value     || null;
-        const pourcentage = document.getElementById('pourcentage').value || null;
-        const msgPerso    = document.getElementById('messagePerso').value.trim() || null;
+        const dateDebut = document.getElementById('dateDebut').value || null;
+        const dateFin   = document.getElementById('dateFin').value   || null;
+        const msgPerso  = document.getElementById('messagePerso').value.trim() || null;
+
+        // Taux de gestion par propriétaire (collecté depuis les lignes destinataires)
+        const avecReleve = typeDocuments.includes('releve_proprietaire') || typeDocuments.includes('releve_agence');
+        const pourcentagesProprietaires = {};
+        if (avecReleve) {
+            document.querySelectorAll('#listeDestinataires .dest-row[data-type="proprietaire"]').forEach(function(row) {
+                const id  = parseInt(row.dataset.id);
+                const inp = row.querySelector('.dest-pct');
+                if (inp) pourcentagesProprietaires[id] = parseFloat(inp.value) || 10;
+            });
+        }
 
         // Vérifier paiement si WhatsApp
         if (methode === 'whatsapp' && !docPaymentDone) {
@@ -1366,16 +1661,21 @@
             return;
         }
 
+        const avecSignature        = document.getElementById('avecSignature').checked;
+        const signatureExpiresDays = parseInt(document.getElementById('signatureExpiresDays').value) || 7;
+
         const payload = {
-            methode_envoi:           methode,
-            type_documents:          typeDocuments,
-            destinataires:           destinataires,
-            message_personnalise:    msgPerso,
-            date_debut:              dateDebut,
-            date_fin:                dateFin,
-            pourcentage:             pourcentage ? parseFloat(pourcentage) : null,
-            payment_transaction_id:  methode === 'whatsapp' ? docPaymentTxnId : null,
-            country_code:            methode === 'whatsapp' ? document.getElementById('paymentCountryCodeDoc').value : null,
+            methode_envoi:               methode,
+            type_documents:              typeDocuments,
+            destinataires:               destinataires,
+            message_personnalise:        msgPerso,
+            date_debut:                  dateDebut,
+            date_fin:                    dateFin,
+            pourcentages_proprietaires:  pourcentagesProprietaires,
+            payment_transaction_id:      methode === 'whatsapp' ? docPaymentTxnId : null,
+            country_code:                methode === 'whatsapp' ? document.getElementById('paymentCountryCodeDoc').value : null,
+            avec_signature:              avecSignature,
+            signature_expires_days:      signatureExpiresDays,
         };
 
         const btn = this;
@@ -1409,11 +1709,19 @@
                     }
                 }
 
+                const sigLinks = (json.details || []).filter(function(d) {
+                    return d.statut === 'success' && d.signature_lien;
+                });
+
                 Swal.fire({
                     icon: errors.length > 0 ? 'warning' : 'success',
                     title: ENV_I18N.result,
                     html:  json.message + details,
                     confirmButtonText: ENV_I18N.ok,
+                }).then(function() {
+                    if (sigLinks.length > 0) {
+                        afficherLiensSignature(sigLinks);
+                    }
                 });
 
                 // Fermer modal et rafraîchir
@@ -1579,12 +1887,22 @@
         rendreHistorique();
     });
 
-    // ── Chargement des données (fetch) ────────────────────────────
+    // Dates par défaut = mois précédent (calculées côté PHP)
+    const DEFAULT_HISTO_DATE_DEBUT = '{{ $defaultDateDebut }}';
+    const DEFAULT_HISTO_DATE_FIN   = '{{ $defaultDateFin }}';
+
+    // ── Chargement des données (fetch avec filtre dates) ──────────
     async function chargerHistorique() {
         const tbody = document.getElementById('tbodyHistorique');
         tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3"><span class="spinner-border spinner-border-sm"></span></td></tr>';
         try {
-            const res  = await fetch(ROUTE_HISTORIQUE);
+            const dateDebut = document.getElementById('histoFiltreDateDebut').value;
+            const dateFin   = document.getElementById('histoFiltreDateFin').value;
+            const params    = new URLSearchParams();
+            if (dateDebut) params.append('date_debut', dateDebut);
+            if (dateFin)   params.append('date_fin',   dateFin);
+            const url  = ROUTE_HISTORIQUE + (params.toString() ? '?' + params.toString() : '');
+            const res  = await fetch(url);
             const json = await res.json();
             allHistoriqueData = json.data || [];
             histoCurrentPage  = 1;
@@ -1594,7 +1912,7 @@
         }
     }
 
-    // ── Écoute des filtres ────────────────────────────────────────
+    // ── Écoute des filtres client (pas de rechargement serveur) ──
     ['histoFiltreNom','histoFiltreDoc','histoFiltreMethode','histoFiltreStatut'].forEach(function(id) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -1604,13 +1922,22 @@
         });
     });
 
-    document.getElementById('histoBtnReset').addEventListener('click', function() {
-        document.getElementById('histoFiltreNom').value      = '';
-        document.getElementById('histoFiltreDoc').value      = '';
-        document.getElementById('histoFiltreMethode').value  = '';
-        document.getElementById('histoFiltreStatut').value   = '';
+    // Bouton Appliquer : recharge depuis le serveur avec les nouvelles dates
+    document.getElementById('histoBtnAppliquer').addEventListener('click', function() {
         histoCurrentPage = 1;
-        rendreHistorique();
+        chargerHistorique();
+    });
+
+    // Bouton Réinitialiser : remet les dates au mois précédent + vide les filtres + recharge
+    document.getElementById('histoBtnReset').addEventListener('click', function() {
+        document.getElementById('histoFiltreDateDebut').value = DEFAULT_HISTO_DATE_DEBUT;
+        document.getElementById('histoFiltreDateFin').value   = DEFAULT_HISTO_DATE_FIN;
+        document.getElementById('histoFiltreNom').value       = '';
+        document.getElementById('histoFiltreDoc').value       = '';
+        document.getElementById('histoFiltreMethode').value   = '';
+        document.getElementById('histoFiltreStatut').value    = '';
+        histoCurrentPage = 1;
+        chargerHistorique();
     });
 
     document.getElementById('btnRefreshHistorique').addEventListener('click', chargerHistorique);
@@ -2068,9 +2395,78 @@
         }
     });
 
-    // ── Recherche en temps réel (sections notifications) ─────────
-    filtreTable('searchRappel',  'tableRappel');
-    filtreTable('searchPreavis', 'tablePreavis');
+    // ── Filtrage intelligent : rappel & préavis ──────────────────
+    var rappelHasDefaut  = document.querySelector('#tableRappel tbody tr[data-default-rappel]') !== null;
+    var preavisHasDefaut = document.querySelector('#tablePreavis tbody tr[data-default-preavis]') !== null;
+
+    function filtrerRappelDefaut() {
+        document.querySelectorAll('#tableRappel tbody tr[data-default-rappel]').forEach(function(tr) {
+            tr.style.display = tr.dataset.defaultRappel === '1' ? '' : 'none';
+        });
+        var btnTous = document.getElementById('btnVoirTousRappel');
+        var btnDef  = document.getElementById('btnRappelDefaut');
+        if (btnTous) btnTous.classList.remove('d-none');
+        if (btnDef)  btnDef.classList.add('d-none');
+        document.getElementById('searchRappel').value = '';
+    }
+    function voirTousRappel() {
+        document.querySelectorAll('#tableRappel tbody tr[data-default-rappel]').forEach(function(tr) {
+            tr.style.display = '';
+        });
+        var btnTous = document.getElementById('btnVoirTousRappel');
+        var btnDef  = document.getElementById('btnRappelDefaut');
+        if (btnTous) btnTous.classList.add('d-none');
+        if (btnDef)  btnDef.classList.remove('d-none');
+    }
+    function filtrerPreavisDefaut() {
+        document.querySelectorAll('#tablePreavis tbody tr[data-default-preavis]').forEach(function(tr) {
+            tr.style.display = tr.dataset.defaultPreavis === '1' ? '' : 'none';
+        });
+        var btnTous = document.getElementById('btnVoirTousPreavis');
+        var btnDef  = document.getElementById('btnPreavisDefaut');
+        if (btnTous) btnTous.classList.remove('d-none');
+        if (btnDef)  btnDef.classList.add('d-none');
+        document.getElementById('searchPreavis').value = '';
+    }
+    function voirTousPreavis() {
+        document.querySelectorAll('#tablePreavis tbody tr[data-default-preavis]').forEach(function(tr) {
+            tr.style.display = '';
+        });
+        var btnTous = document.getElementById('btnVoirTousPreavis');
+        var btnDef  = document.getElementById('btnPreavisDefaut');
+        if (btnTous) btnTous.classList.add('d-none');
+        if (btnDef)  btnDef.classList.remove('d-none');
+    }
+
+    // Recherche rappel : quand vide → revient au filtre défaut
+    document.getElementById('searchRappel').addEventListener('input', function() {
+        var q = this.value.toLowerCase().trim();
+        if (q === '' && rappelHasDefaut) { filtrerRappelDefaut(); return; }
+        var btnTous = document.getElementById('btnVoirTousRappel');
+        var btnDef  = document.getElementById('btnRappelDefaut');
+        if (btnTous) btnTous.classList.add('d-none');
+        if (btnDef)  btnDef.classList.remove('d-none');
+        document.querySelectorAll('#tableRappel tbody tr[data-default-rappel]').forEach(function(tr) {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    });
+
+    // Recherche préavis : quand vide → revient au filtre défaut
+    document.getElementById('searchPreavis').addEventListener('input', function() {
+        var q = this.value.toLowerCase().trim();
+        if (q === '' && preavisHasDefaut) { filtrerPreavisDefaut(); return; }
+        var btnTous = document.getElementById('btnVoirTousPreavis');
+        var btnDef  = document.getElementById('btnPreavisDefaut');
+        if (btnTous) btnTous.classList.add('d-none');
+        if (btnDef)  btnDef.classList.remove('d-none');
+        document.querySelectorAll('#tablePreavis tbody tr[data-default-preavis]').forEach(function(tr) {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    });
+
+    // Application du filtre par défaut au chargement
+    if (rappelHasDefaut)  filtrerRappelDefaut();
+    if (preavisHasDefaut) filtrerPreavisDefaut();
 
     // ── Charger les pays disponibles pour les dropdowns de paiement ──
     (function loadMessagingCountries() {

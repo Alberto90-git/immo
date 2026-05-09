@@ -366,18 +366,26 @@ class ChambreController extends Controller
     {
         try {
             
-            $valueDeleted = Chambre::where('id',$request->id)->first();
-            
+            $valueDeleted = Chambre::where('id',$request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
+
+            if (!$valueDeleted) {
+                return response()->json(['status' => false, 'message' => 'Chambre introuvable']);
+            }
+
             $occupe = Chambre::where('id',$request->id)
-                            ->where('etat',1)        
-                            ->whereNull('delete_at')        
+                            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                            ->where('etat',1)
+                            ->whereNull('delete_at')
                             ->count();
 
             if($occupe == 1){
                 return response()->json(['status' => false, 'message' => "Echéc, la chambre est toujours occupée par un locataire, veuillez le faire sortir d'abord"]);
             }
-            
+
             $deleted = Chambre::where('id',$request->id)
+                               ->where('iddirection_ref', Auth::user()->iddirection_ref)
                                ->update([
                                         'delete_at' => Carbon::now()
                                        ]);

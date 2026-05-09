@@ -97,7 +97,7 @@
               <td>
                 <span class="badge bg-info">{{ $item->plan_nom ?? __('pages.ent_badge_none') }}</span>
                 @if($item->plan_prix)
-                  <div class="small text-muted">{{ number_format($item->plan_prix, 0, ',', '.') }} XOF/an</div>
+                  <div class="small text-muted">{{ number_format($item->plan_prix, 0, ',', '.') }} {{ get_symbole_devise('XOF') }}/an</div>
                 @endif
               </td>
 
@@ -169,7 +169,7 @@
                     @if($blocked)
                       <li>
                         <button class="dropdown-item text-success btn-toggle-block"
-                                data-id="{{ $item->iddirection }}"
+                                data-id="{{ encrypt_id($item->iddirection) }}"
                                 data-action="debloquer"
                                 data-nom="{{ $item->designation }}">
                           <i class="bx bx-check-circle me-1"></i> {{ __('pages.ent_menu_validate') }}
@@ -178,7 +178,7 @@
                     @else
                       <li>
                         <button class="dropdown-item text-danger btn-toggle-block"
-                                data-id="{{ $item->iddirection }}"
+                                data-id="{{ encrypt_id($item->iddirection) }}"
                                 data-action="bloquer"
                                 data-nom="{{ $item->designation }}">
                           <i class="bx bx-lock me-1"></i> {{ __('pages.ent_menu_block') }}
@@ -191,7 +191,7 @@
                     {{-- Changer de plan --}}
                     <li>
                       <button class="dropdown-item btn-change-plan"
-                              data-id="{{ $item->iddirection }}"
+                              data-id="{{ encrypt_id($item->iddirection) }}"
                               data-nom="{{ $item->designation }}"
                               data-plan="{{ $item->idplan ?? '' }}">
                         <i class="bx bx-transfer me-1"></i> {{ __('pages.ent_menu_change_plan') }}
@@ -201,7 +201,7 @@
                     {{-- Renouveler --}}
                     <li>
                       <button class="dropdown-item btn-renouveler"
-                              data-id="{{ $item->iddirection }}"
+                              data-id="{{ encrypt_id($item->iddirection) }}"
                               data-nom="{{ $item->designation }}"
                               data-fin="{{ $item->abonnement_fin ?? '' }}">
                         <i class="bx bx-refresh me-1"></i> {{ __('pages.ent_menu_renew') }}
@@ -221,7 +221,7 @@
                               data-tel="{{ $item->telephone ?? '-' }}"
                               data-siege="{{ $item->siege_social ?? '-' }}"
                               data-plan="{{ $item->plan_nom ?? 'Aucun' }}"
-                              data-prix="{{ $item->plan_prix ? number_format($item->plan_prix, 0, ',', '.') . ' XOF' : 'Gratuit' }}"
+                              data-prix="{{ $item->plan_prix ? number_format($item->plan_prix, 0, ',', '.') . ' ' . get_symbole_devise('XOF') : 'Gratuit' }}"
                               data-maisons="{{ $item->nb_maisons }}"
                               data-agences="{{ $item->nb_agences }}"
                               data-debut="{{ $item->abonnement_debut ? \Carbon\Carbon::parse($item->abonnement_debut)->format('d/m/Y') : '-' }}"
@@ -291,7 +291,7 @@
           <label class="form-label">{{ __('pages.ent_cp_new_plan') }}</label>
           <select class="form-select" id="cpIdPlan">
             @foreach($plans as $plan)
-              <option value="{{ $plan->idplan }}">{{ $plan->nom }} — {{ number_format($plan->prix_annuel, 0, ',', '.') }} XOF/an</option>
+              <option value="{{ $plan->idplan }}">{{ $plan->nom }} — {{ number_format($plan->prix_annuel, 0, ',', '.') }} {{ get_symbole_devise('XOF') }}/an</option>
             @endforeach
           </select>
         </div>
@@ -580,19 +580,34 @@ $(document).off('click.ent', '.btn-details')
 });
 
 // ── DataTables (en dernier — son erreur éventuelle n'affecte plus rien)
+var DT_FR = {
+  processing:   "Traitement...",
+  search:       "Rechercher :",
+  lengthMenu:   "Afficher _MENU_ éléments",
+  info:         "Affichage de _START_ à _END_ sur _TOTAL_ éléments",
+  infoEmpty:    "Affichage de 0 à 0 sur 0 élément",
+  infoFiltered: "(filtré depuis _MAX_ éléments au total)",
+  infoPostFix:  "",
+  loadingRecords:"Chargement...",
+  zeroRecords:  "Aucun élément correspondant trouvé",
+  emptyTable:   "Aucune donnée disponible",
+  paginate: { first:"Premier", previous:"Précédent", next:"Suivant", last:"Dernier" },
+  aria: { sortAscending:" : activer pour trier la colonne par ordre croissant", sortDescending:" : activer pour trier la colonne par ordre décroissant" }
+};
+
 $(document).ready(function () {
   if (typeof $.fn.DataTable === 'undefined') return;
 
   var tableE = $('#tableEntreprises').DataTable({
     pageLength: 25,
-    language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' },
+    language: DT_FR,
     columnDefs: [{ orderable: false, targets: -1 }],
     drawCallback: function () { closeDtMenus(); }
   });
 
   $('#tableAnnexes').DataTable({
     pageLength: 10,
-    language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }
+    language: DT_FR
   });
 
   var currentFilter = 'all';

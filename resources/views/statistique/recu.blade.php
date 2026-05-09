@@ -14,17 +14,17 @@
 
         <div class="col-xl-12">
             <div class="nav-align-top mb-4">
-                <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
+                <ul class="nav nav-pills mb-3 nav-fill" role="tablist" id="recuTabList">
 
                     <li class="nav-item">
                         <button
                             type="button"
-                            class="nav-link active"
+                            class="nav-link"
                             role="tab"
                             data-bs-toggle="tab"
                             data-bs-target="#navs-pills-justified-recu_avance"
                             aria-controls="navs-pills-justified-recu_avance"
-                            aria-selected="true">
+                            aria-selected="false">
                             <i class="tf-icons bx bx-wallet me-1"></i> {{ __('pages.recu_tab_advance') }}
                         </button>
                     </li>
@@ -37,8 +37,7 @@
                             data-bs-toggle="tab"
                             data-bs-target="#navs-pills-justified-reculocation"
                             aria-controls="navs-pills-justified-reculocation"
-                            aria-selected="false"
-                        >
+                            aria-selected="false">
                             <i class="tf-icons bx bx-receipt me-1"></i> {{ __('pages.recu_tab_monthly') }}
                         </button>
                     </li>
@@ -48,7 +47,7 @@
                 <div class="tab-content">
 
                     <!-- TAB 1: Recus d'avance -->
-                    <div class="tab-pane fade show active" id="navs-pills-justified-recu_avance" role="tabpanel">
+                    <div class="tab-pane fade" id="navs-pills-justified-recu_avance" role="tabpanel">
                         <div class="card shadow-sm">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="mb-0"><i class="bx bx-search-alt me-2"></i>{{ __('pages.recu_search_advance') }}</h5>
@@ -75,9 +74,15 @@
                                         <input type="date" name="date_fin" id="date_fin" class="form-control">
                                     </div>
 
-                                    <div class="col-md-6" style="display: none;" id="user_nameDiv">
+                                    <div class="col-md-5" style="display: none;" id="user_nameDiv">
                                         <label class="form-label fw-semibold">{{ __('pages.recu_label_tenant_name') }}</label>
                                         <input type="text" placeholder="{{ __('pages.recu_ph_tenant_name') }}" class="form-control" name="user_name" id="user_name">
+                                    </div>
+                                    <div class="col-md-2" id="btnSearchDiv" style="display: none;">
+                                        <label class="form-label d-block">&nbsp;</label>
+                                        <button type="button" class="btn btn-primary w-100" id="btnSearchByDate">
+                                            <i class="bx bx-search me-1"></i>{{ __('pages.recu_btn_search') }}
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -156,9 +161,15 @@
                                         <input type="date" name="date_fin2" id="date_fin2" class="form-control">
                                     </div>
 
-                                    <div class="col-md-6" style="display: none;" id="user_nameDiv2">
+                                    <div class="col-md-5" style="display: none;" id="user_nameDiv2">
                                         <label class="form-label fw-semibold">{{ __('pages.recu_label_tenant_name') }}</label>
                                         <input type="text" placeholder="{{ __('pages.recu_ph_tenant_name') }}" class="form-control" name="user_name2" id="user_name2">
+                                    </div>
+                                    <div class="col-md-2" id="btnSearchDiv2" style="display: none;">
+                                        <label class="form-label d-block">&nbsp;</label>
+                                        <button type="button" class="btn btn-success w-100" id="btnSearchByDate2">
+                                            <i class="bx bx-search me-1"></i>{{ __('pages.recu_btn_search') }}
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -219,176 +230,128 @@
         };
 
         $.ajaxSetup({
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          }
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
         });
 
-
-        $('#user_name').on('keyup',function(e)
-        {
-          var user_name = $('#user_name').val();
-
-            if(user_name === null || user_name.length < 2)
-            {
-                return false;
-            }
-            else
-            {
-                return $.ajax
-                ({
-                    url: '{{ url('statistique-facture-avance-nom') }}',
-                    data: {user_name:user_name},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        $('#list_ancien_recu_avance').html(data.list_recu);
-                        $('#titre2').html('<i class="bx bx-list-ul me-2"></i>' + data.titre2);
-                    },
-                    error:function(data)
-                    {
-                      console.log('Erreur de recherche');
-                    },
-               });
-            }
-        });
-
-
-        $('#user_name2').on('keyup',function(e)
-        {
-          var user_name2 = $('#user_name2').val();
-
-            if(user_name2 === null || user_name2.length < 2)
-            {
-                return false;
-            }
-            else
-            {
-                return $.ajax
-                ({
-                    url: '{{ url('statistique-facture-mois-nom') }}',
-                    data: {user_name2:user_name2},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        $('#list_locataire_recuPP').html(data.list_locataireP);
-                        $('#titre').html('<i class="bx bx-list-ul me-2"></i>' + data.titre);
-                    },
-                    error:function(data)
-                    {
-                      console.log('Erreur de recherche');
-                    },
-               });
-            }
-        });
-
-
-        $('#date_fin2').on('change',function(e)
-        {
-          var date_debut2 = $('#date_debut2').val();
-          var date_fin2 = $('#date_fin2').val();
-
-            if(date_fin2 === null || date_debut2 === null)
-            {
-                alert(RECU_I18N.alertDates);
-                return false;
-            }
-            else
-            {
-                return $.ajax
-                ({
-                    url: '{{ url('statistique-facture-mois') }}',
-                    data: {date_debut2:date_debut2, date_fin2:date_fin2},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        $('#list_locataire_recuPP').html(data.list_locataireP);
-                        $('#titre').html('<i class="bx bx-list-ul me-2"></i>' + data.titre);
-                    },
-                    error:function(data)
-                    {
-                      console.log('Erreur de recherche');
-                    },
-               });
-            }
-        });
-
-
-
-
-        $('#date_fin').on('change',function(e)
-        {
-          var date_debut = $('#date_debut').val();
-          var date_fin = $('#date_fin').val();
-
-            if(date_fin === null || date_debut === null)
-            {
-                alert(RECU_I18N.alertDates);
-                return false;
-            }
-            else
-            {
-                return $.ajax
-                ({
-                    url: '{{ url('statistique-facture-avance') }}',
-                    data: {date_debut:date_debut, date_fin:date_fin},
-                    type: 'GET',
-                    cache: false,
-                    dataType: 'json',
-                    success: function (data) {
-                        $('#list_ancien_recu_avance').html(data.list_recu);
-                        $('#titre2').html('<i class="bx bx-list-ul me-2"></i>' + data.titre2);
-                    },
-                    error:function(data)
-                    {
-                      console.log('Erreur de recherche');
-                    },
-               });
-            }
-        });
-
-
-        function displayChoix2() {
-            let val = document.getElementById('choix2').value;
-            if (val == 'by_user') {
-              document.getElementById('user_nameDiv2').style.display = 'block';
-              document.getElementById('date_debutDiv2').style.display = 'none';
-              document.getElementById('date_finDiv2').style.display = 'none';
-              $("#user_name2").attr('required', true);
-              $("#date_debut2").attr('required', false);
-              $("#date_fin2").attr('required', false);
+        // ── Persistance du tab actif via localStorage ─────────────────────────────
+        (function () {
+            var DEFAULT_TAB = '#navs-pills-justified-recu_avance';
+            var saved = localStorage.getItem('recu_active_tab') || DEFAULT_TAB;
+            var tabBtn = document.querySelector('[data-bs-target="' + saved + '"]');
+            if (tabBtn) {
+                new bootstrap.Tab(tabBtn).show();
             } else {
-              document.getElementById('user_nameDiv2').style.display = 'none';
-              document.getElementById('date_debutDiv2').style.display = 'block';
-              document.getElementById('date_finDiv2').style.display = 'block';
-              $("#user_name2").attr('required', false);
-              $("#date_debut2").attr('required', true);
-              $("#date_fin2").attr('required', true);
+                // fallback : activer le premier onglet
+                var first = document.querySelector('#recuTabList [data-bs-toggle="tab"]');
+                if (first) new bootstrap.Tab(first).show();
             }
+            document.querySelectorAll('#recuTabList [data-bs-toggle="tab"]').forEach(function (btn) {
+                btn.addEventListener('shown.bs.tab', function (e) {
+                    localStorage.setItem('recu_active_tab', e.target.getAttribute('data-bs-target'));
+                });
+            });
+        })();
+
+        // ── Helpers AJAX ──────────────────────────────────────────────────────────
+        function rechercherAvanceParDate() {
+            var date_debut = $('#date_debut').val();
+            var date_fin   = $('#date_fin').val();
+            if (!date_debut || !date_fin) {
+                alert(RECU_I18N.alertDates);
+                return;
+            }
+            $.ajax({
+                url: '{{ url('statistique-facture-avance') }}',
+                data: { date_debut: date_debut, date_fin: date_fin },
+                type: 'GET', cache: false, dataType: 'json',
+                success: function (data) {
+                    $('#list_ancien_recu_avance').html(data.list_recu);
+                    $('#titre2').html('<i class="bx bx-list-ul me-2"></i>' + data.titre2);
+                }
+            });
         }
 
+        function rechercherMoisParDate() {
+            var date_debut2 = $('#date_debut2').val();
+            var date_fin2   = $('#date_fin2').val();
+            if (!date_debut2 || !date_fin2) {
+                alert(RECU_I18N.alertDates);
+                return;
+            }
+            $.ajax({
+                url: '{{ url('statistique-facture-mois') }}',
+                data: { date_debut2: date_debut2, date_fin2: date_fin2 },
+                type: 'GET', cache: false, dataType: 'json',
+                success: function (data) {
+                    $('#list_locataire_recuPP').html(data.list_locataireP);
+                    $('#titre').html('<i class="bx bx-list-ul me-2"></i>' + data.titre);
+                }
+            });
+        }
 
+        // ── Recherche par nom (Tab 1 – avance) ───────────────────────────────────
+        $('#user_name').on('keyup', function () {
+            var val = $(this).val();
+            if (val.length < 2) return;
+            $.ajax({
+                url: '{{ url('statistique-facture-avance-nom') }}',
+                data: { user_name: val },
+                type: 'GET', cache: false, dataType: 'json',
+                success: function (data) {
+                    $('#list_ancien_recu_avance').html(data.list_recu);
+                    $('#titre2').html('<i class="bx bx-list-ul me-2"></i>' + data.titre2);
+                }
+            });
+        });
 
+        // ── Recherche par nom (Tab 2 – loyer mensuel) ────────────────────────────
+        $('#user_name2').on('keyup', function () {
+            var val = $(this).val();
+            if (val.length < 2) return;
+            $.ajax({
+                url: '{{ url('statistique-facture-mois-nom') }}',
+                data: { user_name2: val },
+                type: 'GET', cache: false, dataType: 'json',
+                success: function (data) {
+                    $('#list_locataire_recuPP').html(data.list_locataireP);
+                    $('#titre').html('<i class="bx bx-list-ul me-2"></i>' + data.titre);
+                }
+            });
+        });
+
+        // ── Bouton Rechercher (Tab 1 – dates) ────────────────────────────────────
+        $('#btnSearchByDate').on('click', rechercherAvanceParDate);
+
+        // ── Bouton Rechercher (Tab 2 – dates) ────────────────────────────────────
+        $('#btnSearchByDate2').on('click', rechercherMoisParDate);
+
+        // ── Fonctions displayChoix ────────────────────────────────────────────────
         function displayChoix() {
-          let val = document.getElementById('choix').value;
-          if (val == 'by_user') {
-            document.getElementById('user_nameDiv').style.display = 'block';
-            document.getElementById('date_debutDiv').style.display = 'none';
-            document.getElementById('date_finDiv').style.display = 'none';
-            $("#user_name").attr('required', true);
-            $("#date_debut").attr('required', false);
-            $("#date_fin").attr('required', false);
-          } else {
-            document.getElementById('user_nameDiv').style.display = 'none';
-            document.getElementById('date_debutDiv').style.display = 'block';
-            document.getElementById('date_finDiv').style.display = 'block';
-            $("#user_name").attr('required', false);
-            $("#date_debut").attr('required', true);
-            $("#date_fin").attr('required', true);
-          }
+            var val = document.getElementById('choix').value;
+            var isByUser = val === 'by_user';
+            document.getElementById('user_nameDiv').style.display   = isByUser ? 'block' : 'none';
+            document.getElementById('date_debutDiv').style.display  = isByUser ? 'none'  : 'block';
+            document.getElementById('date_finDiv').style.display    = isByUser ? 'none'  : 'block';
+            document.getElementById('btnSearchDiv').style.display   = isByUser ? 'none'  : 'block';
+            $('#user_name').attr('required', isByUser);
+            $('#date_debut').attr('required', !isByUser);
+            $('#date_fin').attr('required', !isByUser);
+            // Vider les résultats lors du changement de mode
+            $('#list_ancien_recu_avance').html('');
+        }
+
+        function displayChoix2() {
+            var val = document.getElementById('choix2').value;
+            var isByUser = val === 'by_user';
+            document.getElementById('user_nameDiv2').style.display  = isByUser ? 'block' : 'none';
+            document.getElementById('date_debutDiv2').style.display = isByUser ? 'none'  : 'block';
+            document.getElementById('date_finDiv2').style.display   = isByUser ? 'none'  : 'block';
+            document.getElementById('btnSearchDiv2').style.display  = isByUser ? 'none'  : 'block';
+            $('#user_name2').attr('required', isByUser);
+            $('#date_debut2').attr('required', !isByUser);
+            $('#date_fin2').attr('required', !isByUser);
+            // Vider les résultats lors du changement de mode
+            $('#list_locataire_recuPP').html('');
         }
 
     </script>

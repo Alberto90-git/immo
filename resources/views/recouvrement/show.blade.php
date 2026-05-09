@@ -198,7 +198,7 @@
                     <span class="badge bg-danger ms-1">{{ __('ui.recouvrement.plan_late') }}</span>
                   @endif
                 </td>
-                <td>{{ number_format($ech->montant, 0, ',', ' ') }}</td>
+                <td>{{ format_price($ech->montant) }}</td>
                 <td>{!! $ech->statut_badge !!}</td>
                 <td class="small text-muted">{{ $ech->date_paiement ? $ech->date_paiement->format('d/m/Y') : '–' }}</td>
                 <td>
@@ -206,7 +206,7 @@
                   @can('modify-recouvrement')
                   <button type="button" class="btn btn-xs btn-outline-success py-0 px-2 btn-payer-echeance"
                     data-id="{{ $ech->id }}"
-                    data-url="{{ route('recouvrement.echeance_payer', $ech->id) }}">
+                    data-url="{{ route('recouvrement.echeance_payer', encrypt_id($ech->id)) }}">
                     <i class="bx bx-check"></i> {{ __('ui.recouvrement.plan_mark_paid') }}
                   </button>
                   @endcan
@@ -469,7 +469,7 @@ document.getElementById('btnDownloadMED').addEventListener('click', function () 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>';
 
-  fetch('{{ route("recouvrement.mise_en_demeure", $dossier->id) }}', {
+  fetch('{{ route("recouvrement.mise_en_demeure", encrypt_id($dossier->id)) }}', {
     headers: { 'X-CSRF-TOKEN': CSRF },
   })
   .then(r => r.blob())
@@ -494,7 +494,7 @@ document.getElementById('btnDownloadMED').addEventListener('click', function () 
 const btnPreviewMED = document.getElementById('btnPreviewMED');
 if (btnPreviewMED) {
   btnPreviewMED.addEventListener('click', function () {
-    document.getElementById('iframeMED').src = '{{ route("recouvrement.mise_en_demeure_preview", $dossier->id) }}';
+    document.getElementById('iframeMED').src = '{{ route("recouvrement.mise_en_demeure_preview", encrypt_id($dossier->id)) }}';
     new bootstrap.Modal(document.getElementById('modalPreviewMED')).show();
   });
 }
@@ -510,7 +510,7 @@ if (btnSigner) {
     const fd = new FormData();
     fd.append('_token', CSRF);
 
-    fetch('{{ route("recouvrement.signer_document", $dossier->id) }}', {
+    fetch('{{ route("recouvrement.signer_document", encrypt_id($dossier->id)) }}', {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
       body: fd,
@@ -579,7 +579,7 @@ if (btnRelancer) {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ __("ui.recouvrement.js_creating") }}';
 
-    fetch('{{ route("recouvrement.relancer", $dossier->id) }}', {
+    fetch('{{ route("recouvrement.relancer", encrypt_id($dossier->id)) }}', {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
       body: formToData('formRelancer'),
@@ -590,7 +590,7 @@ if (btnRelancer) {
         Swal.fire({ icon: 'success', title: '{{ __("ui.common.success") }}', text: res.message, timer: 1800, showConfirmButton: false });
 
         // Rafraîchir la timeline et le select sans recharger la page
-        fetch('{{ route("recouvrement.relances_data", $dossier->id) }}', {
+        fetch('{{ route("recouvrement.relances_data", encrypt_id($dossier->id)) }}', {
           headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
         })
         .then(r => r.json())
@@ -668,7 +668,7 @@ if (btnPlan) {
     if (!validerPlan()) return;
     bootstrap.Modal.getInstance(document.getElementById('modalPlanApurement'))?.hide();
     ajaxPost(
-      '{{ route("recouvrement.plan_apurement", $dossier->id) }}',
+      '{{ route("recouvrement.plan_apurement", encrypt_id($dossier->id)) }}',
       formToData('formPlanApurement'),
       this,
       '<i class="bx bx-save me-1"></i>{{ __("ui.recouvrement.plan_create_btn") }}'
@@ -704,7 +704,7 @@ if (btnContentieux) {
   btnContentieux.addEventListener('click', function () {
     bootstrap.Modal.getInstance(document.getElementById('modalContentieux'))?.hide();
     ajaxPost(
-      '{{ route("recouvrement.contentieux", $dossier->id) }}',
+      '{{ route("recouvrement.contentieux", encrypt_id($dossier->id)) }}',
       formToData('formContentieux'),
       this,
       '<i class="bx bx-gavel me-1"></i>{{ __("ui.recouvrement.contentieux_confirm") }}'
@@ -717,7 +717,7 @@ const btnUpdate = document.getElementById('btnUpdate');
 if (btnUpdate) {
   btnUpdate.addEventListener('click', function () {
     ajaxPost(
-      '{{ route("recouvrement.update", $dossier->id) }}',
+      '{{ route("recouvrement.update", encrypt_id($dossier->id)) }}',
       formToData('formUpdate'),
       this,
       '<i class="bx bx-save me-1"></i> {{ __("ui.common.save") }}',
@@ -732,7 +732,7 @@ if (btnCloturer) {
   btnCloturer.addEventListener('click', function () {
     bootstrap.Modal.getInstance(document.getElementById('modalCloturer'))?.hide();
     ajaxPost(
-      '{{ route("recouvrement.cloturer", $dossier->id) }}',
+      '{{ route("recouvrement.cloturer", encrypt_id($dossier->id)) }}',
       formToData('formCloturer'),
       this,
       '{{ __("ui.recouvrement.close_btn") }}'

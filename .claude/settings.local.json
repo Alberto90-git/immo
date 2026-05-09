@@ -48,7 +48,13 @@
       "Bash(grep -r \"Locataire\\\\|Facture\\\\|paiement\\\\|rappel\" /c/Users/altchegnon/Documents/immo/app/*.php)",
       "Bash(ls -1 /c/Users/altchegnon/Documents/immo/app/*.php)",
       "Bash(sed -n '3835,3845p' /c/Users/altchegnon/Documents/immo/public/assetsV2/vendor/css/core.css)",
-      "Bash(sed -n '8347,8360p' /c/Users/altchegnon/Documents/immo/public/assetsV2/vendor/css/core.css)"
+      "Bash(sed -n '8347,8360p' /c/Users/altchegnon/Documents/immo/public/assetsV2/vendor/css/core.css)",
+      "Bash(findstr /R /S \"Route::.*\\\\{id\" routes/web.php)",
+      "Bash(grep -r \"route.*\\\\\\\\\\\\$.*id\" \"C:\\\\Users\\\\altchegnon\\\\Documents\\\\immo\\\\app\\\\Http\\\\Controllers\" --include=\"*.php\")",
+      "Bash(grep -n \"route\\(['\\\\\"][^'\\\\\"]*['\\\\\"],\\\\s*\\\\$\" \"C:\\\\Users\\\\altchegnon\\\\Documents\\\\immo\\\\app\\\\Http\\\\Controllers\\\\EtatDesLieuxController.php\")",
+      "Bash(grep -n \"route\\(['\\\\\"][^'\\\\\"]*['\\\\\"],\\\\s*\\\\$\" \"C:\\\\Users\\\\altchegnon\\\\Documents\\\\immo\\\\app\\\\Http\\\\Controllers\\\\TicketMaintenanceController.php\")",
+      "Bash(grep -rn \"route\\(['\\\\\"][^'\\\\\"]*['\\\\\"],\\\\s*\\\\$\" \"C:\\\\Users\\\\altchegnon\\\\Documents\\\\immo\\\\app\\\\Http\\\\Controllers\" --include=\"*.php\")",
+      "Bash(grep -n \"'cookie.policy'\\\\|'pwa.later'\\\\|^        }$\\\\|en:\\\\s*{\" resources/views/welcome.blade.php)"
     ]
   }
 }

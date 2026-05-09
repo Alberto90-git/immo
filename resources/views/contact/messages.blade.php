@@ -44,7 +44,7 @@
                         </thead>
                         <tbody>
                             @foreach($messages as $msg)
-                            <tr id="row-{{ $msg->id }}" class="{{ !$msg->lu ? 'table-warning fw-semibold' : '' }}">
+                            <tr id="row-{{ encrypt_id($msg->id) }}" class="{{ !$msg->lu ? 'table-warning fw-semibold' : '' }}">
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
                                     {{ $msg->nom }} {{ $msg->prenom }}
@@ -85,7 +85,7 @@
                                     <div class="d-flex gap-1 justify-content-center">
                                         <button class="btn btn-sm btn-icon btn-outline-danger"
                                                 title="{{ __('common.title_delete') }}"
-                                                onclick="deleteMsg({{ $msg->id }})">
+                                                onclick="deleteMsg('{{ encrypt_id($msg->id) }}')">
                                             <i class="bx bx-trash"></i>
                                         </button>
                                     </div>

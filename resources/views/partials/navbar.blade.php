@@ -84,7 +84,7 @@
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0"
-                    style="width:360px; max-height:420px; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05);">
+                    style="width:min(360px, calc(100vw - 24px)); max-height:420px; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.05);">
                     <li class="border-bottom">
                         <div class="d-flex align-items-center py-3 px-4">
                             <h6 class="mb-0 me-auto fw-semibold">{{ __('layout.notifications') }}</h6>
@@ -236,16 +236,16 @@
                                     <i class="bx bx-user me-1"></i>{{ __('layout.tenant_info') }}
                                 </h6>
                                 <div class="row g-2" style="font-size:0.9rem;">
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <strong>{{ __('layout.label_name') }}</strong> <span id="preview-nom"></span>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <strong>{{ __('layout.label_phone') }}</strong> <span id="preview-tel"></span>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <strong>{{ __('layout.label_house') }}</strong> <span id="preview-maison"></span>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <strong>{{ __('layout.label_room') }}</strong> <span id="preview-chambre"></span>
                                     </div>
                                     <div class="col-12">
@@ -401,7 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
         border-radius: 50px;
         padding: 0.5rem 1rem;
         cursor: pointer;
-        min-width: 200px;
+        min-width: 120px;
+        max-width: 200px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
         appearance: none;

@@ -2555,7 +2555,7 @@
                 $stats = [
                     ['val'=>'500+','label'=>'Utilisateurs actifs','icon'=>'fa-users','i18n'=>'stat.users'],
                     ['val'=>'2 500+','label'=>'Propriétés gérées','icon'=>'fa-home','i18n'=>'stat.props'],
-                    ['val'=>'15M+','label'=>'XOF de loyers traités','icon'=>'fa-coins','i18n'=>'stat.revenue'],
+                    ['val'=>'15M+','label'=>'de loyers traités','icon'=>'fa-coins','i18n'=>'stat.revenue'],
                     ['val'=>'97%','label'=>'Taux de satisfaction','icon'=>'fa-heart','i18n'=>'stat.satisfaction'],
                 ];
                 @endphp
@@ -2616,13 +2616,13 @@
 
             <!-- En-tête -->
             <div class="mb-10 text-center">
-                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
-                    Marketplace
+                <span class="inline-block px-4 py-1 mb-4 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full" data-i18n="biens.badge">
+                    Nos offres du moment
                 </span>
                 <h2 class="mb-3 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl">
-                    Biens <span class="text-blue-600">Immobiliers</span> Disponibles
+                    <span data-i18n="biens.h2a">Biens</span> <span class="text-blue-600" data-i18n="biens.h2b">Immobiliers</span> <span data-i18n="biens.h2c">Disponibles</span>
                 </h2>
-                <p class="max-w-2xl mx-auto text-base text-gray-500">
+                <p class="max-w-2xl mx-auto text-base text-gray-500" data-i18n="biens.sub">
                     Trouvez appartements, maisons, terrains et locaux — recherchez et filtrez en temps réel
                 </p>
             </div>
@@ -2632,12 +2632,13 @@
                 <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
                     <!-- Recherche libre -->
                     <div class="col-span-2 sm:col-span-4 lg:col-span-2">
-                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Recherche</label>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide" data-i18n="biens.filter.search">Recherche</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
                             </span>
                             <input type="text" id="mkpQ" placeholder="Quartier, description..."
+                                   data-i18n-ph="biens.filter.search_ph"
                                    class="w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
                             <button type="button" id="mkpClearQ"
                                     class="absolute inset-y-0 right-3 flex items-center text-gray-300 hover:text-gray-500"
@@ -2648,9 +2649,9 @@
                     </div>
                     <!-- Type -->
                     <div>
-                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Type</label>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide" data-i18n="biens.filter.type">Type</label>
                         <select id="mkpType" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            <option value="">Tous</option>
+                            <option value="" data-i18n="biens.filter.type_all">Tous les types</option>
                             @foreach(['appartement'=>'Appartement','maison'=>'Maison','villa'=>'Villa','terrain'=>'Terrain','bureau'=>'Bureau','commerce'=>'Local commercial','chambre'=>'Chambre','studio'=>'Studio'] as $v=>$l)
                             <option value="{{ $v }}">{{ $l }}</option>
                             @endforeach
@@ -2658,8 +2659,9 @@
                     </div>
                     <!-- Ville -->
                     <div>
-                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Ville</label>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide" data-i18n="biens.filter.city">Ville</label>
                         <input type="text" id="mkpVille" list="mkpVillesList" placeholder="Cotonou..."
+                               data-i18n-ph="biens.filter.city_ph"
                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
                         <datalist id="mkpVillesList">
                             @foreach($villesMarketplace ?? [] as $v)<option value="{{ $v }}">@endforeach
@@ -2667,7 +2669,7 @@
                     </div>
                     <!-- Budget max -->
                     <div>
-                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">Budget max (XOF)</label>
+                        <label class="block mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide"><span data-i18n="biens.filter.budget">Budget max</span> ({{ get_symbole_devise('XOF') }})</label>
                         <input type="number" id="mkpBudget" placeholder="500 000"
                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
                     </div>
@@ -2685,7 +2687,7 @@
                 <button type="button" id="mkpToggleMap"
                         class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                    <span id="mkpMapLabel">Afficher la carte</span>
+                    <span id="mkpMapLabel" data-i18n="biens.map.show">Afficher la carte</span>
                 </button>
             </div>
 
@@ -2695,11 +2697,18 @@
                 <div id="mkpMap" style="height:360px;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden"></div>
             </div>
 
-            <!-- Message aucun résultat JS -->
-            <div id="mkpEmpty" style="display:none" class="py-12 text-center">
-                <svg class="w-14 h-14 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-                <p class="text-gray-500 font-medium">Aucune annonce ne correspond à votre recherche.</p>
-                <button type="button" onclick="mkpReset()" class="mt-3 text-sm text-blue-600 hover:underline">Effacer les filtres</button>
+            <!-- Message aucun résultat JS (filtres actifs) -->
+            <div id="mkpEmpty" style="display:none" class="py-14 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 mb-5 rounded-full bg-blue-50">
+                    <svg class="w-10 h-10 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+                </div>
+                <p class="mb-1 text-base font-semibold text-gray-600" data-i18n="biens.empty.title">Aucune annonce ne correspond à votre recherche.</p>
+                <p class="mb-4 text-sm text-gray-400" data-i18n="biens.empty.hint">Essayez des mots-clés différents ou réinitialisez les filtres.</p>
+                <button type="button" onclick="mkpReset()"
+                        class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
+                        data-i18n="biens.empty.reset">
+                    Effacer les filtres
+                </button>
             </div>
 
             <!-- Grille des annonces -->
@@ -2721,7 +2730,7 @@
                         @else
                         <div class="flex items-center justify-center h-full text-gray-400 flex-col gap-2">
                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span class="text-sm">Pas de photo</span>
+                            <span class="text-sm" data-i18n="biens.card.nophoto">Pas de photo</span>
                         </div>
                         @endif
 
@@ -2729,7 +2738,8 @@
                         <div class="absolute top-0 left-0 p-3 flex flex-wrap gap-1">
                             @if($pub->is_sponsored_active)
                             <span class="px-2 py-0.5 text-xs font-bold text-white rounded-full shadow"
-                                  style="background:linear-gradient(90deg,#f7b731,#f0932b)">
+                                  style="background:linear-gradient(90deg,#f7b731,#f0932b)"
+                                  data-i18n="biens.card.sponsored">
                                 ★ Sponsorisée
                             </span>
                             @endif
@@ -2740,7 +2750,8 @@
                             </span>
                             @endif
                             @if($pub->published_at && $pub->published_at->diffInDays(now()) < 3)
-                            <span class="px-2 py-0.5 text-xs font-bold text-white bg-green-500 rounded-full shadow">
+                            <span class="px-2 py-0.5 text-xs font-bold text-white bg-green-500 rounded-full shadow"
+                                  data-i18n="biens.card.new">
                                 Nouveau
                             </span>
                             @endif
@@ -2750,7 +2761,7 @@
                         <div class="absolute top-3 right-3">
                             <span class="px-3 py-1 text-sm font-bold text-white rounded-full shadow-lg"
                                   style="background:rgba(37,99,235,.9)">
-                                {{ number_format((float)$pub->price, 0, ',', ' ') }} XOF
+                                {{ format_price((float)$pub->price, null, $deviseMapWelcome[$pub->iddirection_ref] ?? 'XOF') }}
                             </span>
                         </div>
                     </div>
@@ -2786,16 +2797,16 @@
                             <a href="{{ route('marketplace.show', $pub->slug) }}"
                                class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm font-semibold text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                Voir détail
+                                <span data-i18n="biens.card.details">Voir détail</span>
                             </a>
                             @endif
                             <a href="tel:{{ preg_replace('/\s+/', '', $pub->telephone) }}"
                                class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                Appeler
+                                <span data-i18n="biens.card.call">Appeler</span>
                             </a>
                             @php $shareUrl = urlencode($pub->slug ? route('marketplace.show', $pub->slug) : url('/')); @endphp
-                            <a href="https://wa.me/?text={{ urlencode($pub->localisation.' — '.$pub->price.' XOF ') }}{{ $shareUrl }}"
+                            <a href="https://wa.me/?text={{ urlencode($pub->localisation.' — '.$pub->price.' '.($deviseMapWelcome[$pub->iddirection_ref] ?? 'XOF').' ') }}{{ $shareUrl }}"
                                target="_blank"
                                class="flex items-center justify-center px-3 py-2 rounded-xl transition-colors"
                                style="background:#25d366;color:#fff"
@@ -2813,17 +2824,47 @@
                 <a href="{{ route('marketplace.index') }}"
                    class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-2xl shadow-md hover:bg-blue-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                    Voir toutes les annonces sur le Marketplace
+                    <span data-i18n="biens.cta">Voir toutes les annonces sur le Marketplace</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
 
             @else
-            <div class="py-16 text-center">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                <h3 class="mb-2 text-lg font-semibold text-gray-500">Aucune annonce trouvée</h3>
-                <p class="text-sm text-gray-400">Modifiez vos critères ou revenez plus tard.</p>
-                <a href="{{ url('/') }}#biens" class="inline-block mt-4 text-sm text-blue-600 hover:underline">Voir toutes les annonces</a>
+            <!-- État vide : aucune annonce publiée -->
+            <div class="py-20 text-center">
+                <!-- Icône animée -->
+                <div class="relative inline-flex items-center justify-center w-28 h-28 mb-8 mx-auto">
+                    <div class="absolute inset-0 rounded-full bg-blue-100 animate-pulse opacity-60"></div>
+                    <div class="relative flex items-center justify-center w-24 h-24 rounded-full bg-white shadow-lg border border-blue-100">
+                        <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Textes -->
+                <h3 class="mb-3 text-2xl font-bold text-gray-700" data-i18n="biens.none.title">Aucune annonce disponible</h3>
+                <p class="max-w-sm mx-auto mb-8 text-base text-gray-400 leading-relaxed" data-i18n="biens.none.desc">
+                    Des biens immobiliers seront bientôt disponibles. Revenez prochainement pour découvrir nos annonces.
+                </p>
+                <!-- Points décoratifs -->
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <span class="inline-block w-2 h-2 rounded-full bg-blue-200"></span>
+                    <span class="inline-block w-3 h-3 rounded-full bg-blue-300"></span>
+                    <span class="inline-block w-2 h-2 rounded-full bg-blue-200"></span>
+                </div>
+                <!-- CTA -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="{{ route('marketplace.index') }}"
+                       class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-2xl shadow-md hover:bg-blue-700 transition-all hover:-translate-y-0.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span data-i18n="biens.none.cta_market">Voir le marketplace</span>
+                    </a>
+                    <a href="{{ route('login') }}"
+                       class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-blue-600 border border-blue-200 rounded-2xl hover:bg-blue-50 transition-all hover:-translate-y-0.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span data-i18n="biens.none.cta_publish">Publier une annonce</span>
+                    </a>
+                </div>
             </div>
             @endif
 
@@ -2887,12 +2928,17 @@
 
             // Compteur
             if (countEl) countEl.textContent = visible;
-            if (labelEl) labelEl.textContent = 'annonce' + (visible > 1 ? 's' : '') + ' trouvée' + (visible > 1 ? 's' : '');
+            if (labelEl) {
+                var tKey = visible > 1 ? 'biens.count.many' : 'biens.count.one';
+                labelEl.textContent = (typeof _t === 'function') ? _t(tKey) : (visible > 1 ? 'annonces trouvées' : 'annonce trouvée');
+            }
 
             // Message vide
             if (empty) empty.style.display = (visible === 0) ? '' : 'none';
             if (grid)  grid.style.display  = (visible === 0) ? 'none' : '';
         }
+
+        window.mkpRunFilter = runFilter;
 
         window.mkpReset = function() {
             if (fQ)      fQ.value     = '';
@@ -2924,7 +2970,9 @@
                 var visible   = container.style.display !== 'none';
 
                 container.style.display = visible ? 'none' : '';
-                label.textContent = visible ? 'Afficher la carte' : 'Masquer la carte';
+                var showKey = visible ? 'biens.map.show' : 'biens.map.hide';
+                label.textContent = (typeof _t === 'function') ? _t(showKey) : (visible ? 'Afficher la carte' : 'Masquer la carte');
+                label.setAttribute('data-i18n', showKey);
 
                 if (!visible && !mapLoaded) {
                     mapLoaded = true;
@@ -2953,7 +3001,7 @@
                 var popup = '<div style="min-width:160px">'
                     + (a.image ? '<img src="'+a.image+'" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">' : '')
                     + '<strong style="font-size:.82rem;display:block;margin-bottom:2px">'+a.localisation+'</strong>'
-                    + '<span style="color:#2563eb;font-weight:700">'+parseFloat(a.price).toLocaleString('fr-FR')+' XOF</span>'
+                    + '<span style="color:#2563eb;font-weight:700">'+parseFloat(a.price).toLocaleString('fr-FR')+' '+(a.devise ? a.devise : '{{ get_symbole_devise("XOF") }}')+'</span>'
                     + (a.slug ? '<br><a href="/marketplace/annonce/'+a.slug+'" style="font-size:.75rem;color:#2563eb;margin-top:4px;display:inline-block">Voir l\'annonce \u2192</a>' : '')
                     + '</div>';
                 L.marker([a.lat, a.lng], {icon: icon}).addTo(m).bindPopup(popup);
@@ -3140,7 +3188,7 @@
                         </div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                             <div style="background:#fff;border:1px solid #f1f5f9;border-radius:12px;padding:14px;">
-                                <div style="font-size:0.72rem;font-weight:700;color:#64748b;margin-bottom:10px;">Revenus mensuels (FCFA)</div>
+                                <div style="font-size:0.72rem;font-weight:700;color:#64748b;margin-bottom:10px;">Revenus mensuels ({{ get_symbole_devise('XOF') }})</div>
                                 <div class="mock-chart-bar" style="height:100px;">
                                     <div class="mock-bar" style="height:50%;background:#bfdbfe;"></div>
                                     <div class="mock-bar" style="height:65%;background:#93c5fd;"></div>
@@ -3547,15 +3595,15 @@
                         @if($isFree)
                             <div style="display:flex;align-items:baseline;gap:4px;padding:0.75rem 0 0.5rem;">
                                 <span style="font-size:2.4rem;font-weight:900;color:{{ $priceColor }};line-height:1;">0</span>
-                                <span style="font-size:1rem;color:#94a3b8;font-weight:500;">XOF</span>
+                                <span style="font-size:1rem;color:#94a3b8;font-weight:500;">{{ get_symbole_devise('XOF') }}</span>
                             </div>
                             <p style="font-size:0.78rem;color:#64748b;margin:0;" data-i18n-html="plan.trial.text">Pendant <strong>14 jours</strong> · Sans CB requise</p>
                         @else
                             <div style="display:flex;align-items:baseline;gap:4px;padding:0.75rem 0 0.25rem;">
                                 <span style="font-size:2.1rem;font-weight:900;color:{{ $priceColor }};line-height:1;">{{ number_format($plan->prix_annuel, 0, ',', ' ') }}</span>
-                                <span style="font-size:0.9rem;color:#94a3b8;font-weight:500;">XOF / an</span>
+                                <span style="font-size:0.9rem;color:#94a3b8;font-weight:500;">{{ get_symbole_devise('XOF') }} / an</span>
                             </div>
-                            <p style="font-size:0.78rem;color:#64748b;margin:0;"><span data-i18n="plan.price.soit">soit</span> {{ number_format($plan->prix_annuel / 12, 0, ',', ' ') }} XOF <span data-i18n="plan.price.permonth">/ mois</span></p>
+                            <p style="font-size:0.78rem;color:#64748b;margin:0;"><span data-i18n="plan.price.soit">soit</span> {{ number_format($plan->prix_annuel / 12, 0, ',', ' ') }} {{ get_symbole_devise('XOF') }} <span data-i18n="plan.price.permonth">/ mois</span></p>
                         @endif
                     </div>
 
@@ -3833,14 +3881,14 @@
                         </h3>
 
                         <div class="row g-3">
-                            <div class="col-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="reg-field">
                                     <label for="nom" data-i18n="reg.label.nom">Nom</label>
                                     <input type="text" class="form-control" id="nom" name="nom" placeholder="Dupont" required>
                                     <div class="invalid-feedback">Veuillez saisir votre nom.</div>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="reg-field">
                                     <label for="prenom" data-i18n="reg.label.prenom">Prénom</label>
                                     <input type="text" class="form-control" id="prenom" name="prenom" placeholder="Jean" required>
@@ -4424,7 +4472,7 @@
 
             <!-- Barre de copyright -->
             <div class="footer-copyright" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:1.5rem 0;">
-                <p style="font-size:0.78rem;color:#334155;margin:0;">
+                <p data-i18n-html="footer.copy" style="font-size:0.78rem;color:#334155;margin:0;">
                     &copy; {{ date('Y') }} <strong style="color:#475569;">Lokativ</strong> — Tous droits réservés.
                     Fabriqué avec <i class="fas fa-heart" style="color:#ef4444;font-size:10px;"></i> en Afrique de l'Ouest.
                 </p>
@@ -4928,7 +4976,7 @@
 
                 const prixAffiche = plan.prix_mensuel === 0
                     ? 'Gratuit'
-                    : plan.prix_mensuel.toLocaleString('fr-FR') + ' XOF/mois';
+                    : plan.prix_mensuel.toLocaleString('fr-FR') + ' {{ get_symbole_devise("XOF") }}/mois';
 
                 planElement.innerHTML = `
                     <div class="d-flex justify-content-between align-items-start">
@@ -4985,7 +5033,7 @@
             const nb    = selectedNbMois;
             const total = selectedPlan.prix_mensuel * nb;
             document.getElementById('total-preview-reg').textContent =
-                'Total : ' + total.toLocaleString('fr-FR') + ' XOF';
+                'Total : ' + total.toLocaleString('fr-FR') + ' {{ get_symbole_devise("XOF") }}';
             // Calcul de la date de fin estimée
             const fin = new Date();
             fin.setMonth(fin.getMonth() + nb);
@@ -5498,14 +5546,14 @@
         <div class="pwa-inner">
             <img src="/logo/LOGO.jpg" alt="Lokativ" onerror="this.src='/assets/img/logo.png'">
             <div class="pwa-text">
-                <strong>Installer Lokativ</strong>
-                <span>Accès rapide depuis votre écran d'accueil</span>
+                <strong data-i18n="pwa.title">Installer Lokativ</strong>
+                <span data-i18n="pwa.desc">Accès rapide depuis votre écran d'accueil</span>
             </div>
             <div class="pwa-actions">
                 <button class="pwa-btn-install" id="pwa-install-btn">
-                    <i class="fas fa-download me-1"></i> Installer
+                    <i class="fas fa-download me-1"></i> <span data-i18n="pwa.install">Installer</span>
                 </button>
-                <button class="pwa-btn-dismiss" id="pwa-install-dismiss">Plus tard</button>
+                <button class="pwa-btn-dismiss" id="pwa-install-dismiss" data-i18n="pwa.later">Plus tard</button>
             </div>
         </div>
     </div>
@@ -5767,12 +5815,11 @@
                 <div style="flex:1;min-width:280px;">
                     <p style="margin:0 0 6px;font-size:15px;font-weight:700;color:#fff;">
                         <i class="fas fa-cookie-bite" style="color:#f59e0b;margin-right:8px;"></i>
-                        Ce site utilise des cookies
+                        <span data-i18n="cookie.title">Ce site utilise des cookies</span>
                     </p>
                     <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.5;">
-                        Nous utilisons des cookies essentiels au fonctionnement du site et, avec votre consentement,
-                        des cookies d'analyse et de préférences pour améliorer votre expérience.
-                        <a href="{{ route('legal.cookies') }}" style="color:#60a5fa;text-decoration:underline;" target="_blank">En savoir plus</a>
+                        <span data-i18n="cookie.desc">Nous utilisons des cookies essentiels au fonctionnement du site et, avec votre consentement, des cookies d'analyse et de préférences pour améliorer votre expérience.</span>
+                        <a href="{{ route('legal.cookies') }}" style="color:#60a5fa;text-decoration:underline;" target="_blank"><span data-i18n="cookie.learn">En savoir plus</span></a>
                     </p>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
@@ -5781,21 +5828,21 @@
                                    border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;"
                             onmouseover="this.style.borderColor='#9ca3af';this.style.color='#fff';"
                             onmouseout="this.style.borderColor='#4b5563';this.style.color='#9ca3af';">
-                        Refuser
+                        <span data-i18n="cookie.reject">Refuser</span>
                     </button>
                     <button id="cookie-customize" onclick="lokativCookiePanel()"
                             style="padding:9px 20px;background:transparent;border:1px solid #3b82f6;color:#60a5fa;
                                    border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;"
                             onmouseover="this.style.background='rgba(59,130,246,0.1)';"
                             onmouseout="this.style.background='transparent';">
-                        Personnaliser
+                        <span data-i18n="cookie.customize">Personnaliser</span>
                     </button>
                     <button id="cookie-accept" onclick="lokativCookies('all')"
                             style="padding:9px 24px;background:#3b82f6;border:none;color:#fff;
                                    border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;"
                             onmouseover="this.style.background='#2563eb';"
                             onmouseout="this.style.background='#3b82f6';">
-                        Tout accepter
+                        <span data-i18n="cookie.accept">Tout accepter</span>
                     </button>
                 </div>
             </div>
@@ -5809,7 +5856,7 @@
             <div style="display:flex;align-items:center;justify-content:between;margin-bottom:20px;">
                 <h3 style="margin:0;font-size:18px;font-weight:700;color:#111827;flex:1;">
                     <i class="fas fa-sliders-h" style="color:#3b82f6;margin-right:8px;"></i>
-                    Personnaliser les cookies
+                    <span data-i18n="cookie.panel.title">Personnaliser les cookies</span>
                 </h3>
                 <button onclick="document.getElementById('cookie-panel').style.display='none';"
                         style="background:none;border:none;font-size:20px;color:#6b7280;cursor:pointer;padding:4px;float:right;">
@@ -5822,11 +5869,11 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div>
                         <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#111827;">
-                            <i class="fas fa-lock" style="color:#10b981;margin-right:6px;"></i>Essentiels
+                            <i class="fas fa-lock" style="color:#10b981;margin-right:6px;"></i><span data-i18n="cookie.essential.name">Essentiels</span>
                         </p>
-                        <p style="margin:0;font-size:12px;color:#6b7280;">Indispensables au fonctionnement</p>
+                        <p data-i18n="cookie.essential.desc" style="margin:0;font-size:12px;color:#6b7280;">Indispensables au fonctionnement</p>
                     </div>
-                    <span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;">Toujours actifs</span>
+                    <span data-i18n="cookie.essential.badge" style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;">Toujours actifs</span>
                 </div>
             </div>
 
@@ -5835,9 +5882,9 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div>
                         <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#111827;">
-                            <i class="fas fa-chart-bar" style="color:#f59e0b;margin-right:6px;"></i>Analytiques
+                            <i class="fas fa-chart-bar" style="color:#f59e0b;margin-right:6px;"></i><span data-i18n="cookie.analytics.name">Analytiques</span>
                         </p>
-                        <p style="margin:0;font-size:12px;color:#6b7280;">Amélioration de l'expérience</p>
+                        <p data-i18n="cookie.analytics.desc" style="margin:0;font-size:12px;color:#6b7280;">Amélioration de l'expérience</p>
                     </div>
                     <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
                         <input type="checkbox" id="toggle-analytics" style="opacity:0;width:0;height:0;">
@@ -5855,9 +5902,9 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div>
                         <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#111827;">
-                            <i class="fas fa-heart" style="color:#8b5cf6;margin-right:6px;"></i>Préférences
+                            <i class="fas fa-heart" style="color:#8b5cf6;margin-right:6px;"></i><span data-i18n="cookie.prefs.name">Préférences</span>
                         </p>
-                        <p style="margin:0;font-size:12px;color:#6b7280;">Mémorisation de vos paramètres</p>
+                        <p data-i18n="cookie.prefs.desc" style="margin:0;font-size:12px;color:#6b7280;">Mémorisation de vos paramètres</p>
                     </div>
                     <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
                         <input type="checkbox" id="toggle-prefs" style="opacity:0;width:0;height:0;">
@@ -5873,16 +5920,16 @@
             <div style="display:flex;gap:10px;">
                 <button onclick="lokativCookiesSave()"
                         style="flex:1;padding:10px;background:#3b82f6;border:none;color:#fff;border-radius:50px;font-weight:700;font-size:14px;cursor:pointer;">
-                    Enregistrer mes choix
+                    <span data-i18n="cookie.save">Enregistrer mes choix</span>
                 </button>
                 <button onclick="lokativCookies('all')"
                         style="flex:1;padding:10px;background:#f1f5f9;border:1px solid #e2e8f0;color:#374151;border-radius:50px;font-weight:600;font-size:14px;cursor:pointer;">
-                    Tout accepter
+                    <span data-i18n="cookie.accept_all">Tout accepter</span>
                 </button>
             </div>
             <p style="margin-top:12px;text-align:center;font-size:11px;color:#9ca3af;">
-                <a href="{{ route('legal.cookies') }}" style="color:#60a5fa;">Politique de cookies</a> &nbsp;·&nbsp;
-                <a href="{{ route('legal.confidentialite') }}" style="color:#60a5fa;">Confidentialité</a>
+                <a href="{{ route('legal.cookies') }}" style="color:#60a5fa;"><span data-i18n="cookie.policy">Politique de cookies</span></a> &nbsp;·&nbsp;
+                <a href="{{ route('legal.confidentialite') }}" style="color:#60a5fa;"><span data-i18n="cookie.privacy">Confidentialité</span></a>
             </p>
         </div>
     </div>
@@ -6359,16 +6406,40 @@
             /* Stats */
             'stat.users'        : 'Utilisateurs actifs',
             'stat.props'        : 'Propriétés gérées',
-            'stat.revenue'      : 'XOF de loyers traités',
+            'stat.revenue'      : 'de loyers traités',
             'stat.satisfaction' : 'Taux de satisfaction',
             /* Partners */
             'partners.label'    : 'Ils nous font confiance',
-            /* Biens */
-            'biens.badge'       : 'Nos offres du moment',
-            'biens.h2a'         : 'Biens',
-            'biens.h2b'         : 'Immobiliers',
-            'biens.h2c'         : 'Disponibles',
-            'biens.sub'         : 'Découvrez nos dernières offres immobilières disponibles',
+            /* Biens / Marketplace */
+            'biens.badge'              : 'Nos offres du moment',
+            'biens.h2a'                : 'Biens',
+            'biens.h2b'                : 'Immobiliers',
+            'biens.h2c'                : 'Disponibles',
+            'biens.sub'                : 'Trouvez appartements, maisons, terrains et locaux — recherchez et filtrez en temps réel',
+            'biens.filter.search'      : 'Recherche',
+            'biens.filter.search_ph'   : 'Quartier, description...',
+            'biens.filter.type'        : 'Type',
+            'biens.filter.type_all'    : 'Tous les types',
+            'biens.filter.city'        : 'Ville',
+            'biens.filter.city_ph'     : 'Cotonou...',
+            'biens.filter.budget'      : 'Budget max',
+            'biens.count.one'          : 'annonce trouvée',
+            'biens.count.many'         : 'annonces trouvées',
+            'biens.map.show'           : 'Afficher la carte',
+            'biens.map.hide'           : 'Masquer la carte',
+            'biens.empty.title'        : 'Aucune annonce ne correspond à votre recherche.',
+            'biens.empty.hint'         : 'Essayez des mots-clés différents ou réinitialisez les filtres.',
+            'biens.empty.reset'        : 'Effacer les filtres',
+            'biens.none.title'         : 'Aucune annonce disponible',
+            'biens.none.desc'          : 'Des biens immobiliers seront bientôt disponibles. Revenez prochainement pour découvrir nos annonces.',
+            'biens.none.cta_market'    : 'Voir le marketplace',
+            'biens.none.cta_publish'   : 'Publier une annonce',
+            'biens.card.details'       : 'Voir détail',
+            'biens.card.call'          : 'Appeler',
+            'biens.card.nophoto'       : 'Pas de photo',
+            'biens.card.new'           : 'Nouveau',
+            'biens.card.sponsored'     : '★ Sponsorisée',
+            'biens.cta'                : 'Voir toutes les annonces sur le Marketplace',
             /* Portfolio */
             'portfolio.badge'   : 'Interface moderne',
             'portfolio.h2a'     : 'Aperçu de la',
@@ -6557,6 +6628,30 @@
             'payment.retry'              : 'Réessayer',
             'payment.unavailable_title'  : 'Service indisponible',
             'payment.kkiapay_unavailable': 'Le widget de paiement KKiaPay n\'a pas pu être chargé. Vérifiez votre connexion internet et réessayez.',
+            /* Bannière cookies */
+            'cookie.title'          : 'Ce site utilise des cookies',
+            'cookie.desc'           : 'Nous utilisons des cookies essentiels au fonctionnement du site et, avec votre consentement, des cookies d\'analyse et de préférences pour améliorer votre expérience.',
+            'cookie.learn'          : 'En savoir plus',
+            'cookie.reject'         : 'Refuser',
+            'cookie.customize'      : 'Personnaliser',
+            'cookie.accept'         : 'Tout accepter',
+            'cookie.panel.title'    : 'Personnaliser les cookies',
+            'cookie.essential.name' : 'Essentiels',
+            'cookie.essential.desc' : 'Indispensables au fonctionnement',
+            'cookie.essential.badge': 'Toujours actifs',
+            'cookie.analytics.name' : 'Analytiques',
+            'cookie.analytics.desc' : 'Amélioration de l\'expérience',
+            'cookie.prefs.name'     : 'Préférences',
+            'cookie.prefs.desc'     : 'Mémorisation de vos paramètres',
+            'cookie.save'           : 'Enregistrer mes choix',
+            'cookie.accept_all'     : 'Tout accepter',
+            'cookie.policy'         : 'Politique de cookies',
+            'cookie.privacy'        : 'Confidentialité',
+            /* Bannière PWA */
+            'pwa.title'   : 'Installer Lokativ',
+            'pwa.desc'    : 'Accès rapide depuis votre écran d\'accueil',
+            'pwa.install' : 'Installer',
+            'pwa.later'   : 'Plus tard',
         },
         en: {
             /* Navigation */
@@ -6651,16 +6746,40 @@
             /* Stats */
             'stat.users'        : 'Active users',
             'stat.props'        : 'Properties managed',
-            'stat.revenue'      : 'XOF in rents processed',
+            'stat.revenue'      : 'in rents processed',
             'stat.satisfaction' : 'Satisfaction rate',
             /* Partners */
             'partners.label'    : 'They trust us',
-            /* Biens */
-            'biens.badge'       : 'Current listings',
-            'biens.h2a'         : 'Available',
-            'biens.h2b'         : 'Real Estate',
-            'biens.h2c'         : 'Properties',
-            'biens.sub'         : 'Discover our latest available real estate listings',
+            /* Biens / Marketplace */
+            'biens.badge'              : 'Current listings',
+            'biens.h2a'                : 'Available',
+            'biens.h2b'                : 'Real Estate',
+            'biens.h2c'                : 'Properties',
+            'biens.sub'                : 'Find apartments, houses, land and offices — search and filter in real time',
+            'biens.filter.search'      : 'Search',
+            'biens.filter.search_ph'   : 'Neighborhood, description...',
+            'biens.filter.type'        : 'Type',
+            'biens.filter.type_all'    : 'All types',
+            'biens.filter.city'        : 'City',
+            'biens.filter.city_ph'     : 'Cotonou...',
+            'biens.filter.budget'      : 'Max budget',
+            'biens.count.one'          : 'listing found',
+            'biens.count.many'         : 'listings found',
+            'biens.map.show'           : 'Show map',
+            'biens.map.hide'           : 'Hide map',
+            'biens.empty.title'        : 'No listings match your search.',
+            'biens.empty.hint'         : 'Try different keywords or reset the filters.',
+            'biens.empty.reset'        : 'Clear filters',
+            'biens.none.title'         : 'No listings available yet',
+            'biens.none.desc'          : 'Properties will be available soon. Check back later to discover our real estate listings.',
+            'biens.none.cta_market'    : 'View marketplace',
+            'biens.none.cta_publish'   : 'Post a listing',
+            'biens.card.details'       : 'View details',
+            'biens.card.call'          : 'Call',
+            'biens.card.nophoto'       : 'No photo',
+            'biens.card.new'           : 'New',
+            'biens.card.sponsored'     : '★ Sponsored',
+            'biens.cta'                : 'View all listings on the Marketplace',
             /* Portfolio */
             'portfolio.badge'   : 'Modern interface',
             'portfolio.h2a'     : 'Preview of the',
@@ -6836,7 +6955,7 @@
             'footer.features'   : 'Features',
             'footer.legal'      : 'Legal',
             'footer.newsletter' : 'Stay informed',
-            'footer.copy'       : '© __YEAR__ Lokativ — All rights reserved. Made with ❤ in West Africa.',
+            'footer.copy'       : '© __YEAR__ Lokativ — All rights reserved.',
             'footer.payment'    : 'Accepted payments:',
             /* Registration form — button states & payment errors */
             'reg.submit_pay'             : 'Pay and create my account',
@@ -6849,6 +6968,30 @@
             'payment.retry'              : 'Try again',
             'payment.unavailable_title'  : 'Service unavailable',
             'payment.kkiapay_unavailable': 'The KKiaPay payment widget could not be loaded. Check your internet connection and try again.',
+            /* Cookie banner */
+            'cookie.title'          : 'This site uses cookies',
+            'cookie.desc'           : 'We use essential cookies for the site to function and, with your consent, analytics and preference cookies to improve your experience.',
+            'cookie.learn'          : 'Learn more',
+            'cookie.reject'         : 'Decline',
+            'cookie.customize'      : 'Customize',
+            'cookie.accept'         : 'Accept all',
+            'cookie.panel.title'    : 'Cookie preferences',
+            'cookie.essential.name' : 'Essential',
+            'cookie.essential.desc' : 'Required for the site to work',
+            'cookie.essential.badge': 'Always active',
+            'cookie.analytics.name' : 'Analytics',
+            'cookie.analytics.desc' : 'Improving your experience',
+            'cookie.prefs.name'     : 'Preferences',
+            'cookie.prefs.desc'     : 'Remembering your settings',
+            'cookie.save'           : 'Save my choices',
+            'cookie.accept_all'     : 'Accept all',
+            'cookie.policy'         : 'Cookie policy',
+            'cookie.privacy'        : 'Privacy',
+            /* PWA banner */
+            'pwa.title'   : 'Install Lokativ',
+            'pwa.desc'    : 'Quick access from your home screen',
+            'pwa.install' : 'Install',
+            'pwa.later'   : 'Later',
         }
     };
 
@@ -6897,6 +7040,9 @@
 
         /* Attribut lang sur <html> */
         document.documentElement.setAttribute('lang', lang);
+
+        /* Mettre à jour le compteur marketplace si visible */
+        if (typeof window.mkpRunFilter === 'function') window.mkpRunFilter();
     }
 
     /* Init au chargement */

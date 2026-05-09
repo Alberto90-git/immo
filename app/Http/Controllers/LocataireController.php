@@ -6,6 +6,7 @@ use App\Locataire;
 use App\Maison;
 use App\Chambre;
 use App\Prix;
+use App\ContratConfig;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
@@ -46,11 +47,17 @@ class LocataireController extends Controller
                                       ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
                                       ->whereNull('maisons.delete_at')
                                       ->whereNull('chambres.delete_at')
-                                      ->select('locataires.iddirection_ref','locataires.idannexe_ref','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','locataires.nom','locataires.prenom','locataires.profession','locataires.telephone','locataires.email','locataires.mode_paiement','locataires.nombre_caution','locataires.nombre_avance','locataires.date_entree','locataires.id','locataires.chambre_id','locataires.nombre_avance_consomme','locataires.caution_courant','locataires.caution_eau')
+                                      ->select('locataires.iddirection_ref','locataires.idannexe_ref','maisons.nom_maison','chambres.numero_chambre','chambres.type_chambre','locataires.nom','locataires.prenom','locataires.profession','locataires.telephone','locataires.email','locataires.mode_paiement','locataires.nombre_caution','locataires.nombre_avance','locataires.date_entree','locataires.id','locataires.chambre_id','locataires.nombre_avance_consomme','locataires.caution_courant','locataires.caution_eau','locataires.statut_bail')
                                       ->get();
 
+            $contratConfigs = ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->orderBy('is_default', 'desc')
+                ->orderBy('nom_modele')
+                ->get();
 
-            return view('locataire.locataire', compact(['allMaison','allLocataire']));
+            $prospectPrefill = session()->pull('prospect_prefill');
+
+            return view('locataire.locataire', compact(['allMaison','allLocataire','contratConfigs','prospectPrefill']));
 
        } catch (QueryException $e) {
             return back()->with('error','Echec, veuillez verifier les donnees');
@@ -236,6 +243,7 @@ class LocataireController extends Controller
                    } catch (\Exception $e) {}
 
                    Chambre::where('id',$request->numero_chambre)
+                            ->where('iddirection_ref', Auth::user()->iddirection_ref)
                             ->whereNull('delete_at')
                             ->where('etat',0)
                             ->update([
@@ -250,6 +258,7 @@ class LocataireController extends Controller
                         'message' => "Le locataire ".Str::upper($request->nom_locataire).' '.Str::upper($request->prenom_locataire).' est bien ajouté',
                         'locataire' => [
                             'id'              => $locataires->id,
+                            'encoded_id'      => encrypt_id($locataires->id),
                             'nom_maison'      => $maison ? $maison->nom_maison : '',
                             'numero_chambre'  => $chambre ? $chambre->numero_chambre : '',
                             'type_chambre'    => $chambre ? $chambre->type_chambre : '',
@@ -306,6 +315,7 @@ class LocataireController extends Controller
                 $oldLocataire = Locataire::find($request->locataire_id);
 
              Locataire::where('id',$request->locataire_id)
+                              ->where('iddirection_ref', Auth::user()->iddirection_ref)
                               ->update([
                                     'nom'                   => Str::upper($request->nom_locataire),
                                     'prenom'                => Str::ucfirst($request->prenom_locataire),
@@ -355,13 +365,16 @@ class LocataireController extends Controller
     {
         try {
             $locataireId = $request->id ?: $request->locataire_id;
-            $deletedValue = Locataire::where('id', $locataireId)->first();
+            $deletedValue = Locataire::where('id', $locataireId)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
 
             if (!$deletedValue) {
                 return response()->json(['status' => false, 'message' => 'Locataire introuvable']);
             }
 
             $deleted = Locataire::where('id', $locataireId)
+                                  ->where('iddirection_ref', Auth::user()->iddirection_ref)
                                   ->update([
                                      'delete_at' => Carbon::now(),
                                      'status' => 0

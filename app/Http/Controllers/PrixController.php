@@ -227,6 +227,7 @@ class PrixController extends Controller
             }
 
              $prixOff = Prix::where('id',$request->prix_id)
+                                 ->where('iddirection_ref', Auth::user()->iddirection_ref)
                                  ->update([
                                     'status' => 0,
                                     'idannexe_ref' => $idannexe_ref,
@@ -262,7 +263,9 @@ class PrixController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $deleted = Prix::where('id',$request->prix_id)->update(['delete_at' => Carbon::now()]);
+            $deleted = Prix::where('id',$request->prix_id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->update(['delete_at' => Carbon::now()]);
 
             if ($deleted) {
 

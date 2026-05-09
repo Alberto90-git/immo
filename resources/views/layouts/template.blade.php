@@ -620,6 +620,51 @@
       color: #d0d4e0 !important;
     }
 
+    /* ── Texte primary en dark mode ── */
+    html.dark-style .text-primary {
+      color: #8c8eff !important;
+    }
+    html.dark-style .modal-title {
+      color: #d0d4e0 !important;
+    }
+
+    /* ── Tableaux colorés (thead.table-*) ── */
+    html.dark-style .table-primary,
+    html.dark-style thead.table-primary th,
+    html.dark-style .table-primary td {
+      background-color: rgba(105, 108, 255, 0.18) !important;
+      color: #b3b4ff !important;
+      border-color: #444564 !important;
+    }
+    html.dark-style .table-success,
+    html.dark-style thead.table-success th,
+    html.dark-style .table-success td {
+      background-color: rgba(113, 221, 55, 0.15) !important;
+      color: #9de85a !important;
+      border-color: #444564 !important;
+    }
+    html.dark-style .table-info,
+    html.dark-style thead.table-info th,
+    html.dark-style .table-info td {
+      background-color: rgba(3, 195, 236, 0.15) !important;
+      color: #03c3ec !important;
+      border-color: #444564 !important;
+    }
+    html.dark-style .table-warning,
+    html.dark-style thead.table-warning th,
+    html.dark-style .table-warning td {
+      background-color: rgba(255, 171, 0, 0.15) !important;
+      color: #ffab00 !important;
+      border-color: #444564 !important;
+    }
+    html.dark-style .table-danger,
+    html.dark-style thead.table-danger th,
+    html.dark-style .table-danger td {
+      background-color: rgba(255, 62, 29, 0.15) !important;
+      color: #ff8a75 !important;
+      border-color: #444564 !important;
+    }
+
     /* ── Chips / tags ── */
     html.dark-style .badge.bg-secondary {
       background-color: #444564 !important;

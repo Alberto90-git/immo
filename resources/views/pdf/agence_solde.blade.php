@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>Benefice agence</title>
+    <title>{{ __('pdf.agence_doc_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -144,26 +144,26 @@
 @endif
 
 <div class="header">
-    <h1>BENEFICE REALISE PAR L'AGENCE</h1>
-    <p class="subtitle">Periode du {{ Carbon\Carbon::parse($element2['date_debut'])->format('d/m/Y') }} au {{ Carbon\Carbon::parse($element2['date_fin'])->format('d/m/Y') }}</p>
+    <h1>{{ __('pdf.agence_title') }}</h1>
+    <p class="subtitle">{{ __('pdf.periode', ['debut' => Carbon\Carbon::parse($element2['date_debut'])->format('d/m/Y'), 'fin' => Carbon\Carbon::parse($element2['date_fin'])->format('d/m/Y')]) }}</p>
 </div>
 
 <div class="info-box">
-    <p><strong>Proprietaire concerne:</strong></p>
+    <p><strong>{{ __('pdf.proprio_concerne') }}</strong></p>
     <p class="proprio-name">{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</p>
-    <p><strong>Commission agence:</strong> {{ $element2['pourcentage'] }}%</p>
-    <p><strong>Date d'edition:</strong> {{ Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
+    <p><strong>{{ __('pdf.commission_agence') }}</strong> {{ $element2['pourcentage'] }}%</p>
+    <p><strong>{{ __('pdf.date_edition') }}</strong> {{ Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
 </div>
 
 <table>
     <thead>
         <tr>
-            <th style="width: 12%;">Agence</th>
-            <th style="width: 18%;">Maison</th>
-            <th style="width: 18%;">Quartier</th>
-            <th style="width: 15%;">Chambre</th>
-            <th style="width: 17%;" class="amount">Loyer percu</th>
-            <th style="width: 20%;" class="amount">Commission agence</th>
+            <th style="width: 12%;">{{ __('pdf.col_agence') }}</th>
+            <th style="width: 18%;">{{ __('pdf.col_maison') }}</th>
+            <th style="width: 18%;">{{ __('pdf.col_quartier') }}</th>
+            <th style="width: 15%;">{{ __('pdf.col_chambre') }}</th>
+            <th style="width: 17%;" class="amount">{{ __('pdf.col_loyer') }}</th>
+            <th style="width: 20%;" class="amount">{{ __('pdf.col_commission') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -180,19 +180,19 @@
             @endforeach
         @else
             <tr>
-                <td colspan="6" style="text-align: center; padding: 20px;">Aucune donnee disponible</td>
+                <td colspan="6" style="text-align: center; padding: 20px;">{{ __('pdf.no_data') }}</td>
             </tr>
         @endif
         <tr class="total-row">
-            <td colspan="5" style="text-align: right;">TOTAL BENEFICE AGENCE:</td>
+            <td colspan="5" style="text-align: right;">{{ __('pdf.total_agence') }}</td>
             <td class="amount">{{ format_price($element2['garde']) }}</td>
         </tr>
     </tbody>
 </table>
 
 <div class="summary-box">
-    <h3>RESUME</h3>
-    <p>Benefice total realise chez le proprietaire <strong>{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</strong></p>
+    <h3>{{ __('pdf.resume_agence') }}</h3>
+    <p>{{ __('pdf.benefice_total') }} <strong>{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</strong></p>
     <p class="total">{{ format_price($element2['garde']) }}</p>
 </div>
 
@@ -210,10 +210,10 @@
 <table style="margin-top: 40px; border: none; width:100%; border-collapse:collapse;">
     <tr style="background: none;">
         <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
-            <u><strong style="font-size:11px;">Signature du proprietaire</strong></u>
+            <u><strong style="font-size:11px;">{{ __('pdf.sig_proprietaire') }}</strong></u>
         </td>
         <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
-            <u><strong style="font-size:11px;">Cachet et signature de l'agence</strong></u>
+            <u><strong style="font-size:11px;">{{ __('pdf.sig_agence') }}</strong></u>
         </td>
     </tr>
     <tr style="background: none;">
@@ -239,8 +239,8 @@
 </table>
 
 <div class="footer">
-    <p>Document de synthese des benefices de l'agence.</p>
-    <p>Genere le {{ Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
+    <p>{{ __('pdf.footer_agence') }}</p>
+    <p>{{ __('pdf.generated_on') }} {{ Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
 </div>
 
 </body>

@@ -84,7 +84,7 @@
                   </td>
                   <td>
                     @if($etat->retenue_caution > 0)
-                      <span class="fw-semibold text-danger">{{ number_format($etat->retenue_caution, 0, ',', ' ') }} F</span>
+                      <span class="fw-semibold text-danger">{{ format_price($etat->retenue_caution) }}</span>
                     @else
                       <span class="text-muted small">–</span>
                     @endif
@@ -93,12 +93,12 @@
                     <div class="d-flex gap-1 justify-content-center">
                       @can('Consulter-etat-des-lieux')
                         <button type="button" class="btn btn-sm btn-icon btn-outline-info btn-voir-etat"
-                                data-href="{{ route('etat_des_lieux.show', $etat->id) }}" title="Voir">
+                                data-href="{{ route('etat_des_lieux.show', encrypt_id($etat->id)) }}" title="Voir">
                           <i class="bx bx-show"></i>
                         </button>
                       @endcan
                       @can('download-etat-des-lieux')
-                        <a href="{{ route('etat_des_lieux.pdf', $etat->id) }}"
+                        <a href="{{ route('etat_des_lieux.pdf', encrypt_id($etat->id)) }}"
                            class="btn btn-sm btn-icon btn-outline-dark" title="PDF">
                           <i class="bx bx-file"></i>
                         </a>

@@ -154,6 +154,24 @@
             alertDate: '{{ __('pages.dos_alert_date') }}',
         };
 
+        // Persistance du tab actif
+        (function() {
+            var TAB_KEY = 'dossier_active_tab';
+            var savedTab = localStorage.getItem(TAB_KEY);
+            if (savedTab) {
+                var btn = document.querySelector('[data-bs-target="' + savedTab + '"]');
+                if (btn) {
+                    var tab = new bootstrap.Tab(btn);
+                    tab.show();
+                }
+            }
+            document.querySelectorAll('[data-bs-toggle="tab"]').forEach(function(btn) {
+                btn.addEventListener('shown.bs.tab', function(e) {
+                    localStorage.setItem(TAB_KEY, e.target.getAttribute('data-bs-target'));
+                });
+            });
+        })();
+
         $.ajaxSetup({
           headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

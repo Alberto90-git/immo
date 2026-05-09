@@ -47,7 +47,7 @@
           <form class="row g-3" id="formulaire" onsubmit="save_locataire(event)">
             @csrf
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_choose_house') }} <span class="text-danger">*</span></label>
               <select required class="form-select" name="nom_maison" id="nom_maison">
                 <option selected disabled value="">{{ __('pages.tenant_choose_house_opt') }}</option>
@@ -66,7 +66,7 @@
               <span class="invalid-feedback nom_locataire_err" role="alert"></span>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_choose_room') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="numero_chambre" id="numero_chambre">
                 <option selected disabled value="">{{ __('pages.tenant_choose_room_opt') }}</option>
@@ -97,12 +97,12 @@
               <input type="email" name="email" id="email_locataire" class="form-control" placeholder="exemple@mail.com">
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_room_type') }}</label>
               <input type="text" name="type_chambre" class="form-control" id="type_chambre_getData" readonly disabled>
             </div>
 
-            <div class="col-3">
+            <div class="col-6 col-md-3">
               <label class="form-label">{{ __('pages.tenant_water_deposit') }} <span class="text-danger">*</span></label>
               <input type="text" name="caution_eau" class="form-control" id="caution_eau" required>
               <span class="invalid-feedback caution_eau_err" role="alert"></span>
@@ -114,12 +114,12 @@
               <span class="invalid-feedback caution_courant_err" role="alert"></span>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_price_month') }}</label>
               <input type="text" name="prix_mois" class="form-control" id="prix_mois" readonly>
             </div>
 
-            <div class="col-3">
+            <div class="col-6 col-md-3">
               <label class="form-label">{{ __('pages.tenant_deposit_for') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="nombre_caution" id="nombre_caution" required>
                 <option selected disabled value="">{{ __('pages.tenant_deposit_for_opt') }}</option>
@@ -132,13 +132,13 @@
               </select>
             </div>
 
-            <div class="col-3">
+            <div class="col-6 col-md-3">
               <label class="form-label">{{ __('pages.tenant_entry_date') }} <span class="text-danger">*</span></label>
               <input type="date" name="date_entre" class="form-control" min="<?= date('1970-m-d'); ?>" id="date_entre" required>
               <span class="invalid-feedback date_entre_err" role="alert"></span>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_advance_for') }}</label>
               <select class="form-select" name="nombre_avance" id="nombre_avance">
                 <option selected disabled value="">{{ __('pages.tenant_advance_for_opt') }}</option>
@@ -151,7 +151,7 @@
               </select>
             </div>
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_payment_mode') }}</label>
               <select class="form-select" name="mode_paiement" id="mode_paiement">
                 <option selected disabled value="">{{ __('pages.tenant_payment_mode_opt') }}</option>
@@ -189,7 +189,7 @@
           <!-- Infos principales -->
           <div class="px-4 pt-3 pb-2">
             <div class="row g-3">
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-primary p-2"><i class="bx bx-phone"></i></span>
                   <div>
@@ -198,7 +198,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-info p-2"><i class="bx bx-calendar"></i></span>
                   <div>
@@ -207,7 +207,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-success p-2"><i class="bx bx-credit-card"></i></span>
                   <div>
@@ -216,7 +216,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="d-flex align-items-center gap-2">
                   <span class="badge bg-label-warning p-2"><i class="bx bx-briefcase"></i></span>
                   <div>
@@ -234,34 +234,34 @@
           <div class="px-4 pb-3">
             <p class="text-muted small text-uppercase fw-semibold mb-2">{{ __('pages.tenant_details_section') }}</p>
             <div class="row g-2">
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light rounded-3 p-2 text-center">
                   <div class="text-muted small">{{ __('pages.tenant_caution') }}</div>
                   <div class="fw-bold text-primary fs-6"><span id="d-caution"></span> {{ __('pages.tenant_months') }}</div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light rounded-3 p-2 text-center">
                   <div class="text-muted small">{{ __('pages.tenant_advance') }}</div>
                   <div class="fw-bold text-info fs-6"><span id="d-avance"></span> {{ __('pages.tenant_months') }}</div>
                 </div>
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <div class="card border-0 bg-light rounded-3 p-2 text-center">
                   <div class="text-muted small">{{ __('pages.tenant_consumed') }}</div>
                   <div class="fw-bold text-warning fs-6"><span id="d-avance-consomme"></span> {{ __('pages.tenant_months') }}</div>
                 </div>
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <div class="card border-0 bg-light rounded-3 p-2 text-center">
                   <div class="text-muted small">{{ __('pages.tenant_water_caution') }}</div>
-                  <div class="fw-bold text-success fs-6"><span id="d-caution-eau"></span> <small>XOF</small></div>
+                  <div class="fw-bold text-success fs-6"><span id="d-caution-eau"></span> <small>{{ get_symbole_devise() }}</small></div>
                 </div>
               </div>
-              <div class="col-4">
+              <div class="col-6 col-md-4">
                 <div class="card border-0 bg-light rounded-3 p-2 text-center">
                   <div class="text-muted small">{{ __('pages.tenant_elec_caution') }}</div>
-                  <div class="fw-bold text-danger fs-6"><span id="d-caution-courant"></span> <small>XOF</small></div>
+                  <div class="fw-bold text-danger fs-6"><span id="d-caution-courant"></span> <small>{{ get_symbole_devise() }}</small></div>
                 </div>
               </div>
             </div>
@@ -307,7 +307,7 @@
             @csrf
             <input type="hidden" name="locataire_id" id="m-locataire-id">
 
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('common.label_house') }}</label>
               <input type="text" class="form-control" id="m-maison" readonly disabled>
             </div>
@@ -315,7 +315,7 @@
               <label class="form-label">{{ __('pages.tenant_name_modal') }} <span class="text-danger">*</span></label>
               <input type="text" name="nom_locataire" id="m-nom" class="form-control" required>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_room_no_modal') }}</label>
               <input type="text" class="form-control" id="m-chambre" readonly disabled>
             </div>
@@ -331,7 +331,7 @@
               <label class="form-label">{{ __('pages.tenant_email_opt') }}</label>
               <input type="email" name="email" id="m-email" class="form-control" placeholder="exemple@mail.com">
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_room_type') }}</label>
               <input type="text" name="type_chambre" id="m-type-chambre" class="form-control" readonly disabled>
             </div>
@@ -339,7 +339,7 @@
               <label class="form-label">{{ __('pages.tenant_profession') }} <span class="text-danger">*</span></label>
               <input type="text" name="profession" id="m-profession" class="form-control" required>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_water_deposit') }} <span class="text-danger">*</span></label>
               <input type="text" name="caution_eau" id="m-caution-eau" class="form-control" onkeypress="return /[0-9]/i.test(event.key)">
             </div>
@@ -347,7 +347,7 @@
               <label class="form-label">{{ __('pages.tenant_electricity') }} <span class="text-danger">*</span></label>
               <input type="text" name="caution_courant" id="m-caution-courant" class="form-control" onkeypress="return /[0-9]/i.test(event.key)">
             </div>
-            <div class="col-3">
+            <div class="col-6 col-md-3">
               <label class="form-label">{{ __('pages.tenant_deposit_for') }} <span class="text-danger">*</span></label>
               <select class="form-select" name="nombre_caution" id="m-nombre-caution">
                 <option value="2">2 {{ __('pages.tenant_months') }}</option>
@@ -358,11 +358,11 @@
                 <option value="12">12 {{ __('pages.tenant_months') }}</option>
               </select>
             </div>
-            <div class="col-3">
+            <div class="col-6 col-md-3">
               <label class="form-label">{{ __('pages.tenant_entry_date') }} <span class="text-danger">*</span></label>
               <input type="date" name="date_entre" id="m-date-entree" class="form-control" required min="<?= date('1970-m-d'); ?>">
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_advance_for') }}</label>
               <select class="form-select" name="nombre_avance" id="m-nombre-avance">
                 <option value="">—</option>
@@ -374,7 +374,7 @@
                 <option value="12">12 {{ __('pages.tenant_months') }}</option>
               </select>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label">{{ __('pages.tenant_payment_mode') }}</label>
               <select class="form-select" name="mode_paiement" id="m-mode-paiement">
                 <option value="">—</option>
@@ -410,6 +410,7 @@
               <th>{{ __('common.th_house') }}</th>
               <th>{{ __('common.th_room_no') }}</th>
               <th>{{ __('common.label_tenant') }}</th>
+              <th>{{ __('pages.bail_statut_lbl') }}</th>
               <th class="text-center">{{ __('common.th_actions') }}</th>
             </tr>
           </thead>
@@ -434,10 +435,16 @@
                 data-nombre-avance-consomme="{{ $item->nombre_avance_consomme }}"
                 data-date-entree="{{ $item->date_entree }}"
                 data-mode-paiement="{{ $item->mode_paiement }}"
+                data-statut-bail="{{ $item->statut_bail ?? 'en_cours' }}"
             >
               <th scope="row">{{ $item->nom_maison }}</th>
               <td>{{ $item->numero_chambre }} ({{ $item->type_chambre }})</td>
               <td>{{ $item->nom }} {{ $item->prenom }}</td>
+              <td>
+                <span class="badge {{ $item->getStatutBailBadgeClass() }} badge-statut-bail-{{ $item->id }}">
+                  {{ $item->getStatutBailLabel() }}
+                </span>
+              </td>
               <td class="text-center">
                 @can('modify-locataire')
                 <a class="btn btn-sm btn-primary me-1 btn-modif-loc" title="{{ __('common.title_edit') }}" href="#">
@@ -451,19 +458,32 @@
                 @endcan
                 @can('download-recu-avance')
                 <a class="btn btn-sm btn-success me-1" title="{{ __('common.title_download') }}"
-                  href="{{ route('telecharge', ['id' => $item->id]) }}">
+                  href="{{ route('telecharge', ['id' => encrypt_id($item->id)]) }}">
                   <i class="bx bx-download"></i>
                 </a>
                 @endcan
                 @can('download-recu-location')
                 <a class="btn btn-sm btn-outline-primary me-1" title="Relevé de compte"
-                  href="{{ route('releve_locataire', ['id' => $item->id]) }}">
+                  href="{{ route('releve_locataire', ['id' => encrypt_id($item->id)]) }}">
                   <i class="bx bx-file"></i>
                 </a>
                 <a class="btn btn-sm btn-outline-secondary me-1" title="Attestation de résidence"
-                  href="{{ route('attestation_residence', ['id' => $item->id]) }}">
+                  href="{{ route('attestation_residence', ['id' => encrypt_id($item->id)]) }}">
                   <i class="bx bx-home-check"></i>
                 </a>
+                <a class="btn btn-sm btn-outline-warning me-1" title="Reçu de caution"
+                  href="{{ route('quittance_caution', ['id' => encrypt_id($item->id)]) }}">
+                  <i class="bx bx-receipt"></i>
+                </a>
+                @endcan
+                @can('manager-contrat')
+                <button type="button" class="btn btn-sm btn-outline-info me-1 btn-renouveler-contrat"
+                  title="{{ __('pages.contrat_renew_modal_title') }}"
+                  data-id="{{ $item->id }}"
+                  data-nom="{{ $item->nom }} {{ $item->prenom }}"
+                  data-statut-bail="{{ $item->statut_bail ?? 'en_cours' }}">
+                  <i class="bx bx-refresh"></i>
+                </button>
                 @endcan
                 <button type="button" class="btn btn-sm btn-primary btn-details-loc">
                   <i class="bx bx-zoom-in"></i>
@@ -480,6 +500,59 @@
   </div>
 
 </div>
+
+{{-- Modal renouvellement / statut bail --}}
+@can('manager-contrat')
+<div class="modal fade" id="modalRenouvelerContrat" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title text-white" id="modalRenouvelerTitre">{{ __('pages.contrat_renew_modal_title') }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {{-- Statut du bail --}}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ __('pages.bail_statut_lbl') }}</label>
+          <select id="renew_statut_bail" class="form-select">
+            <option value="en_cours">{{ __('pages.bail_statut_en_cours') }}</option>
+            <option value="signe">{{ __('pages.bail_statut_signe') }}</option>
+            <option value="en_litige">{{ __('pages.bail_statut_en_litige') }}</option>
+            <option value="resilie">{{ __('pages.bail_statut_resilie') }}</option>
+          </select>
+        </div>
+        {{-- Choix du template de contrat --}}
+        <form method="POST" action="{{ route('download_contrat') }}" id="formRenouvelerContrat" target="_blank">
+          @csrf
+          <input type="hidden" name="idlocataire" id="renew_locataire_id" value="">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ __('pages.contrat_renew_choose_modele') }}</label>
+            <select name="contrat_config_id" id="renew_contrat_config_id" class="form-select">
+              <option value="">{{ __('pages.contrat_renew_modele_default') }}</option>
+              @foreach($contratConfigs as $cfg)
+              <option value="{{ $cfg->id }}">{{ $cfg->nom_modele }} — {{ $cfg->getTypeBailLabel() }}{{ $cfg->is_default ? ' ✓' : '' }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="alert alert-light border-start border-info border-3 py-2">
+            <i class="bx bx-info-circle me-1 text-info"></i>
+            <small>{{ __('pages.contrat_renew_info') }}</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.btn_close') }}</button>
+        <button type="button" class="btn btn-outline-primary" id="btnUpdateStatutBail">
+          <i class="bx bx-refresh me-1"></i>{{ __('pages.bail_statut_update_btn') }}
+        </button>
+        <button type="submit" form="formRenouvelerContrat" class="btn btn-info text-white">
+          <i class="bx bx-file-find me-1"></i>{{ __('pages.contrat_renew_btn_dl') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+@endcan
 
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
 <script>
@@ -655,9 +728,11 @@ function save_locataire(e) {
                 var btns = '';
                 if (canModifyLocataire)  btns += '<a class="btn btn-sm btn-primary me-1 btn-modif-loc" title="' + I18N_LOC.titleEdit + '" href="#"><i class="bx bx-edit-alt"></i></a>';
                 if (canDeleteLocataire)  btns += '<a class="btn btn-sm btn-danger me-1 btn-supp-loc" title="' + I18N_LOC.titleRemove + '" href="#"><i class="bx bx-trash"></i></a>';
-                if (canDownloadLocataire) btns += '<a class="btn btn-sm btn-success me-1" href="{{ route('telecharge', ['id' => 'LOCID']) }}'.replace('LOCID', l.id) + '"><i class="bx bx-download"></i></a>';
-                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-primary me-1" title="Releve" href="{{ route('releve_locataire', ['id' => 'LOCID']) }}'.replace('LOCID', l.id) + '"><i class="bx bx-file"></i></a>';
-                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-secondary me-1" title="Attestation residence" href="{{ route('attestation_residence', ['id' => 'LOCID']) }}'.replace('LOCID', l.id) + '"><i class="bx bx-home-check"></i></a>';
+                if (canDownloadLocataire) btns += '<a class="btn btn-sm btn-success me-1" href="{{ route('telecharge', ['id' => 'ENCID']) }}'.replace('ENCID', l.encoded_id) + '"><i class="bx bx-download"></i></a>';
+                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-primary me-1" title="Relevé de compte" href="{{ route('releve_locataire', ['id' => 'ENCID']) }}'.replace('ENCID', l.encoded_id) + '"><i class="bx bx-file"></i></a>';
+                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-secondary me-1" title="Attestation de résidence" href="{{ route('attestation_residence', ['id' => 'ENCID']) }}'.replace('ENCID', l.encoded_id) + '"><i class="bx bx-home-check"></i></a>';
+                if (canDownloadReleve) btns += '<a class="btn btn-sm btn-outline-warning me-1" title="Reçu de caution" href="{{ route('quittance_caution', ['id' => 'ENCID']) }}'.replace('ENCID', l.encoded_id) + '"><i class="bx bx-receipt"></i></a>';
+                if (canManagerContrat) btns += '<button type="button" class="btn btn-sm btn-outline-info me-1 btn-renouveler-contrat" data-id="' + l.id + '" data-nom="' + l.nom + ' ' + l.prenom + '" data-statut-bail="en_cours"><i class="bx bx-refresh"></i></button>';
                 btns += '<button type="button" class="btn btn-sm btn-primary btn-details-loc"><i class="bx bx-zoom-in"></i></button>';
 
                 var newRow = $('<tr id="row-' + l.id + '"></tr>')
@@ -680,6 +755,7 @@ function save_locataire(e) {
                     .append('<th scope="row">' + l.nom_maison + '</th>')
                     .append('<td>' + l.numero_chambre + ' (' + l.type_chambre + ')</td>')
                     .append('<td>' + l.nom + ' ' + l.prenom + '</td>')
+                    .append('<td><span class="badge bg-label-success badge-statut-bail-' + l.id + '">{{ __('pages.bail_statut_en_cours') }}</span></td>')
                     .append('<td class="text-center">' + btns + '</td>');
 
                 if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
@@ -762,11 +838,84 @@ if (typeof Sepatateur_Milliers === 'undefined') {
     };
 }
 
+// ─── RENOUVELLEMENT CONTRAT & STATUT BAIL ─────────────────────────────────────
+var canManagerContrat = @json(Auth::user()->can('manager-contrat'));
+
+$(document).on('click.page', '.btn-renouveler-contrat', function() {
+    var btn  = $(this);
+    var id   = btn.data('id');
+    var nom  = btn.data('nom');
+    var stat = btn.data('statut-bail') || 'en_cours';
+    $('#renew_locataire_id').val(id);
+    $('#modalRenouvelerTitre').text('{{ __('pages.contrat_renew_modal_title') }} — ' + nom);
+    $('#renew_statut_bail').val(stat);
+    var modal = new bootstrap.Modal(document.getElementById('modalRenouvelerContrat'));
+    modal.show();
+});
+
+$('#btnUpdateStatutBail').on('click', function() {
+    var btn      = $(this);
+    var locId    = $('#renew_locataire_id').val();
+    var statut   = $('#renew_statut_bail').val();
+    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>');
+    $.post('{{ route('locataire.update_statut_bail') }}', {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        locataire_id: locId,
+        statut_bail: statut
+    })
+    .done(function(resp) {
+        if (resp.status) {
+            // Update badge in table row
+            var row = $('#row-' + locId);
+            row.find('[class*="badge-statut-bail-"]')
+               .removeClass('bg-label-success bg-label-primary bg-label-warning bg-label-danger')
+               .addClass(resp.badge_class)
+               .text(resp.label);
+            row.data('statut-bail', resp.statut_bail);
+            toastLoc(resp.message, 'success');
+            var bsModal = bootstrap.Modal.getInstance(document.getElementById('modalRenouvelerContrat'));
+            if (bsModal) bsModal.hide();
+        } else {
+            toastLoc(resp.message || I18N_LOC.errOccurred, 'warning');
+        }
+    })
+    .fail(function() { toastLoc(I18N_LOC.errOccurred, 'error'); })
+    .always(function() {
+        btn.prop('disabled', false).html('<i class="bx bx-refresh me-1"></i>{{ __('pages.bail_statut_update_btn') }}');
+    });
+});
+
 // ─── DATATABLES ───────────────────────────────────────────────────────────────
 if (typeof $.fn.dataTable !== 'undefined' && $.fn.dataTable.isDataTable('#example')) {
     $('#example').DataTable().destroy();
 }
 $('#example').DataTable();
+
+// ─── PREFILL depuis prospect converti ────────────────────────────────────────
+@if(!empty($prospectPrefill))
+(function(){
+    var p = @json($prospectPrefill);
+    // Ouvrir le modal
+    var modal = new bootstrap.Modal(document.getElementById('AjouterLocataire'));
+    modal.show();
+    // Pré-remplir les champs
+    document.getElementById('nom_locataire').value  = p.nom  || '';
+    document.getElementById('prenom_locataire').value= p.prenom || '';
+    document.getElementById('email_locataire').value= p.email || '';
+    if(p.maison_id) {
+        var sel = document.getElementById('nom_maison');
+        sel.value = p.maison_id;
+        sel.dispatchEvent(new Event('change'));
+        @if(!empty($prospectPrefill['chambre_id']))
+        setTimeout(function(){
+            var chambreSel = document.getElementById('numero_chambre');
+            chambreSel.value = p.chambre_id;
+            chambreSel.dispatchEvent(new Event('change'));
+        }, 600);
+        @endif
+    }
+})();
+@endif
 </script>
 
 @endsection

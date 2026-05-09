@@ -17,9 +17,11 @@ use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -99,33 +101,36 @@ class HomeController extends Controller
                                                 ->whereYear('date_paiement', Carbon::now()->year)
                                                 ->sum('montant');
 
-            // Statistiques sur 12 mois glissants
+            // Statistiques sur 12 mois glissants — 2 requêtes GROUP BY au lieu de 24
             $paiementsParMois  = [];
             $locatairesParMois = [];
             $moisLabels        = [];
             Carbon::setLocale('fr');
+            $dirId     = Auth::user()->iddirection_ref;
+            $dateDebut = Carbon::now()->subMonths(11)->startOfMonth()->toDateString();
+
+            $paiementsGroupes = Facture::whereNull('delete_at')
+                ->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->where('date_paiement', '>=', $dateDebut)
+                ->selectRaw("TO_CHAR(date_paiement, 'YYYY-MM') as mois_cle, SUM(montant) as total")
+                ->groupByRaw("TO_CHAR(date_paiement, 'YYYY-MM')")
+                ->pluck('total', 'mois_cle');
+
+            $locatairesGroupes = Locataire::whereNull('delete_at')
+                ->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->where('date_entree', '>=', $dateDebut)
+                ->selectRaw("TO_CHAR(date_entree, 'YYYY-MM') as mois_cle, COUNT(*) as total")
+                ->groupByRaw("TO_CHAR(date_entree, 'YYYY-MM')")
+                ->pluck('total', 'mois_cle');
 
             for ($i = 11; $i >= 0; $i--) {
                 $mois = Carbon::now()->subMonths($i);
-                $moisLabels[] = ucfirst($mois->translatedFormat('M Y'));
-
-                $paiementsParMois[] = (int) Facture::whereNull('delete_at')
-                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
-                    ->when($idannexe_ref, function($q) use ($idannexe_ref) {
-                        $q->where('idannexe_ref', $idannexe_ref);
-                    })
-                    ->whereMonth('date_paiement', $mois->month)
-                    ->whereYear('date_paiement', $mois->year)
-                    ->sum('montant');
-
-                $locatairesParMois[] = (int) Locataire::whereNull('delete_at')
-                    ->where('iddirection_ref', Auth::user()->iddirection_ref)
-                    ->when($idannexe_ref, function($q) use ($idannexe_ref) {
-                        $q->where('idannexe_ref', $idannexe_ref);
-                    })
-                    ->whereMonth('date_entree', $mois->month)
-                    ->whereYear('date_entree', $mois->year)
-                    ->count();
+                $moisKey = $mois->format('Y-m');
+                $moisLabels[]        = ucfirst($mois->translatedFormat('M Y'));
+                $paiementsParMois[]  = (int) ($paiementsGroupes[$moisKey]  ?? 0);
+                $locatairesParMois[] = (int) ($locatairesGroupes[$moisKey] ?? 0);
             }
 
             $element['moisLabels']        = $moisLabels;
@@ -338,33 +343,36 @@ class HomeController extends Controller
         if (!$vide)  $vide  = '<tr><td colspan="4" class="text-center text-muted">' . __('messages.no_data') . '</td></tr>';
         if (!$vide2) $vide2 = '<tr><td colspan="5" class="text-center text-muted">' . __('messages.no_data') . '</td></tr>';
 
-        // Statistiques graphiques pour cette annexe
+        // Statistiques graphiques pour cette annexe — 2 GROUP BY au lieu de 24 requêtes
         Carbon::setLocale('fr');
         $paiementsParMois  = [];
         $locatairesParMois = [];
         $moisLabels        = [];
+        $dateDebutStats    = Carbon::now()->subMonths(11)->startOfMonth()->toDateString();
+        $dirIdL            = Auth::user()->iddirection_ref;
+
+        $paiementsGroupesL = Facture::whereNull('delete_at')
+            ->where('iddirection_ref', $dirIdL)
+            ->when($annexe_id !== 'all', fn($q) => $q->where('idannexe_ref', $annexe_id))
+            ->where('date_paiement', '>=', $dateDebutStats)
+            ->selectRaw("TO_CHAR(date_paiement, 'YYYY-MM') as mois_cle, SUM(montant) as total")
+            ->groupByRaw("TO_CHAR(date_paiement, 'YYYY-MM')")
+            ->pluck('total', 'mois_cle');
+
+        $locatairesGroupesL = Locataire::whereNull('delete_at')
+            ->where('iddirection_ref', $dirIdL)
+            ->when($annexe_id !== 'all', fn($q) => $q->where('idannexe_ref', $annexe_id))
+            ->where('date_entree', '>=', $dateDebutStats)
+            ->selectRaw("TO_CHAR(date_entree, 'YYYY-MM') as mois_cle, COUNT(*) as total")
+            ->groupByRaw("TO_CHAR(date_entree, 'YYYY-MM')")
+            ->pluck('total', 'mois_cle');
 
         for ($i = 11; $i >= 0; $i--) {
-            $mois = Carbon::now()->subMonths($i);
-            $moisLabels[] = ucfirst($mois->translatedFormat('M Y'));
-
-            $paiementsParMois[] = (int) Facture::whereNull('delete_at')
-                ->where('iddirection_ref', Auth::user()->iddirection_ref)
-                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
-                    $q->where('idannexe_ref', $annexe_id);
-                })
-                ->whereMonth('date_paiement', $mois->month)
-                ->whereYear('date_paiement', $mois->year)
-                ->sum('montant');
-
-            $locatairesParMois[] = (int) Locataire::whereNull('delete_at')
-                ->where('iddirection_ref', Auth::user()->iddirection_ref)
-                ->when($annexe_id !== 'all', function($q) use ($annexe_id) {
-                    $q->where('idannexe_ref', $annexe_id);
-                })
-                ->whereMonth('date_entree', $mois->month)
-                ->whereYear('date_entree', $mois->year)
-                ->count();
+            $mois    = Carbon::now()->subMonths($i);
+            $moisKey = $mois->format('Y-m');
+            $moisLabels[]        = ucfirst($mois->translatedFormat('M Y'));
+            $paiementsParMois[]  = (int) ($paiementsGroupesL[$moisKey]  ?? 0);
+            $locatairesParMois[] = (int) ($locatairesGroupesL[$moisKey] ?? 0);
         }
 
         $chambresOccupees = Chambre::whereNull('delete_at')
@@ -448,21 +456,28 @@ class HomeController extends Controller
 
             $tauxRecouvrement = $loyersAttendus > 0 ? round(($loyersEncaisses / $loyersAttendus) * 100, 1) : 0;
 
-            // ── Comparaison N vs N-1 ─────────────────────────────────────────────
-            $revenusN = []; $revenusN1 = []; $moisCourts = [];
+            // ── Comparaison N vs N-1 — 1 requête GROUP BY au lieu de 24 ─────────
+            $revenusN  = array_fill(0, 12, 0);
+            $revenusN1 = array_fill(0, 12, 0);
+            $moisCourts = [];
+
+            $revenusParAnMois = Facture::whereNull('delete_at')
+                ->where('iddirection_ref', $dirId)
+                ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
+                ->whereRaw('EXTRACT(YEAR FROM date_paiement) IN (?, ?)', [$now->year, $now->year - 1])
+                ->selectRaw('EXTRACT(YEAR FROM date_paiement)::int as annee, EXTRACT(MONTH FROM date_paiement)::int as mois, SUM(montant) as total')
+                ->groupByRaw('EXTRACT(YEAR FROM date_paiement), EXTRACT(MONTH FROM date_paiement)')
+                ->get()
+                ->groupBy('annee');
+
+            $byN  = ($revenusParAnMois[$now->year]       ?? collect())->keyBy('mois');
+            $byN1 = ($revenusParAnMois[$now->year - 1]   ?? collect())->keyBy('mois');
+
             for ($i = 0; $i < 12; $i++) {
                 $mois = Carbon::createFromDate($now->year, 1, 1)->addMonths($i);
                 $moisCourts[] = ucfirst($mois->locale('fr')->monthName);
-
-                $revenusN[] = (int) Facture::whereNull('delete_at')->where('iddirection_ref', $dirId)
-                    ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
-                    ->whereYear('date_paiement', $now->year)->whereMonth('date_paiement', $mois->month)
-                    ->sum('montant');
-
-                $revenusN1[] = (int) Facture::whereNull('delete_at')->where('iddirection_ref', $dirId)
-                    ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
-                    ->whereYear('date_paiement', $now->year - 1)->whereMonth('date_paiement', $mois->month)
-                    ->sum('montant');
+                $revenusN[$i]  = (int) ($byN->get($mois->month)?->total  ?? 0);
+                $revenusN1[$i] = (int) ($byN1->get($mois->month)?->total ?? 0);
             }
 
             // ── Impayés du mois courant ──────────────────────────────────────────
@@ -744,6 +759,8 @@ class HomeController extends Controller
             return redirect()->back()->with('error', __('messages.tenant_not_found'));
         }
 
+        App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
+
         // Récupérer les infos de l'agence
         $idannexe_ref = get_active_annexe_id() ?? $data->idannexe_ref;
         $agence = get_annexe_details_for_invoice($idannexe_ref);
@@ -761,8 +778,18 @@ class HomeController extends Controller
             ];
         }
 
-        // Charger la config personnalisée du contrat pour cette direction
-        $contratConfig = \App\ContratConfig::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+        // Charger la config du contrat (template sélectionné ou défaut)
+        $dirId = Auth::user()->iddirection_ref;
+        if ($request->filled('contrat_config_id')) {
+            $contratConfig = \App\ContratConfig::where('id', $request->contrat_config_id)
+                ->where('iddirection_ref', $dirId)
+                ->first();
+        } else {
+            $contratConfig = \App\ContratConfig::where('iddirection_ref', $dirId)
+                ->where('is_default', true)
+                ->first()
+                ?? \App\ContratConfig::where('iddirection_ref', $dirId)->first();
+        }
 
         // Table de remplacement des variables dynamiques
         $replacements = [
@@ -777,14 +804,14 @@ class HomeController extends Controller
             '{quartier_maison}'      => $data->quartier_maison ?? '',
             '{type_chambre}'         => $data->type_chambre ?? '',
             '{numero_chambre}'       => $data->numero_chambre ?? '',
-            '{montant_loyer}'        => number_format($data->prix_mois ?? 0, 0, ',', '.') . ' F CFA',
+            '{montant_loyer}'        => format_price($data->prix_mois ?? 0, $dirId),
             '{nombre_caution}'       => $data->nombre_caution ?? 0,
-            '{montant_caution}'      => number_format(($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0), 0, ',', '.') . ' F CFA',
-            '{caution_courant}'      => number_format($data->caution_courant ?? 0, 0, ',', '.') . ' F CFA',
-            '{caution_eau}'          => number_format($data->caution_eau ?? 0, 0, ',', '.') . ' F CFA',
+            '{montant_caution}'      => format_price(($data->nombre_caution ?? 0) * ($data->prix_mois ?? 0), $dirId),
+            '{caution_courant}'      => format_price($data->caution_courant ?? 0, $dirId),
+            '{caution_eau}'          => format_price($data->caution_eau ?? 0, $dirId),
             '{nombre_avance}'        => $data->nombre_avance ?? 0,
-            '{montant_avance}'       => number_format(($data->nombre_avance ?? 0) * ($data->prix_mois ?? 0), 0, ',', '.') . ' F CFA',
-            '{mode_paiement}'        => $data->mode_paiement ?? 'tout moyen convenu entre les parties',
+            '{montant_avance}'       => format_price(($data->nombre_avance ?? 0) * ($data->prix_mois ?? 0), $dirId),
+            '{mode_paiement}'        => $data->mode_paiement ?? __('pdf.contrat_art4_mode_default'),
             '{date_entree}'          => isset($data->date_entree) ? Carbon::parse($data->date_entree)->translatedFormat('d F Y') : 'N/A',
             '{date_contrat}'         => Carbon::now()->translatedFormat('d F Y'),
         ];

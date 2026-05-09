@@ -178,9 +178,16 @@ class MaisonController extends Controller
                 return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
             }
 
-            $oldMaison = Maison::find($request->house_id);
+            $oldMaison = Maison::where('id', $request->house_id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
+
+            if (!$oldMaison) {
+                return response()->json(['status' => false, 'message' => 'Maison introuvable']);
+            }
 
              $maison = Maison::where('id',$request->house_id)
+                                 ->where('iddirection_ref', Auth::user()->iddirection_ref)
                                  ->update([
                                     'proprio_id' => $request->nom_proprietaire2,
                                     'nom_maison' =>Str::ucfirst($request->nom_maison),
@@ -230,9 +237,17 @@ class MaisonController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $valueDeleted = Maison::where('id',$request->id)->first();
-           
-            $deleted = Maison::where('id',$request->id)->update(['delete_at' => Carbon::now()]);
+            $valueDeleted = Maison::where('id',$request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
+
+            if (!$valueDeleted) {
+                return response()->json(['status' => false, 'message' => 'Maison introuvable']);
+            }
+
+            $deleted = Maison::where('id',$request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->update(['delete_at' => Carbon::now()]);
 
             if ($deleted) {
 

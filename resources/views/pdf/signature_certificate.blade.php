@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
   <meta charset="UTF-8">
   <style>
@@ -54,7 +54,7 @@
   </div>
   <div style="text-align:right; font-size:10px; opacity:0.85;">
     #SIG-{{ str_pad($demande->id, 6, '0', STR_PAD_LEFT) }}<br>
-    <span class="badge-success" style="color:#15803d; background:rgba(255,255,255,0.2); padding:2px 8px;">✓ Signé</span>
+    <span class="badge-success" style="color:#15803d; background:rgba(255,255,255,0.2); padding:2px 8px;">✓ {{ __('sig.statut_signe') }}</span>
   </div>
 </div>
 
@@ -65,7 +65,7 @@
     <tr><td>{{ __('sig.form_doc_type') }}</td><td>{{ $demande->getDocumentTypeLabel() }}</td></tr>
     <tr><td>{{ __('sig.col_document') }}</td><td><strong>{{ $demande->document_titre }}</strong></td></tr>
     @if($demande->document_description)
-    <tr><td>Description</td><td>{{ $demande->document_description }}</td></tr>
+    <tr><td>{{ __('sig.cert_description') }}</td><td>{{ $demande->document_description }}</td></tr>
     @endif
   </table>
 
@@ -73,10 +73,10 @@
   <table>
     <tr><td>{{ __('sig.cert_signataire') }}</td><td><strong>{{ $demande->signataire_nom }}</strong></td></tr>
     @if($demande->signataire_email)
-    <tr><td>Email</td><td>{{ $demande->signataire_email }}</td></tr>
+    <tr><td>{{ __('sig.cert_email') }}</td><td>{{ $demande->signataire_email }}</td></tr>
     @endif
     @if($demande->signataire_telephone)
-    <tr><td>Téléphone</td><td>{{ $demande->signataire_telephone }}</td></tr>
+    <tr><td>{{ __('sig.cert_telephone') }}</td><td>{{ $demande->signataire_telephone }}</td></tr>
     @endif
   </table>
 
@@ -94,7 +94,7 @@
   <img src="{{ $demande->signature_image }}" class="sig-img" alt="Signature">
   @endif
 
-  <div class="section-title">Empreintes numériques (SHA-256)</div>
+  <div class="section-title">{{ __('sig.cert_sha_section') }}</div>
   <table>
     @if($demande->sha256_document)
     <tr>
@@ -115,17 +115,17 @@
   <table class="audit-table">
     <thead>
       <tr>
-        <th>Date</th>
-        <th>Action</th>
-        <th>Canal</th>
-        <th>IP</th>
+        <th>{{ __('sig.cert_col_date') }}</th>
+        <th>{{ __('sig.cert_col_action') }}</th>
+        <th>{{ __('sig.cert_col_canal') }}</th>
+        <th>{{ __('sig.cert_col_ip') }}</th>
       </tr>
     </thead>
     <tbody>
       @foreach($demande->audits as $audit)
       <tr>
         <td>{{ $audit->created_at ? $audit->created_at->format('d/m/Y H:i:s') : '—' }}</td>
-        <td>{{ __('sig.audit_' . $audit->action, [], 'fr') }}</td>
+        <td>{{ __('sig.audit_' . $audit->action) }}</td>
         <td>{{ $audit->canal ?? '—' }}</td>
         <td>{{ $audit->ip_adresse ?? '—' }}</td>
       </tr>
@@ -135,14 +135,14 @@
   @endif
 
   <div class="legal-box">
-    <strong>Note légale :</strong> {{ __('sig.cert_legal_note') }}<br>
-    Document généré le {{ now()->format('d/m/Y à H:i:s') }} — Référence #SIG-{{ str_pad($demande->id, 6, '0', STR_PAD_LEFT) }}
+    <strong>{{ __('sig.cert_legal_label') }}</strong> {{ __('sig.cert_legal_note') }}<br>
+    {{ __('sig.cert_generated_on') }} {{ now()->format('d/m/Y H:i:s') }} — Référence #SIG-{{ str_pad($demande->id, 6, '0', STR_PAD_LEFT) }}
   </div>
 
 </div>
 
 <div class="footer">
-  {{ config('app.name') }} — Certificat de signature électronique — Généré automatiquement
+  {{ config('app.name') }} — {{ __('sig.cert_footer') }}
 </div>
 
 </body>

@@ -61,6 +61,7 @@ class EntrepriseController extends Controller
 
     public function manage_compte($ids)
     {
+        $ids = decrypt_id($ids); abort_if(!$ids, 404);
         $checkstatut = User::Where('iddirection_ref', $ids)->get();
 
         if (empty($checkstatut->first()?->blocage_entreprise)) {
@@ -85,12 +86,17 @@ class EntrepriseController extends Controller
     public function changePlanAdmin(Request $request)
     {
         $request->validate([
-            'iddirection' => 'required|integer',
+            'iddirection' => 'required|string',
             'idplan'      => 'required|integer',
             'duree'       => 'required|integer|min:1|max:60',
         ]);
 
-        $direction = Direction::find($request->iddirection);
+        $decId = decrypt_id($request->iddirection);
+        if (!$decId) {
+            return response()->json(['status' => false, 'message' => 'Entreprise introuvable']);
+        }
+
+        $direction = Direction::find($decId);
         if (!$direction) {
             return response()->json(['status' => false, 'message' => 'Entreprise introuvable']);
         }
@@ -124,11 +130,16 @@ class EntrepriseController extends Controller
     public function renouvelerAbonnement(Request $request)
     {
         $request->validate([
-            'iddirection' => 'required|integer',
+            'iddirection' => 'required|string',
             'duree'       => 'required|integer|min:1|max:60',
         ]);
 
-        $direction = Direction::find($request->iddirection);
+        $decId = decrypt_id($request->iddirection);
+        if (!$decId) {
+            return response()->json(['status' => false, 'message' => 'Entreprise introuvable']);
+        }
+
+        $direction = Direction::find($decId);
         if (!$direction) {
             return response()->json(['status' => false, 'message' => 'Entreprise introuvable']);
         }

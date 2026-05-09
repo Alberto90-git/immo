@@ -53,7 +53,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="d-flex flex-column">
                                 <small class="text-muted">Prix mensuel</small>
-                                <h5 class="mb-0">{{ number_format($currentPlan->prix_mensuel, 0, ',', '.') }} XOF/mois</h5>
+                                <h5 class="mb-0">{{ format_price($currentPlan->prix_mensuel) }}/mois</h5>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
@@ -107,7 +107,7 @@
                                 @if(floatval($plan->prix_mensuel) == 0)
                                     {{ __('pages.plan_free') }}
                                 @else
-                                    {{ number_format($plan->prix_mensuel, 0, ',', '.') }} <small class="text-muted" style="font-size:14px;">XOF/mois</small>
+                                    {{ format_price($plan->prix_mensuel) }}<small class="text-muted" style="font-size:14px;">/mois</small>
                                 @endif
                             </h3>
                             <p class="text-muted small mb-3">{{ $plan->description }}</p>
@@ -146,7 +146,7 @@
                                                    data-prix-mensuel="{{ $plan->prix_mensuel }}"
                                                    value="1" min="1" max="24">
                                             <span class="input-group-text text-muted" id="total_display_{{ $plan->idplan }}">
-                                                = {{ number_format($plan->prix_mensuel, 0, ',', '.') }} XOF
+                                                = {{ format_price($plan->prix_mensuel) }}
                                             </span>
                                         </div>
                                     </div>
@@ -190,11 +190,13 @@
         btnChoose:     '{{ __('pages.plan_btn_choose') }}',
     };
 
-    // ===== Config paiement injectée depuis le contrôleur =====
     const PAYMENT_ENABLED    = @json($paymentEnabled ?? false);
     const PAYMENT_PROVIDER   = @json($paymentProvider ?? 'none');
     const PAYMENT_PUBLIC_KEY = @json($paymentPublicKey ?? '');
     const PAYMENT_SANDBOX    = @json($paymentSandbox ?? true);
+    const URL_PRORATION      = '{{ route("plans.proration") }}';
+    const URL_CHANGE         = '{{ route("plans.change") }}';
+    const CSRF_TOKEN         = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     // ===== Mise à jour du total affiché quand on change la durée =====
     document.querySelectorAll('.nb-mois-input').forEach(function(input) {
@@ -206,7 +208,7 @@
             const total       = prixMensuel * nb;
             const display     = document.getElementById('total_display_' + planId);
             if (display) {
-                display.textContent = '= ' + total.toLocaleString('fr-FR') + ' XOF';
+                display.textContent = '= ' + total.toLocaleString('fr-FR') + ' {{ get_symbole_devise() }}';
             }
         });
     });
@@ -216,8 +218,12 @@
         return input ? Math.max(1, Math.min(24, parseInt(input.value) || 1)) : 1;
     }
 
-    // ===== Soumission du changement de plan (avec ou sans paiement) =====
-    function submitPlanChange(planId, transactionId, nbMois) {
+    function fmt(n) {
+        return Math.round(n).toLocaleString('fr-FR');
+    }
+
+    // ===== Soumission du changement de plan =====
+    function submitPlanChange(planId, transactionId, nbMois, extraDays) {
         const alertEl = document.getElementById('alertUpgrade');
         alertEl.classList.add('d-none');
 
@@ -227,19 +233,17 @@
         });
 
         $.ajax({
-            url: '{{ route("plans.change") }}',
+            url: URL_CHANGE,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
                 plan_id:        planId,
                 transaction_id: transactionId || null,
                 nb_mois:        nbMois || 1,
-                _token:         document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                extra_days:     extraDays || 0,
+                _token:         CSRF_TOKEN,
             }),
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json',
-            },
+            headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
             success: function(data) {
                 if (data.status) {
                     Swal.fire({
@@ -265,51 +269,41 @@
         });
     }
 
-    // ===== Paiement puis changement de plan =====
-    function initiateUpgradePayment(planId, planNom, prixTotal, nbMois) {
+    // ===== Lancement du widget de paiement =====
+    function initiateUpgradePayment(planId, planNom, montantDu, nbMois, extraDays) {
         if (PAYMENT_PROVIDER === 'kkiapay') {
             if (typeof openKkiapayWidget !== 'function') {
-                Swal.fire({
-                    title: PLAN_I18N.unavailable,
-                    text: PLAN_I18N.kkiaError,
-                    icon: 'error', confirmButtonText: PLAN_I18N.ok,
-                });
+                Swal.fire({ title: PLAN_I18N.unavailable, text: PLAN_I18N.kkiaError, icon: 'error', confirmButtonText: PLAN_I18N.ok });
                 resetButtons();
                 return;
             }
             openKkiapayWidget({
-                amount:  prixTotal,
+                amount:  montantDu,
                 key:     PAYMENT_PUBLIC_KEY,
                 sandbox: PAYMENT_SANDBOX,
                 data:    JSON.stringify({ plan_id: planId }),
             });
-
             addSuccessListener(function(response) {
-                submitPlanChange(planId, response.transactionId, nbMois);
+                submitPlanChange(planId, response.transactionId, nbMois, extraDays);
             });
-
             addFailedListener(function() {
                 Swal.fire(PLAN_I18N.payFailed, PLAN_I18N.kkiaFailed, 'error');
                 resetButtons();
             });
-
             addCloseListener(function() { resetButtons(); });
 
         } else if (PAYMENT_PROVIDER === 'fedapay') {
             FedaPay.init({
                 public_key:  PAYMENT_PUBLIC_KEY,
                 transaction: {
-                    amount:      prixTotal,
+                    amount:      montantDu,
                     description: 'Abonnement Lokativ — ' + planNom + ' (' + nbMois + ' mois)',
                 },
                 onComplete: function(resp) {
-                    if (resp.reason === FedaPay.DIALOG_DISMISSED) {
-                        resetButtons();
-                        return;
-                    }
+                    if (resp.reason === FedaPay.DIALOG_DISMISSED) { resetButtons(); return; }
                     var trans = resp.transaction;
                     if (trans && trans.status === 'approved') {
-                        submitPlanChange(planId, String(trans.id), nbMois);
+                        submitPlanChange(planId, String(trans.id), nbMois, extraDays);
                     } else {
                         Swal.fire(PLAN_I18N.payFailed, PLAN_I18N.fedaFailed, 'error');
                         resetButtons();
@@ -319,56 +313,129 @@
         }
     }
 
+    // ===== Construction du HTML de confirmation avec prorata =====
+    function buildConfirmHtml(planNom, nbMois, prixMensuel, proration, paymentEnabled) {
+        const providerLabel = PAYMENT_PROVIDER === 'fedapay' ? 'FedaPay' : 'KKiaPay';
+        const prixTotal     = proration.prix_total;
+        const montantDu     = proration.montant_du;
+        const credit        = proration.credit;
+        const hasProration  = proration.has_proration;
+        const joursRestants = proration.jours_restants;
+        const extraDays     = proration.extra_days;
+        const isPlanPaye    = prixMensuel > 0;
+
+        let html = `<div style="text-align:left;font-size:.92rem;">`;
+
+        // Ligne : nouveau plan
+        html += `<div class="mb-2"><strong>Nouveau plan :</strong> ${planNom}</div>`;
+        html += `<div class="mb-2"><strong>Durée choisie :</strong> ${nbMois} mois &times; ${fmt(prixMensuel)} {{ get_symbole_devise() }}/mois`;
+        html += ` <span class="text-muted">= ${fmt(prixTotal)} {{ get_symbole_devise() }}</span></div>`;
+
+        if (hasProration && isPlanPaye) {
+            html += `<hr class="my-2">`;
+            html += `<div class="mb-1 text-success"><i class="bx bx-transfer-alt me-1"></i><strong>Calcul au prorata</strong></div>`;
+            html += `<div class="mb-1 text-muted small">Plan actuel : <strong>${proration.plan_actuel_nom}</strong> — ${joursRestants} jour(s) restant(s)</div>`;
+            html += `<div class="mb-1">Crédit disponible : <strong class="text-success">− ${fmt(credit)} {{ get_symbole_devise() }}</strong></div>`;
+
+            if (montantDu > 0) {
+                html += `<hr class="my-2">`;
+                html += `<div class="fw-bold fs-6">Montant à payer : <span class="text-primary">${fmt(montantDu)} {{ get_symbole_devise() }}</span></div>`;
+                if (paymentEnabled) {
+                    html += `<div class="text-muted small mt-1">Paiement via <strong>${providerLabel}</strong> — activation immédiate.</div>`;
+                }
+            } else {
+                html += `<hr class="my-2">`;
+                html += `<div class="fw-bold text-success fs-6"><i class="bx bx-check-circle me-1"></i>Aucun paiement requis — crédit suffisant</div>`;
+                if (extraDays > 0) {
+                    html += `<div class="text-muted small mt-1">Crédit excédentaire → <strong>+${extraDays} jour(s)</strong> ajouté(s) à votre abonnement.</div>`;
+                }
+            }
+        } else if (isPlanPaye) {
+            html += `<hr class="my-2">`;
+            html += `<div class="fw-bold fs-6">Montant total : <span class="text-primary">${fmt(prixTotal)} {{ get_symbole_devise() }}</span></div>`;
+            if (paymentEnabled) {
+                html += `<div class="text-muted small mt-1">Paiement via <strong>${providerLabel}</strong> — activation immédiate.</div>`;
+            } else {
+                html += `<div class="text-muted small mt-1">Activation après validation par l'administrateur.</div>`;
+            }
+        } else {
+            html += `<div class="text-muted small mt-1">Activation après validation par l'administrateur.</div>`;
+        }
+
+        // Avertissement annexes inaccessibles après rétrogradation
+        if (proration.annexes_warning) {
+            html += `<hr class="my-2">`;
+            html += `<div class="alert alert-warning p-2 mb-0" style="font-size:.85rem;">
+                       <i class="bx bx-info-circle me-1"></i>
+                       Vous avez <strong>${proration.annexes_extra} annexe(s) supplémentaire(s)</strong>.
+                       Ce plan ne permet pas la création de nouvelles annexes.
+                       Vos annexes existantes restent en place mais seront inaccessibles jusqu'à un changement de plan.
+                     </div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
     // ===== Listener sur les boutons =====
     document.querySelectorAll('.btn-upgrade').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            const planId       = this.getAttribute('data-plan-id');
-            const planNom      = this.getAttribute('data-plan-nom');
-            const prixMensuel  = parseFloat(this.getAttribute('data-plan-prix-mensuel')) || 0;
-            const nbMois       = getNbMois(planId);
-            const prixTotal    = prixMensuel * nbMois;
-            const prixTotalFmt = prixTotal.toLocaleString('fr-FR');
-            const isPlanPaye   = prixMensuel > 0;
+            const planId      = this.getAttribute('data-plan-id');
+            const planNom     = this.getAttribute('data-plan-nom');
+            const prixMensuel = parseFloat(this.getAttribute('data-plan-prix-mensuel')) || 0;
+            const nbMois      = getNbMois(planId);
+            const isPlanPaye  = prixMensuel > 0;
 
-            if (isPlanPaye && PAYMENT_ENABLED) {
-                const providerLabel = PAYMENT_PROVIDER === 'fedapay' ? 'FedaPay' : 'KKiaPay';
-                Swal.fire({
-                    title: PLAN_I18N.payRequired,
-                    html: `Vous allez passer au plan <strong>${planNom}</strong>.<br>
-                           Durée : <strong>${nbMois} mois</strong> &nbsp;×&nbsp; ${prixMensuel.toLocaleString('fr-FR')} XOF/mois<br>
-                           Total : <strong>${prixTotalFmt} XOF</strong>.<br><br>
-                           Le paiement sera traité via <strong>${providerLabel}</strong>.
-                           Votre plan sera activé immédiatement après confirmation du paiement.`,
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#1e40af',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: `<i class="bx bx-credit-card me-1"></i> Payer ${prixTotalFmt} XOF`,
-                    cancelButtonText: PLAN_I18N.cancel
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        initiateUpgradePayment(planId, planNom, prixTotal, nbMois);
+            // Loader temporaire sur le bouton
+            const origHtml = this.innerHTML;
+            this.disabled  = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>';
+
+            const self = this;
+
+            // Récupération du prorata via l'API
+            $.get(URL_PRORATION, { plan_id: planId, nb_mois: nbMois, _token: CSRF_TOKEN })
+                .done(function(proration) {
+                    self.disabled  = false;
+                    self.innerHTML = origHtml;
+
+                    if (!proration.status) {
+                        Swal.fire('Erreur', proration.message || PLAN_I18N.genericError, 'error');
+                        return;
                     }
+
+                    const montantDu  = proration.montant_du;
+                    const extraDays  = proration.extra_days;
+                    const needsPay   = isPlanPaye && montantDu > 0 && PAYMENT_ENABLED;
+                    const confirmTxt = needsPay
+                        ? `<i class="bx bx-credit-card me-1"></i> Payer ${fmt(montantDu)} {{ get_symbole_devise() }}`
+                        : (montantDu === 0 && isPlanPaye ? '<i class="bx bx-check me-1"></i> Confirmer (sans paiement)' : PLAN_I18N.confirmBtn);
+
+                    Swal.fire({
+                        title: needsPay ? PLAN_I18N.payRequired : PLAN_I18N.confirmChange,
+                        html: buildConfirmHtml(planNom, nbMois, prixMensuel, proration, PAYMENT_ENABLED),
+                        icon: needsPay ? 'info' : 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#1e40af',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: confirmTxt,
+                        cancelButtonText: PLAN_I18N.cancel,
+                    }).then(function(result) {
+                        if (!result.isConfirmed) return;
+
+                        if (needsPay) {
+                            initiateUpgradePayment(planId, planNom, montantDu, nbMois, extraDays);
+                        } else {
+                            // Pas de paiement : crédit couvre tout, ou pas de prestataire actif
+                            submitPlanChange(planId, null, nbMois, extraDays);
+                        }
+                    });
+                })
+                .fail(function() {
+                    self.disabled  = false;
+                    self.innerHTML = origHtml;
+                    Swal.fire('Erreur', PLAN_I18N.genericError, 'error');
                 });
-            } else {
-                Swal.fire({
-                    title: PLAN_I18N.confirmChange,
-                    html: `Vous allez passer au plan <strong>${planNom}</strong>
-                           ${prixMensuel > 0 ? ' pour <strong>' + nbMois + ' mois</strong> (' + prixTotalFmt + ' XOF)' : ''}.<br><br>
-                           Votre compte sera temporairement suspendu en attendant la validation de l'administrateur.<br>
-                           Une facture vous sera envoyée par email.`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#1e40af',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: PLAN_I18N.confirmBtn,
-                    cancelButtonText: PLAN_I18N.cancel
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        submitPlanChange(planId, null, nbMois);
-                    }
-                });
-            }
         });
     });
 
@@ -376,11 +443,7 @@
         document.querySelectorAll('.btn-upgrade').forEach(function(b) {
             b.disabled = false;
             const prixMensuel = parseFloat(b.getAttribute('data-plan-prix-mensuel')) || 0;
-            if (prixMensuel > 0 && PAYMENT_ENABLED) {
-                b.innerHTML = PLAN_I18N.btnPayChange;
-            } else {
-                b.innerHTML = PLAN_I18N.btnChoose;
-            }
+            b.innerHTML = (prixMensuel > 0 && PAYMENT_ENABLED) ? PLAN_I18N.btnPayChange : PLAN_I18N.btnChoose;
         });
     }
 </script>

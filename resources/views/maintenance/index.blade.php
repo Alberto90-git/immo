@@ -119,7 +119,7 @@
                     <div class="d-flex gap-1 justify-content-center">
                       @can('Consulter-maintenance')
                         <button type="button" class="btn btn-sm btn-icon btn-outline-info btn-voir-ticket"
-                                data-href="{{ route('maintenance.show', $ticket->id) }}" title="Voir">
+                                data-href="{{ route('maintenance.show', encrypt_id($ticket->id)) }}" title="Voir">
                           <i class="bx bx-show"></i>
                         </button>
                       @endcan
@@ -362,11 +362,11 @@
             <input type="text" id="inputNom" class="form-control" placeholder="{{ __('ui.maintenance.prest_name') }}">
           </div>
           <div class="row g-2 mb-3">
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label fw-semibold">{{ __('ui.maintenance.prest_phone') }}</label>
               <input type="tel" id="inputTelephone" class="form-control">
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label class="form-label fw-semibold">Email</label>
               <input type="email" id="inputEmail" class="form-control" placeholder="exemple@mail.com">
             </div>

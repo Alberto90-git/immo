@@ -54,31 +54,31 @@
         <div class="card-body">
           <h6 class="text-muted text-uppercase small mb-3">{{ __('ui.edl.tenant_property') }}</h6>
           <div class="row g-2">
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <div class="text-muted small">{{ __('ui.edl.tenant') }}</div>
               <div class="fw-semibold">{{ $etat->locataire->nom ?? '–' }} {{ $etat->locataire->prenom ?? '' }}</div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <div class="text-muted small">{{ __('ui.edl.phone') }}</div>
               <div>{{ $etat->locataire->telephone ?? '–' }}</div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <div class="text-muted small">{{ __('ui.edl.property') }}</div>
               <div>{{ $etat->maison->nom_maison ?? '–' }}</div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <div class="text-muted small">{{ __('ui.edl.room') }}</div>
               <div>{{ __('ui.edl.room_prefix') }} {{ $etat->chambre->numero_chambre ?? '–' }}</div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <div class="text-muted small">{{ __('ui.edl.state_date') }}</div>
               <div class="fw-semibold">{{ $etat->date_etat->format('d/m/Y') }}</div>
             </div>
             @if($etat->type === 'sortie' && $etat->etatEntree)
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="text-muted small">{{ __('ui.edl.entry_ref') }}</div>
                 <div>
-                  <a href="{{ route('etat_des_lieux.show', $etat->etatEntree->id) }}" class="text-primary">
+                  <a href="{{ route('etat_des_lieux.show', encrypt_id($etat->etatEntree->id)) }}" class="text-primary">
                     {{ __('ui.edl.entry_on') }} {{ $etat->etatEntree->date_etat->format('d/m/Y') }}
                   </a>
                 </div>
@@ -239,7 +239,7 @@
                       @endif
                     </td>
                     <td class="text-center fw-semibold {{ $element->montant_retenue > 0 ? 'text-danger' : '' }}">
-                      {{ $element->montant_retenue > 0 ? number_format($element->montant_retenue, 0, ',', ' ') . ' F' : '–' }}
+                      {{ $element->montant_retenue > 0 ? format_price($element->montant_retenue) : '–' }}
                     </td>
                   @endif
                 </tr>
@@ -395,7 +395,7 @@
       <div class="modal-header py-2">
         <h6 class="modal-title mb-0"><i class="bx bx-file-pdf me-2 text-danger"></i>{{ __('ui.edl.pdf_preview') }}</h6>
         <div class="ms-auto d-flex gap-2 align-items-center">
-          <a href="{{ route('etat_des_lieux.pdf', $etat->id) }}" class="btn btn-sm btn-primary" download>
+          <a href="{{ route('etat_des_lieux.pdf', encrypt_id($etat->id)) }}" class="btn btn-sm btn-primary" download>
             <i class="bx bx-download me-1"></i> {{ __('ui.common.download') }}
           </a>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -427,7 +427,7 @@ const modalPdf = _elPdf ? bootstrap.Modal.getOrCreateInstance(_elPdf) : null;
 const btnPreview = document.getElementById('btnPreviewPdf');
 if (btnPreview && modalPdf) {
     btnPreview.addEventListener('click', function () {
-        const url = '{{ route("etat_des_lieux.preview", $etat->id) }}';
+        const url = '{{ route("etat_des_lieux.preview", encrypt_id($etat->id)) }}';
         document.getElementById('pdfIframe').src = url;
         modalPdf.show();
     });

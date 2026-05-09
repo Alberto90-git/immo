@@ -9,6 +9,8 @@ use App\Locataire;
 use App\Parametre;
 use App\Plan;
 use App\Proprietaire;
+use App\SignatureDemande;
+use App\SignatureAudit;
 use App\Services\PdfGeneratorService;
 use App\Services\AfricasTalkingService;
 use App\Services\WhatsAppService;
@@ -18,7 +20,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class EnvoiDocumentController extends Controller
 {
@@ -31,9 +35,11 @@ class EnvoiDocumentController extends Controller
     {
         $idannexe_ref = get_active_annexe_id();
 
+        $dirId = Auth::user()->iddirection_ref;
+
         $locataires = Locataire::whereNull('locataires.delete_at')
             ->where('locataires.status', true)
-            ->where('locataires.iddirection_ref', Auth::user()->iddirection_ref)
+            ->where('locataires.iddirection_ref', $dirId)
             ->when($idannexe_ref, fn($q) => $q->where('locataires.idannexe_ref', $idannexe_ref))
             ->join('maisons', 'locataires.maison_id', '=', 'maisons.id')
             ->join('chambres', 'locataires.chambre_id', '=', 'chambres.id')
@@ -45,6 +51,9 @@ class EnvoiDocumentController extends Controller
                 'locataires.email',
                 'locataires.prix_mois',
                 'locataires.date_entree',
+                'locataires.nombre_avance',
+                'locataires.nombre_avance_consomme',
+                'locataires.nombre_caution',
                 'maisons.nom_maison',
                 'chambres.numero_chambre',
                 'chambres.type_chambre'
@@ -54,25 +63,85 @@ class EnvoiDocumentController extends Controller
 
         // Ajouter les factures disponibles par locataire
         $facturesParLocataire = Facture::whereNull('delete_at')
-            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->where('iddirection_ref', $dirId)
             ->select('id', 'locataire_id', 'mois', 'montant', 'date_paiement')
             ->orderBy('date_paiement', 'desc')
             ->get()
             ->groupBy('locataire_id');
 
+        // ── Rappels de loyer : locataires sans paiement direct le mois précédent ──
+        $moisFrancais = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                         'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        $moisPrecedentNom = $moisFrancais[Carbon::now()->subMonth()->month];
+
+        $payesMoisPrec = array_flip(
+            Facture::whereNull('delete_at')
+                ->where('iddirection_ref', $dirId)
+                ->where('type_paiement', 'direct')
+                ->where('mois', $moisPrecedentNom)
+                ->distinct()
+                ->pluck('locataire_id')
+                ->toArray()
+        );
+
+        // Nombre de loyers directs payés par locataire (pour calcul caution)
+        $directCountParLoc = Facture::whereNull('delete_at')
+            ->where('iddirection_ref', $dirId)
+            ->where('type_paiement', 'direct')
+            ->groupBy('locataire_id')
+            ->selectRaw('locataire_id, COUNT(*) as cnt')
+            ->pluck('cnt', 'locataire_id')
+            ->toArray();
+
+        $idsRappelDefault  = [];
+        $idsPreavisDefault = [];
+        $detailsPreavis    = [];
+        $nowCarbon         = Carbon::now();
+
+        foreach ($locataires as $loc) {
+            // Rappel : pas de loyer direct pour le mois précédent
+            if (!isset($payesMoisPrec[$loc->id])) {
+                $idsRappelDefault[$loc->id] = true;
+            }
+
+            // Préavis : avance épuisée
+            $nombreAvance = (int) ($loc->nombre_avance ?? 0);
+            $avanceConsomme = (int) ($loc->nombre_avance_consomme ?? 0);
+            $avanceEpuisee = $nombreAvance > 0 && $avanceConsomme >= $nombreAvance;
+
+            // Préavis : caution entamée (mois non couverts par loyer direct ni avance)
+            $moisEcoules  = max(0, (int) Carbon::parse($loc->date_entree)->diffInMonths($nowCarbon));
+            $directCount  = (int) ($directCountParLoc[$loc->id] ?? 0);
+            $cautionMois  = max(0, $moisEcoules - $directCount - $avanceConsomme);
+            $cautionEntamee = $cautionMois >= 1;
+
+            if ($avanceEpuisee || $cautionEntamee) {
+                $idsPreavisDefault[$loc->id] = true;
+                $detailsPreavis[$loc->id] = [
+                    'avance_epuisee'  => $avanceEpuisee,
+                    'caution_entamee' => $cautionEntamee,
+                    'caution_mois'    => $cautionMois,
+                ];
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────
+
         $proprietaires = Proprietaire::whereNull('delete_at')
-            ->where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->where('iddirection_ref', $dirId)
             ->when($idannexe_ref, fn($q) => $q->where('idannexe_ref', $idannexe_ref))
             ->select('id', 'nom', 'prenom', 'telephone', 'email')
             ->orderBy('nom')
             ->get();
 
-        $parametre  = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+        $parametre  = Parametre::where('iddirection_ref', $dirId)->first();
         $platformCfg = \App\PlatformConfig::getConfig();
         $atConnecte = !empty($platformCfg->at_username) && !empty($platformCfg->at_api_key);
         $waConnecte = $atConnecte && !empty($platformCfg->at_whatsapp_product_id);
 
-        return view('documents.envoyer', compact('locataires', 'facturesParLocataire', 'proprietaires', 'parametre', 'atConnecte', 'waConnecte'));
+        return view('documents.envoyer', compact(
+            'locataires', 'facturesParLocataire', 'proprietaires', 'parametre', 'atConnecte', 'waConnecte',
+            'moisPrecedentNom', 'idsRappelDefault', 'idsPreavisDefault', 'detailsPreavis'
+        ));
     }
 
     public function envoyer(Request $request)
@@ -91,9 +160,12 @@ class EnvoiDocumentController extends Controller
             'message_personnalise'    => 'nullable|string|max:1000',
             'date_debut'              => 'nullable|date',
             'date_fin'                => 'nullable|date',
-            'pourcentage'             => 'nullable|numeric|min:0|max:100',
+            'pourcentage'                  => 'nullable|numeric|min:0|max:100',
+            'pourcentages_proprietaires'   => 'nullable|array',
             'payment_transaction_id'  => 'nullable|string',
             'country_code'            => 'nullable|string|max:5',
+            'avec_signature'          => 'nullable|boolean',
+            'signature_expires_days'  => 'nullable|integer|min:1|max:60',
         ]);
 
         if ($validator->fails()) {
@@ -111,9 +183,14 @@ class EnvoiDocumentController extends Controller
         $msgPerso       = $input['message_personnalise'] ?? '';
         $dateDebut      = $input['date_debut'] ?? null;
         $dateFin        = $input['date_fin']   ?? null;
-        $pourcentage    = isset($input['pourcentage']) ? (float) $input['pourcentage'] : 10;
+        $pourcentage               = isset($input['pourcentage']) ? (float) $input['pourcentage'] : 10;
+        $pourcentagesProprietaires = $input['pourcentages_proprietaires'] ?? [];
+        $avecSignature             = !empty($input['avec_signature']);
+        $signatureExpiresDays      = max(1, min(60, (int)($input['signature_expires_days'] ?? 7)));
 
         $parametre = Parametre::where('iddirection_ref', Auth::user()->iddirection_ref)->first();
+
+        App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
 
         // Vérifier config selon méthode
         if ($methodeEnvoi === 'email') {
@@ -158,7 +235,7 @@ class EnvoiDocumentController extends Controller
                 'recipient_count'       => $recipientCount,
                 'unit_cost'             => $rate ? $rate->whatsapp_unit_cost : 0,
                 'total_amount'          => $rate ? $rate->whatsapp_unit_cost * $recipientCount : 0,
-                'currency'              => $rate ? $rate->currency : 'XOF',
+                'currency'              => $rate ? $rate->currency : get_devise_courante(Auth::user()->iddirection_ref),
                 'country_code'          => $countryCode,
                 'payment_provider'      => \App\PlatformConfig::getConfig()->getActiveProvider(),
                 'payment_transaction_id'=> $txnId,
@@ -252,9 +329,11 @@ class EnvoiDocumentController extends Controller
                             'destinataire_nom'     => $destinataireNom,
                             'destinataire_contact' => $contact,
                             'type_document'        => 'quittance_mensuelle',
+                            'document_ref_id'      => null,
                             'methode_envoi'        => $methodeEnvoi,
                             'statut'               => 'error',
                             'message_erreur'       => 'Aucun mois sélectionné.',
+                            'pdf_temp_path'        => null,
                             'message_personnalise' => $msgPerso ?: null,
                             'envoye_par'           => Auth::id(),
                             'created_at'           => $now,
@@ -293,14 +372,14 @@ class EnvoiDocumentController extends Controller
                                 if (empty($dateDebut) || empty($dateFin)) {
                                     throw new \Exception('Les dates du relevé sont requises.');
                                 }
-                                $pdf = $pdfService->genererReleveProprietaire($destId, $dateDebut, $dateFin, $pourcentage);
+                                $pdf = $pdfService->genererReleveProprietaire($destId, $dateDebut, $dateFin, $this->resoudrePourcentage($destId, $pourcentagesProprietaires, $pourcentage));
                                 break;
 
                             case 'releve_agence':
                                 if (empty($dateDebut) || empty($dateFin)) {
                                     throw new \Exception('Les dates du relevé sont requises.');
                                 }
-                                $pdf = $pdfService->genererReleveAgence($destId, $dateDebut, $dateFin, $pourcentage);
+                                $pdf = $pdfService->genererReleveAgence($destId, $dateDebut, $dateFin, $this->resoudrePourcentage($destId, $pourcentagesProprietaires, $pourcentage));
                                 break;
 
                             default:
@@ -367,6 +446,40 @@ class EnvoiDocumentController extends Controller
                         $tempPath = $result['temp_path'] ?? null;
                     }
 
+                    // ── Signature électronique ───────────────────────────
+                    $signatureLien      = null;
+                    $signatureEmailSent = false;
+                    if ($avecSignature && $statut === 'success') {
+                        try {
+                            $sigDemande    = $this->creerDemandeSignature($pdf, $typeDoc, $destinataire, $destType, $destId, $signatureExpiresDays);
+                            $signatureLien = route('signature.signer', $sigDemande->token);
+                            if (!empty($sigDemande->signataire_email)) {
+                                try {
+                                    $agenceInfo = get_annexe_details_for_invoice(get_active_annexe_id());
+                                    Mail::send('mail.signature_demande', [
+                                        'lien'   => $signatureLien,
+                                        'nom'    => $sigDemande->signataire_nom,
+                                        'titre'  => $sigDemande->document_titre,
+                                        'expire' => $sigDemande->expires_at->format('d/m/Y'),
+                                    ], function ($m) use ($sigDemande, $agenceInfo) {
+                                        $m->to($sigDemande->signataire_email, $sigDemande->signataire_nom)
+                                          ->subject(__('sig.mail_subject') . ' – ' . ($agenceInfo['designation'] ?? config('app.name')));
+                                    });
+                                    $signatureEmailSent = true;
+                                    SignatureAudit::create([
+                                        'signature_demande_id' => $sigDemande->id,
+                                        'action'               => 'sent_email',
+                                        'canal'                => 'email',
+                                        'ip_adresse'           => request()->ip(),
+                                        'user_agent'           => request()->userAgent(),
+                                        'details'              => ['email' => $sigDemande->signataire_email],
+                                        'created_at'           => now(),
+                                    ]);
+                                } catch (\Exception $e) {}
+                            }
+                        } catch (\Exception $e) {}
+                    }
+
                     if ($statut === 'success') {
                         $reussis++;
                     }
@@ -390,10 +503,13 @@ class EnvoiDocumentController extends Controller
                     ];
 
                     $details[] = [
-                        'destinataire' => $destinataireNom,
-                        'document'     => $typeDoc,
-                        'statut'       => $statut,
-                        'erreur'       => $messageErreur,
+                        'destinataire'          => $destinataireNom,
+                        'document'              => $typeDoc,
+                        'statut'                => $statut,
+                        'erreur'                => $messageErreur,
+                        'signature_lien'        => $signatureLien,
+                        'signature_email_sent'  => $signatureEmailSent,
+                        'telephone'             => $destinataire->telephone ?? '',
                     ];
                 } // fin foreach $iterIds
             }
@@ -417,14 +533,113 @@ class EnvoiDocumentController extends Controller
         ]);
     }
 
-    public function historique()
+    public function historique(Request $request)
     {
+        $dateDebut = $request->query('date_debut');
+        $dateFin   = $request->query('date_fin');
+
+        // Par défaut : mois précédent
+        if (empty($dateDebut) || empty($dateFin)) {
+            $dateDebut = Carbon::now()->subMonth()->startOfMonth()->toDateString();
+            $dateFin   = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+        }
+
         $envois = EnvoiDocument::where('iddirection_ref', Auth::user()->iddirection_ref)
+            ->whereDate('created_at', '>=', $dateDebut)
+            ->whereDate('created_at', '<=', $dateFin)
             ->orderBy('created_at', 'desc')
-            ->limit(200)
             ->get();
 
-        return response()->json(['status' => true, 'data' => $envois]);
+        return response()->json([
+            'status'     => true,
+            'data'       => $envois,
+            'date_debut' => $dateDebut,
+            'date_fin'   => $dateFin,
+        ]);
+    }
+
+    /**
+     * Retourne le pourcentage de gestion configuré pour une liste de propriétaires.
+     * null = non configuré → l'utilisateur devra le saisir.
+     */
+    public function getPourcentagesProprietaires(Request $request)
+    {
+        $ids    = array_filter(array_map('intval', (array) $request->input('ids', [])));
+        $result = [];
+        foreach ($ids as $id) {
+            $pct = get_pourcentage_gestion_or_null($id);
+            $result[$id] = [
+                'configured'  => $pct !== null,
+                'pourcentage' => $pct,
+            ];
+        }
+        return response()->json(['status' => true, 'data' => $result]);
+    }
+
+    /**
+     * Résout le pourcentage à utiliser pour un propriétaire donné :
+     * 1. Configuré en base (groupe ou général)
+     * 2. Fourni manuellement par l'utilisateur (pour ce propriétaire)
+     * 3. Valeur globale du formulaire (fallback)
+     */
+    private function resoudrePourcentage(int $proprietaireId, array $pourcentagesMap, float $fallback): float
+    {
+        $pctDb = get_pourcentage_gestion_or_null($proprietaireId);
+        if ($pctDb !== null) {
+            return $pctDb;
+        }
+        $manual = $pourcentagesMap[$proprietaireId] ?? $pourcentagesMap[(string) $proprietaireId] ?? null;
+        return $manual !== null ? (float) $manual : $fallback;
+    }
+
+    private function creerDemandeSignature(
+        array $pdf, string $typeDoc, $destinataire, string $destType, int $destId, int $expiresDays
+    ): SignatureDemande {
+        $user  = Auth::user();
+        $dirId = $user->iddirection_ref;
+
+        $docTypeMap = [
+            'contrat'             => 'contrat',
+            'quittance_mensuelle' => 'quittance',
+            'quittance_caution'   => 'quittance',
+            'releve_proprietaire' => 'autre',
+            'releve_agence'       => 'autre',
+        ];
+
+        $sha256 = hash('sha256', $pdf['content']);
+        $dir    = "signature_docs/{$dirId}";
+        $fname  = 'doc_' . Str::random(16) . '.pdf';
+        Storage::disk('local')->put("{$dir}/{$fname}", $pdf['content']);
+
+        $demande = SignatureDemande::create([
+            'iddirection_ref'      => $dirId,
+            'idannexe_ref'         => $user->idannexe_ref,
+            'document_type'        => $docTypeMap[$typeDoc] ?? 'autre',
+            'document_id'          => $destId,
+            'document_titre'       => $pdf['label'],
+            'pdf_path'             => "{$dir}/{$fname}",
+            'sha256_document'      => $sha256,
+            'locataire_id'         => $destType === 'locataire' ? $destId : null,
+            'signataire_nom'       => trim($destinataire->nom . ' ' . ($destinataire->prenom ?? '')),
+            'signataire_email'     => $destinataire->email ?? null,
+            'signataire_telephone' => $destinataire->telephone ?? null,
+            'token'                => Str::random(64),
+            'statut'               => 'en_attente',
+            'expires_at'           => now()->addDays($expiresDays),
+            'created_by'           => $user->id,
+        ]);
+
+        SignatureAudit::create([
+            'signature_demande_id' => $demande->id,
+            'action'               => 'created',
+            'canal'                => 'admin',
+            'ip_adresse'           => request()->ip(),
+            'user_agent'           => request()->userAgent(),
+            'details'              => ['source' => 'envoi_document'],
+            'created_at'           => now(),
+        ]);
+
+        return $demande;
     }
 
     public function envoyerNotification(Request $request)
@@ -579,7 +794,7 @@ class EnvoiDocumentController extends Controller
                 'recipient_count'        => $recipientCount,
                 'unit_cost'              => $unitCost,
                 'total_amount'           => $unitCost * $recipientCount,
-                'currency'               => $rate ? $rate->currency : 'XOF',
+                'currency'               => $rate ? $rate->currency : get_devise_courante(Auth::user()->iddirection_ref),
                 'country_code'           => $countryCode,
                 'payment_provider'       => \App\PlatformConfig::getConfig()->getActiveProvider(),
                 'payment_transaction_id' => $txnId,
@@ -590,14 +805,17 @@ class EnvoiDocumentController extends Controller
 
         set_time_limit(300);
 
+        App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
+
         $agence    = get_annexe_details_for_invoice(get_active_annexe_id());
         $agenceNom = $agence['designation'] ?? 'Agence Immobilière';
 
         $whatsapp  = $methodeEnvoi === 'whatsapp' ? new WhatsAppService() : null;
         $atService = $methodeEnvoi === 'sms' ? new AfricasTalkingService() : null;
 
-        $moisCourant      = Carbon::now()->locale('fr')->isoFormat('MMMM YYYY');
-        $dateFinFormatted = $dateFin ? Carbon::parse($dateFin)->locale('fr')->isoFormat('D MMMM YYYY') : null;
+        $locale           = app()->getLocale();
+        $moisCourant      = Carbon::now()->locale($locale)->isoFormat('MMMM YYYY');
+        $dateFinFormatted = $dateFin ? Carbon::parse($dateFin)->locale($locale)->isoFormat('D MMMM YYYY') : null;
 
         // Pré-charger tous les locataires avec leurs jointures en une seule requête
         $destIds      = array_column($destinatairesInput, 'id');
@@ -659,24 +877,26 @@ class EnvoiDocumentController extends Controller
                 continue;
             }
 
-            // Locale avant génération des textes
-            App::setLocale(get_direction_locale(Auth::user()->iddirection_ref));
-
-            // Construire le message WhatsApp
+            // Construire le message WhatsApp/SMS
             if ($typeNotif === 'rappel_loyer') {
                 $sujet     = __('mail.rappel_loyer.subject') . ' – ' . $moisCourant;
-                $messageWA = "Bonjour {$destinataireNom},\n\n"
-                    . "Nous vous rappelons que votre loyer du mois de {$moisCourant} d'un montant de {$montantLoyer} " . get_devise_courante() . " est dû.\n\n"
-                    . "Merci de bien vouloir procéder au règlement dans les meilleurs délais.\n\n"
-                    . ($msgPerso ? "{$msgPerso}\n\n" : '')
-                    . "Cordialement,\n{$agenceNom}";
+                $messageWA = __('mail.greeting', ['name' => $destinataireNom]) . "\n\n"
+                    . __('mail.rappel_loyer.wa_body', [
+                        'mois'    => $moisCourant,
+                        'montant' => $montantLoyer,
+                        'devise'  => get_devise_courante(),
+                    ])
+                    . ($msgPerso ? "\n\n{$msgPerso}" : '')
+                    . "\n\n" . __('mail.wa_closing', ['agence' => $agenceNom]);
             } else {
                 $sujet     = __('mail.preavis.subject');
-                $messageWA = "Bonjour {$destinataireNom},\n\n"
-                    . "Nous vous informons que votre contrat de bail pour le logement {$logement} prend fin le {$dateFinFormatted}.\n\n"
-                    . "Conformément aux termes de votre contrat, vous êtes prié(e) de libérer les lieux et de restituer les clés avant cette date.\n\n"
-                    . ($msgPerso ? "{$msgPerso}\n\n" : '')
-                    . "Cordialement,\n{$agenceNom}";
+                $messageWA = __('mail.greeting', ['name' => $destinataireNom]) . "\n\n"
+                    . __('mail.preavis.wa_body', [
+                        'logement' => $logement,
+                        'date'     => $dateFinFormatted,
+                    ])
+                    . ($msgPerso ? "\n\n{$msgPerso}" : '')
+                    . "\n\n" . __('mail.wa_closing', ['agence' => $agenceNom]);
             }
 
             $statut        = 'success';

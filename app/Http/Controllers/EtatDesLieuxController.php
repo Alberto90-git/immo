@@ -243,7 +243,7 @@ class EtatDesLieuxController extends Controller
 
             return response()->json([
                 'status'   => true,
-                'redirect' => route('etat_des_lieux.show', $etat->id),
+                'redirect' => route('etat_des_lieux.show', encrypt_id($etat->id)),
                 'message'  => 'État des lieux créé avec succès.',
                 'row'      => [
                     'id'          => $etat->id,
@@ -253,8 +253,8 @@ class EtatDesLieuxController extends Controller
                     'type_label'  => $etat->type === 'entree' ? 'Entrée' : 'Sortie',
                     'date_etat'   => $etat->date_etat->format('d/m/Y'),
                     'statut_badge'=> $etat->statut_badge,
-                    'show_url'    => route('etat_des_lieux.show', $etat->id),
-                    'pdf_url'     => route('etat_des_lieux.pdf', $etat->id),
+                    'show_url'    => route('etat_des_lieux.show', encrypt_id($etat->id)),
+                    'pdf_url'     => route('etat_des_lieux.pdf', encrypt_id($etat->id)),
                     'can_show'    => Auth::user()->can('Consulter-etat-des-lieux'),
                     'can_pdf'     => Auth::user()->can('download-etat-des-lieux'),
                     'can_delete'  => Auth::user()->can('delete-etat-des-lieux'),
@@ -270,6 +270,7 @@ class EtatDesLieuxController extends Controller
 
     public function show($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $etat = EtatDesLieux::with([
             'pieces.elements', 'pieces.photos',
             'locataire', 'maison', 'chambre', 'etatEntree.pieces.elements',
@@ -314,6 +315,7 @@ class EtatDesLieuxController extends Controller
 
     public function previewPDF($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $etat = EtatDesLieux::with([
             'pieces.elements', 'pieces.photos',
             'locataire', 'maison', 'chambre', 'etatEntree.pieces.elements',
@@ -346,6 +348,7 @@ class EtatDesLieuxController extends Controller
 
     public function telechargerPDF($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $etat = EtatDesLieux::with([
             'pieces.elements', 'pieces.photos',
             'locataire', 'maison', 'chambre', 'etatEntree.pieces.elements',
@@ -541,6 +544,10 @@ class EtatDesLieuxController extends Controller
             ->where('iddirection_ref', Auth::user()->iddirection_ref)
             ->findOrFail($request->etat_des_lieux_id);
 
+        if (!Gate::check('Is_admin') && $etat->idannexe_ref !== Auth::user()->idannexe_ref) {
+            abort(403);
+        }
+
         // Bloquer l'ajout de photos après finalisation
         if ($etat->statut !== 'brouillon') {
             return response()->json(['status' => false, 'message' => 'L\'ajout de photos n\'est plus possible une fois l\'état des lieux finalisé.']);
@@ -588,6 +595,10 @@ class EtatDesLieuxController extends Controller
         $etat = EtatDesLieux::where('id', $photo->etat_des_lieux_id)
             ->where('iddirection_ref', Auth::user()->iddirection_ref)
             ->firstOrFail();
+
+        if (!Gate::check('Is_admin') && $etat->idannexe_ref !== Auth::user()->idannexe_ref) {
+            abort(403);
+        }
 
         Storage::delete('public/' . $photo->chemin_fichier);
         $photo->delete();

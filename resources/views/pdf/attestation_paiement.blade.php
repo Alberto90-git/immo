@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Attestation de paiement</title>
+    <title>{{ __('pdf.attestation_paiement_title') }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 12px; color: #333; padding: 30px 40px; }
@@ -52,51 +52,51 @@
     </div>
 
     <div class="doc-title">
-        <h2>Attestation de paiement</h2>
+        <h2>{{ __('pdf.attestation_paiement_title') }}</h2>
     </div>
 
     <div class="body-text">
-        Je soussigné(e), <span class="highlight">{{ $user->nom ?? '' }} {{ $user->prenom ?? '' }}</span>,
-        représentant l'agence immobilière <span class="highlight">{{ $agence['designation'] ?? config('app.name') }}</span>,
-        certifie avoir reçu de :
+        {!! __('pdf.att_pai_body_1', [
+            'user'   => '<span class="highlight">' . e(($user->nom ?? '') . ' ' . ($user->prenom ?? '')) . '</span>',
+            'agence' => '<span class="highlight">' . e($agence['designation'] ?? config('app.name')) . '</span>',
+        ]) !!}
     </div>
 
     <div class="details-box">
-        <div class="row"><label>Locataire :</label><span><strong>{{ $facture->nom }} {{ $facture->prenom }}</strong></span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_locataire') }}</label><span><strong>{{ $facture->nom }} {{ $facture->prenom }}</strong></span></div>
         @if($facture->profession ?? false)
-        <div class="row"><label>Profession :</label><span>{{ $facture->profession }}</span></div>
+        <div class="row"><label>{{ __('pdf.info_profession') }}</label><span>{{ $facture->profession }}</span></div>
         @endif
-        <div class="row"><label>Maison :</label><span>{{ $facture->nom_maison }}</span></div>
-        <div class="row"><label>Chambre :</label><span>{{ $facture->ch_type ?? $facture->type_chambre }} N° {{ $facture->ch_numero ?? $facture->numero_chambre }}</span></div>
-        <div class="row"><label>Période (mois) :</label><span><strong>{{ $facture->mois }}</strong></span></div>
-        <div class="row"><label>Montant reçu :</label><span class="amount-highlight">{{ format_price($facture->montant, $facture->iddirection_ref) }}</span></div>
-        <div class="row"><label>Date du paiement :</label><span>{{ $facture->date_paiement ? \Carbon\Carbon::parse($facture->date_paiement)->format('d/m/Y') : '—' }}</span></div>
-        <div class="row"><label>Mode de paiement :</label><span>{{ $facture->mode_paiement ?? '—' }}</span></div>
-        <div class="row"><label>Type :</label><span>{{ $facture->type_paiement === 'direct' ? 'Paiement direct' : 'Sur avance' }}</span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_maison') }}</label><span>{{ $facture->nom_maison }}</span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_chambre') }}</label><span>{{ $facture->ch_type ?? $facture->type_chambre }} N° {{ $facture->ch_numero ?? $facture->numero_chambre }}</span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_periode') }}</label><span><strong>{{ $facture->mois }}</strong></span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_montant') }}</label><span class="amount-highlight">{{ format_price($facture->montant, $facture->iddirection_ref) }}</span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_date') }}</label><span>{{ $facture->date_paiement ? \Carbon\Carbon::parse($facture->date_paiement)->format('d/m/Y') : '—' }}</span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_mode') }}</label><span>{{ $facture->mode_paiement ?? '—' }}</span></div>
+        <div class="row"><label>{{ __('pdf.att_pai_details_type') }}</label><span>{{ $facture->type_paiement === 'direct' ? __('pdf.att_pai_type_direct') : __('pdf.att_pai_type_avance') }}</span></div>
     </div>
 
     <div class="body-text">
-        au titre du loyer mensuel de la période indiquée ci-dessus, pour le logement désigné.
-        La présente attestation est établie à la demande de l'intéressé(e), pour servir et valoir ce que de droit.
+        {{ __('pdf.att_pai_body_2') }}
     </div>
 
     <div class="legal-note">
-        Ce document tient lieu de justificatif de paiement à usage administratif.
+        {{ __('pdf.att_pai_legal_note') }}
     </div>
 
     <div class="date-line">
-        Fait à ________________________________, le {{ $dateEmission->translatedFormat('d F Y') }}
+        {{ __('pdf.fait_a', ['lieu' => '________________________________', 'date' => $dateEmission->translatedFormat('d F Y')]) }}
     </div>
 
     <div class="signature-area">
         <div class="sig-block">
-            <div style="font-size:10px;color:#777;">Le locataire (pour information)</div>
-            <div style="font-style:italic;font-size:10px;color:#999;">(Prise de connaissance)</div>
+            <div style="font-size:10px;color:#777;">{{ __('pdf.sig_le_locataire_info') }}</div>
+            <div style="font-style:italic;font-size:10px;color:#999;">{{ __('pdf.sig_prise_connaissance') }}</div>
             <div class="sig-line"></div>
             <div class="sig-label">{{ $facture->nom }} {{ $facture->prenom }}</div>
         </div>
         <div class="sig-block">
-            <div style="font-size:10px;color:#777;margin-bottom:8px;">Cachet et signature de l'agence</div>
+            <div style="font-size:10px;color:#777;margin-bottom:8px;">{{ __('pdf.sig_agence') }}</div>
             @if($agence && !empty($agence['signature_path']) && file_exists($agence['signature_path']))
                 <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents($agence['signature_path'])) }}" alt="Signature">
             @else
@@ -108,7 +108,7 @@
     </div>
 
     <div class="footer">
-        Document généré le {{ $dateEmission->format('d/m/Y à H:i') }} par {{ config('app.name') }} — Document officiel, ne pas reproduire sans autorisation
+        {{ __('pdf.generated_on') }} {{ $dateEmission->format('d/m/Y') }} — {{ __('pdf.footer_officiel') }}
     </div>
 </body>
 </html>

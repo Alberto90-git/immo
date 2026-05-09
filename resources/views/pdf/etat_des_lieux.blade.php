@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
 <head>
 <meta charset="UTF-8">
 <style>
@@ -234,45 +234,45 @@
         <div class="agence-name">{{ $agence['designation'] ?? config('app.name') }}</div>
         <div class="agence-sub">
           @if(!empty($agence['adresse'])){{ $agence['adresse'] }}<br>@endif
-          @if(!empty($agence['telephone']))Tél : {{ $agence['telephone'] }}@endif
+          @if(!empty($agence['telephone'])){{ __('pdf.edl_tph') }} {{ $agence['telephone'] }}@endif
           @if(!empty($agence['email'])) &nbsp;|&nbsp; {{ $agence['email'] }}@endif
         </div>
       </div>
     </div>
     <div class="header-right">
       <div class="doc-badge {{ $etat->type === 'sortie' ? 'sortie' : '' }}">
-        {{ $etat->type === 'entree' ? "État d'Entrée" : "État de Sortie" }}
+        {{ $etat->type === 'entree' ? __('pdf.edl_type_entree') : __('pdf.edl_type_sortie') }}
       </div>
       <div class="doc-meta">
-        Ref. N° {{ str_pad($etat->id, 4, '0', STR_PAD_LEFT) }}<br>
-        Date : <strong>{{ $etat->date_etat->format('d/m/Y') }}</strong><br>
-        Statut : <strong>{{ ucfirst($etat->statut) }}</strong>
+        {{ __('pdf.edl_ref') }} {{ str_pad($etat->id, 4, '0', STR_PAD_LEFT) }}<br>
+        {{ __('pdf.edl_date') }} <strong>{{ $etat->date_etat->format('d/m/Y') }}</strong><br>
+        {{ __('pdf.edl_statut') }} <strong>{{ ucfirst($etat->statut) }}</strong>
       </div>
     </div>
   </div>
 
   {{-- ── Titre ───────────────────────────────────────────────────────────── --}}
-  <div class="titre-principal">Procès-verbal d'état des lieux</div>
+  <div class="titre-principal">{{ __('pdf.edl_titre') }}</div>
 
   {{-- ── Parties ─────────────────────────────────────────────────────────── --}}
   <div class="parties">
     <div class="partie-block">
-      <div class="partie-titre">👤 Locataire</div>
+      <div class="partie-titre">{{ __('pdf.edl_locataire') }}</div>
       <div class="partie-valeur">{{ $etat->locataire->nom ?? '–' }} {{ $etat->locataire->prenom ?? '' }}</div>
-      @if(!empty($etat->locataire->telephone))<div class="partie-sous">📞 {{ $etat->locataire->telephone }}</div>@endif
-      @if(!empty($etat->locataire->email))<div class="partie-sous">✉ {{ $etat->locataire->email }}</div>@endif
+      @if(!empty($etat->locataire->telephone))<div class="partie-sous">{{ $etat->locataire->telephone }}</div>@endif
+      @if(!empty($etat->locataire->email))<div class="partie-sous">{{ $etat->locataire->email }}</div>@endif
     </div>
     <div class="partie-block">
-      <div class="partie-titre">🏠 Logement</div>
+      <div class="partie-titre">{{ __('pdf.edl_logement') }}</div>
       <div class="partie-valeur">{{ $etat->maison->nom_maison ?? '–' }}</div>
-      <div class="partie-sous">Chambre N° {{ $etat->chambre->numero_chambre ?? '–' }}</div>
-      @if(!empty($etat->maison->quartier))<div class="partie-sous">📍 {{ $etat->maison->quartier }}</div>@endif
+      <div class="partie-sous">{{ __('pdf.edl_chambre') }} {{ $etat->chambre->numero_chambre ?? '–' }}</div>
+      @if(!empty($etat->maison->quartier))<div class="partie-sous">{{ $etat->maison->quartier }}</div>@endif
     </div>
     @if($etat->type === 'sortie' && $etat->etatEntree)
     <div class="partie-block">
-      <div class="partie-titre">📋 Référence entrée</div>
-      <div class="partie-valeur">Entrée du {{ $etat->etatEntree->date_etat->format('d/m/Y') }}</div>
-      <div class="partie-sous">Durée d'occupation : {{ $etat->etatEntree->date_etat->diffInMonths($etat->date_etat) }} mois</div>
+      <div class="partie-titre">{{ __('pdf.edl_ref_entree') }}</div>
+      <div class="partie-valeur">{{ __('pdf.edl_entree_du') }} {{ $etat->etatEntree->date_etat->format('d/m/Y') }}</div>
+      <div class="partie-sous">{{ __('pdf.edl_duree_occupation', ['n' => $etat->etatEntree->date_etat->diffInMonths($etat->date_etat)]) }}</div>
     </div>
     @endif
   </div>
@@ -284,21 +284,21 @@
       <div class="piece-titre">
         <span>{{ $piece->nom_piece }}</span>
         @if($nbDegra > 0)
-          <span class="piece-degra-badge">⚠ {{ $nbDegra }} dégradation(s)</span>
+          <span class="piece-degra-badge">⚠ {{ __('pdf.edl_degradations', ['n' => $nbDegra]) }}</span>
         @endif
       </div>
       <table class="elements">
         <thead>
           <tr>
-            <th class="th-left" style="width:18%">Élément</th>
+            <th class="th-left" style="width:18%">{{ __('pdf.edl_col_element') }}</th>
             @if($etat->type === 'sortie' && $etat->etatEntree)
-              <th style="width:12%">État entrée</th>
+              <th style="width:12%">{{ __('pdf.edl_col_etat_entree') }}</th>
             @endif
-            <th style="width:13%">État {{ $etat->type === 'sortie' ? 'sortie' : '' }}</th>
-            <th class="th-left">Observations</th>
+            <th style="width:13%">{{ $etat->type === 'sortie' ? __('pdf.edl_col_etat_sortie') : __('pdf.edl_col_etat') }}</th>
+            <th class="th-left">{{ __('pdf.edl_col_observations') }}</th>
             @if($etat->type === 'sortie')
-              <th style="width:11%">Dégradation</th>
-              <th style="width:13%" class="text-right">Retenue ({{ get_symbole_devise() }})</th>
+              <th style="width:11%">{{ __('pdf.edl_col_degradation') }}</th>
+              <th style="width:13%" class="text-right">{{ __('pdf.edl_col_retenue', ['devise' => get_symbole_devise()]) }}</th>
             @endif
           </tr>
         </thead>
@@ -322,9 +322,9 @@
               @if($etat->type === 'sortie')
                 <td class="text-center">
                   @if($el->degradation_detectee)
-                    <span class="badge bg-danger">OUI</span>
+                    <span class="badge bg-danger">{{ __('pdf.edl_oui') }}</span>
                   @else
-                    <span class="badge bg-success">NON</span>
+                    <span class="badge bg-success">{{ __('pdf.edl_non') }}</span>
                   @endif
                 </td>
                 <td class="text-right" style="{{ $el->montant_retenue > 0 ? 'color:#dc2626;font-weight:bold' : 'color:#94a3b8' }}">
@@ -340,14 +340,14 @@
 
   {{-- ── Récapitulatif retenues ──────────────────────────────────────────── --}}
   @if($etat->type === 'sortie' && $etat->retenue_caution > 0)
-    <div class="recap-titre">Récapitulatif des retenues sur caution</div>
+    <div class="recap-titre">{{ __('pdf.edl_recap_titre') }}</div>
     <table class="retenue">
       <thead>
         <tr>
-          <th>Pièce</th>
-          <th>Élément</th>
-          <th>Description</th>
-          <th class="text-right">Montant ({{ get_symbole_devise() }})</th>
+          <th>{{ __('pdf.edl_col_piece') }}</th>
+          <th>{{ __('pdf.edl_col_element') }}</th>
+          <th>{{ __('pdf.col_type') }}</th>
+          <th class="text-right">{{ __('pdf.edl_col_montant', ['devise' => get_symbole_devise()]) }}</th>
         </tr>
       </thead>
       <tbody>
@@ -364,7 +364,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="3" class="text-right">TOTAL RETENU SUR CAUTION</td>
+          <td colspan="3" class="text-right">{{ __('pdf.edl_total_retenu') }}</td>
           <td class="text-right">{{ format_price($etat->retenue_caution) }}</td>
         </tr>
       </tfoot>
@@ -374,7 +374,7 @@
   {{-- ── Notes générales ─────────────────────────────────────────────────── --}}
   @if($etat->notes_generales)
     <div class="notes-block">
-      <div class="notes-titre">Notes générales</div>
+      <div class="notes-titre">{{ __('pdf.edl_notes') }}</div>
       {{ $etat->notes_generales }}
     </div>
   @endif
@@ -384,41 +384,41 @@
 
     {{-- Locataire (gauche) --}}
     <div class="sig-block">
-      <div class="sig-titre">Signature du locataire</div>
+      <div class="sig-titre">{{ __('pdf.edl_sig_locataire') }}</div>
       <div class="sig-zone">
         @if($etat->signe_locataire)
           @if(!empty($etat->signature_locataire_image))
             <img src="{{ $etat->signature_locataire_image }}" alt="Signature" class="sig-img">
           @else
-            <div class="sig-ok">✓ Signé électroniquement</div>
+            <div class="sig-ok">{{ __('pdf.edl_signe') }}</div>
           @endif
         @else
-          <div class="sig-en-attente">En attente de signature</div>
+          <div class="sig-en-attente">{{ __('pdf.edl_en_attente') }}</div>
         @endif
       </div>
       <div class="sig-nom">{{ $etat->locataire->nom ?? '' }} {{ $etat->locataire->prenom ?? '' }}</div>
       @if($etat->signe_locataire)
-        <div class="sig-date">Le {{ \Carbon\Carbon::parse($etat->signe_locataire_at)->format('d/m/Y à H:i') }}</div>
+        <div class="sig-date">{{ __('pdf.edl_sig_le') }} {{ \Carbon\Carbon::parse($etat->signe_locataire_at)->format('d/m/Y H:i') }}</div>
       @endif
     </div>
 
-    {{-- Directeur (droite) — signature uniquement si l'agent a signé --}}
+    {{-- Directeur (droite) —  signature uniquement si l'agent a signé --}}
     <div class="sig-block">
-      <div class="sig-titre">Signature du directeur</div>
+      <div class="sig-titre">{{ __('pdf.edl_sig_directeur') }}</div>
       <div class="sig-zone">
         @if($etat->signe_agent)
           @if(!empty($agence['cash_electronique_image_base64']))
             <img src="{{ $agence['cash_electronique_image_base64'] }}" alt="Signature" class="sig-img">
           @else
-            <div class="sig-ok">✓ Signé électroniquement</div>
+            <div class="sig-ok">{{ __('pdf.edl_signe') }}</div>
           @endif
         @else
-          <div class="sig-en-attente">En attente de signature</div>
+          <div class="sig-en-attente">{{ __('pdf.edl_en_attente') }}</div>
         @endif
       </div>
       <div class="sig-nom">{{ $agence['designation'] ?? '' }}</div>
       @if($etat->signe_agent)
-        <div class="sig-date">Le {{ \Carbon\Carbon::parse($etat->signe_agent_at)->format('d/m/Y à H:i') }}</div>
+        <div class="sig-date">{{ __('pdf.edl_sig_le') }} {{ \Carbon\Carbon::parse($etat->signe_agent_at)->format('d/m/Y H:i') }}</div>
       @endif
     </div>
 
@@ -426,8 +426,8 @@
 
   {{-- ── Pied de page ─────────────────────────────────────────────────────── --}}
   <div class="footer">
-    <span>{{ config('app.name') }} &mdash; Document confidentiel</span>
-    <span>Généré le {{ now()->format('d/m/Y à H:i') }}</span>
+    <span>{{ config('app.name') }} &mdash; {{ __('pdf.footer_confidentiel') }}</span>
+    <span>{{ __('pdf.generated_on') }} {{ now()->format('d/m/Y H:i') }}</span>
   </div>
 
 </div>

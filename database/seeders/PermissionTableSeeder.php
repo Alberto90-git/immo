@@ -31,7 +31,8 @@ class PermissionTableSeeder extends Seeder
             'historique'        => ['label' => 'Historique des actions',   'group' => 'params'],
             'modifier-parametre'=> ['label' => 'Modification paramétrage', 'group' => 'params'],
             'Is_admin'          => ['label' => 'Administrateur',           'group' => 'params'],
-            'manager-contrat'   => ['label' => 'Gérer contrat',            'group' => 'params'],
+            'manager-contrat'        => ['label' => 'Gérer contrat',                          'group' => 'params'],
+            'voir-archives-contrats' => ['label' => 'Voir les archives des contrats signés', 'group' => 'params'],
 
             // ── Propriétaire ──────────────────────────────────────────────────
             'gestion-proprietaire'   => ['label' => 'Gestion propriétaire',    'group' => 'proprietaire'],
@@ -158,6 +159,23 @@ class PermissionTableSeeder extends Seeder
             'modify-maintenance'    => ['label' => 'Modifier / avancer ticket',    'group' => 'maintenance'],
             'delete-maintenance'    => ['label' => 'Supprimer ticket',             'group' => 'maintenance'],
             'gestion-prestataire'   => ['label' => 'Gérer les prestataires',       'group' => 'maintenance'],
+
+            // ── Dépenses & Comptabilité ───────────────────────────────────────
+            'gestion-depenses'      => ['label' => 'Gestion des dépenses',         'group' => 'depense'],
+            'ajoute-depense'        => ['label' => 'Ajouter une dépense',          'group' => 'depense'],
+            'modify-depense'        => ['label' => 'Modifier une dépense',         'group' => 'depense'],
+            'delete-depense'        => ['label' => 'Supprimer une dépense',        'group' => 'depense'],
+            'export-depense'        => ['label' => 'Exporter les dépenses (CSV)',  'group' => 'depense'],
+
+            // ── Prospects & Pipeline ──────────────────────────────────────────
+            'gestion-prospect'      => ['label' => 'Gestion des prospects',         'group' => 'prospect'],
+            'ajoute-prospect'       => ['label' => 'Ajouter un prospect',           'group' => 'prospect'],
+            'modify-prospect'       => ['label' => 'Modifier un prospect',          'group' => 'prospect'],
+            'delete-prospect'       => ['label' => 'Supprimer un prospect',         'group' => 'prospect'],
+            'convertir-prospect'    => ['label' => 'Convertir prospect → locataire','group' => 'prospect'],
+            'gestion-visite'        => ['label' => 'Gestion des visites',           'group' => 'prospect'],
+            'ajoute-visite'         => ['label' => 'Planifier une visite',          'group' => 'prospect'],
+            'modify-visite'         => ['label' => 'Modifier/valider une visite',   'group' => 'prospect'],
 
         ];
 

@@ -112,11 +112,11 @@
           <input type="text" id="inputNom" class="form-control" placeholder="Nom du prestataire">
         </div>
         <div class="row g-2 mb-3">
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <label class="form-label fw-semibold">Téléphone</label>
             <input type="tel" id="inputTelephone" class="form-control">
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <label class="form-label fw-semibold">Email</label>
             <input type="email" id="inputEmail" class="form-control" placeholder="exemple@mail.com">
           </div>

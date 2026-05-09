@@ -8,6 +8,7 @@ return [
     'footer_auto'    => 'Ce message a été envoyé automatiquement — merci de ne pas y répondre directement.',
     'contact_note'   => 'Pour toute question, contactez :agence ou écrivez à',
     'auto_note'      => 'Ce message a été envoyé automatiquement par Lokativ. Merci de ne pas y répondre directement.',
+    'wa_closing'     => "Cordialement,\n:agence",
 
     // ── Rappel de loyer ───────────────────────────────────────────────────────────
     'rappel_loyer' => [
@@ -19,6 +20,7 @@ return [
         'logement_header' => 'Détails du logement',
         'logement_label'  => 'Logement concerné',
         'alert'           => 'Pour éviter tout désagrément ou pénalité, veuillez procéder au règlement dès que possible. En cas de difficulté, contactez directement votre agence.',
+        'wa_body'         => "Nous vous rappelons que votre loyer du mois de :mois d'un montant de :montant :devise est dû.\n\nMerci de bien vouloir procéder au règlement dans les meilleurs délais.",
     ],
 
     // ── Préavis de fin de bail ────────────────────────────────────────────────────
@@ -33,6 +35,7 @@ return [
         'body_1'          => 'Conformément aux termes de votre contrat de location, vous êtes prié(e) de <strong>libérer les lieux et restituer les clés</strong> avant la date indiquée ci-dessus.',
         'body_2'          => 'Nous vous invitons à prendre contact avec notre agence afin de planifier l\'état des lieux de sortie.',
         'alert'           => 'Passé ce délai sans restitution des lieux, des frais supplémentaires pourront être engagés. Pour tout arrangement ou question, contactez directement votre agence.',
+        'wa_body'         => "Nous vous informons que votre contrat de bail pour le logement :logement prend fin le :date.\n\nConformément aux termes de votre contrat, vous êtes prié(e) de libérer les lieux et de restituer les clés avant cette date.",
     ],
 
     // ── Recouvrement / Relance ────────────────────────────────────────────────────
@@ -173,6 +176,18 @@ return [
         'contact_note'        => 'Des questions ? Contactez notre support à',
         'footer_privacy'      => 'Politique de confidentialité',
         'footer_help'         => 'Aide',
+    ],
+
+    // ── Labels documents (email + filename) ──────────────────────────────────────
+    'document_labels' => [
+        'contrat'               => 'Contrat de :name',
+        'quittance_mensuelle'   => 'Quittance mensuelle de :name — :mois',
+        'quittance_caution'     => 'Quittance de caution de :name',
+        'releve_proprietaire'   => 'Relevé propriétaire de :name du :debut au :fin',
+        'releve_agence'         => 'Relevé agence chez :name du :debut au :fin',
+        'releve_locataire'      => 'Relevé locataire de :name',
+        'attestation_residence' => 'Attestation de résidence de :name',
+        'attestation_paiement'  => 'Attestation de paiement de :name — :mois',
     ],
 
     'automation' => [

@@ -32,6 +32,8 @@ use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\PrestatireController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\SignatureElectroniqueController;
+use App\Http\Controllers\ContratArchiveController;
+use App\Http\Controllers\ProspectController;
 
 use App\Publicite;
 use Illuminate\Support\Facades\Auth;
@@ -218,6 +220,8 @@ Route::middleware('auth')->group(function () {
     # MODELE DE CONTRAT
     Route::post('contrat-config', [ParametreController::class, 'storeContratConfig'])->name('store_contrat_config');
     Route::post('contrat-config-reset', [ParametreController::class, 'resetContratConfig'])->name('reset_contrat_config');
+    Route::post('locataire/statut-bail', [ParametreController::class, 'updateStatutBail'])->name('locataire.update_statut_bail');
+    Route::get('contrats/archives', [ContratArchiveController::class, 'index'])->name('contrats.archives')->middleware('can:voir-archives-contrats');
 
     # API pour la gestion centralisée de l'agence active
     Route::post('/api/set-active-annexe', [ParametreController::class, 'setActiveAnnexe'])->name('api.set_active_annexe');
@@ -236,6 +240,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/check-maison', [PlanController::class, 'checkMaisonLimit'])->name('plans.check-maison');
         Route::get('/check-annexe', [PlanController::class, 'checkAnnexeLimit'])->name('plans.check-annexe');
         Route::get('/usage-stats', [PlanController::class, 'getUsageStats'])->name('plans.usage-stats');
+        Route::get('/proration', [PlanController::class, 'calculerProration'])->name('plans.proration');
         Route::post('/change', [PlanController::class, 'changePlan'])->name('plans.change');
     });
 
@@ -353,6 +358,7 @@ Route::middleware('auth')->prefix('gerer-facture')->group(function () {
     Route::get('/releve-locataire/{id}',      [FactureController::class, 'releveLocataire'])->name('releve_locataire')->middleware('can:download-recu-location');
     Route::get('/attestation-residence/{id}', [FactureController::class, 'attestationResidence'])->name('attestation_residence')->middleware('can:download-recu-location');
     Route::get('/attestation-paiement/{id}',  [FactureController::class, 'attestationPaiement'])->name('attestation_paiement')->middleware('can:download-recu-location');
+    Route::get('/quittance-caution/{id}',     [FactureController::class, 'quittanceCaution'])->name('quittance_caution')->middleware('can:download-recu-location');
 
 
     # AJAX
@@ -436,7 +442,7 @@ Route::middleware('auth')->group(function () {
     //RETRIEVE ALL PAYMENT FOR AGENCE
     Route::get('agence-payment-general', [StatistiqueController::class, 'getAllPaymentToAgenceSoldeByDate'])->name('agence-payment-general');
 
-    Route::get('pdf-all-solde-agence/{pourcentage_general}/{date_debut_general}/{date_fin_general}', [StatistiqueController::class, 'getAllPaymentToAgencySoldePdf']);
+    Route::get('pdf-all-solde-agence/{date_debut_general}/{date_fin_general}', [StatistiqueController::class, 'getAllPaymentToAgencySoldePdf']);
 
 
 });
@@ -504,6 +510,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/envoyer', [EnvoiDocumentController::class, 'envoyer'])->name('envoi_document.envoyer');
     Route::get('/historique', [EnvoiDocumentController::class, 'historique'])->name('envoi_document.historique');
     Route::post('/notification', [EnvoiDocumentController::class, 'envoyerNotification'])->name('envoi_document.notification');
+    Route::post('/pourcentages', [EnvoiDocumentController::class, 'getPourcentagesProprietaires'])->name('envoi_document.pourcentages');
   });
 
   Route::middleware('auth')->post('comm-config', [ParametreController::class, 'storeCommConfig'])->name('store_comm_config');
@@ -613,12 +620,30 @@ Route::middleware('auth')->group(function () {
     Route::post('/destroy',            [DepenseController::class, 'destroy'])->name('depenses.destroy')->middleware('can:delete-depense');
     Route::get('/bilan',               [DepenseController::class, 'bilan'])->name('depenses.bilan');
     Route::get('/export-csv',          [DepenseController::class, 'exportCsv'])->name('depenses.export_csv')->middleware('can:gestion-depenses');
+    Route::get('/synthese-proprietaire',[DepenseController::class, 'syntheseProprietaire'])->name('depenses.synthese_proprio')->middleware('can:gestion-depenses');
     Route::post('/categorie/store',    [DepenseController::class, 'storeCategorie'])->name('depenses.categorie_store')->middleware('can:modify-depense');
     Route::post('/categorie/update',   [DepenseController::class, 'updateCategorie'])->name('depenses.categorie_update')->middleware('can:modify-depense');
     Route::post('/categorie/destroy',  [DepenseController::class, 'destroyCategorie'])->name('depenses.categorie_destroy')->middleware('can:delete-depense');
   });
 
+  // ── Prospects & Pipeline ──────────────────────────────────────────────────
+  Route::middleware('auth')->prefix('prospects')->group(function () {
+    Route::get('/',                           [ProspectController::class, 'index'])->name('prospects.index')->middleware('can:gestion-prospect');
+    Route::get('/calendrier',                 [ProspectController::class, 'calendrier'])->name('prospects.calendrier')->middleware('can:gestion-prospect');
+    Route::get('/agenda',                     [ProspectController::class, 'agenda'])->name('prospects.agenda')->middleware('can:gestion-visite');
+    Route::post('/store',                     [ProspectController::class, 'store'])->name('prospects.store')->middleware('can:ajoute-prospect');
+    Route::post('/update',                    [ProspectController::class, 'update'])->name('prospects.update')->middleware('can:modify-prospect');
+    Route::post('/update-statut',             [ProspectController::class, 'updateStatut'])->name('prospects.update_statut')->middleware('can:modify-prospect');
+    Route::post('/destroy',                   [ProspectController::class, 'destroy'])->name('prospects.destroy')->middleware('can:delete-prospect');
+    Route::get('/{id}/convertir',             [ProspectController::class, 'convertir'])->name('prospects.convertir')->middleware('can:convertir-prospect');
+    Route::post('/visite/store',              [ProspectController::class, 'storeVisite'])->name('prospects.visite_store')->middleware('can:ajoute-visite');
+    Route::post('/visite/update-statut',      [ProspectController::class, 'updateVisiteStatut'])->name('prospects.visite_update_statut')->middleware('can:modify-visite');
+    Route::post('/prereservation/store',      [ProspectController::class, 'storePreReservation'])->name('prospects.prereserv_store')->middleware('can:ajoute-prospect');
+    Route::post('/prereservation/annuler',    [ProspectController::class, 'annulerPreReservation'])->name('prospects.prereserv_annuler')->middleware('can:modify-prospect');
+    Route::get('/chambres-maison',            [ProspectController::class, 'getChambresMaison'])->name('prospects.chambres_maison');
+  });
 
-
+  // ── Formulaire public (demande de location) ───────────────────────────────
+  Route::post('/demande-location', [ProspectController::class, 'storePublic'])->name('prospects.store_public');
 
 

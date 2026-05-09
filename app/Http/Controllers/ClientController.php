@@ -136,9 +136,17 @@ class ClientController extends Controller
                 return response()->json(['status' => false, 'message' => "Veuillez sélectionner une agence dans le header"]);
             }
 
-            $oldClient = Client::find($request->id);
+            $dirId = Auth::user()->iddirection_ref;
+            $oldClient = Client::where('id', $request->id)
+                ->where('iddirection_ref', $dirId)
+                ->first();
+
+            if (!$oldClient) {
+                return response()->json(['status' => false, 'message' => 'Client introuvable']);
+            }
 
             $terrain = Client::where('id',$request->id)
+                                    ->where('iddirection_ref', $dirId)
                                     ->update([
                                         'nom'  => Str::upper($request->nom),
                                         'prenom'  => Str::ucfirst($request->prenom) ,
@@ -181,13 +189,20 @@ class ClientController extends Controller
     {
         try {
 
+            $dirId = Auth::user()->iddirection_ref;
+            $objetDeleted = Client::where('id', $request->id)
+                ->where('iddirection_ref', $dirId)
+                ->first();
+
+            if (!$objetDeleted) {
+                return response()->json(['status' => false, 'message' => 'Client introuvable']);
+            }
+
             $deleted = Client::where('id',$request->id)
+                                   ->where('iddirection_ref', $dirId)
                                    ->update([
                                             'delete_at' => Carbon::now()
                                     ]);
-
-            $objetDeleted = Client::where('id',$request->id)
-                                   ->first();
 
 
             if ($deleted) {
@@ -215,13 +230,18 @@ class ClientController extends Controller
     {
         try {
 
+            $dirId = Auth::user()->iddirection_ref;
+            $objetcloture = Client::where('id', $request->id)->where('iddirection_ref', $dirId)->first();
+
+            if (!$objetcloture) {
+                return response()->json(['status' => false, 'message' => 'Client introuvable']);
+            }
+
             $cloture = Client::where('id',$request->id)
+                                   ->where('iddirection_ref', $dirId)
                                    ->update([
                                             'status' => Carbon::now()
                                     ]);
-
-            $objetcloture = Client::where('id',$request->id)
-                                   ->first();
 
 
             if ($cloture) {

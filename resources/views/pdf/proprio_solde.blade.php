@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>Fiche de paie proprietaire</title>
+    <title>{{ __('pdf.proprio_doc_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -109,17 +109,6 @@
             font-size: 9px;
             color: #7f8c8d;
         }
-        .signature-box {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .signature {
-            width: 45%;
-            text-align: center;
-            padding-top: 40px;
-            border-top: 1px solid #333;
-        }
         .agency-header {
             text-align: center;
             margin-bottom: 10px;
@@ -155,34 +144,30 @@
 @endif
 
 <div class="header">
-    <h1>FICHE DE PAIE PROPRIETAIRE</h1>
-    <p class="subtitle">Periode du {{ Carbon\Carbon::parse($element2['date_debut'])->format('d/m/Y') }} au {{ Carbon\Carbon::parse($element2['date_fin'])->format('d/m/Y') }}</p>
+    <h1>{{ __('pdf.proprio_title') }}</h1>
+    <p class="subtitle">{{ __('pdf.periode', ['debut' => Carbon\Carbon::parse($element2['date_debut'])->format('d/m/Y'), 'fin' => Carbon\Carbon::parse($element2['date_fin'])->format('d/m/Y')]) }}</p>
 </div>
 
 <div class="info-box">
     <p class="proprio-name">{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</p>
-    <p><strong>Pourcentage agence:</strong> {{ $element2['pourcentage'] }}%</p>
-    <p><strong>Pourcentage proprietaire:</strong> {{ 100 - $element2['pourcentage'] }}%</p>
-    <p><strong>Date d'edition:</strong> {{ Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
+    <p><strong>{{ __('pdf.pct_agence') }}</strong> {{ $element2['pourcentage'] }}%</p>
+    <p><strong>{{ __('pdf.pct_proprio') }}</strong> {{ 100 - $element2['pourcentage'] }}%</p>
+    <p><strong>{{ __('pdf.date_edition') }}</strong> {{ Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
 </div>
 
 <table>
     <thead>
         <tr>
-            <th style="width: 12%;">Agence</th>
-            <th style="width: 15%;">Maison</th>
-            <th style="width: 15%;">Quartier</th>
-            <th style="width: 10%;">Chambre</th>
-            <th style="width: 12%;">Type</th>
-            <th style="width: 18%;" class="amount">Loyer percu</th>
-            <th style="width: 18%;" class="amount">Part proprietaire</th>
+            <th style="width: 12%;">{{ __('pdf.col_agence') }}</th>
+            <th style="width: 15%;">{{ __('pdf.col_maison') }}</th>
+            <th style="width: 15%;">{{ __('pdf.col_quartier') }}</th>
+            <th style="width: 10%;">{{ __('pdf.col_chambre') }}</th>
+            <th style="width: 12%;">{{ __('pdf.col_type') }}</th>
+            <th style="width: 18%;" class="amount">{{ __('pdf.col_loyer') }}</th>
+            <th style="width: 18%;" class="amount">{{ __('pdf.col_part_proprio') }}</th>
         </tr>
     </thead>
     <tbody>
-        @php
-            $currentMaison = '';
-            $totalMaison = 0;
-        @endphp
         @if(isset($element2['donnees']) && count($element2['donnees']) > 0)
             @foreach($element2['donnees'] as $items)
                 <tr>
@@ -197,19 +182,19 @@
             @endforeach
         @else
             <tr>
-                <td colspan="7" style="text-align: center; padding: 20px;">Aucune donnee disponible</td>
+                <td colspan="7" style="text-align: center; padding: 20px;">{{ __('pdf.no_data') }}</td>
             </tr>
         @endif
         <tr class="total-row">
-            <td colspan="6" style="text-align: right;">TOTAL A PAYER AU PROPRIETAIRE:</td>
+            <td colspan="6" style="text-align: right;">{{ __('pdf.total_proprio') }}</td>
             <td class="amount">{{ format_price($element2['garde']) }}</td>
         </tr>
     </tbody>
 </table>
 
 <div class="summary-box">
-    <h3>RESUME DU PAIEMENT</h3>
-    <p>Montant total a verser au proprietaire <strong>{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</strong></p>
+    <h3>{{ __('pdf.resume_proprio') }}</h3>
+    <p>{{ __('pdf.montant_a_verser') }} <strong>{{ $element2['proprio_nom'] }} {{ $element2['proprio_prenom'] }}</strong></p>
     <p class="total">{{ format_price($element2['garde']) }}</p>
 </div>
 
@@ -228,10 +213,10 @@
     {{-- Ligne 1 : labels --}}
     <tr style="background: none;">
         <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
-            <u><strong style="font-size:11px;">Signature du proprietaire</strong></u>
+            <u><strong style="font-size:11px;">{{ __('pdf.sig_proprietaire') }}</strong></u>
         </td>
         <td style="width: 50%; text-align: center; border: none; padding: 4px 20px;">
-            <u><strong style="font-size:11px;">Cachet et signature de l'agence</strong></u>
+            <u><strong style="font-size:11px;">{{ __('pdf.sig_agence') }}</strong></u>
         </td>
     </tr>
     {{-- Ligne 2 : image / espace --}}
@@ -260,8 +245,8 @@
 </table>
 
 <div class="footer">
-    <p>Ce document fait foi de fiche de paie pour la periode indiquee.</p>
-    <p>Document genere le {{ Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
+    <p>{{ __('pdf.footer_proprio') }}</p>
+    <p>{{ __('pdf.generated_on') }} {{ Carbon\Carbon::now()->format('d/m/Y H:i:s') }}</p>
 </div>
 
 </body>

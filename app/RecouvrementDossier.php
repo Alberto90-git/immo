@@ -50,7 +50,7 @@ class RecouvrementDossier extends Model
             'contentieux' => 'Contentieux',
             'resolu'      => 'Résolu',
             'classe'      => 'Classé',
-        ][$this->statut] ?? $this->statut;
+        ][$this->statut] ?? e($this->statut);
     }
 
     public function getStatutBadgeAttribute(): string

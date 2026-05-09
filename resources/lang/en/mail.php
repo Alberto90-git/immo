@@ -8,6 +8,7 @@ return [
     'footer_auto'    => 'This message was sent automatically — please do not reply directly.',
     'contact_note'   => 'For any questions, contact :agence or write to',
     'auto_note'      => 'This message was sent automatically by Lokativ. Please do not reply directly.',
+    'wa_closing'     => "Best regards,\n:agence",
 
     // ── Rent reminder ─────────────────────────────────────────────────────────────
     'rappel_loyer' => [
@@ -19,6 +20,7 @@ return [
         'logement_header' => 'Property Details',
         'logement_label'  => 'Property',
         'alert'           => 'To avoid any inconvenience or penalties, please make your payment as soon as possible. If you are experiencing difficulties, contact your agency directly.',
+        'wa_body'         => "This is a reminder that your rent for the month of :mois in the amount of :montant :devise is due.\n\nPlease settle your balance as soon as possible.",
     ],
 
     // ── End of lease notice ───────────────────────────────────────────────────────
@@ -33,6 +35,7 @@ return [
         'body_1'          => 'In accordance with the terms of your lease, you are requested to <strong>vacate the premises and return the keys</strong> before the date indicated above.',
         'body_2'          => 'We invite you to contact our agency to schedule the move-out property inspection.',
         'alert'           => 'After this deadline without vacating the property, additional charges may apply. For any arrangement or question, contact your agency directly.',
+        'wa_body'         => "We are informing you that your lease for property :logement expires on :date.\n\nIn accordance with your lease terms, you are requested to vacate the premises and return the keys before this date.",
     ],
 
     // ── Debt collection / Reminders ───────────────────────────────────────────────
@@ -173,6 +176,18 @@ return [
         'contact_note'        => 'Questions? Contact our support at',
         'footer_privacy'      => 'Privacy Policy',
         'footer_help'         => 'Help',
+    ],
+
+    // ── Document labels (email + filename) ───────────────────────────────────────
+    'document_labels' => [
+        'contrat'               => 'Lease Agreement for :name',
+        'quittance_mensuelle'   => 'Monthly Receipt for :name — :mois',
+        'quittance_caution'     => 'Security Deposit Receipt for :name',
+        'releve_proprietaire'   => 'Owner Statement for :name from :debut to :fin',
+        'releve_agence'         => 'Agency Statement for :name from :debut to :fin',
+        'releve_locataire'      => 'Tenant Statement for :name',
+        'attestation_residence' => 'Certificate of Residence for :name',
+        'attestation_paiement'  => 'Payment Certificate for :name — :mois',
     ],
 
     'automation' => [

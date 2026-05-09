@@ -38,7 +38,7 @@
     @endif
     <div class="row">
       <div class="label">Bien concerné</div>
-      <div class="value">{{ $annonce->localisation }} — {{ number_format((float)$annonce->price, 0, ',', ' ') }} {{ $deviseCode ?? 'XOF' }}</div>
+      <div class="value">{{ $annonce->localisation }} — {{ format_price((float)$annonce->price, null, $deviseCode ?? 'XOF') }}</div>
     </div>
     <div style="margin-top:16px">
       <div class="label">Message</div>

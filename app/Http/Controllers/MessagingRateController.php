@@ -62,7 +62,7 @@ class MessagingRateController extends Controller
         if (!Auth::user()->can('config-paiement')) {
             return response()->json(['status' => false, 'message' => 'Accès refusé.'], 403);
         }
-
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $rate = MessagingRate::findOrFail($id);
 
         $v = Validator::make($request->all(), [
@@ -95,7 +95,7 @@ class MessagingRateController extends Controller
         if (!Auth::user()->can('config-paiement')) {
             return response()->json(['status' => false, 'message' => 'Accès refusé.'], 403);
         }
-
+        $id = decrypt_id($id); abort_if(!$id, 404);
         MessagingRate::findOrFail($id)->delete();
 
         return response()->json(['status' => true, 'message' => 'Tarif supprimé.']);

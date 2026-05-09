@@ -36,38 +36,38 @@
             <form class="row g-3" id="formulaire" onsubmit="save_client(event)">
                @csrf
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.client_name') }}<span style="color: red;">*</span></label>
                   <input type="text" name="nom" class="form-control" id="nom" required="">
                   <span class="invalid-feedback nom_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.client_firstname') }}<span style="color: red;">*</span></label>
                   <input type="text" name="prenom" class="form-control" id="prenom" required="">
                   <span class="invalid-feedback prenom_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.client_phone') }}<span style="color: red;">*</span></label>
                   <input type="text" name="telephone" class="form-control" id="telephone" required=""
                     onkeypress="return /[0-9]/i.test(event.key)">
                   <span class="invalid-feedback telephone_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.client_zone') }}<span style="color: red;">*</span></label>
                   <input type="text" name="zone" class="form-control" id="zone" required="">
                   <span class="invalid-feedback zone_err" role="alert"></span>
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.client_area') }}</label>
                   <input type="text" name="superficie" class="form-control" id="superficie"
                     onkeypress="return /[0-9]/i.test(event.key)">
                 </div>
 
-                <div class="col-6">
+                <div class="col-12 col-sm-6">
                   <label class="form-label">{{ __('pages.client_budget') }}<span style="color: red;">*</span></label>
                   <input type="text" name="budget" class="form-control" id="budget" required="">
                   <span class="invalid-feedback budget_err" role="alert"></span>
@@ -98,7 +98,7 @@
           </div>
           <div class="modal-body">
             <div class="row g-3">
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-phone fs-4 text-primary mb-1"></i>
@@ -107,7 +107,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-map fs-4 text-success mb-1"></i>
@@ -116,7 +116,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-area fs-4 text-info mb-1"></i>
@@ -125,7 +125,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <div class="card border-0 bg-light h-100">
                   <div class="card-body text-center py-3">
                     <i class="bx bx-money fs-4 text-warning mb-1"></i>
@@ -156,29 +156,29 @@
               @csrf
               <input type="hidden" name="id" id="mc-id">
 
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.client_name') }}<span style="color: red;">*</span></label>
                 <input type="text" name="nom" id="mc-nom" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.client_firstname') }}<span style="color: red;">*</span></label>
                 <input type="text" name="prenom" id="mc-prenom" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.client_phone') }}<span style="color: red;">*</span></label>
                 <input type="text" name="telephone" id="mc-telephone" class="form-control" required
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.client_zone') }}<span style="color: red;">*</span></label>
                 <input type="text" name="zone" id="mc-zone" class="form-control" required>
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.client_area') }}</label>
                 <input type="text" name="superficie" id="mc-superficie" class="form-control"
                   onkeypress="return /[0-9]/i.test(event.key)">
               </div>
-              <div class="col-6">
+              <div class="col-12 col-sm-6">
                 <label class="form-label">{{ __('pages.client_budget') }}<span style="color: red;">*</span></label>
                 <input type="text" name="budget" id="mc-budget" class="form-control" required
                   onkeypress="return /[0-9]/i.test(event.key)">

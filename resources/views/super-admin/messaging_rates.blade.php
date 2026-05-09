@@ -40,7 +40,7 @@
                     </thead>
                     <tbody id="tbodyRates">
                         @forelse($rates as $rate)
-                        <tr id="rate-row-{{ $rate->id }}">
+                        <tr id="rate-row-{{ encrypt_id($rate->id) }}">
                             <td class="fw-semibold">{{ $rate->country_name }}</td>
                             <td><span class="badge bg-label-secondary">{{ $rate->country_code }}</span></td>
                             <td>
@@ -65,12 +65,12 @@
                             </td>
                             <td>
                                 <button class="btn btn-sm btn-outline-primary me-1"
-                                        onclick="editRate({{ $rate->id }}, '{{ $rate->country_name }}', {{ $rate->sms_unit_cost }}, {{ $rate->whatsapp_unit_cost }}, '{{ $rate->currency }}', {{ $rate->is_default ? 'true' : 'false' }})"
+                                        onclick="editRate('{{ encrypt_id($rate->id) }}', '{{ $rate->country_name }}', {{ $rate->sms_unit_cost }}, {{ $rate->whatsapp_unit_cost }}, '{{ $rate->currency }}', {{ $rate->is_default ? 'true' : 'false' }})"
                                         title="{{ __('common.title_edit') }}">
                                     <i class="bx bx-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger"
-                                        onclick="deleteRate({{ $rate->id }}, '{{ $rate->country_name }}')"
+                                        onclick="deleteRate('{{ encrypt_id($rate->id) }}', '{{ $rate->country_name }}')"
                                         title="{{ __('common.title_delete') }}">
                                     <i class="bx bx-trash"></i>
                                 </button>

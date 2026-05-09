@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use App\RecouvrementDossier;
 use App\RecouvrementRelance;
@@ -59,19 +60,27 @@ class RecouvrementController extends Controller
                   ->whereRaw('EXTRACT(MONTH FROM date_paiement) = ?', [$month])
                   ->whereRaw('EXTRACT(YEAR FROM date_paiement) = ?', [$year]);
             })
-            ->get()
-            ->map(function ($loc) {
-                $dernierPaiement = Facture::where('locataire_id', $loc->id)
-                    ->whereNull('delete_at')
-                    ->whereNotNull('date_paiement')
-                    ->orderByDesc('date_paiement')
-                    ->value('date_paiement');
-                $loc->dernierPaiement  = $dernierPaiement;
-                $loc->nbMoisImpayes    = $dernierPaiement
-                    ? (int) Carbon::parse($dernierPaiement)->diffInMonths(now())
-                    : null;
-                return $loc;
-            });
+            ->get();
+
+        // Batch-fetch last payment dates — 1 query instead of N
+        $locIds = $impayes->pluck('id')->toArray();
+        $derniersPaiements = $locIds
+            ? Facture::whereNull('delete_at')
+                ->whereNotNull('date_paiement')
+                ->whereIn('locataire_id', $locIds)
+                ->selectRaw('locataire_id, MAX(date_paiement) as dernier_paiement')
+                ->groupBy('locataire_id')
+                ->pluck('dernier_paiement', 'locataire_id')
+            : collect();
+
+        $impayes = $impayes->map(function ($loc) use ($derniersPaiements) {
+            $dernierPaiement      = $derniersPaiements[$loc->id] ?? null;
+            $loc->dernierPaiement = $dernierPaiement;
+            $loc->nbMoisImpayes   = $dernierPaiement
+                ? (int) Carbon::parse($dernierPaiement)->diffInMonths(now())
+                : null;
+            return $loc;
+        });
 
         $stats = [
             'total_dossiers'   => $dossiers->count(),
@@ -87,18 +96,22 @@ class RecouvrementController extends Controller
 
     public function creerDossier(Request $request)
     {
-        $request->validate([
-            'locataire_id'        => 'required|exists:locataires,id',
-            'montant_du'          => 'required|numeric|min:0',
-            'nb_mois_impayes'     => 'required|integer|min:1',
-            'date_dernier_paiement' => 'nullable|date',
-            'notes_juridiques'    => 'nullable|string',
-        ]);
-
         $dirId = Auth::user()->iddirection_ref;
 
-        // Un seul dossier actif par locataire
+        $request->validate([
+            'locataire_id'          => [
+                'required',
+                Rule::exists('locataires', 'id')->where('iddirection_ref', $dirId),
+            ],
+            'montant_du'            => 'required|numeric|min:0',
+            'nb_mois_impayes'       => 'required|integer|min:1',
+            'date_dernier_paiement' => 'nullable|date',
+            'notes_juridiques'      => 'nullable|string',
+        ]);
+
+        // Un seul dossier actif par locataire (dans la même direction)
         $exists = RecouvrementDossier::where('locataire_id', $request->locataire_id)
+            ->where('iddirection_ref', $dirId)
             ->whereNotIn('statut', ['resolu', 'classe'])
             ->first();
 
@@ -124,6 +137,7 @@ class RecouvrementController extends Controller
 
     public function show($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $dirId   = Auth::user()->iddirection_ref;
         $dossier = RecouvrementDossier::with([
                 'locataire.maison',
@@ -145,7 +159,7 @@ class RecouvrementController extends Controller
         $smsRate     = MessagingRate::where('is_default', true)->first()
                     ?? MessagingRate::first();
         $smsCost     = $smsRate ? (float) $smsRate->sms_unit_cost : 0;
-        $smsCurrency = $smsRate?->currency ?? 'FCFA';
+        $smsCurrency = $smsRate?->currency ?? get_symbole_devise();
 
         return view('recouvrement.show', compact(
             'dossier',
@@ -158,6 +172,7 @@ class RecouvrementController extends Controller
 
     public function relancer(Request $request, $id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $request->validate([
             'type'           => ['required', 'string', 'regex:/^rappel\d+$|^mise_en_demeure$/'],
             'canal'          => 'required|in:email,sms,whatsapp,courrier',
@@ -235,6 +250,7 @@ class RecouvrementController extends Controller
 
     public function relancesData($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $dirId   = Auth::user()->iddirection_ref;
         $dossier = RecouvrementDossier::with(['relances'])
             ->where('iddirection_ref', $dirId)
@@ -257,6 +273,7 @@ class RecouvrementController extends Controller
 
     public function misEnDemeurePdf($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         [$dossier, $pdfData] = $this->buildMisEnDemeurePdfData($id, true);
         $pdf = PDF::loadView('pdf.mise_en_demeure', $pdfData);
         return $pdf->download('mise_en_demeure_' . $dossier->locataire->nom . '_' . now()->format('Ymd') . '.pdf');
@@ -265,6 +282,7 @@ class RecouvrementController extends Controller
     // Aperçu inline : sert le fichier signé s'il existe, sinon génère à la volée
     public function previewMisEnDemeure($id, Request $request)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $dirId   = Auth::user()->iddirection_ref;
         $dossier = RecouvrementDossier::where('iddirection_ref', $dirId)->findOrFail($id);
 
@@ -288,6 +306,7 @@ class RecouvrementController extends Controller
     // Signer : applique le cachet et sauvegarde sous nom fixe (écrase l'ancien)
     public function signerDocument($id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         [$dossier, $pdfData] = $this->buildMisEnDemeurePdfData($id, true);
 
         if (empty($pdfData['annexeData']['cachet_base64'])) {
@@ -407,6 +426,7 @@ class RecouvrementController extends Controller
 
     public function creerPlanApurement(Request $request, $id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $request->validate([
             'nb_echeances'      => 'required|integer|min:1|max:36',
             'montant_echeance'  => 'required|numeric|min:0',
@@ -449,6 +469,7 @@ class RecouvrementController extends Controller
 
     public function marquerEcheancePaye(Request $request, $echeanceId)
     {
+        $echeanceId = decrypt_id($echeanceId); abort_if(!$echeanceId, 404);
         $dirId    = Auth::user()->iddirection_ref;
         $echeance = RecouvrementEcheance::whereHas('dossier', function ($q) use ($dirId) {
             $q->where('iddirection_ref', $dirId);
@@ -477,6 +498,7 @@ class RecouvrementController extends Controller
 
     public function escaladerContentieux(Request $request, $id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $dirId   = Auth::user()->iddirection_ref;
         $dossier = RecouvrementDossier::where('iddirection_ref', $dirId)->findOrFail($id);
 
@@ -493,6 +515,7 @@ class RecouvrementController extends Controller
 
     public function update(Request $request, $id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
         $request->validate([
             'notes_juridiques'  => 'nullable|string',
             'montant_recouvre'  => 'nullable|numeric|min:0',
@@ -517,6 +540,9 @@ class RecouvrementController extends Controller
 
     public function cloturer(Request $request, $id)
     {
+        $id = decrypt_id($id); abort_if(!$id, 404);
+        $request->validate(['statut' => 'nullable|in:resolu,classe']);
+
         $dirId   = Auth::user()->iddirection_ref;
         $dossier = RecouvrementDossier::where('iddirection_ref', $dirId)->findOrFail($id);
 

@@ -124,8 +124,8 @@
                   {{ $d->locataire->maison->nom_maison ?? '–' }}<br>
                   @if($d->locataire->chambre) {{ __('ui.recouvrement.room_prefix') }} {{ $d->locataire->chambre->numero_chambre }} @endif
                 </td>
-                <td class="fw-semibold text-danger">{{ number_format($d->montant_du, 0, ',', ' ') }}</td>
-                <td class="text-success">{{ number_format($d->montant_recouvre, 0, ',', ' ') }}</td>
+                <td class="fw-semibold text-danger">{{ format_price($d->montant_du) }}</td>
+                <td class="text-success">{{ format_price($d->montant_recouvre) }}</td>
                 <td>{!! $d->statut_badge !!}</td>
                 <td>
                   <span class="badge bg-{{ $d->score_color }}">{{ $d->score_risque }}/100</span>
@@ -140,7 +140,7 @@
                   @endif
                 </td>
                 <td>
-                  <a href="{{ route('recouvrement.show', $d->id) }}" class="btn btn-sm btn-outline-primary">
+                  <a href="{{ route('recouvrement.show', encrypt_id($d->id)) }}" class="btn btn-sm btn-outline-primary">
                     <i class="bx bx-show"></i>
                   </a>
                 </td>
@@ -185,7 +185,7 @@
                     {{ $loc->maison->nom_maison ?? '–' }}<br>
                     {{ $loc->chambre->numero_chambre ?? '' }}
                   </td>
-                  <td>{{ number_format($loc->prix_mois, 0, ',', ' ') }}</td>
+                  <td>{{ format_price($loc->prix_mois) }}</td>
                   <td class="small">
                     @if($loc->dernierPaiement)
                       {{ \Carbon\Carbon::parse($loc->dernierPaiement)->format('d/m/Y') }}
@@ -202,7 +202,7 @@
                       <span class="badge bg-secondary">–</span>
                     @endif
                   </td>
-                  <td class="fw-semibold text-danger">{{ number_format($montantEstime, 0, ',', ' ') }}</td>
+                  <td class="fw-semibold text-danger">{{ format_price($montantEstime) }}</td>
                   <td>
                     @can('ajoute-recouvrement')
                     <button class="btn btn-sm btn-danger btn-ouvrir-dossier"

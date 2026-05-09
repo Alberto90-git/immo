@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Relevé de compte locataire</title>
+    <title>{{ __('pdf.releve_locataire_doc_title') }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 11px; color: #333; padding: 20px; }
@@ -48,10 +48,10 @@
         </div>
         <div class="header-center">
             <h1>{{ $agence['designation'] ?? config('app.name') }}</h1>
-            <div class="doc-title">Relevé de compte locataire</div>
+            <div class="doc-title">{{ __('pdf.releve_locataire_doc_title') }}</div>
         </div>
         <div class="header-right">
-            <div>Émis le {{ \Carbon\Carbon::now()->format('d/m/Y') }}</div>
+            <div>{{ __('pdf.emis_le') }} {{ \Carbon\Carbon::now()->format('d/m/Y') }}</div>
             <div style="margin-top:4px;font-size:8px;color:#bbb;">{{ \Carbon\Carbon::now()->format('H:i') }}</div>
         </div>
     </div>
@@ -65,41 +65,41 @@
 
     <div class="info-section">
         <div class="info-box">
-            <h3>Informations locataire</h3>
-            <p><strong>Nom complet :</strong> {{ $locataire->nom }} {{ $locataire->prenom }}</p>
-            <p><strong>Profession :</strong> {{ $locataire->profession ?? '—' }}</p>
+            <h3>{{ __('pdf.info_locataire') }}</h3>
+            <p><strong>{{ __('pdf.info_nom_complet') }}</strong> {{ $locataire->nom }} {{ $locataire->prenom }}</p>
+            <p><strong>{{ __('pdf.info_profession') }}</strong> {{ $locataire->profession ?? '—' }}</p>
             @if($locataire->email ?? false)
-            <p><strong>Email :</strong> {{ $locataire->email }}</p>
+            <p><strong>{{ __('pdf.info_email') }}</strong> {{ $locataire->email }}</p>
             @endif
             @if($locataire->telephone ?? false)
-            <p><strong>Téléphone :</strong> {{ $locataire->telephone }}</p>
+            <p><strong>{{ __('pdf.info_telephone') }}</strong> {{ $locataire->telephone }}</p>
             @endif
         </div>
         <div class="info-box">
-            <h3>Logement</h3>
-            <p><strong>Maison :</strong> {{ $locataire->nom_maison }}</p>
-            <p><strong>Chambre :</strong> {{ $locataire->type_chambre }} N° {{ $locataire->numero_chambre }}</p>
-            <p><strong>Entrée :</strong> {{ $locataire->date_entree ? \Carbon\Carbon::parse($locataire->date_entree)->format('d/m/Y') : '—' }}</p>
-            <p><strong>Loyer mensuel :</strong> {{ format_price($locataire->prix_mois, $locataire->iddirection_ref) }}</p>
+            <h3>{{ __('pdf.info_logement') }}</h3>
+            <p><strong>{{ __('pdf.info_maison') }}</strong> {{ $locataire->nom_maison }}</p>
+            <p><strong>{{ __('pdf.info_chambre') }}</strong> {{ $locataire->type_chambre }} N° {{ $locataire->numero_chambre }}</p>
+            <p><strong>{{ __('pdf.info_entree') }}</strong> {{ $locataire->date_entree ? \Carbon\Carbon::parse($locataire->date_entree)->format('d/m/Y') : '—' }}</p>
+            <p><strong>{{ __('pdf.info_loyer') }}</strong> {{ format_price($locataire->prix_mois, $locataire->iddirection_ref) }}</p>
         </div>
     </div>
 
     <div class="summary-box">
         <div class="summary-item">
             <div class="value">{{ $factures->count() }}</div>
-            <div class="label">Paiements enregistrés</div>
+            <div class="label">{{ __('pdf.summary_paiements') }}</div>
         </div>
         <div class="summary-item">
             <div class="value">{{ format_price($totalPaye, $locataire->iddirection_ref) }}</div>
-            <div class="label">Total payé</div>
+            <div class="label">{{ __('pdf.summary_total') }}</div>
         </div>
         <div class="summary-item">
             <div class="value">{{ $factures->where('type_paiement', 'direct')->count() }}</div>
-            <div class="label">Paiements directs</div>
+            <div class="label">{{ __('pdf.summary_directs') }}</div>
         </div>
         <div class="summary-item">
             <div class="value">{{ $factures->where('type_paiement', 'avance')->count() }}</div>
-            <div class="label">Sur avance</div>
+            <div class="label">{{ __('pdf.summary_avances') }}</div>
         </div>
     </div>
 
@@ -108,12 +108,12 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Date paiement</th>
-                <th>Mois concerné</th>
-                <th class="text-right">Montant</th>
-                <th class="text-center">Type</th>
-                <th>Mode</th>
-                <th>Référence</th>
+                <th>{{ __('pdf.col_date_paiement') }}</th>
+                <th>{{ __('pdf.col_mois_concerne') }}</th>
+                <th class="text-right">{{ __('pdf.col_montant_th') }}</th>
+                <th class="text-center">{{ __('pdf.col_type_th') }}</th>
+                <th>{{ __('pdf.col_mode') }}</th>
+                <th>{{ __('pdf.col_reference_th') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -125,9 +125,9 @@
                 <td class="text-right"><strong>{{ format_price($f->montant, $f->iddirection_ref) }}</strong></td>
                 <td class="text-center">
                     @if($f->type_paiement === 'direct')
-                        <span class="badge-direct">Direct</span>
+                        <span class="badge-direct">{{ __('pdf.badge_direct') }}</span>
                     @else
-                        <span class="badge-avance">Avance</span>
+                        <span class="badge-avance">{{ __('pdf.badge_avance') }}</span>
                     @endif
                 </td>
                 <td>{{ $f->mode_paiement ?? '—' }}</td>
@@ -137,11 +137,11 @@
         </tbody>
     </table>
     @else
-    <div class="no-data">Aucun paiement enregistré pour ce locataire.</div>
+    <div class="no-data">{{ __('pdf.no_paiement') }}</div>
     @endif
 
     <div class="footer">
-        Document généré le {{ \Carbon\Carbon::now()->format('d/m/Y à H:i') }} — Confidentiel — Usage interne et administratif uniquement
+        {{ __('pdf.generated_on') }} {{ \Carbon\Carbon::now()->format('d/m/Y') }} — {{ __('pdf.footer_confidentiel') }}
     </div>
 </body>
 </html>

@@ -368,7 +368,7 @@ $(document).on('submit.page', '#formAjouterChambre', function(e) {
                 <td>${c.nom_maison}</td>
                 <td>${c.numero_chambre}</td>
                 <td>${c.type_chambre}</td>
-                <td>${parseInt(c.prix_chambre).toLocaleString('fr-FR')} XOF</td>
+                <td>${parseInt(c.prix_chambre).toLocaleString('fr-FR')} {{ get_symbole_devise() }}</td>
                 <td><span class="badge rounded-pill bg-success">${I18N.badgeFree}</span></td>
                 <td class="text-center">${actions}</td>
             `;
@@ -409,7 +409,7 @@ $(document).on('submit.page', '.form-modifier-chambre', function(e) {
                 cells[0].textContent = res.chambre.nom_maison;
                 cells[1].textContent = res.chambre.numero_chambre;
                 cells[2].textContent = res.chambre.type_chambre;
-                cells[3].textContent = res.chambre.prix_chambre + ' XOF';
+                cells[3].textContent = res.chambre.prix_chambre + ' {{ get_symbole_devise() }}';
             }
             Swal.fire({ icon: 'success', title: I18N.swalUpdated, text: res.message, timer: 2500, showConfirmButton: false });
             closeModalClean('modifier' + id);

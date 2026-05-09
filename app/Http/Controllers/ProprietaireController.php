@@ -169,10 +169,17 @@ class ProprietaireController extends Controller
                 return response()->json(['status' => false, 'message' => 'Veuillez sélectionner une agence dans le header']);
             }
 
-            $oldProprio = Proprietaire::find($request->id);
+            $oldProprio = Proprietaire::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
+
+            if (!$oldProprio) {
+                return response()->json(['status' => false, 'message' => 'Propriétaire introuvable']);
+            }
 
             // Mettre à jour le propriétaire
             $proprio = Proprietaire::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
                 ->update([
                     'nom' => Str::upper($request->nom),
                     'prenom' => Str::ucfirst($request->prenom),
@@ -249,7 +256,9 @@ class ProprietaireController extends Controller
             $now = Carbon::now();
 
             // Récupérer le propriétaire avant suppression
-            $proprio = Proprietaire::find($request->id);
+            $proprio = Proprietaire::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
+                ->first();
 
             if (!$proprio) {
                 return response()->json(['status' => false, 'message' => 'Propriétaire introuvable']);
@@ -257,6 +266,7 @@ class ProprietaireController extends Controller
 
             // Soft delete du propriétaire
             $deleted = Proprietaire::where('id', $request->id)
+                ->where('iddirection_ref', Auth::user()->iddirection_ref)
                 ->update(['delete_at' => $now]);
 
             if ($deleted) {
